@@ -52,7 +52,7 @@ repositories {
 }
 
 apply from: '../dependencies.gradle'
-apply from: '../java_common.gradle'
+  apply from: '../java_common.gradle'
 
 sourceSets {
   main {
