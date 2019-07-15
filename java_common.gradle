@@ -79,11 +79,4 @@ spotless {
     }
     googleJavaFormat('1.7')
   }
-  format 'misc', {
-    clearSteps()
-    target '**/*.gradle'
-    trimTrailingWhitespace()
-    indentWithSpaces(2)
-    endWithNewline()
-  }
 }

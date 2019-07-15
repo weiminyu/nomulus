@@ -251,3 +251,14 @@ subprojects {
     }
   }
 }
+
+spotless {
+  format 'misc', {
+    clearSteps()
+    target '**/*.gradle', '**/*.json', '**/src/**/*.xml'
+    targetExclude 'node_modules/**', '**/test/resources/**', '**/build/**', 'services/**'
+    trimTrailingWhitespace()
+    indentWithSpaces(2)
+    endWithNewline()
+  }
+}
