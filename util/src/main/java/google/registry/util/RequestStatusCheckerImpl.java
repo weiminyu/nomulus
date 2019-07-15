@@ -33,15 +33,13 @@ public class RequestStatusCheckerImpl implements RequestStatusChecker {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  @VisibleForTesting
-  static LogService logService = LogServiceFactory.getLogService();
+  @VisibleForTesting static LogService logService = LogServiceFactory.getLogService();
 
-  /**
-   * The key to {@link Environment#getAttributes}'s request_log_id value.
-   */
+  /** The key to {@link Environment#getAttributes}'s request_log_id value. */
   private static final String REQUEST_LOG_ID_KEY = "com.google.appengine.runtime.request_log_id";
 
-  @Inject public RequestStatusCheckerImpl() {}
+  @Inject
+  public RequestStatusCheckerImpl() {}
 
   /**
    * Returns the unique log identifier of the current request.
@@ -49,7 +47,9 @@ public class RequestStatusCheckerImpl implements RequestStatusChecker {
    * <p>May be safely called multiple times, will always return the same result (within the same
    * request).
    *
-   * @see <a href="https://cloud.google.com/appengine/docs/standard/java/how-requests-are-handled#request-ids">appengine documentation</a>
+   * @see <a
+   *     href="https://cloud.google.com/appengine/docs/standard/java/how-requests-are-handled#request-ids">appengine
+   *     documentation</a>
    */
   @Override
   public String getLogId() {
@@ -68,15 +68,16 @@ public class RequestStatusCheckerImpl implements RequestStatusChecker {
   /**
    * Returns true if the given request is currently running.
    *
-   * @see <a href="https://cloud.google.com/appengine/docs/standard/java/javadoc/com/google/appengine/api/log/LogQuery">appengine documentation</a>
+   * @see <a
+   *     href="https://cloud.google.com/appengine/docs/standard/java/javadoc/com/google/appengine/api/log/LogQuery">appengine
+   *     documentation</a>
    */
   @Override
   public boolean isRunning(String requestLogId) {
     RequestLogs requestLogs =
         Iterables.getOnlyElement(
             logService.fetch(
-                LogQuery.Builder
-                    .withRequestIds(Collections.singletonList(requestLogId))
+                LogQuery.Builder.withRequestIds(Collections.singletonList(requestLogId))
                     .includeAppLogs(false)
                     .includeIncomplete(true)),
             null);

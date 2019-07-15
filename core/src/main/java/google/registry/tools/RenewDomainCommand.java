@@ -45,8 +45,7 @@ final class RenewDomainCommand extends MutatingEppToolCommand {
   @Parameter(description = "Names of the domains to renew.", required = true)
   private List<String> mainParameters;
 
-  @Inject
-  Clock clock;
+  @Inject Clock clock;
 
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormat.forPattern("YYYY-MM-dd");
 
@@ -57,8 +56,7 @@ final class RenewDomainCommand extends MutatingEppToolCommand {
     checkArgument(period < 10, "Cannot renew domains for 10 or more years");
     DateTime now = clock.nowUtc();
     for (String domainName : mainParameters) {
-      Optional<DomainBase> domainOptional =
-          loadByForeignKey(DomainBase.class, domainName, now);
+      Optional<DomainBase> domainOptional = loadByForeignKey(DomainBase.class, domainName, now);
       checkArgumentPresent(domainOptional, "Domain '%s' does not exist or is deleted", domainName);
       setSoyTemplate(RenewDomainSoyInfo.getInstance(), RenewDomainSoyInfo.RENEWDOMAIN);
       DomainBase domain = domainOptional.get();

@@ -43,17 +43,26 @@ import google.registry.ui.server.registrar.RegistrarSettingsAction;
     })
 interface FrontendRequestComponent {
   ConsoleOteSetupAction consoleOteSetupAction();
+
   ConsoleRegistrarCreatorAction consoleRegistrarCreatorAction();
+
   ConsoleUiAction consoleUiAction();
+
   EppTlsAction eppTlsAction();
+
   FlowComponent.Builder flowComponentBuilder();
+
   OteStatusAction oteStatusAction();
+
   RegistrarSettingsAction registrarSettingsAction();
 
   @Subcomponent.Builder
   abstract class Builder implements RequestComponentBuilder<FrontendRequestComponent> {
-    @Override public abstract Builder requestModule(RequestModule requestModule);
-    @Override public abstract FrontendRequestComponent build();
+    @Override
+    public abstract Builder requestModule(RequestModule requestModule);
+
+    @Override
+    public abstract FrontendRequestComponent build();
   }
 
   @Module(subcomponents = FrontendRequestComponent.class)

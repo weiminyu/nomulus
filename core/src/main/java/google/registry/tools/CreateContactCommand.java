@@ -59,14 +59,10 @@ final class CreateContactCommand extends MutatingEppToolCommand {
       variableArity = true)
   private List<String> street;
 
-  @Parameter(
-      names = "--city",
-      description = "City of address.")
+  @Parameter(names = "--city", description = "City of address.")
   private String city;
 
-  @Parameter(
-      names = "--state",
-      description = "State of address.")
+  @Parameter(names = "--state", description = "State of address.")
   private String state;
 
   @Parameter(
@@ -74,9 +70,7 @@ final class CreateContactCommand extends MutatingEppToolCommand {
       description = "Postal code of address.")
   private String zip;
 
-  @Parameter(
-      names = "--cc",
-      description = "Country code of address.")
+  @Parameter(names = "--cc", description = "Country code of address.")
   private String cc;
 
   @Parameter(
@@ -114,22 +108,24 @@ final class CreateContactCommand extends MutatingEppToolCommand {
     if (isNullOrEmpty(password)) {
       password = passwordGenerator.createString(PASSWORD_LENGTH);
     }
-    checkArgument(street == null || street.size() <= 3,
-        "Addresses must contain at most 3 street lines.");
+    checkArgument(
+        street == null || street.size() <= 3, "Addresses must contain at most 3 street lines.");
 
     setSoyTemplate(ContactCreateSoyInfo.getInstance(), ContactCreateSoyInfo.CONTACTCREATE);
-    addSoyRecord(clientId, new SoyMapData(
-        "id", id,
-        "name", name,
-        "org", org,
-        "street", street,
-        "city", city,
-        "state", state,
-        "zip", zip,
-        "cc", cc,
-        "phone", phone,
-        "fax", fax,
-        "email", email,
-        "password", password));
+    addSoyRecord(
+        clientId,
+        new SoyMapData(
+            "id", id,
+            "name", name,
+            "org", org,
+            "street", street,
+            "city", city,
+            "state", state,
+            "zip", zip,
+            "cc", cc,
+            "phone", phone,
+            "fax", fax,
+            "email", email,
+            "password", password));
   }
 }

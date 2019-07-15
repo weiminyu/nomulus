@@ -31,7 +31,9 @@ import org.joda.time.DateTime;
 /** Metadata for an {@link Ofy} transaction that saves commit logs. */
 class TransactionInfo {
 
-  private enum Delete { SENTINEL }
+  private enum Delete {
+    SENTINEL
+  }
 
   /** Logical "now" of the transaction. */
   DateTime transactionTime;
@@ -45,15 +47,15 @@ class TransactionInfo {
   /**
    * Accumulator of save/delete operations performed in transaction.
    *
-   * <p>The {@link ImmutableMap} builder provides us the benefit of not permitting duplicates.
-   * This allows us to avoid potential race conditions where the same key is mutated twice in a
+   * <p>The {@link ImmutableMap} builder provides us the benefit of not permitting duplicates. This
+   * allows us to avoid potential race conditions where the same key is mutated twice in a
    * transaction.
    */
   private final ImmutableMap.Builder<Key<?>, Object> changesBuilder = new ImmutableMap.Builder<>();
 
   TransactionInfo(DateTime now) {
     this.transactionTime = now;
-    ofy().load().key(bucketKey);  // Asynchronously load value into session cache.
+    ofy().load().key(bucketKey); // Asynchronously load value into session cache.
   }
 
   TransactionInfo setReadOnly() {
@@ -85,10 +87,7 @@ class TransactionInfo {
   }
 
   ImmutableSet<Object> getSaves() {
-    return changesBuilder
-        .build()
-        .values()
-        .stream()
+    return changesBuilder.build().values().stream()
         .filter(not(Delete.SENTINEL::equals))
         .collect(toImmutableSet());
   }

@@ -42,19 +42,14 @@ import org.junit.runners.JUnit4;
 /** Tests for {@link PricingEngineProxy}. */
 @RunWith(JUnit4.class)
 public class PricingEngineProxyTest {
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private Clock clock;
 
   @Before
   public void before() {
-    PremiumList premiumList = persistPremiumList(
-        "rich,USD 100",
-        "richer,USD 999",
-        "fraction,USD 20.50");
+    PremiumList premiumList =
+        persistPremiumList("rich,USD 100", "richer,USD 999", "fraction,USD 20.50");
     createTld("moka");
     persistResource(Registry.get("moka").asBuilder().setPremiumList(premiumList).build());
     clock = new FakeClock(DateTime.parse("2016-03-17T12:01:00Z"));
@@ -97,10 +92,8 @@ public class PricingEngineProxyTest {
     // The example tld has a premium price for "rich".
     createTld("example");
     // The default value of 17 is set in createTld().
-    assertThat(getDomainCreateCost("poor.example", clock.nowUtc(), 1))
-        .isEqualTo(Money.of(USD, 13));
-    assertThat(getDomainCreateCost("poor.example", clock.nowUtc(), 2))
-        .isEqualTo(Money.of(USD, 26));
+    assertThat(getDomainCreateCost("poor.example", clock.nowUtc(), 1)).isEqualTo(Money.of(USD, 13));
+    assertThat(getDomainCreateCost("poor.example", clock.nowUtc(), 2)).isEqualTo(Money.of(USD, 26));
     assertThat(getDomainCreateCost("rich.example", clock.nowUtc(), 1))
         .isEqualTo(Money.of(USD, 100));
     assertThat(getDomainCreateCost("rich.example", clock.nowUtc(), 2))
@@ -118,32 +111,20 @@ public class PricingEngineProxyTest {
                 ImmutableSortedMap.of(
                     START_OF_TIME, Money.of(USD, 8), clock.nowUtc(), Money.of(USD, 10)))
             .build());
-    assertThat(getDomainRenewCost("poor.example", START_OF_TIME, 1))
-        .isEqualTo(Money.of(USD, 8));
-    assertThat(getDomainRenewCost("poor.example", START_OF_TIME, 2))
-        .isEqualTo(Money.of(USD, 16));
-    assertThat(getDomainRenewCost("poor.example", clock.nowUtc(), 1))
-        .isEqualTo(Money.of(USD, 10));
-    assertThat(getDomainRenewCost("poor.example", clock.nowUtc(), 2))
-        .isEqualTo(Money.of(USD, 20));
-    assertThat(getDomainRenewCost("rich.example", START_OF_TIME, 1))
-        .isEqualTo(Money.of(USD, 100));
-    assertThat(getDomainRenewCost("rich.example", START_OF_TIME, 2))
-        .isEqualTo(Money.of(USD, 200));
-    assertThat(getDomainRenewCost("rich.example", clock.nowUtc(), 1))
-        .isEqualTo(Money.of(USD, 100));
-    assertThat(getDomainRenewCost("rich.example", clock.nowUtc(), 2))
-        .isEqualTo(Money.of(USD, 200));
+    assertThat(getDomainRenewCost("poor.example", START_OF_TIME, 1)).isEqualTo(Money.of(USD, 8));
+    assertThat(getDomainRenewCost("poor.example", START_OF_TIME, 2)).isEqualTo(Money.of(USD, 16));
+    assertThat(getDomainRenewCost("poor.example", clock.nowUtc(), 1)).isEqualTo(Money.of(USD, 10));
+    assertThat(getDomainRenewCost("poor.example", clock.nowUtc(), 2)).isEqualTo(Money.of(USD, 20));
+    assertThat(getDomainRenewCost("rich.example", START_OF_TIME, 1)).isEqualTo(Money.of(USD, 100));
+    assertThat(getDomainRenewCost("rich.example", START_OF_TIME, 2)).isEqualTo(Money.of(USD, 200));
+    assertThat(getDomainRenewCost("rich.example", clock.nowUtc(), 1)).isEqualTo(Money.of(USD, 100));
+    assertThat(getDomainRenewCost("rich.example", clock.nowUtc(), 2)).isEqualTo(Money.of(USD, 200));
   }
 
   @Test
   public void testFailure_cantLoadPricingEngine() {
     createTld("example");
-    persistResource(
-        Registry.get("example")
-            .asBuilder()
-            .setPremiumPricingEngine("fake")
-            .build());
+    persistResource(Registry.get("example").asBuilder().setPremiumPricingEngine("fake").build());
     IllegalStateException thrown =
         assertThrows(
             IllegalStateException.class,

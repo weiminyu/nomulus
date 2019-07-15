@@ -18,9 +18,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * A base implementation of {@link DnsWriter} that protects against multiple calls to commit().
- */
+/** A base implementation of {@link DnsWriter} that protects against multiple calls to commit(). */
 public abstract class BaseDnsWriter implements DnsWriter {
 
   private final AtomicBoolean committedAlready = new AtomicBoolean(false);

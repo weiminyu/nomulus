@@ -166,7 +166,6 @@ public class KmsConnectionImplTest {
   public void test_encrypt() throws Exception {
     new KmsConnectionImpl("foo", "bar", retrier, kms).encrypt("key", "moo".getBytes(UTF_8));
 
-
     verify(kmsCryptoKeyVersions).create(cryptoKeyName.capture(), cryptoKeyVersion.capture());
     assertThat(cryptoKeyName.getValue())
         .isEqualTo("projects/foo/locations/global/keyRings/bar/cryptoKeys/key");

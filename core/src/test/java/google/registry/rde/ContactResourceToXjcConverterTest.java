@@ -62,10 +62,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class ContactResourceToXjcConverterTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Before
   public void before() {
@@ -235,31 +232,30 @@ public class ContactResourceToXjcConverterTest {
 
   @Test
   public void testConvertContact_absentVoiceAndFaxNumbers() {
-    XjcRdeContact bean = ContactResourceToXjcConverter.convertContact(
-        makeContactResource().asBuilder()
-            .setVoiceNumber(null)
-            .setFaxNumber(null)
-            .build());
+    XjcRdeContact bean =
+        ContactResourceToXjcConverter.convertContact(
+            makeContactResource().asBuilder().setVoiceNumber(null).setFaxNumber(null).build());
     assertThat(bean.getVoice()).isNull();
     assertThat(bean.getFax()).isNull();
   }
 
   @Test
   public void testConvertContact_absentDisclose() {
-    XjcRdeContact bean = ContactResourceToXjcConverter.convertContact(
-        makeContactResource().asBuilder()
-            .setDisclose(null)
-            .build());
+    XjcRdeContact bean =
+        ContactResourceToXjcConverter.convertContact(
+            makeContactResource().asBuilder().setDisclose(null).build());
     assertThat(bean.getDisclose()).isNull();
   }
 
   @Test
   public void testConvertContact_absentTransferData() {
-    XjcRdeContact bean = ContactResourceToXjcConverter.convertContact(
-        makeContactResource().asBuilder()
-            .setLastTransferTime(null)
-            .setTransferData(null)
-            .build());
+    XjcRdeContact bean =
+        ContactResourceToXjcConverter.convertContact(
+            makeContactResource()
+                .asBuilder()
+                .setLastTransferTime(null)
+                .setTransferData(null)
+                .build());
     assertThat(bean.getTrDate()).isNull();
     assertThat(bean.getTrnData()).isNull();
   }
@@ -299,46 +295,49 @@ public class ContactResourceToXjcConverterTest {
         .setLastTransferTime(DateTime.parse("1925-04-20TZ"))
         .setLastEppUpdateTime(DateTime.parse("1930-04-20TZ"))
         .setEmailAddress("justine@crr.com")
-        .setStatusValues(ImmutableSet.of(
-            StatusValue.CLIENT_DELETE_PROHIBITED,
-            StatusValue.SERVER_UPDATE_PROHIBITED))
-        .setInternationalizedPostalInfo(new PostalInfo.Builder()
-            .setType(PostalInfo.Type.INTERNATIONALIZED)
-            .setName("Dipsy Doodle")
-            .setOrg("Charleston Road Registry Incorporated")
-            .setAddress(new ContactAddress.Builder()
-                .setStreet(ImmutableList.of("123 Charleston Road", "Suite 123"))
-                .setCity("Mountain View")
-                .setState("CA")
-                .setZip("31337")
-                .setCountryCode("US")
+        .setStatusValues(
+            ImmutableSet.of(
+                StatusValue.CLIENT_DELETE_PROHIBITED, StatusValue.SERVER_UPDATE_PROHIBITED))
+        .setInternationalizedPostalInfo(
+            new PostalInfo.Builder()
+                .setType(PostalInfo.Type.INTERNATIONALIZED)
+                .setName("Dipsy Doodle")
+                .setOrg("Charleston Road Registry Incorporated")
+                .setAddress(
+                    new ContactAddress.Builder()
+                        .setStreet(ImmutableList.of("123 Charleston Road", "Suite 123"))
+                        .setCity("Mountain View")
+                        .setState("CA")
+                        .setZip("31337")
+                        .setCountryCode("US")
+                        .build())
                 .build())
-            .build())
         .setVoiceNumber(
             new ContactPhoneNumber.Builder()
                 .setPhoneNumber("+1.2126660000")
                 .setExtension("123")
                 .build())
-        .setFaxNumber(
-            new ContactPhoneNumber.Builder()
-                .setPhoneNumber("+1.2126660001")
+        .setFaxNumber(new ContactPhoneNumber.Builder().setPhoneNumber("+1.2126660001").build())
+        .setTransferData(
+            new TransferData.Builder()
+                .setGainingClientId("TheRegistrar")
+                .setLosingClientId("NewRegistrar")
+                .setTransferRequestTime(DateTime.parse("1925-04-19TZ"))
+                .setPendingTransferExpirationTime(DateTime.parse("1925-04-21TZ"))
+                .setTransferStatus(TransferStatus.SERVER_APPROVED)
+                .setTransferRequestTrid(Trid.create("client-trid", "server-trid"))
                 .build())
-        .setTransferData(new TransferData.Builder()
-            .setGainingClientId("TheRegistrar")
-            .setLosingClientId("NewRegistrar")
-            .setTransferRequestTime(DateTime.parse("1925-04-19TZ"))
-            .setPendingTransferExpirationTime(DateTime.parse("1925-04-21TZ"))
-            .setTransferStatus(TransferStatus.SERVER_APPROVED)
-            .setTransferRequestTrid(Trid.create("client-trid", "server-trid"))
-            .build())
-        .setDisclose(new Disclose.Builder()
-            .setFlag(true)
-            .setEmail(new PresenceMarker())
-            .setAddrs(ImmutableList.of(
-                Disclose.PostalInfoChoice.create(PostalInfo.Type.INTERNATIONALIZED)))
-            .setNames(ImmutableList.of(
-                Disclose.PostalInfoChoice.create(PostalInfo.Type.INTERNATIONALIZED)))
-            .build())
+        .setDisclose(
+            new Disclose.Builder()
+                .setFlag(true)
+                .setEmail(new PresenceMarker())
+                .setAddrs(
+                    ImmutableList.of(
+                        Disclose.PostalInfoChoice.create(PostalInfo.Type.INTERNATIONALIZED)))
+                .setNames(
+                    ImmutableList.of(
+                        Disclose.PostalInfoChoice.create(PostalInfo.Type.INTERNATIONALIZED)))
+                .build())
         .build();
   }
 }

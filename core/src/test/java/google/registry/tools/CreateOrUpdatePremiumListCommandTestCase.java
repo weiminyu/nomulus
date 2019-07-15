@@ -28,17 +28,14 @@ import java.nio.charset.StandardCharsets;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 
-/**
- * Base class for common testing setup for create and update commands for Premium Lists.
- */
+/** Base class for common testing setup for create and update commands for Premium Lists. */
 public abstract class CreateOrUpdatePremiumListCommandTestCase<
-        T extends CreateOrUpdatePremiumListCommand> extends CommandTestCase<T> {
+        T extends CreateOrUpdatePremiumListCommand>
+    extends CommandTestCase<T> {
 
-  @Captor
-  ArgumentCaptor<ImmutableMap<String, String>> urlParamCaptor;
+  @Captor ArgumentCaptor<ImmutableMap<String, String>> urlParamCaptor;
 
-  @Captor
-  ArgumentCaptor<byte[]> requestBodyCaptor;
+  @Captor ArgumentCaptor<byte[]> requestBodyCaptor;
 
   static String generateInputData(String premiumTermsPath) throws Exception {
     return Files.asCharSource(new File(premiumTermsPath), StandardCharsets.UTF_8).read();
@@ -53,10 +50,12 @@ public abstract class CreateOrUpdatePremiumListCommandTestCase<
             urlParamCaptor.capture(),
             eq(MediaType.FORM_DATA),
             requestBodyCaptor.capture());
-    assertThat(new ImmutableMap.Builder<String, String>()
-        .putAll(urlParamCaptor.getValue())
-        .putAll(UriParameters.parse(new String(requestBodyCaptor.getValue(), UTF_8)).entries())
-        .build())
-            .containsExactlyEntriesIn(parameterMap);
+    assertThat(
+            new ImmutableMap.Builder<String, String>()
+                .putAll(urlParamCaptor.getValue())
+                .putAll(
+                    UriParameters.parse(new String(requestBodyCaptor.getValue(), UTF_8)).entries())
+                .build())
+        .containsExactlyEntriesIn(parameterMap);
   }
 }

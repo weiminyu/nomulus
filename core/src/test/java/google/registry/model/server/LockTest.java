@@ -74,7 +74,8 @@ public class LockTest {
     Lock.lockMetrics = null;
   }
 
-  @Before public void setUp() {
+  @Before
+  public void setUp() {
     inject.setStaticField(Ofy.class, "clock", clock);
     origLockMetrics = Lock.lockMetrics;
     Lock.lockMetrics = null;

@@ -63,10 +63,7 @@ public class SetupOteCommandTest extends CommandTestCase<SetupOteCommand> {
 
   /** Verify TLD creation. */
   private void verifyTldCreation(
-      String tldName,
-      String roidSuffix,
-      TldState tldState,
-      boolean isEarlyAccess) {
+      String tldName, String roidSuffix, TldState tldState, boolean isEarlyAccess) {
     Registry registry = Registry.get(tldName);
     assertThat(registry).isNotNull();
     assertThat(registry.getRoidSuffix()).isEqualTo(roidSuffix);
@@ -123,8 +120,7 @@ public class SetupOteCommandTest extends CommandTestCase<SetupOteCommand> {
   }
 
   private void verifyRegistrarContactCreation(String registrarName, String email) {
-    ImmutableSet<RegistrarContact> registrarContacts =
-        loadRegistrar(registrarName).getContacts();
+    ImmutableSet<RegistrarContact> registrarContacts = loadRegistrar(registrarName).getContacts();
     assertThat(registrarContacts).hasSize(1);
     RegistrarContact registrarContact = registrarContacts.stream().findAny().get();
     assertThat(registrarContact.getEmailAddress()).isEqualTo(email);
@@ -144,8 +140,8 @@ public class SetupOteCommandTest extends CommandTestCase<SetupOteCommand> {
     verifyTldCreation("blobio-ga", "BLOBIOG2", GENERAL_AVAILABILITY, false);
     verifyTldCreation("blobio-eap", "BLOBIOE3", GENERAL_AVAILABILITY, true);
 
-    ImmutableList<CidrAddressBlock> ipAddress = ImmutableList.of(
-        CidrAddressBlock.create("1.1.1.1"));
+    ImmutableList<CidrAddressBlock> ipAddress =
+        ImmutableList.of(CidrAddressBlock.create("1.1.1.1"));
 
     verifyRegistrarCreation("blobio-1", "blobio-sunrise", PASSWORD, ipAddress);
     verifyRegistrarCreation("blobio-3", "blobio-ga", PASSWORD, ipAddress);
@@ -214,9 +210,8 @@ public class SetupOteCommandTest extends CommandTestCase<SetupOteCommand> {
     verifyTldCreation("blobio-ga", "BLOBIOG2", GENERAL_AVAILABILITY, false);
     verifyTldCreation("blobio-eap", "BLOBIOE3", GENERAL_AVAILABILITY, true);
 
-    ImmutableList<CidrAddressBlock> ipAddresses = ImmutableList.of(
-        CidrAddressBlock.create("1.1.1.1"),
-        CidrAddressBlock.create("2.2.2.2"));
+    ImmutableList<CidrAddressBlock> ipAddresses =
+        ImmutableList.of(CidrAddressBlock.create("1.1.1.1"), CidrAddressBlock.create("2.2.2.2"));
 
     verifyRegistrarCreation("blobio-1", "blobio-sunrise", PASSWORD, ipAddresses);
     verifyRegistrarCreation("blobio-3", "blobio-ga", PASSWORD, ipAddresses);
@@ -262,9 +257,7 @@ public class SetupOteCommandTest extends CommandTestCase<SetupOteCommand> {
             IllegalArgumentException.class,
             () ->
                 runCommandForced(
-                    "--ip_whitelist=1.1.1.1",
-                    "--email=contact@email.com",
-                    "--registrar=blobio"));
+                    "--ip_whitelist=1.1.1.1", "--email=contact@email.com", "--registrar=blobio"));
     assertThat(thrown)
         .hasMessageThat()
         .contains(
@@ -404,10 +397,12 @@ public class SetupOteCommandTest extends CommandTestCase<SetupOteCommand> {
 
   @Test
   public void testFailure_registrarExists() {
-    Registrar registrar = loadRegistrar("TheRegistrar").asBuilder()
-        .setClientId("blobio-1")
-        .setRegistrarName("blobio-1")
-        .build();
+    Registrar registrar =
+        loadRegistrar("TheRegistrar")
+            .asBuilder()
+            .setClientId("blobio-1")
+            .setRegistrarName("blobio-1")
+            .build();
     persistResource(registrar);
     IllegalStateException thrown =
         assertThrows(
@@ -423,10 +418,12 @@ public class SetupOteCommandTest extends CommandTestCase<SetupOteCommand> {
 
   @Test
   public void testSuccess_registrarExists_replaceExisting() throws Exception {
-    Registrar registrar = loadRegistrar("TheRegistrar").asBuilder()
-        .setClientId("blobio-1")
-        .setRegistrarName("blobio-1")
-        .build();
+    Registrar registrar =
+        loadRegistrar("TheRegistrar")
+            .asBuilder()
+            .setClientId("blobio-1")
+            .setRegistrarName("blobio-1")
+            .build();
     persistResource(registrar);
 
     runCommandForced(
@@ -436,8 +433,8 @@ public class SetupOteCommandTest extends CommandTestCase<SetupOteCommand> {
         "--email=contact@email.com",
         "--certfile=" + getCertFilename());
 
-    ImmutableList<CidrAddressBlock> ipAddress = ImmutableList.of(
-        CidrAddressBlock.create("1.1.1.1"));
+    ImmutableList<CidrAddressBlock> ipAddress =
+        ImmutableList.of(CidrAddressBlock.create("1.1.1.1"));
 
     verifyRegistrarCreation("blobio-1", "blobio-sunrise", PASSWORD, ipAddress);
     verifyRegistrarCreation("blobio-3", "blobio-ga", PASSWORD, ipAddress);

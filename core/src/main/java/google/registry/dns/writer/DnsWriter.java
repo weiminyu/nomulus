@@ -21,6 +21,7 @@ package google.registry.dns.writer;
  * happen.
  *
  * <p>Here's an example of how you would publish updates for a domain and host:
+ *
  * <pre>
  * &#064;Inject Provider&lt;DnsWriter&gt; dnsWriter;
  * writer.publishDomain(domainName);
@@ -36,7 +37,7 @@ public interface DnsWriter {
    * and a DS record for each delegation signer stored in the registry for the supplied domain name.
    * If the domain is deleted or is in a "non-publish" state then any existing records are deleted.
    *
-   * This must NOT actually perform any action, instead it should stage the action so that it's
+   * <p>This must NOT actually perform any action, instead it should stage the action so that it's
    * performed when {@link #commit()} is called.
    *
    * @param domainName the fully qualified domain name, with no trailing dot
@@ -51,7 +52,7 @@ public interface DnsWriter {
    * the existing records are deleted. Assumes that this method will only be called for in-bailiwick
    * hosts. The registry does not have addresses for other hosts.
    *
-   * This must NOT actually perform any action, instead it should stage the action so that it's
+   * <p>This must NOT actually perform any action, instead it should stage the action so that it's
    * performed when {@link #commit()} is called.
    *
    * @param hostName the fully qualified host name, with no trailing dot
@@ -65,6 +66,7 @@ public interface DnsWriter {
    * encouraged to throw an error if commit() is called twice.
    *
    * <p>Here's an example of how you would do that
+   *
    * <pre>
    * private boolean committed = false;
    * void commit() {

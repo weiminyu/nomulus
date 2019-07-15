@@ -41,7 +41,8 @@ public final class IdnTable {
   /**
    * Public URL of this IDN table, which is needed by RDE.
    *
-   * @see <a href="https://tools.ietf.org/html/draft-arias-noguchi-dnrd-objects-mapping-05#section-5.5.1.1">
+   * @see <a
+   *     href="https://tools.ietf.org/html/draft-arias-noguchi-dnrd-objects-mapping-05#section-5.5.1.1">
    *     DNRD Objects Mapping - &ltrdeIDN:idnTableRef&gt object</a>
    */
   private final URI url;
@@ -129,8 +130,7 @@ public final class IdnTable {
   }
 
   /**
-   * Read the codepoint from a single line. The expected format of each line is:
-   * {@code U+XXXX}
+   * Read the codepoint from a single line. The expected format of each line is: {@code U+XXXX}
    * Where {@code XXXX} holds the hex value of the codepoint.
    */
   private static int readCodepoint(String line) {

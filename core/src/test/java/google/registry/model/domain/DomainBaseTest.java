@@ -67,22 +67,28 @@ public class DomainBaseTest extends EntityTestCase {
   public void setUp() {
     createTld("com");
     Key<DomainBase> domainKey = Key.create(null, DomainBase.class, "4-COM");
-    Key<HostResource> hostKey = Key.create(persistResource(
-        new HostResource.Builder()
-            .setFullyQualifiedHostName("ns1.example.com")
-            .setSuperordinateDomain(domainKey)
-            .setRepoId("1-COM")
-            .build()));
-    Key<ContactResource> contact1Key = Key.create(persistResource(
-        new ContactResource.Builder()
-            .setContactId("contact_id1")
-            .setRepoId("2-COM")
-            .build()));
-    Key<ContactResource> contact2Key = Key.create(persistResource(
-        new ContactResource.Builder()
-            .setContactId("contact_id2")
-            .setRepoId("3-COM")
-            .build()));
+    Key<HostResource> hostKey =
+        Key.create(
+            persistResource(
+                new HostResource.Builder()
+                    .setFullyQualifiedHostName("ns1.example.com")
+                    .setSuperordinateDomain(domainKey)
+                    .setRepoId("1-COM")
+                    .build()));
+    Key<ContactResource> contact1Key =
+        Key.create(
+            persistResource(
+                new ContactResource.Builder()
+                    .setContactId("contact_id1")
+                    .setRepoId("2-COM")
+                    .build()));
+    Key<ContactResource> contact2Key =
+        Key.create(
+            persistResource(
+                new ContactResource.Builder()
+                    .setContactId("contact_id2")
+                    .setRepoId("3-COM")
+                    .build()));
     Key<HistoryEntry> historyEntryKey =
         Key.create(persistResource(new HistoryEntry.Builder().setParent(domainKey).build()));
     Key<BillingEvent.OneTime> oneTimeBillKey =
@@ -168,21 +174,27 @@ public class DomainBaseTest extends EntityTestCase {
 
   @Test
   public void testEmptyStringsBecomeNull() {
-    assertThat(newDomainBase("example.com").asBuilder()
-        .setPersistedCurrentSponsorClientId(null)
-        .build()
-            .getCurrentSponsorClientId())
-                .isNull();
-    assertThat(newDomainBase("example.com").asBuilder()
-            .setPersistedCurrentSponsorClientId("")
-            .build()
+    assertThat(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setPersistedCurrentSponsorClientId(null)
+                .build()
                 .getCurrentSponsorClientId())
-                    .isNull();
-    assertThat(newDomainBase("example.com").asBuilder()
-        .setPersistedCurrentSponsorClientId(" ")
-        .build()
-            .getCurrentSponsorClientId())
-                .isNotNull();
+        .isNull();
+    assertThat(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setPersistedCurrentSponsorClientId("")
+                .build()
+                .getCurrentSponsorClientId())
+        .isNull();
+    assertThat(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setPersistedCurrentSponsorClientId(" ")
+                .build()
+                .getCurrentSponsorClientId())
+        .isNotNull();
   }
 
   @Test
@@ -201,29 +213,49 @@ public class DomainBaseTest extends EntityTestCase {
                 .build()
                 .nsHosts)
         .isNull();
-    assertThat(newDomainBase("example.com").asBuilder()
-        .setNameservers(ImmutableSet.of(Key.create(newHostResource("foo.example.tld"))))
-            .build().nsHosts)
-                .isNotNull();
+    assertThat(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setNameservers(ImmutableSet.of(Key.create(newHostResource("foo.example.tld"))))
+                .build()
+                .nsHosts)
+        .isNotNull();
     // This behavior should also hold true for ImmutableObjects nested in collections.
-    assertThat(newDomainBase("example.com").asBuilder()
-        .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 1, 1, (byte[]) null)))
-        .build().getDsData().asList().get(0).getDigest())
-            .isNull();
-    assertThat(newDomainBase("example.com").asBuilder()
-        .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 1, 1, new byte[]{})))
-        .build().getDsData().asList().get(0).getDigest())
-            .isNull();
-    assertThat(newDomainBase("example.com").asBuilder()
-        .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 1, 1, new byte[]{1})))
-        .build().getDsData().asList().get(0).getDigest())
-            .isNotNull();
+    assertThat(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 1, 1, (byte[]) null)))
+                .build()
+                .getDsData()
+                .asList()
+                .get(0)
+                .getDigest())
+        .isNull();
+    assertThat(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 1, 1, new byte[] {})))
+                .build()
+                .getDsData()
+                .asList()
+                .get(0)
+                .getDigest())
+        .isNull();
+    assertThat(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 1, 1, new byte[] {1})))
+                .build()
+                .getDsData()
+                .asList()
+                .get(0)
+                .getDigest())
+        .isNotNull();
   }
 
   @Test
   public void testEmptyTransferDataBecomesNull() {
-    DomainBase withNull =
-        newDomainBase("example.com").asBuilder().setTransferData(null).build();
+    DomainBase withNull = newDomainBase("example.com").asBuilder().setTransferData(null).build();
     DomainBase withEmpty = withNull.asBuilder().setTransferData(TransferData.EMPTY).build();
     assertThat(withNull).isEqualTo(withEmpty);
     assertThat(withEmpty.transferData).isNull();
@@ -241,18 +273,22 @@ public class DomainBaseTest extends EntityTestCase {
     StatusValue[] statuses1 = {StatusValue.CLIENT_HOLD};
     // If there are other status values, OK should be suppressed. (Domains can't be LINKED.)
     assertAboutDomains()
-        .that(newDomainBase("example.com").asBuilder()
-            .setNameservers(nameservers)
-            .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_HOLD))
-            .build())
+        .that(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setNameservers(nameservers)
+                .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_HOLD))
+                .build())
         .hasExactlyStatusValues(statuses1);
     StatusValue[] statuses2 = {StatusValue.CLIENT_HOLD};
     // When OK is suppressed, it should be removed even if it was originally there.
     assertAboutDomains()
-        .that(newDomainBase("example.com").asBuilder()
-            .setNameservers(nameservers)
-            .setStatusValues(ImmutableSet.of(StatusValue.OK, StatusValue.CLIENT_HOLD))
-            .build())
+        .that(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setNameservers(nameservers)
+                .setStatusValues(ImmutableSet.of(StatusValue.OK, StatusValue.CLIENT_HOLD))
+                .build())
         .hasExactlyStatusValues(statuses2);
     StatusValue[] statuses3 = {StatusValue.INACTIVE};
     // If there are no nameservers, INACTIVE should be added, which suppresses OK.
@@ -262,17 +298,21 @@ public class DomainBaseTest extends EntityTestCase {
     StatusValue[] statuses4 = {StatusValue.CLIENT_HOLD, StatusValue.INACTIVE};
     // If there are no nameservers but there are status values, INACTIVE should still be added.
     assertAboutDomains()
-        .that(newDomainBase("example.com").asBuilder()
-            .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_HOLD))
-            .build())
+        .that(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_HOLD))
+                .build())
         .hasExactlyStatusValues(statuses4);
     StatusValue[] statuses5 = {StatusValue.CLIENT_HOLD};
     // If there are nameservers, INACTIVE should be removed even if it was originally there.
     assertAboutDomains()
-        .that(newDomainBase("example.com").asBuilder()
-            .setNameservers(nameservers)
-            .setStatusValues(ImmutableSet.of(StatusValue.INACTIVE, StatusValue.CLIENT_HOLD))
-            .build())
+        .that(
+            newDomainBase("example.com")
+                .asBuilder()
+                .setNameservers(nameservers)
+                .setStatusValues(ImmutableSet.of(StatusValue.INACTIVE, StatusValue.CLIENT_HOLD))
+                .build())
         .hasExactlyStatusValues(statuses5);
   }
 
@@ -290,18 +330,22 @@ public class DomainBaseTest extends EntityTestCase {
 
   private void doExpiredTransferTest(DateTime oldExpirationTime) {
     HistoryEntry historyEntry = new HistoryEntry.Builder().setParent(domain).build();
-    BillingEvent.OneTime transferBillingEvent = persistResource(
-        new BillingEvent.OneTime.Builder()
-            .setReason(Reason.TRANSFER)
-            .setClientId("winner")
-            .setTargetId("example.com")
-            .setEventTime(clock.nowUtc())
-            .setBillingTime(
-                clock.nowUtc().plusDays(1).plus(Registry.get("com").getTransferGracePeriodLength()))
-            .setCost(Money.of(USD, 11))
-            .setPeriodYears(1)
-            .setParent(historyEntry)
-            .build());
+    BillingEvent.OneTime transferBillingEvent =
+        persistResource(
+            new BillingEvent.OneTime.Builder()
+                .setReason(Reason.TRANSFER)
+                .setClientId("winner")
+                .setTargetId("example.com")
+                .setEventTime(clock.nowUtc())
+                .setBillingTime(
+                    clock
+                        .nowUtc()
+                        .plusDays(1)
+                        .plus(Registry.get("com").getTransferGracePeriodLength()))
+                .setCost(Money.of(USD, 11))
+                .setPeriodYears(1)
+                .setParent(historyEntry)
+                .build());
     domain =
         domain
             .asBuilder()
@@ -329,14 +373,16 @@ public class DomainBaseTest extends EntityTestCase {
         domain.getTransferData().getServerApproveAutorenewEvent();
     assertTransferred(afterTransfer, newExpirationTime, serverApproveAutorenewEvent);
     assertThat(afterTransfer.getGracePeriods())
-        .containsExactly(GracePeriod.create(
-            GracePeriodStatus.TRANSFER,
-            clock.nowUtc().plusDays(1).plus(Registry.get("com").getTransferGracePeriodLength()),
-            "winner",
-            Key.create(transferBillingEvent)));
+        .containsExactly(
+            GracePeriod.create(
+                GracePeriodStatus.TRANSFER,
+                clock.nowUtc().plusDays(1).plus(Registry.get("com").getTransferGracePeriodLength()),
+                "winner",
+                Key.create(transferBillingEvent)));
     // If we project after the grace period expires all should be the same except the grace period.
-    DomainBase afterGracePeriod = domain.cloneProjectedAtTime(
-        clock.nowUtc().plusDays(2).plus(Registry.get("com").getTransferGracePeriodLength()));
+    DomainBase afterGracePeriod =
+        domain.cloneProjectedAtTime(
+            clock.nowUtc().plusDays(2).plus(Registry.get("com").getTransferGracePeriodLength()));
     assertTransferred(afterGracePeriod, newExpirationTime, serverApproveAutorenewEvent);
     assertThat(afterGracePeriod.getGracePeriods()).isEmpty();
   }
@@ -439,10 +485,11 @@ public class DomainBaseTest extends EntityTestCase {
 
   @Test
   public void testStackedGracePeriods() {
-    ImmutableList<GracePeriod> gracePeriods = ImmutableList.of(
-        GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(3), "foo", null),
-        GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(2), "bar", null),
-        GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(1), "baz", null));
+    ImmutableList<GracePeriod> gracePeriods =
+        ImmutableList.of(
+            GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(3), "foo", null),
+            GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(2), "bar", null),
+            GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(1), "baz", null));
     domain = domain.asBuilder().setGracePeriods(ImmutableSet.copyOf(gracePeriods)).build();
     for (int i = 1; i < 3; ++i) {
       assertThat(domain.cloneProjectedAtTime(clock.nowUtc().plusDays(i)).getGracePeriods())
@@ -452,12 +499,14 @@ public class DomainBaseTest extends EntityTestCase {
 
   @Test
   public void testGracePeriodsByType() {
-    ImmutableSet<GracePeriod> addGracePeriods = ImmutableSet.of(
-        GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(3), "foo", null),
-        GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(1), "baz", null));
-    ImmutableSet<GracePeriod> renewGracePeriods = ImmutableSet.of(
-        GracePeriod.create(GracePeriodStatus.RENEW, clock.nowUtc().plusDays(3), "foo", null),
-        GracePeriod.create(GracePeriodStatus.RENEW, clock.nowUtc().plusDays(1), "baz", null));
+    ImmutableSet<GracePeriod> addGracePeriods =
+        ImmutableSet.of(
+            GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(3), "foo", null),
+            GracePeriod.create(GracePeriodStatus.ADD, clock.nowUtc().plusDays(1), "baz", null));
+    ImmutableSet<GracePeriod> renewGracePeriods =
+        ImmutableSet.of(
+            GracePeriod.create(GracePeriodStatus.RENEW, clock.nowUtc().plusDays(3), "foo", null),
+            GracePeriod.create(GracePeriodStatus.RENEW, clock.nowUtc().plusDays(1), "baz", null));
     domain =
         domain
             .asBuilder()
@@ -472,8 +521,7 @@ public class DomainBaseTest extends EntityTestCase {
 
   @Test
   public void testRenewalsHappenAtExpiration() {
-    DomainBase renewed =
-        domain.cloneProjectedAtTime(domain.getRegistrationExpirationTime());
+    DomainBase renewed = domain.cloneProjectedAtTime(domain.getRegistrationExpirationTime());
     assertThat(renewed.getRegistrationExpirationTime())
         .isEqualTo(domain.getRegistrationExpirationTime().plusYears(1));
     assertThat(renewed.getLastEppUpdateTime()).isEqualTo(domain.getRegistrationExpirationTime());
@@ -490,9 +538,11 @@ public class DomainBaseTest extends EntityTestCase {
 
   @Test
   public void testRenewalsDontHappenOnFebruary29() {
-    domain = domain.asBuilder()
-        .setRegistrationExpirationTime(DateTime.parse("2004-02-29T22:00:00.0Z"))
-        .build();
+    domain =
+        domain
+            .asBuilder()
+            .setRegistrationExpirationTime(DateTime.parse("2004-02-29T22:00:00.0Z"))
+            .build();
     DomainBase renewed =
         domain.cloneProjectedAtTime(domain.getRegistrationExpirationTime().plusYears(4));
     assertThat(renewed.getRegistrationExpirationTime().getDayOfMonth()).isEqualTo(28);
@@ -517,23 +567,24 @@ public class DomainBaseTest extends EntityTestCase {
                     .put(oldExpirationTime.plusYears(2).plusMillis(1), Money.of(USD, 5))
                     .build())
             .build());
-    DomainBase renewedThreeTimes =
-        domain.cloneProjectedAtTime(oldExpirationTime.plusYears(2));
+    DomainBase renewedThreeTimes = domain.cloneProjectedAtTime(oldExpirationTime.plusYears(2));
     assertThat(renewedThreeTimes.getRegistrationExpirationTime())
         .isEqualTo(oldExpirationTime.plusYears(3));
     assertThat(renewedThreeTimes.getLastEppUpdateTime()).isEqualTo(oldExpirationTime.plusYears(2));
     assertThat(renewedThreeTimes.getGracePeriods())
-        .containsExactly(GracePeriod.createForRecurring(
-            GracePeriodStatus.AUTO_RENEW,
-            oldExpirationTime.plusYears(2).plus(
-                Registry.get("com").getAutoRenewGracePeriodLength()),
-            renewedThreeTimes.getCurrentSponsorClientId(),
-            renewedThreeTimes.autorenewBillingEvent));
+        .containsExactly(
+            GracePeriod.createForRecurring(
+                GracePeriodStatus.AUTO_RENEW,
+                oldExpirationTime
+                    .plusYears(2)
+                    .plus(Registry.get("com").getAutoRenewGracePeriodLength()),
+                renewedThreeTimes.getCurrentSponsorClientId(),
+                renewedThreeTimes.autorenewBillingEvent));
   }
 
   @Test
   public void testToHydratedString_notCircular() {
-    domain.toHydratedString();  // If there are circular references, this will overflow the stack.
+    domain.toHydratedString(); // If there are circular references, this will overflow the stack.
   }
 
   @Test

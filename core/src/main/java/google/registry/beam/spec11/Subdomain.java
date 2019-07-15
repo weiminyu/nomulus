@@ -74,4 +74,3 @@ public abstract class Subdomain implements Serializable {
         fullyQualifiedDomainName, registrarClientId, registrarEmailAddress);
   }
 }
-

@@ -55,20 +55,31 @@ public class RdeReporter {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  /** @see <a href="http://tools.ietf.org/html/draft-lozano-icann-registry-interfaces-05#section-4">
-   *     ICANN Registry Interfaces - Interface details</a>*/
+  /**
+   * @see <a href="http://tools.ietf.org/html/draft-lozano-icann-registry-interfaces-05#section-4">
+   *     ICANN Registry Interfaces - Interface details</a>
+   */
   private static final String REPORT_MIME = "text/xml";
 
   @Inject Retrier retrier;
   @Inject URLFetchService urlFetchService;
-  @Inject @Config("rdeReportUrlPrefix") String reportUrlPrefix;
-  @Inject @Key("icannReportingPassword") String password;
-  @Inject RdeReporter() {}
+
+  @Inject
+  @Config("rdeReportUrlPrefix")
+  String reportUrlPrefix;
+
+  @Inject
+  @Key("icannReportingPassword")
+  String password;
+
+  @Inject
+  RdeReporter() {}
 
   /** Uploads {@code reportBytes} to ICANN. */
   public void send(byte[] reportBytes) throws XmlException {
-    XjcRdeReportReport report = XjcXmlTransformer.unmarshal(
-        XjcRdeReportReport.class, new ByteArrayInputStream(reportBytes));
+    XjcRdeReportReport report =
+        XjcXmlTransformer.unmarshal(
+            XjcRdeReportReport.class, new ByteArrayInputStream(reportBytes));
     XjcRdeHeader header = report.getHeader().getValue();
 
     // Send a PUT request to ICANN's HTTPS server.
@@ -108,14 +119,16 @@ public class RdeReporter {
   /**
    * Unmarshals IIRDEA XML result object from {@link HTTPResponse} payload.
    *
-   * @see <a href="http://tools.ietf.org/html/draft-lozano-icann-registry-interfaces-05#section-4.1">
+   * @see <a
+   *     href="http://tools.ietf.org/html/draft-lozano-icann-registry-interfaces-05#section-4.1">
    *     ICANN Registry Interfaces - IIRDEA Result Object</a>
    */
   private XjcIirdeaResult parseResult(HTTPResponse rsp) throws XmlException {
     byte[] responseBytes = rsp.getContent();
     logger.atInfo().log("Received response:\n%s", new String(responseBytes, UTF_8));
-    XjcIirdeaResponseElement response = XjcXmlTransformer.unmarshal(
-        XjcIirdeaResponseElement.class, new ByteArrayInputStream(responseBytes));
+    XjcIirdeaResponseElement response =
+        XjcXmlTransformer.unmarshal(
+            XjcIirdeaResponseElement.class, new ByteArrayInputStream(responseBytes));
     return response.getResult();
   }
 

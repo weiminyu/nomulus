@@ -54,17 +54,20 @@ public class TldFanoutActionTest {
   private final FakeResponse response = new FakeResponse();
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withTaskQueue(Joiner.on('\n').join(
-          "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-          "<queue-entries>",
-          "  <queue>",
-          "    <name>the-queue</name>",
-          "    <rate>1/s</rate>",
-          "  </queue>",
-          "</queue-entries>"))
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder()
+          .withDatastore()
+          .withTaskQueue(
+              Joiner.on('\n')
+                  .join(
+                      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                      "<queue-entries>",
+                      "  <queue>",
+                      "    <name>the-queue</name>",
+                      "    <rate>1/s</rate>",
+                      "  </queue>",
+                      "</queue-entries>"))
+          .build();
 
   private static ImmutableListMultimap<String, String> getParamsMap(String... keysAndValues) {
     ImmutableListMultimap.Builder<String, String> params = new ImmutableListMultimap.Builder<>();
@@ -81,9 +84,10 @@ public class TldFanoutActionTest {
     action.params = params;
     action.endpoint = getLast(params.get("endpoint"));
     action.queue = getLast(params.get("queue"));
-    action.excludes = params.containsKey("exclude")
-        ? ImmutableSet.copyOf(Splitter.on(',').split(params.get("exclude").get(0)))
-        : ImmutableSet.of();
+    action.excludes =
+        params.containsKey("exclude")
+            ? ImmutableSet.copyOf(Splitter.on(',').split(params.get("exclude").get(0)))
+            : ImmutableSet.of();
     action.taskQueueUtils = new TaskQueueUtils(new Retrier(null, 1));
     action.response = response;
     action.runInEmpty = params.containsKey("runInEmpty");
@@ -102,13 +106,14 @@ public class TldFanoutActionTest {
   private static void assertTasks(String... tasks) {
     assertTasksEnqueued(
         QUEUE,
-        Stream.of(tasks).map(
-            namespace ->
-                new TaskMatcher()
-                    .url(ENDPOINT)
-                    .header("content-type", "application/x-www-form-urlencoded")
-                    .param("tld", namespace))
-        .collect(toImmutableList()));
+        Stream.of(tasks)
+            .map(
+                namespace ->
+                    new TaskMatcher()
+                        .url(ENDPOINT)
+                        .header("content-type", "application/x-www-form-urlencoded")
+                        .param("tld", namespace))
+            .collect(toImmutableList()));
   }
 
   private static void assertTaskWithoutTld() {
@@ -150,9 +155,10 @@ public class TldFanoutActionTest {
 
   @Test
   public void testSuccess_forEachTestTldAndForEachRealTld() {
-    run(getParamsMap(
-        "forEachTestTld", "",
-        "forEachRealTld", ""));
+    run(
+        getParamsMap(
+            "forEachTestTld", "",
+            "forEachRealTld", ""));
     assertTasks("com", "net", "org", "example");
   }
 
@@ -164,26 +170,29 @@ public class TldFanoutActionTest {
 
   @Test
   public void testSuccess_excludeRealTlds() {
-    run(getParamsMap(
-        "forEachRealTld", "",
-        "exclude", "com,net"));
+    run(
+        getParamsMap(
+            "forEachRealTld", "",
+            "exclude", "com,net"));
     assertTasks("org");
   }
 
   @Test
   public void testSuccess_excludeTestTlds() {
-    run(getParamsMap(
-        "forEachTestTld", "",
-        "exclude", "example"));
+    run(
+        getParamsMap(
+            "forEachTestTld", "",
+            "exclude", "example"));
     assertNoTasksEnqueued(QUEUE);
   }
 
   @Test
   public void testSuccess_excludeNonexistentTlds() {
-    run(getParamsMap(
-        "forEachTestTld", "",
-        "forEachRealTld", "",
-        "exclude", "foo"));
+    run(
+        getParamsMap(
+            "forEachTestTld", "",
+            "forEachRealTld", "",
+            "exclude", "foo"));
     assertTasks("com", "net", "org", "example");
   }
 
@@ -223,8 +232,7 @@ public class TldFanoutActionTest {
   @Test
   public void testSuccess_additionalArgsFlowThroughToPostParams() {
     run(getParamsMap("forEachTestTld", "", "newkey", "newval"));
-    assertTasksEnqueued(QUEUE,
-        new TaskMatcher().url("/the/servlet").param("newkey", "newval"));
+    assertTasksEnqueued(QUEUE, new TaskMatcher().url("/the/servlet").param("newkey", "newval"));
   }
 
   @Test
@@ -235,14 +243,15 @@ public class TldFanoutActionTest {
         LocalTaskQueueTestConfig.getLocalTaskQueue().getQueueStateInfo().get(QUEUE).getTaskInfo();
 
     assertThat(taskList).hasSize(3);
-    String expectedResponse = String.format(
-        "OK: Launched the following 3 tasks in queue the-queue\n"
-            + "- Task: '%s', tld: 'com', endpoint: '/the/servlet'\n"
-            + "- Task: '%s', tld: 'net', endpoint: '/the/servlet'\n"
-            + "- Task: '%s', tld: 'org', endpoint: '/the/servlet'\n",
-        taskList.get(0).getTaskName(),
-        taskList.get(1).getTaskName(),
-        taskList.get(2).getTaskName());
+    String expectedResponse =
+        String.format(
+            "OK: Launched the following 3 tasks in queue the-queue\n"
+                + "- Task: '%s', tld: 'com', endpoint: '/the/servlet'\n"
+                + "- Task: '%s', tld: 'net', endpoint: '/the/servlet'\n"
+                + "- Task: '%s', tld: 'org', endpoint: '/the/servlet'\n",
+            taskList.get(0).getTaskName(),
+            taskList.get(1).getTaskName(),
+            taskList.get(2).getTaskName());
     assertThat(response.getPayload()).isEqualTo(expectedResponse);
   }
 
@@ -254,10 +263,11 @@ public class TldFanoutActionTest {
         LocalTaskQueueTestConfig.getLocalTaskQueue().getQueueStateInfo().get(QUEUE).getTaskInfo();
 
     assertThat(taskList).hasSize(1);
-    String expectedResponse = String.format(
-        "OK: Launched the following 1 tasks in queue the-queue\n"
-            + "- Task: '%s', tld: '', endpoint: '/the/servlet'\n",
-        taskList.get(0).getTaskName());
+    String expectedResponse =
+        String.format(
+            "OK: Launched the following 1 tasks in queue the-queue\n"
+                + "- Task: '%s', tld: '', endpoint: '/the/servlet'\n",
+            taskList.get(0).getTaskName());
     assertThat(response.getPayload()).isEqualTo(expectedResponse);
   }
 }

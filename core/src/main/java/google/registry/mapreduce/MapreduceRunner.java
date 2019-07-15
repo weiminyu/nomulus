@@ -133,7 +133,6 @@ public class MapreduceRunner {
    * Create a map-only mapreduce to be run as part of a pipeline.
    *
    * @see #runMapOnly for creating and running an independent map-only mapreduce
-   *
    * @param mapper instance of a mapper class
    * @param inputs input sources for the mapper
    * @param <I> mapper input type
@@ -181,7 +180,6 @@ public class MapreduceRunner {
    * Create a mapreduce job to be run as part of a pipeline.
    *
    * @see #runMapreduce for creating and running an independent mapreduce
-   *
    * @param mapper instance of a mapper class
    * @param reducer instance of a reducer class
    * @param inputs input sources for the mapper
@@ -191,8 +189,8 @@ public class MapreduceRunner {
    * @param <O> individual output record type sent to the {@link Output}
    * @param <R> overall output result type
    */
-  public final <I, K extends Serializable, V extends Serializable, O, R> MapReduceJob<I, K, V, O, R>
-      createMapreduceJob(
+  public final <I, K extends Serializable, V extends Serializable, O, R>
+      MapReduceJob<I, K, V, O, R> createMapreduceJob(
           Mapper<I, K, V> mapper,
           Reducer<K, V, O> reducer,
           Iterable<? extends Input<? extends I>> inputs,

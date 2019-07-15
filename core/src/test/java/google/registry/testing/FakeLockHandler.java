@@ -30,7 +30,7 @@ public class FakeLockHandler implements LockHandler {
 
   /**
    * @param lockSucceeds if true - the lock acquisition will succeed and the callable will be
-   * called. If false, lock acquisition will fail and the caller isn't called.
+   *     called. If false, lock acquisition will fail and the caller isn't called.
    */
   public FakeLockHandler(boolean lockSucceeds) {
     this.lockSucceeds = lockSucceeds;

@@ -109,7 +109,6 @@ public enum StatusValue implements EppEnum {
    */
   PENDING_UPDATE(AllowedOn.NONE),
 
-
   /** A non-client-settable status that prevents deletes of EPP resources. */
   SERVER_DELETE_PROHIBITED(AllowedOn.ALL),
 

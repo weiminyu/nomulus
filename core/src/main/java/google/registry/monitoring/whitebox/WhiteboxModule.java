@@ -18,9 +18,7 @@ import dagger.Module;
 import dagger.Provides;
 import google.registry.util.Clock;
 
-/**
- * Dagger module for injecting common settings for Whitebox tasks.
- */
+/** Dagger module for injecting common settings for Whitebox tasks. */
 @Module
 public class WhiteboxModule {
 

@@ -47,8 +47,8 @@ public final class RequestStatusCheckerImplTest {
   /**
    * Matcher for the expected LogQuery in {@link RequestStatusCheckerImpl#isRunning}.
    *
-   * Because LogQuery doesn't have a .equals function, we have to create an actual matcher to make
-   * sure we have the right argument in our mocks.
+   * <p>Because LogQuery doesn't have a .equals function, we have to create an actual matcher to
+   * make sure we have the right argument in our mocks.
    */
   private static LogQuery expectedLogQuery(final String requestLogId) {
     return argThat(
@@ -61,21 +61,23 @@ public final class RequestStatusCheckerImplTest {
         });
   }
 
-  @Rule
-  public AppEngineRule appEngineRule = AppEngineRule.builder().build();
+  @Rule public AppEngineRule appEngineRule = AppEngineRule.builder().build();
 
-  @Before public void setUp() {
+  @Before
+  public void setUp() {
     LoggerConfig.getConfig(RequestStatusCheckerImpl.class).addHandler(logHandler);
     RequestStatusCheckerImpl.logService = mock(LogService.class);
   }
 
-  @After public void tearDown() {
+  @After
+  public void tearDown() {
     LoggerConfig.getConfig(RequestStatusCheckerImpl.class).removeHandler(logHandler);
   }
 
   // If a logId is unrecognized, it could be that the log hasn't been uploaded yet - so we assume
   // it's a request that has just started running recently.
-  @Test public void testIsRunning_unrecognized() {
+  @Test
+  public void testIsRunning_unrecognized() {
     when(RequestStatusCheckerImpl.logService.fetch(expectedLogQuery("12345678")))
         .thenReturn(ImmutableList.of());
     assertThat(requestStatusChecker.isRunning("12345678")).isTrue();
@@ -84,7 +86,8 @@ public final class RequestStatusCheckerImplTest {
         .hasLogAtLevelWithMessage(Level.INFO, "Queried an unrecognized requestLogId");
   }
 
-  @Test public void testIsRunning_notFinished() {
+  @Test
+  public void testIsRunning_notFinished() {
     RequestLogs requestLogs = new RequestLogs();
     requestLogs.setFinished(false);
 
@@ -92,12 +95,11 @@ public final class RequestStatusCheckerImplTest {
         .thenReturn(ImmutableList.of(requestLogs));
 
     assertThat(requestStatusChecker.isRunning("12345678")).isTrue();
-    assertAboutLogs()
-        .that(logHandler)
-        .hasLogAtLevelWithMessage(Level.INFO, "isFinished: false");
+    assertAboutLogs().that(logHandler).hasLogAtLevelWithMessage(Level.INFO, "isFinished: false");
   }
 
-  @Test public void testIsRunning_finished() {
+  @Test
+  public void testIsRunning_finished() {
     RequestLogs requestLogs = new RequestLogs();
     requestLogs.setFinished(true);
 
@@ -105,18 +107,21 @@ public final class RequestStatusCheckerImplTest {
         .thenReturn(ImmutableList.of(requestLogs));
 
     assertThat(requestStatusChecker.isRunning("12345678")).isFalse();
-    assertAboutLogs()
-        .that(logHandler)
-        .hasLogAtLevelWithMessage(Level.INFO, "isFinished: true");
+    assertAboutLogs().that(logHandler).hasLogAtLevelWithMessage(Level.INFO, "isFinished: true");
   }
 
-  @Test public void testGetLogId_returnsRequestLogId() {
-    String expectedLogId = ApiProxy.getCurrentEnvironment().getAttributes().get(
-        "com.google.appengine.runtime.request_log_id").toString();
+  @Test
+  public void testGetLogId_returnsRequestLogId() {
+    String expectedLogId =
+        ApiProxy.getCurrentEnvironment()
+            .getAttributes()
+            .get("com.google.appengine.runtime.request_log_id")
+            .toString();
     assertThat(requestStatusChecker.getLogId()).isEqualTo(expectedLogId);
   }
 
-  @Test public void testGetLogId_createsLog() {
+  @Test
+  public void testGetLogId_createsLog() {
     requestStatusChecker.getLogId();
     assertAboutLogs()
         .that(logHandler)

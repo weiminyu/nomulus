@@ -224,10 +224,11 @@ public class Registry extends ImmutableObject implements Buildable {
                   return Optional.ofNullable(
                       ofy()
                           .doTransactionless(
-                              () -> ofy()
-                                  .load()
-                                  .key(Key.create(getCrossTldKey(), Registry.class, tld))
-                                  .now()));
+                              () ->
+                                  ofy()
+                                      .load()
+                                      .key(Key.create(getCrossTldKey(), Registry.class, tld))
+                                      .now()));
                 }
               });
 

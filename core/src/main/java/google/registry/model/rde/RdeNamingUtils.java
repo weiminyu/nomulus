@@ -31,8 +31,8 @@ public final class RdeNamingUtils {
    *
    * <p>This naming scheme is defined in the {@code gTLD_Applicant_Guidebook_full.pdf}.
    */
-  public static
-      String makeRydeFilename(String tld, DateTime date, RdeMode mode, int series, int revision) {
+  public static String makeRydeFilename(
+      String tld, DateTime date, RdeMode mode, int series, int revision) {
     checkArgument(series >= 1, "series >= 1");
     checkArgument(revision >= 0, "revision >= 0");
     return String.format("%s_S%d_R%d", makePartialName(tld, date, mode), series, revision);
@@ -40,8 +40,8 @@ public final class RdeNamingUtils {
 
   /** Returns same thing as {@link #makeRydeFilename} except without the series and revision. */
   static String makePartialName(String tld, DateTime date, RdeMode mode) {
-    return String.format("%s_%s_%s",
-        checkNotNull(tld), formatDate(date), mode.getFilenameComponent());
+    return String.format(
+        "%s_%s_%s", checkNotNull(tld), formatDate(date), mode.getFilenameComponent());
   }
 
   /** Returns date as a hyphened string with ISO-8601 ordering, e.g. {@code 1984-12-18}. */

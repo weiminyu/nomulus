@@ -59,7 +59,9 @@ public final class ExtensionManager {
   @Inject @Superuser boolean isSuperuser;
   @Inject Class<? extends Flow> flowClass;
   @Inject EppRequestSource eppRequestSource;
-  @Inject ExtensionManager() {}
+
+  @Inject
+  ExtensionManager() {}
 
   @SafeVarargs
   public final void register(Class<? extends CommandExtension>... extension) {
@@ -85,7 +87,7 @@ public final class ExtensionManager {
 
   private void checkForUndeclaredExtensions(
       ImmutableSet<Class<? extends CommandExtension>> suppliedExtensions)
-          throws UndeclaredServiceExtensionException {
+      throws UndeclaredServiceExtensionException {
     ImmutableSet.Builder<String> suppliedUris = new ImmutableSet.Builder<>();
     for (Class<? extends CommandExtension> extension : suppliedExtensions) {
       suppliedUris.add(getCommandExtensionUri(extension));
@@ -123,11 +125,10 @@ public final class ExtensionManager {
   private static void checkForDuplicateExtensions(
       ImmutableList<CommandExtension> suppliedExtensionInstances,
       ImmutableSet<Class<? extends CommandExtension>> implementedExtensions)
-          throws UnsupportedRepeatedExtensionException {
+      throws UnsupportedRepeatedExtensionException {
     for (Class<? extends CommandExtension> implemented : implementedExtensions) {
       if ((int)
-              suppliedExtensionInstances
-                  .stream()
+              suppliedExtensionInstances.stream()
                   .filter(implemented::isInstance)
                   .map(implemented::cast)
                   .count()
@@ -140,12 +141,11 @@ public final class ExtensionManager {
   private static void checkForUnimplementedExtensions(
       ImmutableList<CommandExtension> suppliedExtensionInstances,
       ImmutableSet<Class<? extends CommandExtension>> implementedExtensionClasses)
-          throws UnimplementedExtensionException {
+      throws UnimplementedExtensionException {
     ImmutableSet.Builder<Class<? extends CommandExtension>> unimplementedExtensionsBuilder =
         new ImmutableSet.Builder<>();
     for (final CommandExtension instance : suppliedExtensionInstances) {
-      if (implementedExtensionClasses
-          .stream()
+      if (implementedExtensionClasses.stream()
           .noneMatch(implementedExtensionClass -> implementedExtensionClass.isInstance(instance))) {
         unimplementedExtensionsBuilder.add(instance.getClass());
       }
@@ -161,8 +161,10 @@ public final class ExtensionManager {
   /** Service extension(s) must be declared at login. */
   public static class UndeclaredServiceExtensionException extends CommandUseErrorException {
     public UndeclaredServiceExtensionException(Set<String> undeclaredUris) {
-      super(String.format("Service extension(s) must be declared at login: %s",
-            Joiner.on(", ").join(undeclaredUris)));
+      super(
+          String.format(
+              "Service extension(s) must be declared at login: %s",
+              Joiner.on(", ").join(undeclaredUris)));
     }
   }
 

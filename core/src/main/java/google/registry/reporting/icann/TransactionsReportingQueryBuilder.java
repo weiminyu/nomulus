@@ -29,14 +29,15 @@ import org.joda.time.YearMonth;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-/**
- * Utility class that produces SQL queries used to generate activity reports from Bigquery.
- */
+/** Utility class that produces SQL queries used to generate activity reports from Bigquery. */
 public final class TransactionsReportingQueryBuilder implements QueryBuilder {
 
-  @Inject @Config("projectId") String projectId;
+  @Inject
+  @Config("projectId")
+  String projectId;
 
-  @Inject TransactionsReportingQueryBuilder() {}
+  @Inject
+  TransactionsReportingQueryBuilder() {}
 
   static final String TRANSACTIONS_REPORT_AGGREGATION = "transactions_report_aggregation";
   static final String REGISTRAR_IANA_ID = "registrar_iana_id";

@@ -82,15 +82,17 @@ import org.mockito.junit.MockitoRule;
 @RunWith(JUnit4.class)
 public class NordnUploadActionTest {
 
-  private static final String CLAIMS_CSV = "1,2010-05-01T10:11:12.000Z,1\n"
-      + "roid,domain-name,notice-id,registrar-id,registration-datetime,ack-datetime,"
-      + "application-datetime\n"
-      + "2-TLD,claims-landrush1.tld,landrush1tcn,99999,2010-05-01T10:11:12.000Z,"
-      + "1969-12-31T23:00:00.000Z\n";
+  private static final String CLAIMS_CSV =
+      "1,2010-05-01T10:11:12.000Z,1\n"
+          + "roid,domain-name,notice-id,registrar-id,registration-datetime,ack-datetime,"
+          + "application-datetime\n"
+          + "2-TLD,claims-landrush1.tld,landrush1tcn,99999,2010-05-01T10:11:12.000Z,"
+          + "1969-12-31T23:00:00.000Z\n";
 
-  private static final String SUNRISE_CSV = "1,2010-05-01T10:11:12.000Z,1\n"
-      + "roid,domain-name,SMD-id,registrar-id,registration-datetime,application-datetime\n"
-      + "2-TLD,sunrise1.tld,my-smdid,99999,2010-05-01T10:11:12.000Z\n";
+  private static final String SUNRISE_CSV =
+      "1,2010-05-01T10:11:12.000Z,1\n"
+          + "roid,domain-name,SMD-id,registrar-id,registration-datetime,application-datetime\n"
+          + "2-TLD,sunrise1.tld,my-smdid,99999,2010-05-01T10:11:12.000Z\n";
 
   private static final String LOCATION_URL = "http://trololol";
 
@@ -207,7 +209,7 @@ public class NordnUploadActionTest {
     persistClaimsModeDomain();
     action.run();
     assertThat(getHeaderFirst(getCapturedHttpRequest(), AUTHORIZATION))
-        .hasValue("Basic bG9sY2F0OmF0dGFjaw==");  // echo -n lolcat:attack | base64
+        .hasValue("Basic bG9sY2F0OmF0dGFjaw=="); // echo -n lolcat:attack | base64
   }
 
   @Test
@@ -229,10 +231,12 @@ public class NordnUploadActionTest {
   public void testRun_claimsMode_verifyTaskGetsEnqueuedWithClaimsCsv() {
     persistClaimsModeDomain();
     action.run();
-    assertTasksEnqueued(NordnVerifyAction.QUEUE, new TaskMatcher()
-        .url(NordnVerifyAction.PATH)
-        .header(NordnVerifyAction.URL_HEADER, LOCATION_URL)
-        .header(CONTENT_TYPE, FORM_DATA.toString()));
+    assertTasksEnqueued(
+        NordnVerifyAction.QUEUE,
+        new TaskMatcher()
+            .url(NordnVerifyAction.PATH)
+            .header(NordnVerifyAction.URL_HEADER, LOCATION_URL)
+            .header(CONTENT_TYPE, FORM_DATA.toString()));
   }
 
   @Test
@@ -255,10 +259,12 @@ public class NordnUploadActionTest {
   public void testRun_sunriseMode_verifyTaskGetsEnqueuedWithSunriseCsv() {
     persistSunriseModeDomain();
     action.run();
-    assertTasksEnqueued(NordnVerifyAction.QUEUE, new TaskMatcher()
-        .url(NordnVerifyAction.PATH)
-        .header(NordnVerifyAction.URL_HEADER, LOCATION_URL)
-        .header(CONTENT_TYPE, FORM_DATA.toString()));
+    assertTasksEnqueued(
+        NordnVerifyAction.QUEUE,
+        new TaskMatcher()
+            .url(NordnVerifyAction.PATH)
+            .header(NordnVerifyAction.URL_HEADER, LOCATION_URL)
+            .header(CONTENT_TYPE, FORM_DATA.toString()));
   }
 
   @Test

@@ -35,7 +35,8 @@ public final class ListReservedListsAction extends ListObjectsAction<ReservedLis
 
   public static final String PATH = "/_dr/admin/list/reservedLists";
 
-  @Inject ListReservedListsAction() {}
+  @Inject
+  ListReservedListsAction() {}
 
   @Override
   public ImmutableSet<String> getPrimaryKeyFields() {

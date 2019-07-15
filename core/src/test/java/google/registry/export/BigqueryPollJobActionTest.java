@@ -62,10 +62,9 @@ import org.junit.runners.JUnit4;
 public class BigqueryPollJobActionTest {
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withTaskQueue().build();
+
   private static final String PROJECT_ID = "project_id";
   private static final String JOB_ID = "job_id";
   private static final String CHAINED_QUEUE_NAME = UpdateSnapshotViewAction.QUEUE;
@@ -101,25 +100,26 @@ public class BigqueryPollJobActionTest {
 
   @Test
   public void testSuccess_enqueuePollTask() {
-    new BigqueryPollJobEnqueuer(TASK_QUEUE_UTILS).enqueuePollTask(
-        new JobReference().setProjectId(PROJECT_ID).setJobId(JOB_ID));
+    new BigqueryPollJobEnqueuer(TASK_QUEUE_UTILS)
+        .enqueuePollTask(new JobReference().setProjectId(PROJECT_ID).setJobId(JOB_ID));
     assertTasksEnqueued(BigqueryPollJobAction.QUEUE, newPollJobTaskMatcher("GET"));
   }
 
   @Test
   public void testSuccess_enqueuePollTask_withChainedTask() throws Exception {
-    TaskOptions chainedTask = TaskOptions.Builder
-        .withUrl("/_dr/something")
-        .method(Method.POST)
-        .header("X-Testing", "foo")
-        .param("testing", "bar");
-    new BigqueryPollJobEnqueuer(TASK_QUEUE_UTILS).enqueuePollTask(
-        new JobReference().setProjectId(PROJECT_ID).setJobId(JOB_ID),
-        chainedTask,
-        getQueue(CHAINED_QUEUE_NAME));
+    TaskOptions chainedTask =
+        TaskOptions.Builder.withUrl("/_dr/something")
+            .method(Method.POST)
+            .header("X-Testing", "foo")
+            .param("testing", "bar");
+    new BigqueryPollJobEnqueuer(TASK_QUEUE_UTILS)
+        .enqueuePollTask(
+            new JobReference().setProjectId(PROJECT_ID).setJobId(JOB_ID),
+            chainedTask,
+            getQueue(CHAINED_QUEUE_NAME));
     assertTasksEnqueued(BigqueryPollJobAction.QUEUE, newPollJobTaskMatcher("POST"));
-    TaskStateInfo taskInfo = getOnlyElement(
-        TaskQueueHelper.getQueueInfo(BigqueryPollJobAction.QUEUE).getTaskInfo());
+    TaskStateInfo taskInfo =
+        getOnlyElement(TaskQueueHelper.getQueueInfo(BigqueryPollJobAction.QUEUE).getTaskInfo());
     ByteArrayInputStream taskBodyBytes = new ByteArrayInputStream(taskInfo.getBodyAsBytes());
     TaskOptions taskOptions = (TaskOptions) new ObjectInputStream(taskBodyBytes).readObject();
     assertThat(taskOptions).isEqualTo(chainedTask);
@@ -127,8 +127,8 @@ public class BigqueryPollJobActionTest {
 
   @Test
   public void testSuccess_jobCompletedSuccessfully() throws Exception {
-    when(bigqueryJobsGet.execute()).thenReturn(
-        new Job().setStatus(new JobStatus().setState("DONE")));
+    when(bigqueryJobsGet.execute())
+        .thenReturn(new Job().setStatus(new JobStatus().setState("DONE")));
     action.run();
     assertLogMessage(
         logHandler, INFO, String.format("Bigquery job succeeded - %s:%s", PROJECT_ID, JOB_ID));
@@ -136,8 +136,8 @@ public class BigqueryPollJobActionTest {
 
   @Test
   public void testSuccess_chainedPayloadAndJobSucceeded_enqueuesChainedTask() throws Exception {
-    when(bigqueryJobsGet.execute()).thenReturn(
-        new Job().setStatus(new JobStatus().setState("DONE")));
+    when(bigqueryJobsGet.execute())
+        .thenReturn(new Job().setStatus(new JobStatus().setState("DONE")));
 
     TaskOptions chainedTask =
         TaskOptions.Builder.withUrl("/_dr/something")
@@ -168,10 +168,13 @@ public class BigqueryPollJobActionTest {
 
   @Test
   public void testJobFailed() throws Exception {
-    when(bigqueryJobsGet.execute()).thenReturn(new Job().setStatus(
-        new JobStatus()
-            .setState("DONE")
-            .setErrorResult(new ErrorProto().setMessage("Job failed"))));
+    when(bigqueryJobsGet.execute())
+        .thenReturn(
+            new Job()
+                .setStatus(
+                    new JobStatus()
+                        .setState("DONE")
+                        .setErrorResult(new ErrorProto().setMessage("Job failed"))));
     action.run();
     assertLogMessage(
         logHandler, SEVERE, String.format("Bigquery job failed - %s:%s", PROJECT_ID, JOB_ID));
@@ -179,8 +182,8 @@ public class BigqueryPollJobActionTest {
 
   @Test
   public void testJobPending() throws Exception {
-    when(bigqueryJobsGet.execute()).thenReturn(
-        new Job().setStatus(new JobStatus().setState("PENDING")));
+    when(bigqueryJobsGet.execute())
+        .thenReturn(new Job().setStatus(new JobStatus().setState("PENDING")));
     assertThrows(NotModifiedException.class, action::run);
   }
 
@@ -192,8 +195,8 @@ public class BigqueryPollJobActionTest {
 
   @Test
   public void testFailure_badChainedTaskPayload() throws Exception {
-    when(bigqueryJobsGet.execute()).thenReturn(
-        new Job().setStatus(new JobStatus().setState("DONE")));
+    when(bigqueryJobsGet.execute())
+        .thenReturn(new Job().setStatus(new JobStatus().setState("DONE")));
     action.payload = "payload".getBytes(UTF_8);
     BadRequestException thrown = assertThrows(BadRequestException.class, action::run);
     assertThat(thrown).hasMessageThat().contains("Cannot deserialize task from payload");

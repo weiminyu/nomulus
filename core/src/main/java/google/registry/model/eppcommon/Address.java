@@ -111,7 +111,8 @@ public class Address extends ImmutableObject implements Jsonifiable {
     public Builder<T> setStreet(ImmutableList<String> street) {
       checkArgument(
           street == null || (!street.isEmpty() && street.size() <= 3),
-          "Street address must have [1-3] lines: %s", street);
+          "Street address must have [1-3] lines: %s",
+          street);
       getInstance().street = street;
       return this;
     }

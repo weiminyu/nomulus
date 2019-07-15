@@ -65,9 +65,7 @@ public class FrontendMetrics {
               "Active Connections",
               LABELS,
               () ->
-                  activeConnections
-                      .entrySet()
-                      .stream()
+                  activeConnections.entrySet().stream()
                       .collect(
                           ImmutableMap.toImmutableMap(
                               Map.Entry::getKey, entry -> (long) entry.getValue().size())),

@@ -38,8 +38,8 @@ import org.joda.time.Duration;
 /**
  * A lock on some shared resource.
  *
- * <p>Locks are either specific to a tld or global to the entire system, in which case a tld of
- * null is used.
+ * <p>Locks are either specific to a tld or global to the entire system, in which case a tld of null
+ * is used.
  *
  * <p>This is the "barebone" lock implementation, that requires manual locking and unlocking. For
  * safe calls that automatically lock and unlock, see LockHandler.
@@ -52,14 +52,17 @@ public class Lock extends ImmutableObject implements Serializable {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   /** Disposition of locking, for monitoring. */
-  enum LockState { IN_USE, FREE, TIMED_OUT, OWNER_DIED }
+  enum LockState {
+    IN_USE,
+    FREE,
+    TIMED_OUT,
+    OWNER_DIED
+  }
 
-  @VisibleForTesting
-  static LockMetrics lockMetrics = new LockMetrics();
+  @VisibleForTesting static LockMetrics lockMetrics = new LockMetrics();
 
   /** The name of the locked resource. */
-  @Id
-  String lockId;
+  @Id String lockId;
 
   /**
    * Unique log ID of the request that owns this lock.
@@ -82,12 +85,11 @@ public class Lock extends ImmutableObject implements Serializable {
   String resourceName;
 
   /** The tld used to create lockId. */
-  @Nullable
-  String tld;
+  @Nullable String tld;
 
   /**
-   * Create a new {@link Lock} for the given resource name in the specified tld (which can be
-   * null for cross-tld locks).
+   * Create a new {@link Lock} for the given resource name in the specified tld (which can be null
+   * for cross-tld locks).
    */
   private static Lock create(
       String resourceName,
@@ -115,8 +117,11 @@ public class Lock extends ImmutableObject implements Serializable {
   @AutoValue
   abstract static class AcquireResult {
     public abstract DateTime transactionTime();
+
     public abstract @Nullable Lock existingLock();
+
     public abstract @Nullable Lock newLock();
+
     public abstract LockState lockState();
 
     public static AcquireResult create(

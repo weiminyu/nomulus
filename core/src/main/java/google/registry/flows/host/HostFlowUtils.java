@@ -90,8 +90,7 @@ public class HostFlowUtils {
         hostName.parts().stream()
             .skip(hostName.parts().size() - (tld.get().parts().size() + 1))
             .collect(joining("."));
-    Optional<DomainBase> superordinateDomain =
-        loadByForeignKey(DomainBase.class, domainName, now);
+    Optional<DomainBase> superordinateDomain = loadByForeignKey(DomainBase.class, domainName, now);
     if (!superordinateDomain.isPresent() || !isActive(superordinateDomain.get(), now)) {
       throw new SuperordinateDomainDoesNotExistException(domainName);
     }
@@ -106,8 +105,8 @@ public class HostFlowUtils {
   }
 
   /** Ensure that the superordinate domain is sponsored by the provided clientId. */
-  static void verifySuperordinateDomainOwnership(
-      String clientId, DomainBase superordinateDomain) throws EppException {
+  static void verifySuperordinateDomainOwnership(String clientId, DomainBase superordinateDomain)
+      throws EppException {
     if (superordinateDomain != null
         && !clientId.equals(superordinateDomain.getCurrentSponsorClientId())) {
       throw new HostDomainNotOwnedException();

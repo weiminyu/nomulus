@@ -31,23 +31,23 @@ import org.joda.time.DateTime;
  * POSIX Tar Header.
  *
  * <p>This class represents the 512-byte header that precedes each file within a tar file archive.
- * It's in the POSIX ustar format which is equivalent to using the following GNU tar flags:
- * {@code tar --format=ustar}. It's called ustar because you're a star!
+ * It's in the POSIX ustar format which is equivalent to using the following GNU tar flags: {@code
+ * tar --format=ustar}. It's called ustar because you're a star!
  *
  * <p><b>Warning:</b> This class is not a complete tar implementation. It also offers no
  * abstractions beyond the header format and has only been tested against very simple archives
  * created in the ustar format and the default format for gnu and bsd tar. If your goal is to be
- * able to read generic tar files, you should use a more mature tar implementation like
- * <a href="http://commons.apache.org/proper/commons-compress/">Apache Commons Compress</a>.
+ * able to read generic tar files, you should use a more mature tar implementation like <a
+ * href="http://commons.apache.org/proper/commons-compress/">Apache Commons Compress</a>.
  *
  * <p>This class is only really useful in situations where the following statements are true:
  *
  * <ol>
- * <li>You want to <i>create</i> tar archives.
- * <li>You don't need to be able to read tar files from external sources.
- * <li>You don't want additional dependencies.
- * <li>You don't need fancy features like symbolic links.
- * <li>You want something that's a step above writing out the bytes by hand.
+ *   <li>You want to <i>create</i> tar archives.
+ *   <li>You don't need to be able to read tar files from external sources.
+ *   <li>You don't want additional dependencies.
+ *   <li>You don't need fancy features like symbolic links.
+ *   <li>You want something that's a step above writing out the bytes by hand.
  * </ol>
  *
  * <p>To create a tar archive using this class, you must do the following: For each file in the
@@ -57,38 +57,54 @@ import org.joda.time.DateTime;
  * <p>The ustar tar header contains the following fields:
  *
  * <dl>
- * <dt>name<dd><i>[Offset: 0, Length: 100]</i><br>
- *     C String which we'll assume is UTF-8 (Offset: 0)
- * <dt>mode<dd><i>[Offset: 100, Length: 8]</i><br>
- *     ASCII 7-digit zero-padded octal file mode and {@code null} byte.
- * <dt>uid<dd><i>[Offset: 108, Length: 8]</i><br>
- *     ASCII 7-digit zero-padded octal UNIX user ID and {@code null} byte.
- * <dt>gid<dd><i>[Offset: 116, Length: 8]</i><br>
- *     ASCII 7-digit zero-padded octal UNIX group ID and {@code null} byte.
- * <dt>size<dd><i>[Offset: 124, Length: 12]</i><br>
- *     ASCII 11-digit zero-padded octal file size and {@code null} byte.
- * <dt>mtime<dd><i>[Offset: 136, Length: 12]</i><br>
- *     ASCII octal UNIX timestamp modified time and {@code null} byte.
- * <dt>chksum<dd><i>[Offset: 148, Length: 8]</i><br>
- *     ASCII octal sum of all header bytes where chksum are 0's.
- * <dt>typeflag<dd><i>[Offset: 156]</i><br>
- *     Always {@code '0'} (zero character) for regular type of file.
- * <dt>linkname<dd><i>[Offset: 157, Length: 100]</i><br>
- *     All {@code null} bytes because we don't support symbolic links.
- * <dt>magic<dd><i>[Offset: 257, Length: 6]</i><br>
- *     Always the C string "ustar".
- * <dt>version<dd><i>[Offset: 263, Length: 2]</i><br>
- *     Always "00" without a {@code null} or blank on GNU systems.
- * <dt>uname<dd><i>[Offset: 265, Length: 32]</i><br>
- *     The C string UNIX user name corresponding to {@code uid}.
- * <dt>gname<dd><i>[Offset: 297, Length: 32]</i><br>
- *     The C string UNIX group name corresponding to {@code gid}.
- * <dt>devmajor<dd><i>[Offset: 329, Length: 8]</i><br>
- *     Not supported; set to zero.
- * <dt>devminor<dd><i>[Offset: 337, Length: 8]</i><br>
- *     Not supported; set to zero.
- * <dt>prefix<dd><i>[Offset: 345, Length: 155]</i><br>
- *     Not supported; set to {@code null}.
+ *   <dt>name
+ *   <dd><i>[Offset: 0, Length: 100]</i><br>
+ *       C String which we'll assume is UTF-8 (Offset: 0)
+ *   <dt>mode
+ *   <dd><i>[Offset: 100, Length: 8]</i><br>
+ *       ASCII 7-digit zero-padded octal file mode and {@code null} byte.
+ *   <dt>uid
+ *   <dd><i>[Offset: 108, Length: 8]</i><br>
+ *       ASCII 7-digit zero-padded octal UNIX user ID and {@code null} byte.
+ *   <dt>gid
+ *   <dd><i>[Offset: 116, Length: 8]</i><br>
+ *       ASCII 7-digit zero-padded octal UNIX group ID and {@code null} byte.
+ *   <dt>size
+ *   <dd><i>[Offset: 124, Length: 12]</i><br>
+ *       ASCII 11-digit zero-padded octal file size and {@code null} byte.
+ *   <dt>mtime
+ *   <dd><i>[Offset: 136, Length: 12]</i><br>
+ *       ASCII octal UNIX timestamp modified time and {@code null} byte.
+ *   <dt>chksum
+ *   <dd><i>[Offset: 148, Length: 8]</i><br>
+ *       ASCII octal sum of all header bytes where chksum are 0's.
+ *   <dt>typeflag
+ *   <dd><i>[Offset: 156]</i><br>
+ *       Always {@code '0'} (zero character) for regular type of file.
+ *   <dt>linkname
+ *   <dd><i>[Offset: 157, Length: 100]</i><br>
+ *       All {@code null} bytes because we don't support symbolic links.
+ *   <dt>magic
+ *   <dd><i>[Offset: 257, Length: 6]</i><br>
+ *       Always the C string "ustar".
+ *   <dt>version
+ *   <dd><i>[Offset: 263, Length: 2]</i><br>
+ *       Always "00" without a {@code null} or blank on GNU systems.
+ *   <dt>uname
+ *   <dd><i>[Offset: 265, Length: 32]</i><br>
+ *       The C string UNIX user name corresponding to {@code uid}.
+ *   <dt>gname
+ *   <dd><i>[Offset: 297, Length: 32]</i><br>
+ *       The C string UNIX group name corresponding to {@code gid}.
+ *   <dt>devmajor
+ *   <dd><i>[Offset: 329, Length: 8]</i><br>
+ *       Not supported; set to zero.
+ *   <dt>devminor
+ *   <dd><i>[Offset: 337, Length: 8]</i><br>
+ *       Not supported; set to zero.
+ *   <dt>prefix
+ *   <dd><i>[Offset: 345, Length: 155]</i><br>
+ *       Not supported; set to {@code null}.
  * </dl>
  *
  * @see <a href="http://www.gnu.org/software/tar/manual/html_node/Standard.html">Tar Standard</a>
@@ -123,16 +139,18 @@ public final class PosixTarHeader {
    */
   public static PosixTarHeader from(byte[] header) {
     checkNotNull(header, "header");
-    checkArgument(header.length == HEADER_LENGTH,
-        "POSIX tar header length should be %s but was %s", HEADER_LENGTH, header.length);
+    checkArgument(
+        header.length == HEADER_LENGTH,
+        "POSIX tar header length should be %s but was %s",
+        HEADER_LENGTH,
+        header.length);
     PosixTarHeader res = new PosixTarHeader(header.clone());
-    checkArgument(res.getMagic().equals("ustar"),
-        "Not a POSIX tar ustar header.");
+    checkArgument(res.getMagic().equals("ustar"), "Not a POSIX tar ustar header.");
     String version = res.getVersion();
-    checkArgument(version.isEmpty() || version.equals("00"),
+    checkArgument(
+        version.isEmpty() || version.equals("00"),
         "Only POSIX tar ustar version 00 and the GNU variant supported.");
-    checkArgument(res.getChksum() == checksum(header),
-        "POSIX tar header chksum invalid.");
+    checkArgument(res.getChksum() == checksum(header), "POSIX tar header chksum invalid.");
     return res;
   }
 
@@ -251,9 +269,9 @@ public final class PosixTarHeader {
   }
 
   /**
-   * Extracts a C string field. This routine is lenient when it comes to the terminating
-   * {@code null} byte. If it's not present, it'll be assumed that the string length is the
-   * size of the field. The encoding is always assumed to be UTF-8.
+   * Extracts a C string field. This routine is lenient when it comes to the terminating {@code
+   * null} byte. If it's not present, it'll be assumed that the string length is the size of the
+   * field. The encoding is always assumed to be UTF-8.
    */
   private String extractField(int offset, int max) {
     return new String(header, offset, extractFieldLength(offset, max), UTF_8);
@@ -296,7 +314,7 @@ public final class PosixTarHeader {
     for (int n = 0; n < 148; ++n) {
       sum += bytes[n];
     }
-    sum += ' ' * 8;  // We pretend the chksum field stores spaces.
+    sum += ' ' * 8; // We pretend the chksum field stores spaces.
     for (int n = 148 + 8; n < bytes.length; ++n) {
       sum += bytes[n];
     }
@@ -306,14 +324,17 @@ public final class PosixTarHeader {
   /**
    * Builder for {@link PosixTarHeader}.
    *
-   * <p>The following fields are required:<ul>
-   * <li>{@link #setName(String)}
-   * <li>{@link #setSize(long)}</ul>
+   * <p>The following fields are required:
+   *
+   * <ul>
+   *   <li>{@link #setName(String)}
+   *   <li>{@link #setSize(long)}
+   * </ul>
    *
    * <p>{@link #build()} may be called multiple times. With the exception of the required fields
-   * listed above, fields will retain the values. This is useful if you want to construct many
-   * file headers with the same value for certain certain fields (e.g. uid, gid, uname, gname)
-   * but don't want to have to call their setters repeatedly.
+   * listed above, fields will retain the values. This is useful if you want to construct many file
+   * headers with the same value for certain certain fields (e.g. uid, gid, uname, gname) but don't
+   * want to have to call their setters repeatedly.
    */
   public static class Builder {
 
@@ -338,8 +359,8 @@ public final class PosixTarHeader {
       setVersion();
       setUname(DEFAULT_UNAME);
       setGname(DEFAULT_GNAME);
-      setField("devmajor", 329, 8, "0000000");  // I have no clue what this is.
-      setField("devminor", 337, 8, "0000000");  // I have no clue what this is.
+      setField("devmajor", 329, 8, "0000000"); // I have no clue what this is.
+      setField("devminor", 337, 8, "0000000"); // I have no clue what this is.
     }
 
     /**
@@ -358,12 +379,11 @@ public final class PosixTarHeader {
      * Sets the UNIX file mode aka permissions. By default this is {@value #DEFAULT_MODE}.
      *
      * @param mode <u>This value is octal</u>. Just in case you were wondering, {@code 416} is the
-     *        decimal representation of {@code 0640}. If that number doesn't look familiar to you,
-     *        search Google for "chmod". The value must be {@code >=0} and {@code <8^7}.
+     *     decimal representation of {@code 0640}. If that number doesn't look familiar to you,
+     *     search Google for "chmod". The value must be {@code >=0} and {@code <8^7}.
      */
     public Builder setMode(int mode) {
-      checkArgument(0 <= mode && mode <= 07777777,
-          "Tar mode out of range: %s", mode);
+      checkArgument(0 <= mode && mode <= 07777777, "Tar mode out of range: %s", mode);
       setField("mode", 100, 8, String.format("%07o", mode));
       return this;
     }
@@ -375,8 +395,7 @@ public final class PosixTarHeader {
      * @see #setUname(String)
      */
     public Builder setUid(int uid) {
-      checkArgument(0 <= uid && uid <= 07777777,
-          "Tar uid out of range: %s", uid);
+      checkArgument(0 <= uid && uid <= 07777777, "Tar uid out of range: %s", uid);
       setField("uid", 108, 8, String.format("%07o", uid));
       return this;
     }
@@ -388,8 +407,7 @@ public final class PosixTarHeader {
      * @see #setGname(String)
      */
     public Builder setGid(int gid) {
-      checkArgument(0 <= gid && gid <= 07777777,
-          "Tar gid out of range: %s", gid);
+      checkArgument(0 <= gid && gid <= 07777777, "Tar gid out of range: %s", gid);
       setField("gid", 116, 8, String.format("%07o", gid));
       return this;
     }
@@ -402,8 +420,7 @@ public final class PosixTarHeader {
      * @param size must be {@code >=0} and {@code <8^11} which places an eight gigabyte limit.
      */
     public Builder setSize(long size) {
-      checkArgument(0 <= size && size <= 077777777777L,
-          "Tar size out of range: %s", size);
+      checkArgument(0 <= size && size <= 077777777777L, "Tar size out of range: %s", size);
       setField("size", 124, 12, String.format("%011o", size));
       hasSize = true;
       return this;
@@ -429,9 +446,7 @@ public final class PosixTarHeader {
       setField("chksum", 148, 8, String.format("%06o", checksum(header)));
     }
 
-    /**
-     * Sets the file {@link Type}. By default this is {@link Type#REGULAR}.
-     */
+    /** Sets the file {@link Type}. By default this is {@link Type#REGULAR}. */
     public Builder setType(Type type) {
       switch (type) {
         case REGULAR:
@@ -494,14 +509,14 @@ public final class PosixTarHeader {
       checkState(hasSize, "size not set");
       hasName = false;
       hasSize = false;
-      setChksum();  // Calculate the checksum last.
+      setChksum(); // Calculate the checksum last.
       return new PosixTarHeader(header.clone());
     }
 
     private void setField(String fieldName, int offset, int max, String data) {
       byte[] bytes = (data + "\0").getBytes(UTF_8);
-      checkArgument(bytes.length <= max,
-          "%s field exceeds max length of %s: %s", fieldName, max - 1, data);
+      checkArgument(
+          bytes.length <= max, "%s field exceeds max length of %s: %s", fieldName, max - 1, data);
       System.arraycopy(bytes, 0, header, offset, bytes.length);
       Arrays.fill(header, offset + bytes.length, offset + max, (byte) 0);
     }

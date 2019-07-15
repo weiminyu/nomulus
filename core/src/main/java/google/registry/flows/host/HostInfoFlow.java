@@ -57,11 +57,13 @@ public final class HostInfoFlow implements Flow {
   @Inject @TargetId String targetId;
   @Inject Clock clock;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject HostInfoFlow() {}
+
+  @Inject
+  HostInfoFlow() {}
 
   @Override
   public EppResponse run() throws EppException {
-    extensionManager.validate();  // There are no legal extensions for this flow.
+    extensionManager.validate(); // There are no legal extensions for this flow.
     validateClientIsLoggedIn(clientId);
     validateHostName(targetId);
     DateTime now = clock.nowUtc();
@@ -90,16 +92,17 @@ public final class HostInfoFlow implements Flow {
           .setLastTransferTime(host.getLastTransferTime());
     }
     return responseBuilder
-        .setResData(hostInfoDataBuilder
-            .setFullyQualifiedHostName(host.getFullyQualifiedHostName())
-            .setRepoId(host.getRepoId())
-            .setStatusValues(statusValues.build())
-            .setInetAddresses(host.getInetAddresses())
-            .setCreationClientId(host.getCreationClientId())
-            .setCreationTime(host.getCreationTime())
-            .setLastEppUpdateClientId(host.getLastEppUpdateClientId())
-            .setLastEppUpdateTime(host.getLastEppUpdateTime())
-            .build())
+        .setResData(
+            hostInfoDataBuilder
+                .setFullyQualifiedHostName(host.getFullyQualifiedHostName())
+                .setRepoId(host.getRepoId())
+                .setStatusValues(statusValues.build())
+                .setInetAddresses(host.getInetAddresses())
+                .setCreationClientId(host.getCreationClientId())
+                .setCreationTime(host.getCreationTime())
+                .setLastEppUpdateClientId(host.getLastEppUpdateClientId())
+                .setLastEppUpdateTime(host.getLastEppUpdateTime())
+                .build())
         .build();
   }
 }

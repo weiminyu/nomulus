@@ -27,8 +27,7 @@ import org.joda.money.CurrencyUnit;
 public class FeeCheckResponseExtensionItemV11 extends FeeCheckResponseExtensionItem {
 
   /** Whether the domain is available. */
-  @XmlAttribute
-  boolean avail;
+  @XmlAttribute boolean avail;
 
   /** The domain that was checked. */
   DomainObjectSpec object;
@@ -43,7 +42,7 @@ public class FeeCheckResponseExtensionItemV11 extends FeeCheckResponseExtensionI
 
   /** Builder for {@link FeeCheckResponseExtensionItemV11}. */
   public static class Builder
-    extends FeeCheckResponseExtensionItem.Builder<FeeCheckResponseExtensionItemV11> {
+      extends FeeCheckResponseExtensionItem.Builder<FeeCheckResponseExtensionItemV11> {
 
     @Override
     public Builder setCommand(CommandName commandName, String phase, String subphase) {

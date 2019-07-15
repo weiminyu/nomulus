@@ -45,7 +45,7 @@ public class ContactCommand {
     /** Postal info for the contact. */
     List<PostalInfo> postalInfo;
 
-     /** Contact’s voice number. */
+    /** Contact’s voice number. */
     ContactPhoneNumber voice;
 
     /** Contact’s fax number. */
@@ -111,8 +111,8 @@ public class ContactCommand {
   }
 
   /**
-   * A create command for a {@link ContactResource}, mapping "createType" from
-   * {@link "http://tools.ietf.org/html/rfc5733"}.
+   * A create command for a {@link ContactResource}, mapping "createType" from {@link
+   * "http://tools.ietf.org/html/rfc5733"}.
    */
   @XmlType(propOrder = {"contactId", "postalInfo", "voice", "fax", "email", "authInfo", "disclose"})
   @XmlRootElement
@@ -122,8 +122,8 @@ public class ContactCommand {
      * Unique identifier for this contact.
      *
      * <p>This is only unique in the sense that for any given lifetime specified as the time range
-     * from (creationTime, deletionTime) there can only be one contact in Datastore with this
-     * id.  However, there can be many contacts with the same id and non-overlapping lifetimes.
+     * from (creationTime, deletionTime) there can only be one contact in Datastore with this id.
+     * However, there can be many contacts with the same id and non-overlapping lifetimes.
      */
     @XmlElement(name = "id")
     String contactId;

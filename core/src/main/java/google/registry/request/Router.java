@@ -81,17 +81,14 @@ final class Router {
       @SuppressWarnings("unchecked") // Safe due to previous checks.
       Route route =
           Route.create(
-              action,
-              (Function<Object, Runnable>) newInstantiator(method),
-              method.getReturnType());
+              action, (Function<Object, Runnable>) newInstantiator(method), method.getReturnType());
       routes.put(action.path(), route);
     }
     return routes.build();
   }
 
   private static boolean isDaggerInstantiatorOfType(Class<?> type, Method method) {
-    return method.getParameterTypes().length == 0
-        && type.isAssignableFrom(method.getReturnType());
+    return method.getParameterTypes().length == 0 && type.isAssignableFrom(method.getReturnType());
   }
 
   private static Function<Object, ?> newInstantiator(final Method method) {

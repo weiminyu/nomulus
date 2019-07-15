@@ -38,7 +38,8 @@ import javax.inject.Inject;
     auth = Auth.AUTH_PUBLIC_ANONYMOUS)
 public class RdapAutnumAction extends RdapActionBase {
 
-  @Inject RdapAutnumAction() {
+  @Inject
+  RdapAutnumAction() {
     super("authnum", EndpointType.AUTNUM);
   }
 

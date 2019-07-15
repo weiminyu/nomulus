@@ -79,11 +79,8 @@ public abstract class MapreduceTestCase<T> extends ShardableTestCase {
   private LocalTaskQueue taskQueue;
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withLocalModules()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withLocalModules().withTaskQueue().build();
 
   @Rule public final MockitoRule mocks = MockitoJUnit.rule();
 
@@ -131,7 +128,7 @@ public abstract class MapreduceTestCase<T> extends ShardableTestCase {
     if (pathInfo.startsWith("/_dr/mapreduce/")) {
       pathInfo = pathInfo.replace("/_dr/mapreduce", "");
     } else if (pathInfo.startsWith("/mapreduce/")) {
-        pathInfo = pathInfo.replace("/mapreduce", "");
+      pathInfo = pathInfo.replace("/mapreduce", "");
     } else if (pathInfo.startsWith("/")) {
       pathInfo = pathInfo.replace("/_ah/", "");
       pathInfo = pathInfo.substring(pathInfo.indexOf('/'));
@@ -178,8 +175,8 @@ public abstract class MapreduceTestCase<T> extends ShardableTestCase {
   /**
    * Executes tasks in the mapreduce queue until all are finished.
    *
-   * <p>If you are mocking a clock in your tests, use the
-   * {@link #executeTasksUntilEmpty(String, FakeClock)} version instead.
+   * <p>If you are mocking a clock in your tests, use the {@link #executeTasksUntilEmpty(String,
+   * FakeClock)} version instead.
    */
   protected void executeTasksUntilEmpty(String queueName) throws Exception {
     executeTasksUntilEmpty(queueName, null);

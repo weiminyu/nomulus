@@ -20,9 +20,9 @@ import javax.xml.bind.annotation.XmlTransient;
  * Base class for entities that are the root of a Registry 2.0 entity group that gets enrolled in
  * commit logs for backup purposes.
  *
- * <p>The commit log system needs to preserve the ordering of closely timed mutations to entities
- * in a single entity group. We require an {@link UpdateAutoTimestamp} field on the root of a group
- * so that we can enforce strictly increasing timestamps.
+ * <p>The commit log system needs to preserve the ordering of closely timed mutations to entities in
+ * a single entity group. We require an {@link UpdateAutoTimestamp} field on the root of a group so
+ * that we can enforce strictly increasing timestamps.
  */
 public abstract class BackupGroupRoot extends ImmutableObject {
   /**
@@ -31,8 +31,7 @@ public abstract class BackupGroupRoot extends ImmutableObject {
    * <p>Note that this is distinct from the EPP-specified {@link EppResource#lastEppUpdateTime}, in
    * that this is updated on every save, rather than only in response to an {@code <update>} command
    */
-  @XmlTransient
-  UpdateAutoTimestamp updateTimestamp = UpdateAutoTimestamp.create(null);
+  @XmlTransient UpdateAutoTimestamp updateTimestamp = UpdateAutoTimestamp.create(null);
 
   /** Get the {@link UpdateAutoTimestamp} for this entity. */
   public final UpdateAutoTimestamp getUpdateAutoTimestamp() {

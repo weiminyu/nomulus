@@ -35,12 +35,10 @@ public class Greeting extends ImmutableObject implements ResponseOrGreeting {
   DateTime svDate;
 
   /** This is never changed, so it might as well be static for efficiency. */
-  @XmlElement
-  static SvcMenu svcMenu = new SvcMenu();
+  @XmlElement static SvcMenu svcMenu = new SvcMenu();
 
   /** This is never changed, so it might as well be static for efficiency. */
-  @XmlElement
-  static Dcp dcp = new Dcp();
+  @XmlElement static Dcp dcp = new Dcp();
 
   public static Greeting create(DateTime svDate, String svID) {
     Greeting instance = new Greeting();

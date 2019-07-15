@@ -107,17 +107,49 @@ public final class RdeUploadAction implements Runnable, EscrowTask {
   @Inject SftpProgressMonitor sftpProgressMonitor;
   @Inject TaskQueueUtils taskQueueUtils;
   @Inject Retrier retrier;
-  @Inject @Parameter(RequestParameters.PARAM_TLD) String tld;
-  @Inject @Config("rdeBucket") String bucket;
-  @Inject @Config("rdeInterval") Duration interval;
-  @Inject @Config("rdeUploadLockTimeout") Duration timeout;
-  @Inject @Config("rdeUploadSftpCooldown") Duration sftpCooldown;
-  @Inject @Config("rdeUploadUrl") URI uploadUrl;
-  @Inject @Key("rdeReceiverKey") PGPPublicKey receiverKey;
-  @Inject @Key("rdeSigningKey") PGPKeyPair signingKey;
-  @Inject @Key("rdeStagingDecryptionKey") PGPPrivateKey stagingDecryptionKey;
-  @Inject @Named("rde-report") Queue reportQueue;
-  @Inject RdeUploadAction() {}
+
+  @Inject
+  @Parameter(RequestParameters.PARAM_TLD)
+  String tld;
+
+  @Inject
+  @Config("rdeBucket")
+  String bucket;
+
+  @Inject
+  @Config("rdeInterval")
+  Duration interval;
+
+  @Inject
+  @Config("rdeUploadLockTimeout")
+  Duration timeout;
+
+  @Inject
+  @Config("rdeUploadSftpCooldown")
+  Duration sftpCooldown;
+
+  @Inject
+  @Config("rdeUploadUrl")
+  URI uploadUrl;
+
+  @Inject
+  @Key("rdeReceiverKey")
+  PGPPublicKey receiverKey;
+
+  @Inject
+  @Key("rdeSigningKey")
+  PGPKeyPair signingKey;
+
+  @Inject
+  @Key("rdeStagingDecryptionKey")
+  PGPPrivateKey stagingDecryptionKey;
+
+  @Inject
+  @Named("rde-report")
+  Queue reportQueue;
+
+  @Inject
+  RdeUploadAction() {}
 
   @Override
   public void run() {
@@ -130,8 +162,9 @@ public final class RdeUploadAction implements Runnable, EscrowTask {
   @Override
   public void runWithLock(final DateTime watermark) throws Exception {
     logger.atInfo().log("Verifying readiness to upload the RDE deposit.");
-    DateTime stagingCursorTime = getCursorTimeOrStartOfTime(
-        ofy().load().key(Cursor.createKey(CursorType.RDE_STAGING, Registry.get(tld))).now());
+    DateTime stagingCursorTime =
+        getCursorTimeOrStartOfTime(
+            ofy().load().key(Cursor.createKey(CursorType.RDE_STAGING, Registry.get(tld))).now());
     if (isBeforeOrAt(stagingCursorTime, watermark)) {
       throw new NoContentException(
           String.format(
@@ -181,26 +214,27 @@ public final class RdeUploadAction implements Runnable, EscrowTask {
   }
 
   /**
-   * Performs a blocking upload of a cloud storage XML file to escrow provider, converting
-   * it to the RyDE format along the way by applying tar+compress+encrypt+sign, and saving the
-   * created RyDE file on GCS for future reference.
+   * Performs a blocking upload of a cloud storage XML file to escrow provider, converting it to the
+   * RyDE format along the way by applying tar+compress+encrypt+sign, and saving the created RyDE
+   * file on GCS for future reference.
    *
    * <p>This is done by layering a bunch of {@link java.io.FilterOutputStream FilterOutputStreams}
-   * on top of each other in reverse order that turn XML bytes into a RyDE file while
-   * simultaneously uploading it to the SFTP endpoint, and then using {@link ByteStreams#copy} to
-   * blocking-copy bytes from the cloud storage {@code InputStream} to the RyDE/SFTP pipeline.
+   * on top of each other in reverse order that turn XML bytes into a RyDE file while simultaneously
+   * uploading it to the SFTP endpoint, and then using {@link ByteStreams#copy} to blocking-copy
+   * bytes from the cloud storage {@code InputStream} to the RyDE/SFTP pipeline.
    *
    * <p>In psuedoshell, the whole process looks like the following:
    *
-   * <pre>   {@code
-   *   gcs read $xmlFile \                                   # Get GhostRyDE from cloud storage.
-   *     | decrypt | decompress \                            # Convert it to XML.
-   *     | tar | file | compress | encrypt | sign /tmp/sig \ # Convert it to a RyDE file.
-   *     | tee gs://bucket/$rydeFilename.ryde \              # Save a copy of the RyDE file to GCS.
-   *     | sftp put $dstUrl/$rydeFilename.ryde \             # Upload to SFTP server.
-   *    && sftp put $dstUrl/$rydeFilename.sig </tmp/sig \    # Upload detached signature.
-   *    && cat /tmp/sig > gs://bucket/$rydeFilename.sig      # Save a copy of signature to GCS.
-   *   }</pre>
+   * <pre>{@code
+   * gcs read $xmlFile \                                   # Get GhostRyDE from cloud storage.
+   *   | decrypt | decompress \                            # Convert it to XML.
+   *   | tar | file | compress | encrypt | sign /tmp/sig \ # Convert it to a RyDE file.
+   *   | tee gs://bucket/$rydeFilename.ryde \              # Save a copy of the RyDE file to GCS.
+   *   | sftp put $dstUrl/$rydeFilename.ryde \             # Upload to SFTP server.
+   *  && sftp put $dstUrl/$rydeFilename.sig </tmp/sig \    # Upload detached signature.
+   *  && cat /tmp/sig > gs://bucket/$rydeFilename.sig      # Save a copy of signature to GCS.
+   *
+   * }</pre>
    */
   @VisibleForTesting
   protected void upload(GcsFilename xmlFile, long xmlLength, DateTime watermark, String name)
@@ -223,9 +257,9 @@ public final class RdeUploadAction implements Runnable, EscrowTask {
                     .setSignatureOutput(sigOut, signingKey)
                     .setFileMetadata(name, xmlLength, watermark)
                     .build()) {
-            long bytesCopied = ByteStreams.copy(ghostrydeDecoder, rydeEncoder);
-            logger.atInfo().log("uploaded %,d bytes: %s", bytesCopied, rydeFilename);
-          }
+          long bytesCopied = ByteStreams.copy(ghostrydeDecoder, rydeEncoder);
+          logger.atInfo().log("uploaded %,d bytes: %s", bytesCopied, rydeFilename);
+        }
         String sigFilename = name + ".sig";
         byte[] signature = sigOut.toByteArray();
         gcsUtils.createFromBytes(new GcsFilename(bucket, sigFilename), signature);

@@ -26,13 +26,13 @@ import org.joda.time.DateTime;
 /** A fee extension that may be present on domain info commands. */
 @XmlRootElement(name = "info")
 @XmlType(propOrder = {"currency", "command", "period"})
-public class FeeInfoCommandExtensionV06
-    extends FeeQueryCommandExtensionItem implements CommandExtension {
+public class FeeInfoCommandExtensionV06 extends FeeQueryCommandExtensionItem
+    implements CommandExtension {
 
   /** A three-character ISO4217 currency code. */
   CurrencyUnit currency;
 
-  /** The command being checked.  */
+  /** The command being checked. */
   FeeExtensionCommandDescriptor command;
 
   /** The name of the command being checked. */
@@ -69,4 +69,3 @@ public class FeeInfoCommandExtensionV06
     return Optional.empty();
   }
 }
-

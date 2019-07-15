@@ -25,9 +25,7 @@ import java.util.List;
 @Parameters(separators = " =", commandDescription = "Show registrar record(s)")
 final class GetRegistrarCommand implements CommandWithRemoteApi {
 
-  @Parameter(
-      description = "Client identifier of the registrar account(s)",
-      required = true)
+  @Parameter(description = "Client identifier of the registrar account(s)", required = true)
   private List<String> mainParameters;
 
   @Override

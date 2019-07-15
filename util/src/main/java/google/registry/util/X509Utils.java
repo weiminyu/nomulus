@@ -72,13 +72,11 @@ public final class X509Utils {
   public static X509Certificate loadCertificate(InputStream input)
       throws CertificateParsingException {
     try {
-      return CertificateFactory.getInstance("X.509")
-          .generateCertificates(input)
-          .stream()
+      return CertificateFactory.getInstance("X.509").generateCertificates(input).stream()
           .filter(X509Certificate.class::isInstance)
           .map(X509Certificate.class::cast)
           .collect(onlyElement());
-    } catch (CertificateException e) {  // CertificateParsingException by specification.
+    } catch (CertificateException e) { // CertificateParsingException by specification.
       throwIfInstanceOf(e, CertificateParsingException.class);
       throw new CertificateParsingException(e);
     } catch (NoSuchElementException e) {
@@ -117,9 +115,7 @@ public final class X509Utils {
   public static X509CRL loadCrl(String asciiCrl) throws GeneralSecurityException {
     ByteArrayInputStream input = new ByteArrayInputStream(asciiCrl.getBytes(US_ASCII));
     try {
-      return CertificateFactory.getInstance("X.509")
-          .generateCRLs(input)
-          .stream()
+      return CertificateFactory.getInstance("X.509").generateCRLs(input).stream()
           .filter(X509CRL.class::isInstance)
           .map(X509CRL.class::cast)
           .collect(onlyElement());
@@ -136,12 +132,12 @@ public final class X509Utils {
    * <p>Support for certificate chains has not been implemented.
    *
    * @throws GeneralSecurityException for unsupported protocols, certs not signed by the TMCH,
-   *         parsing errors, encoding errors, if the CRL is expired, or if the CRL is older than the
-   *         one currently in memory.
+   *     parsing errors, encoding errors, if the CRL is expired, or if the CRL is older than the one
+   *     currently in memory.
    */
   public static void verifyCertificate(
       X509Certificate rootCert, X509CRL crl, @Tainted X509Certificate cert, Date now)
-          throws GeneralSecurityException {
+      throws GeneralSecurityException {
     cert.checkValidity(checkNotNull(now, "now"));
     cert.verify(rootCert.getPublicKey());
     if (crl.isRevoked(cert)) {
@@ -161,15 +157,16 @@ public final class X509Utils {
    * are correct with respect to {@code now}.
    *
    * @throws GeneralSecurityException for unsupported protocols, certs not signed by the TMCH,
-   *         incorrect keys, and for invalid, old, not-yet-valid or revoked certificates.
+   *     incorrect keys, and for invalid, old, not-yet-valid or revoked certificates.
    */
   public static void verifyCrl(
       X509Certificate rootCert, X509CRL oldCrl, @Tainted X509CRL newCrl, Date now)
       throws GeneralSecurityException {
     if (newCrl.getThisUpdate().before(oldCrl.getThisUpdate())) {
-      throw new CRLException(String.format(
-          "New CRL is more out of date than our current CRL. %s < %s\n%s",
-          newCrl.getThisUpdate(), oldCrl.getThisUpdate(), newCrl));
+      throw new CRLException(
+          String.format(
+              "New CRL is more out of date than our current CRL. %s < %s\n%s",
+              newCrl.getThisUpdate(), oldCrl.getThisUpdate(), newCrl));
     }
     if (newCrl.getNextUpdate().before(now)) {
       throw new CRLException("CRL has expired.\n" + newCrl);

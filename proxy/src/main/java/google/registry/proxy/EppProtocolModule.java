@@ -147,11 +147,7 @@ public class EppProtocolModule {
       FrontendMetrics metrics,
       ProxyConfig config) {
     return new EppServiceHandler(
-        config.epp.relayHost,
-        config.epp.relayPath,
-        accessTokenSupplier,
-        helloBytes,
-        metrics);
+        config.epp.relayHost, config.epp.relayPath, accessTokenSupplier, helloBytes, metrics);
   }
 
   @Singleton

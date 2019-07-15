@@ -188,8 +188,8 @@ public class ExportPremiumTermsActionTest {
             EXPECTED_FILE_CONTENT.getBytes(UTF_8));
     verifyNoMoreInteractions(driveConnection);
     verify(response).setStatus(SC_INTERNAL_SERVER_ERROR);
-    verify(response).setPayload(
-        ArgumentMatchers.contains("Error exporting premium terms file to Drive."));
+    verify(response)
+        .setPayload(ArgumentMatchers.contains("Error exporting premium terms file to Drive."));
     verify(response).setContentType(PLAIN_TEXT_UTF_8);
     verifyNoMoreInteractions(response);
   }

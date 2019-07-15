@@ -117,9 +117,13 @@ public final class OteStatusAction implements Runnable, JsonActionRunner.JsonAct
   private Map<String, Object> convertSingleRequirement(StatType statType, int count) {
     int requirement = statType.getRequirement();
     return ImmutableMap.of(
-        STAT_TYPE_DESCRIPTION_PARAM, statType.getDescription(),
-        STAT_TYPE_REQUIREMENT_PARAM, requirement,
-        STAT_TYPE_TIMES_PERFORMED_PARAM, count,
-        COMPLETED_PARAM, count >= requirement);
+        STAT_TYPE_DESCRIPTION_PARAM,
+        statType.getDescription(),
+        STAT_TYPE_REQUIREMENT_PARAM,
+        requirement,
+        STAT_TYPE_TIMES_PERFORMED_PARAM,
+        count,
+        COMPLETED_PARAM,
+        count >= requirement);
   }
 }

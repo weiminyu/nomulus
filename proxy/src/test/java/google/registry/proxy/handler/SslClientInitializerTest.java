@@ -68,8 +68,7 @@ public class SslClientInitializerTest {
   /** Fake port to test if the SSL engine gets the correct peer port. */
   private static final int SSL_PORT = 12345;
 
-  @Rule
-  public NettyRule nettyRule = new NettyRule();
+  @Rule public NettyRule nettyRule = new NettyRule();
 
   @Parameter(0)
   public SslProvider sslProvider;

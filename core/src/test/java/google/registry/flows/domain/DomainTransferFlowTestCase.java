@@ -56,7 +56,7 @@ import org.junit.Before;
  * @param <R> the resource type
  */
 public class DomainTransferFlowTestCase<F extends Flow, R extends EppResource>
-    extends ResourceFlowTestCase<F, R>{
+    extends ResourceFlowTestCase<F, R> {
 
   // Transfer is requested on the 6th and expires on the 11th.
   // The "now" of this flow is on the 9th, 3 days in.
@@ -85,8 +85,7 @@ public class DomainTransferFlowTestCase<F extends Flow, R extends EppResource>
   public void makeClientZ() {
     // Registrar ClientZ is used in tests that need another registrar that definitely doesn't own
     // the resources in question.
-    persistResource(
-        AppEngineRule.makeRegistrar1().asBuilder().setClientId("ClientZ").build());
+    persistResource(AppEngineRule.makeRegistrar1().asBuilder().setClientId("ClientZ").build());
   }
 
   static DomainBase persistWithPendingTransfer(DomainBase domain) {
@@ -110,15 +109,16 @@ public class DomainTransferFlowTestCase<F extends Flow, R extends EppResource>
             clock.nowUtc(),
             DateTime.parse("1999-04-03T22:00:00.0Z"),
             REGISTRATION_EXPIRATION_TIME);
-    subordinateHost = persistResource(
-        new HostResource.Builder()
-            .setRepoId("2-".concat(Ascii.toUpperCase(tld)))
-            .setFullyQualifiedHostName("ns1." + label + "." + tld)
-            .setPersistedCurrentSponsorClientId("TheRegistrar")
-            .setCreationClientId("TheRegistrar")
-            .setCreationTimeForTest(DateTime.parse("1999-04-03T22:00:00.0Z"))
-            .setSuperordinateDomain(Key.create(domain))
-            .build());
+    subordinateHost =
+        persistResource(
+            new HostResource.Builder()
+                .setRepoId("2-".concat(Ascii.toUpperCase(tld)))
+                .setFullyQualifiedHostName("ns1." + label + "." + tld)
+                .setPersistedCurrentSponsorClientId("TheRegistrar")
+                .setCreationClientId("TheRegistrar")
+                .setCreationTimeForTest(DateTime.parse("1999-04-03T22:00:00.0Z"))
+                .setSuperordinateDomain(Key.create(domain))
+                .build());
     domain =
         persistResource(
             domain
@@ -132,10 +132,7 @@ public class DomainTransferFlowTestCase<F extends Flow, R extends EppResource>
     HistoryEntry historyEntry =
         getOnlyHistoryEntryOfType(domain, HistoryEntry.Type.DOMAIN_TRANSFER_REQUEST);
     return createBillingEventForTransfer(
-        domain,
-        historyEntry,
-        TRANSFER_REQUEST_TIME,
-        TRANSFER_EXPIRATION_TIME);
+        domain, historyEntry, TRANSFER_REQUEST_TIME, TRANSFER_EXPIRATION_TIME);
   }
 
   /** Get the autorenew event that the losing client will have after a SERVER_APPROVED transfer. */
@@ -166,14 +163,17 @@ public class DomainTransferFlowTestCase<F extends Flow, R extends EppResource>
 
   protected void assertTransferFailed(
       DomainBase domain, TransferStatus status, TransferData oldTransferData) {
-    assertAboutDomains().that(domain)
-        .doesNotHaveStatusValue(StatusValue.PENDING_TRANSFER).and()
+    assertAboutDomains()
+        .that(domain)
+        .doesNotHaveStatusValue(StatusValue.PENDING_TRANSFER)
+        .and()
         .hasCurrentSponsorClientId("TheRegistrar");
     // The domain TransferData should reflect the failed transfer as we expect, with
     // all the speculative server-approve fields nulled out.
     assertThat(domain.getTransferData())
         .isEqualTo(
-            oldTransferData.copyConstantFieldsToBuilder()
+            oldTransferData
+                .copyConstantFieldsToBuilder()
                 .setTransferStatus(status)
                 .setPendingTransferExpirationTime(clock.nowUtc())
                 .build());
@@ -187,8 +187,13 @@ public class DomainTransferFlowTestCase<F extends Flow, R extends EppResource>
 
   /** Changes the transfer status on the persisted domain. */
   protected void changeTransferStatus(TransferStatus transferStatus) {
-    domain = persistResource(domain.asBuilder().setTransferData(
-        domain.getTransferData().asBuilder().setTransferStatus(transferStatus).build()).build());
+    domain =
+        persistResource(
+            domain
+                .asBuilder()
+                .setTransferData(
+                    domain.getTransferData().asBuilder().setTransferStatus(transferStatus).build())
+                .build());
     clock.advanceOneMilli();
   }
 }

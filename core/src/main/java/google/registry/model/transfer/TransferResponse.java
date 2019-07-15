@@ -33,15 +33,17 @@ public abstract class TransferResponse extends BaseTransferObject implements Res
   /** An adapter to output the XML in response to a transfer command on a domain. */
   @Embed
   @XmlRootElement(name = "trnData", namespace = "urn:ietf:params:xml:ns:domain-1.0")
-  @XmlType(propOrder = {
-      "fullyQualifiedDomainName",
-      "transferStatus",
-      "gainingClientId",
-      "transferRequestTime",
-      "losingClientId",
-      "pendingTransferExpirationTime",
-      "extendedRegistrationExpirationTime"},
-    namespace = "urn:ietf:params:xml:ns:domain-1.0")
+  @XmlType(
+      propOrder = {
+        "fullyQualifiedDomainName",
+        "transferStatus",
+        "gainingClientId",
+        "transferRequestTime",
+        "losingClientId",
+        "pendingTransferExpirationTime",
+        "extendedRegistrationExpirationTime"
+      },
+      namespace = "urn:ietf:params:xml:ns:domain-1.0")
   public static class DomainTransferResponse extends TransferResponse {
 
     @XmlElement(name = "name")
@@ -82,14 +84,16 @@ public abstract class TransferResponse extends BaseTransferObject implements Res
   /** An adapter to output the XML in response to a transfer command on a contact. */
   @Embed
   @XmlRootElement(name = "trnData", namespace = "urn:ietf:params:xml:ns:contact-1.0")
-  @XmlType(propOrder = {
-      "contactId",
-      "transferStatus",
-      "gainingClientId",
-      "transferRequestTime",
-      "losingClientId",
-      "pendingTransferExpirationTime"},
-    namespace = "urn:ietf:params:xml:ns:contact-1.0")
+  @XmlType(
+      propOrder = {
+        "contactId",
+        "transferStatus",
+        "gainingClientId",
+        "transferRequestTime",
+        "losingClientId",
+        "pendingTransferExpirationTime"
+      },
+      namespace = "urn:ietf:params:xml:ns:contact-1.0")
   public static class ContactTransferResponse extends TransferResponse {
 
     @XmlElement(name = "id")

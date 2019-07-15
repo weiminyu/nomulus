@@ -31,17 +31,14 @@ import google.registry.model.annotations.ReportedOn;
 @Entity
 public class EppResourceIndex extends BackupGroupRoot {
 
-  @Id
-  String id;
+  @Id String id;
 
-  @Parent
-  Key<EppResourceIndexBucket> bucket;
+  @Parent Key<EppResourceIndexBucket> bucket;
 
   /** Although this field holds a {@link Key} it is named "reference" for historical reasons. */
   Key<? extends EppResource> reference;
 
-  @Index
-  String kind;
+  @Index String kind;
 
   public String getId() {
     return id;
@@ -66,7 +63,7 @@ public class EppResourceIndex extends BackupGroupRoot {
     EppResourceIndex instance = instantiate(EppResourceIndex.class);
     instance.reference = resourceKey;
     instance.kind = resourceKey.getKind();
-    instance.id = resourceKey.getString();  // creates a web-safe key string
+    instance.id = resourceKey.getString(); // creates a web-safe key string
     instance.bucket = bucket;
     return instance;
   }

@@ -35,9 +35,9 @@ public class EppResourceIndexBucket extends ImmutableObject {
   private long bucketId;
 
   /**
-   * Deterministic function that returns a bucket id based on the resource's roid.
-   * NB: At the moment, nothing depends on this being deterministic, so we have the ability to
-   * change the number of buckets and utilize a random distribution once we do.
+   * Deterministic function that returns a bucket id based on the resource's roid. NB: At the
+   * moment, nothing depends on this being deterministic, so we have the ability to change the
+   * number of buckets and utilize a random distribution once we do.
    */
   private static long getBucketIdFromEppResource(Key<? extends EppResource> resourceKey) {
     int numBuckets = getEppResourceIndexBucketCount();

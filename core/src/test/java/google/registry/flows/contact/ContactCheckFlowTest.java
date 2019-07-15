@@ -38,9 +38,7 @@ public class ContactCheckFlowTest
   public void testNothingExists() throws Exception {
     // These ids come from the check xml.
     doCheckTest(
-        create(true, "sh8013", null),
-        create(true, "sah8013", null),
-        create(true, "8013sah", null));
+        create(true, "sh8013", null), create(true, "sah8013", null), create(true, "8013sah", null));
   }
 
   @Test
@@ -58,9 +56,7 @@ public class ContactCheckFlowTest
     persistDeletedContact("sh8013", clock.nowUtc().minusDays(1));
     // These ids come from the check xml.
     doCheckTest(
-        create(true, "sh8013", null),
-        create(true, "sah8013", null),
-        create(true, "8013sah", null));
+        create(true, "sh8013", null), create(true, "sah8013", null), create(true, "8013sah", null));
   }
 
   @Test

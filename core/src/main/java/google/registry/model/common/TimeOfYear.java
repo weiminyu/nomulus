@@ -34,9 +34,9 @@ import org.joda.time.DateTime;
 /**
  * A time of year (month, day, millis of day) that can be stored in a sort-friendly format.
  *
- * <p>This is conceptually similar to {@code MonthDay} in Joda or more generally to Joda's
- * {@code Partial}, but the parts we need are too simple to justify a full implementation of
- * {@code Partial}.
+ * <p>This is conceptually similar to {@code MonthDay} in Joda or more generally to Joda's {@code
+ * Partial}, but the parts we need are too simple to justify a full implementation of {@code
+ * Partial}.
  *
  * <p>For simplicity, the native representation of this class's data is its stored format. This
  * allows it to be embeddable with no translation needed and also delays parsing of the string on
@@ -49,8 +49,7 @@ public class TimeOfYear extends ImmutableObject {
    * The time as "month day millis" with all fields left-padded with zeroes so that lexographic
    * sorting will do the right thing.
    */
-  @Index
-  String timeString;
+  @Index String timeString;
 
   /**
    * Constructs a {@link TimeOfYear} from a {@link DateTime}.
@@ -59,32 +58,30 @@ public class TimeOfYear extends ImmutableObject {
    * February 28. It is impossible to construct a {@link TimeOfYear} for February 29th.
    */
   public static TimeOfYear fromDateTime(DateTime dateTime) {
-    DateTime nextYear = dateTime.plusYears(1);  // This turns February 29 into February 28.
+    DateTime nextYear = dateTime.plusYears(1); // This turns February 29 into February 28.
     TimeOfYear instance = new TimeOfYear();
-    instance.timeString = String.format(
-        "%02d %02d %08d",
-        nextYear.getMonthOfYear(),
-        nextYear.getDayOfMonth(),
-        nextYear.getMillisOfDay());
+    instance.timeString =
+        String.format(
+            "%02d %02d %08d",
+            nextYear.getMonthOfYear(), nextYear.getDayOfMonth(), nextYear.getMillisOfDay());
     return instance;
   }
 
   /**
-   * Returns an {@link Iterable} of {@link DateTime}s of every recurrence of this particular
-   * time of year within a given {@link Range} (usually one spanning many years).
+   * Returns an {@link Iterable} of {@link DateTime}s of every recurrence of this particular time of
+   * year within a given {@link Range} (usually one spanning many years).
    *
-   * <p>WARNING: This can return a potentially very large {@link Iterable} if {@code END_OF_TIME}
-   * is used as the upper endpoint of the range.
+   * <p>WARNING: This can return a potentially very large {@link Iterable} if {@code END_OF_TIME} is
+   * used as the upper endpoint of the range.
    */
   public Iterable<DateTime> getInstancesInRange(Range<DateTime> range) {
     // In registry world, all dates are within START_OF_TIME and END_OF_TIME, so restrict any
     // ranges without bounds to our notion of zero-to-infinity.
     Range<DateTime> normalizedRange = range.intersection(Range.closed(START_OF_TIME, END_OF_TIME));
-    Range<Integer> yearRange = Range.closed(
-        normalizedRange.lowerEndpoint().getYear(),
-        normalizedRange.upperEndpoint().getYear());
-    return ContiguousSet.create(yearRange, integers())
-        .stream()
+    Range<Integer> yearRange =
+        Range.closed(
+            normalizedRange.lowerEndpoint().getYear(), normalizedRange.upperEndpoint().getYear());
+    return ContiguousSet.create(yearRange, integers()).stream()
         .map(this::getDateTimeWithYear)
         .filter(normalizedRange)
         .collect(toImmutableList());

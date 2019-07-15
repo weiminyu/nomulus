@@ -42,9 +42,7 @@ import javax.annotation.Nullable;
 import org.joda.money.Money;
 import org.joda.time.DateTime;
 
-/**
- * Utility logic for facilitating domain transfers.
- */
+/** Utility logic for facilitating domain transfers. */
 public final class DomainTransferUtils {
 
   /** Sets up {@link TransferData} for a domain with links to entities for server approval. */
@@ -61,8 +59,7 @@ public final class DomainTransferUtils {
       // Unless superuser sets period to 0, add a transfer billing event.
       transferDataBuilder.setServerApproveBillingEvent(
           Key.create(
-              serverApproveEntities
-                  .stream()
+              serverApproveEntities.stream()
                   .filter(BillingEvent.OneTime.class::isInstance)
                   .map(BillingEvent.OneTime.class::cast)
                   .collect(onlyElement())));
@@ -71,15 +68,13 @@ public final class DomainTransferUtils {
         .setTransferStatus(TransferStatus.PENDING)
         .setServerApproveAutorenewEvent(
             Key.create(
-                serverApproveEntities
-                    .stream()
+                serverApproveEntities.stream()
                     .filter(BillingEvent.Recurring.class::isInstance)
                     .map(BillingEvent.Recurring.class::cast)
                     .collect(onlyElement())))
         .setServerApproveAutorenewPollMessage(
             Key.create(
-                serverApproveEntities
-                    .stream()
+                serverApproveEntities.stream()
                     .filter(PollMessage.Autorenew.class::isInstance)
                     .map(PollMessage.Autorenew.class::cast)
                     .collect(onlyElement())))
@@ -92,14 +87,15 @@ public final class DomainTransferUtils {
    * Returns a set of entities created speculatively in anticipation of a server approval.
    *
    * <p>This set consists of:
+   *
    * <ul>
-   *    <li>The one-time billing event charging the gaining registrar for the transfer
-   *    <li>A cancellation of an autorenew charge for the losing registrar, if the autorenew grace
-   *        period will apply at transfer time
-   *    <li>A new post-transfer autorenew billing event for the domain (and gaining registrar)
-   *    <li>A new post-transfer autorenew poll message for the domain (and gaining registrar)
-   *    <li>A poll message for the gaining registrar
-   *    <li>A poll message for the losing registrar
+   *   <li>The one-time billing event charging the gaining registrar for the transfer
+   *   <li>A cancellation of an autorenew charge for the losing registrar, if the autorenew grace
+   *       period will apply at transfer time
+   *   <li>A new post-transfer autorenew billing event for the domain (and gaining registrar)
+   *   <li>A new post-transfer autorenew poll message for the domain (and gaining registrar)
+   *   <li>A poll message for the gaining registrar
+   *   <li>A poll message for the losing registrar
    * </ul>
    */
   public static ImmutableSet<TransferServerApproveEntity> createTransferServerApproveEntities(
@@ -164,13 +160,14 @@ public final class DomainTransferUtils {
         .setClientId(transferData.getGainingClientId())
         .setEventTime(transferData.getPendingTransferExpirationTime())
         .setMsg(transferData.getTransferStatus().getMessage())
-        .setResponseData(ImmutableList.of(
-            createTransferResponse(targetId, transferData, extendedRegistrationExpirationTime),
-            DomainPendingActionNotificationResponse.create(
-                  targetId,
-                  transferData.getTransferStatus().isApproved(),
-                  transferData.getTransferRequestTrid(),
-                  historyEntry.getModificationTime())))
+        .setResponseData(
+            ImmutableList.of(
+                createTransferResponse(targetId, transferData, extendedRegistrationExpirationTime),
+                DomainPendingActionNotificationResponse.create(
+                    targetId,
+                    transferData.getTransferStatus().isApproved(),
+                    transferData.getTransferRequestTrid(),
+                    historyEntry.getModificationTime())))
         .setParent(historyEntry)
         .build();
   }
@@ -185,8 +182,9 @@ public final class DomainTransferUtils {
         .setClientId(transferData.getLosingClientId())
         .setEventTime(transferData.getPendingTransferExpirationTime())
         .setMsg(transferData.getTransferStatus().getMessage())
-        .setResponseData(ImmutableList.of(
-            createTransferResponse(targetId, transferData, extendedRegistrationExpirationTime)))
+        .setResponseData(
+            ImmutableList.of(
+                createTransferResponse(targetId, transferData, extendedRegistrationExpirationTime)))
         .setParent(historyEntry)
         .build();
   }
@@ -260,8 +258,7 @@ public final class DomainTransferUtils {
       String targetId,
       DomainBase existingDomain,
       Optional<Money> transferCost) {
-    DomainBase domainAtTransferTime =
-        existingDomain.cloneProjectedAtTime(automaticTransferTime);
+    DomainBase domainAtTransferTime = existingDomain.cloneProjectedAtTime(automaticTransferTime);
     GracePeriod autorenewGracePeriod =
         getOnlyElement(
             domainAtTransferTime.getGracePeriodsOfType(GracePeriodStatus.AUTO_RENEW), null);

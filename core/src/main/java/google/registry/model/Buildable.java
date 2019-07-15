@@ -38,7 +38,7 @@ public interface Buildable {
     private S instance;
 
     protected Builder() {
-      this.instance = new TypeInstantiator<S>(getClass()){}.instantiate();
+      this.instance = new TypeInstantiator<S>(getClass()) {}.instantiate();
       // Only ImmutableObject is allowed, but enforcing that via the generics gets ugly.
       checkState(instance instanceof ImmutableObject);
     }
@@ -57,15 +57,21 @@ public interface Buildable {
         // If this object has a Long or long Objectify @Id field that is not set, set it now.
         Field idField = null;
         try {
-          idField = ModelUtils.getAllFields(instance.getClass()).get(
-              ofy().factory().getMetadata(instance.getClass()).getKeyMetadata().getIdFieldName());
+          idField =
+              ModelUtils.getAllFields(instance.getClass())
+                  .get(
+                      ofy()
+                          .factory()
+                          .getMetadata(instance.getClass())
+                          .getKeyMetadata()
+                          .getIdFieldName());
         } catch (Exception e) {
           // Expected if the class is not registered with Objectify.
         }
         if (idField != null
             && !idField.getType().equals(String.class)
-            && Optional.ofNullable((Long) ModelUtils.getFieldValue(instance, idField))
-                .orElse(0L) == 0) {
+            && Optional.ofNullable((Long) ModelUtils.getFieldValue(instance, idField)).orElse(0L)
+                == 0) {
           ModelUtils.setFieldValue(instance, idField, ObjectifyService.allocateId());
         }
         return instance;

@@ -19,10 +19,10 @@ public class DnsConstants {
   private DnsConstants() {}
 
   /** The name of the DNS pull queue. */
-  public static final String DNS_PULL_QUEUE_NAME = "dns-pull";  // See queue.xml.
+  public static final String DNS_PULL_QUEUE_NAME = "dns-pull"; // See queue.xml.
 
   /** The name of the DNS publish push queue. */
-  public static final String DNS_PUBLISH_PUSH_QUEUE_NAME = "dns-publish";  // See queue.xml.
+  public static final String DNS_PUBLISH_PUSH_QUEUE_NAME = "dns-publish"; // See queue.xml.
 
   /** The parameter to use for storing the target type ("domain" or "host" or "zone"). */
   public static final String DNS_TARGET_TYPE_PARAM = "Target-Type";
@@ -34,5 +34,9 @@ public class DnsConstants {
   public static final String DNS_TARGET_CREATE_TIME_PARAM = "Create-Time";
 
   /** The possible values of the {@code DNS_TARGET_TYPE_PARAM} parameter. */
-  public enum TargetType { DOMAIN, HOST, ZONE }
+  public enum TargetType {
+    DOMAIN,
+    HOST,
+    ZONE
+  }
 }

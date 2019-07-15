@@ -44,15 +44,17 @@ final class RydeTar {
       @WillNotClose OutputStream os, long expectedSize, String filename, DateTime modified) {
 
     checkArgument(expectedSize >= 0);
-    checkArgument(filename.endsWith(".xml"),
+    checkArgument(
+        filename.endsWith(".xml"),
         "Ryde expects tar archive to contain a filename with an '.xml' extension.");
     try {
-      os.write(new PosixTarHeader.Builder()
-          .setName(filename)
-          .setSize(expectedSize)
-          .setMtime(modified)
-          .build()
-          .getBytes());
+      os.write(
+          new PosixTarHeader.Builder()
+              .setName(filename)
+              .setSize(expectedSize)
+              .setMtime(modified)
+              .build()
+              .getBytes());
       return new ImprovedOutputStream("RydeTarWriter", os) {
         /** Writes the end of archive marker. */
         @Override

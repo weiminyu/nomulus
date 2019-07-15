@@ -41,16 +41,18 @@ public class ExportConstantsTest {
 
   private static final String GOLDEN_REPORTING_KINDS_FILENAME = "reporting_kinds.txt";
 
-  private static final String UPDATE_INSTRUCTIONS_TEMPLATE = Joiner.on('\n').join(
-      "",
-      repeat("-", 80),
-      "Your changes affect the list of %s kinds in the golden file:",
-      "  %s",
-      "If these changes are desired, update the golden file with the following contents:",
-      repeat("=", 80),
-      "%s",
-      repeat("=", 80),
-      "");
+  private static final String UPDATE_INSTRUCTIONS_TEMPLATE =
+      Joiner.on('\n')
+          .join(
+              "",
+              repeat("-", 80),
+              "Your changes affect the list of %s kinds in the golden file:",
+              "  %s",
+              "If these changes are desired, update the golden file with the following contents:",
+              repeat("=", 80),
+              "%s",
+              repeat("=", 80),
+              "");
 
   @Test
   public void testBackupKinds_matchGoldenBackupKindsFile() {

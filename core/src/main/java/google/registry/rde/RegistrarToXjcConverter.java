@@ -153,9 +153,8 @@ final class RegistrarToXjcConverter {
   private static XjcRdeRegistrarPostalInfoType convertPostalInfo(
       boolean isInt, RegistrarAddress model) {
     XjcRdeRegistrarPostalInfoType bean = new XjcRdeRegistrarPostalInfoType();
-    bean.setType(isInt
-        ? XjcRdeRegistrarPostalInfoEnumType.INT
-        : XjcRdeRegistrarPostalInfoEnumType.LOC);
+    bean.setType(
+        isInt ? XjcRdeRegistrarPostalInfoEnumType.INT : XjcRdeRegistrarPostalInfoEnumType.LOC);
     bean.setAddr(convertAddress(model));
     return bean;
   }

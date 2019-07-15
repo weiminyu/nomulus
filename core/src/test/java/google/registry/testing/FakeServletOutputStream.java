@@ -25,9 +25,9 @@ import javax.servlet.ServletOutputStream;
 /**
  * Used to mock the return value of {@link javax.servlet.ServletResponse#getOutputStream}.
  *
- * <p>Most servlets will call {@link javax.servlet.ServletResponse#getWriter}, in which case you
- * can simply return a {@link java.io.StringWriter} instance. But the getOutputStream method is
- * not as simple to mock and requires an implementing class.
+ * <p>Most servlets will call {@link javax.servlet.ServletResponse#getWriter}, in which case you can
+ * simply return a {@link java.io.StringWriter} instance. But the getOutputStream method is not as
+ * simple to mock and requires an implementing class.
  */
 public final class FakeServletOutputStream extends ServletOutputStream {
 

@@ -47,6 +47,7 @@ public class CreateAutoTimestampTranslatorFactory
       @Override
       public Date saveValue(CreateAutoTimestamp pojoValue) {
         return firstNonNull(pojoValue.getTimestamp(), ofy().getTransactionTime()).toDate();
-      }};
+      }
+    };
   }
 }

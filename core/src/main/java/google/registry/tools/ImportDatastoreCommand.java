@@ -85,8 +85,7 @@ public class ImportDatastoreCommand extends ConfirmingCommand {
 
     if (async) {
       return String.format(
-          "Datastore import started. Run this command to check its progress:\n%s",
-          statusCommand);
+          "Datastore import started. Run this command to check its progress:\n%s", statusCommand);
     }
 
     System.out.println(

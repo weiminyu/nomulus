@@ -49,7 +49,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/** Tests for {@link GenerateZoneFilesAction}.*/
+/** Tests for {@link GenerateZoneFilesAction}. */
 @RunWith(JUnit4.class)
 public class GenerateZoneFilesActionTest extends MapreduceTestCase<GenerateZoneFilesAction> {
 
@@ -72,47 +72,56 @@ public class GenerateZoneFilesActionTest extends MapreduceTestCase<GenerateZoneF
     // This domain will have glue records, because it has a subordinate host which is its own
     // nameserver. None of the other domains should have glue records, because their nameservers are
     // subordinate to different domains.
-    persistResource(newDomainBase("bar.tld").asBuilder()
-        .addNameservers(nameservers)
-        .addSubordinateHost("ns.bar.tld")
-        .build());
-    persistResource(newDomainBase("foo.tld").asBuilder()
-        .addSubordinateHost("ns.foo.tld")
-        .build());
-    persistResource(newDomainBase("ns-and-ds.tld").asBuilder()
-        .addNameservers(nameservers)
-        .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 2, 3, new byte[] {0, 1, 2})))
-        .build());
-    persistResource(newDomainBase("ns-only.tld").asBuilder()
-        .addNameservers(nameservers)
-        .build());
-    persistResource(newDomainBase("ns-only-client-hold.tld").asBuilder()
-        .addNameservers(nameservers)
-        .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_HOLD))
-        .build());
-    persistResource(newDomainBase("ns-only-pending-delete.tld").asBuilder()
-        .addNameservers(nameservers)
-        .setStatusValues(ImmutableSet.of(StatusValue.PENDING_DELETE))
-        .build());
-    persistResource(newDomainBase("ns-only-server-hold.tld").asBuilder()
-        .addNameservers(nameservers)
-        .setStatusValues(ImmutableSet.of(StatusValue.SERVER_HOLD))
-        .build());
+    persistResource(
+        newDomainBase("bar.tld")
+            .asBuilder()
+            .addNameservers(nameservers)
+            .addSubordinateHost("ns.bar.tld")
+            .build());
+    persistResource(newDomainBase("foo.tld").asBuilder().addSubordinateHost("ns.foo.tld").build());
+    persistResource(
+        newDomainBase("ns-and-ds.tld")
+            .asBuilder()
+            .addNameservers(nameservers)
+            .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 2, 3, new byte[] {0, 1, 2})))
+            .build());
+    persistResource(newDomainBase("ns-only.tld").asBuilder().addNameservers(nameservers).build());
+    persistResource(
+        newDomainBase("ns-only-client-hold.tld")
+            .asBuilder()
+            .addNameservers(nameservers)
+            .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_HOLD))
+            .build());
+    persistResource(
+        newDomainBase("ns-only-pending-delete.tld")
+            .asBuilder()
+            .addNameservers(nameservers)
+            .setStatusValues(ImmutableSet.of(StatusValue.PENDING_DELETE))
+            .build());
+    persistResource(
+        newDomainBase("ns-only-server-hold.tld")
+            .asBuilder()
+            .addNameservers(nameservers)
+            .setStatusValues(ImmutableSet.of(StatusValue.SERVER_HOLD))
+            .build());
     // These should be ignored; contacts aren't in DNS, hosts need to be from the same tld and have
     // IP addresses, and domains need to be from the same TLD and have hosts (even in the case where
     // domains contain DS data).
-    persistResource(newDomainBase("ds-only.tld").asBuilder()
-        .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 2, 3, new byte[] {0, 1, 2})))
-        .build());
+    persistResource(
+        newDomainBase("ds-only.tld")
+            .asBuilder()
+            .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 2, 3, new byte[] {0, 1, 2})))
+            .build());
     persistActiveContact("ignored_contact");
-    persistActiveHost("ignored.host.tld");  // No ips.
-    persistActiveDomain("ignored_domain.tld");  // No hosts or DS data.
+    persistActiveHost("ignored.host.tld"); // No ips.
+    persistActiveDomain("ignored_domain.tld"); // No hosts or DS data.
     persistResource(newHostResource("ignored.foo.com").asBuilder().addInetAddresses(ips).build());
-    persistResource(newDomainBase("ignored.com")
-        .asBuilder()
-        .addNameservers(nameservers)
-        .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 2, 3, new byte[] {0, 1, 2})))
-        .build());
+    persistResource(
+        newDomainBase("ignored.com")
+            .asBuilder()
+            .addNameservers(nameservers)
+            .setDsData(ImmutableSet.of(DelegationSignerData.create(1, 2, 3, new byte[] {0, 1, 2})))
+            .build());
 
     GenerateZoneFilesAction action = new GenerateZoneFilesAction();
     action.mrRunner = makeDefaultRunner();
@@ -122,7 +131,7 @@ public class GenerateZoneFilesActionTest extends MapreduceTestCase<GenerateZoneF
     action.dnsDefaultATtl = Duration.standardSeconds(11);
     action.dnsDefaultNsTtl = Duration.standardSeconds(222);
     action.dnsDefaultDsTtl = Duration.standardSeconds(3333);
-    action.clock = new FakeClock(now.plusMinutes(2));  // Move past the actions' 2 minute check.
+    action.clock = new FakeClock(now.plusMinutes(2)); // Move past the actions' 2 minute check.
 
     Map<String, Object> response =
         action.handleJsonRequest(

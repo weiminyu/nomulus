@@ -22,8 +22,8 @@ public interface Jsonifiable {
   /**
    * Returns a JSON representation of this object.
    *
-   * <p>The returned value must not return sensitive fields, so that it may be safe to return to
-   * the client via an API response.
+   * <p>The returned value must not return sensitive fields, so that it may be safe to return to the
+   * client via an API response.
    */
   Map<String, Object> toJsonMap();
 }

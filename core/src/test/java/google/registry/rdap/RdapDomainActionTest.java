@@ -59,8 +59,9 @@ public class RdapDomainActionTest extends RdapActionBaseTestCase<RdapDomainActio
   public void setUp() {
     // lol
     createTld("lol");
-    Registrar registrarLol = persistResource(makeRegistrar(
-        "evilregistrar", "Yes Virginia <script>", Registrar.State.ACTIVE));
+    Registrar registrarLol =
+        persistResource(
+            makeRegistrar("evilregistrar", "Yes Virginia <script>", Registrar.State.ACTIVE));
     persistSimpleResources(makeRegistrarContacts(registrarLol));
     ContactResource registrantLol =
         makeAndPersistContactResource(
@@ -78,15 +79,12 @@ public class RdapDomainActionTest extends RdapActionBaseTestCase<RdapDomainActio
             registrarLol);
     ContactResource techContactLol =
         makeAndPersistContactResource(
-            "5372808-TRL",
-            "The Raven",
-            "bog@cat.lol",
-            clock.nowUtc().minusYears(3),
-            registrarLol);
-    HostResource host1 = makeAndPersistHostResource(
-        "ns1.cat.lol", "1.2.3.4", null, clock.nowUtc().minusYears(1));
-    HostResource host2 = makeAndPersistHostResource(
-        "ns2.cat.lol", "bad:f00d:cafe:0:0:0:15:beef", clock.nowUtc().minusYears(2));
+            "5372808-TRL", "The Raven", "bog@cat.lol", clock.nowUtc().minusYears(3), registrarLol);
+    HostResource host1 =
+        makeAndPersistHostResource("ns1.cat.lol", "1.2.3.4", null, clock.nowUtc().minusYears(1));
+    HostResource host2 =
+        makeAndPersistHostResource(
+            "ns2.cat.lol", "bad:f00d:cafe:0:0:0:15:beef", clock.nowUtc().minusYears(2));
     persistResource(
         makeDomainBase(
                 "cat.lol",
@@ -102,8 +100,9 @@ public class RdapDomainActionTest extends RdapActionBaseTestCase<RdapDomainActio
             .build());
 
     // deleted domain in lol
-    HostResource hostDodo2 = makeAndPersistHostResource(
-        "ns2.dodo.lol", "bad:f00d:cafe:0:0:0:15:beef", clock.nowUtc().minusYears(2));
+    HostResource hostDodo2 =
+        makeAndPersistHostResource(
+            "ns2.dodo.lol", "bad:f00d:cafe:0:0:0:15:beef", clock.nowUtc().minusYears(2));
     DomainBase domainDeleted =
         persistResource(
             makeDomainBase(
@@ -155,11 +154,7 @@ public class RdapDomainActionTest extends RdapActionBaseTestCase<RdapDomainActio
             registrarIdn);
     ContactResource techContactIdn =
         makeAndPersistContactResource(
-            "5372808-TRL",
-            "The Raven",
-            "bog@cat.lol",
-            clock.nowUtc().minusYears(3),
-            registrarIdn);
+            "5372808-TRL", "The Raven", "bog@cat.lol", clock.nowUtc().minusYears(3), registrarIdn);
     persistResource(
         makeDomainBase(
                 "cat.みんな",
@@ -176,8 +171,9 @@ public class RdapDomainActionTest extends RdapActionBaseTestCase<RdapDomainActio
 
     // 1.tld
     createTld("1.tld");
-    Registrar registrar1Tld = persistResource(
-        makeRegistrar("1tldregistrar", "Multilevel Registrar", Registrar.State.ACTIVE));
+    Registrar registrar1Tld =
+        persistResource(
+            makeRegistrar("1tldregistrar", "Multilevel Registrar", Registrar.State.ACTIVE));
     persistSimpleResources(makeRegistrarContacts(registrar1Tld));
     ContactResource registrant1Tld =
         makeAndPersistContactResource(
@@ -195,11 +191,7 @@ public class RdapDomainActionTest extends RdapActionBaseTestCase<RdapDomainActio
             registrar1Tld);
     ContactResource techContact1Tld =
         makeAndPersistContactResource(
-            "5372808-TRL",
-            "The Raven",
-            "bog@cat.lol",
-            clock.nowUtc().minusYears(3),
-            registrar1Tld);
+            "5372808-TRL", "The Raven", "bog@cat.lol", clock.nowUtc().minusYears(3), registrar1Tld);
     persistResource(
         makeDomainBase(
                 "cat.1.tld",

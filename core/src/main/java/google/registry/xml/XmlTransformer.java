@@ -96,8 +96,8 @@ public class XmlTransformer {
    * classes generated off of those schemas.
    *
    * @param schemaNamesToFilenames map of schema names to filenames, immutable because ordering is
-   *        significant and ImmutableMap preserves insertion order. The filenames are relative to
-   *        this package.
+   *     significant and ImmutableMap preserves insertion order. The filenames are relative to this
+   *     package.
    */
   public XmlTransformer(Package pakkage, ImmutableMap<String, String> schemaNamesToFilenames) {
     try {
@@ -119,7 +119,7 @@ public class XmlTransformer {
   /**
    * Validates XML text against {@link #schema} without marshalling.
    *
-   * <p>You must specify the XML class you expect to receive as the root element.  Validation is
+   * <p>You must specify the XML class you expect to receive as the root element. Validation is
    * performed in accordance with the hard-coded XML schemas.
    *
    * @throws XmlException if XML input was invalid or root element doesn't match {@code expect}.
@@ -137,36 +137,43 @@ public class XmlTransformer {
    *
    * @param clazz the XML class you expect to receive as the root element
    * @throws XmlException if failed to read from {@code bytes}, XML input is invalid, or root
-   *         element doesn't match {@code expect}.
+   *     element doesn't match {@code expect}.
    * @see com.google.common.io.Files#asByteSource
    * @see com.google.common.io.Resources#asByteSource
-   * @see <a href="https://errorprone.info/bugpattern/TypeParameterUnusedInFormals">TypeParameterUnusedInFormals</a>
+   * @see <a
+   *     href="https://errorprone.info/bugpattern/TypeParameterUnusedInFormals">TypeParameterUnusedInFormals</a>
    */
   public <T> T unmarshal(Class<T> clazz, InputStream stream) throws XmlException {
     try (InputStream autoClosingStream = stream) {
-      return clazz.cast(getUnmarshaller().unmarshal(
-          XML_INPUT_FACTORY.createXMLStreamReader(new StreamSource(autoClosingStream, SYSTEM_ID))));
+      return clazz.cast(
+          getUnmarshaller()
+              .unmarshal(
+                  XML_INPUT_FACTORY.createXMLStreamReader(
+                      new StreamSource(autoClosingStream, SYSTEM_ID))));
     } catch (UnmarshalException e) {
       // Plain old parsing exceptions have a SAXParseException with no further cause.
       if (e.getLinkedException() instanceof SAXParseException
           && e.getLinkedException().getCause() == null) {
         SAXParseException sae = (SAXParseException) e.getLinkedException();
-        throw new XmlException(String.format(
-            "Syntax error at line %d, column %d: %s",
-            sae.getLineNumber(),
-            sae.getColumnNumber(),
-            nullToEmpty(sae.getMessage()).replaceAll("&quot;", "")));
+        throw new XmlException(
+            String.format(
+                "Syntax error at line %d, column %d: %s",
+                sae.getLineNumber(),
+                sae.getColumnNumber(),
+                nullToEmpty(sae.getMessage()).replaceAll("&quot;", "")));
       }
       // These get thrown for attempted XXE attacks.
       if (e.getLinkedException() instanceof XMLStreamException) {
         XMLStreamException xse = (XMLStreamException) e.getLinkedException();
-        throw new XmlException(String.format(
-            "Syntax error at line %d, column %d: %s",
-            xse.getLocation().getLineNumber(),
-            xse.getLocation().getColumnNumber(),
-            nullToEmpty(xse.getMessage())
-                .replaceAll("^.*\nMessage: ", "")  // Strip an ugly prefix from XMLStreamException.
-                .replaceAll("&quot;", "")));
+        throw new XmlException(
+            String.format(
+                "Syntax error at line %d, column %d: %s",
+                xse.getLocation().getLineNumber(),
+                xse.getLocation().getColumnNumber(),
+                nullToEmpty(xse.getMessage())
+                    .replaceAll(
+                        "^.*\nMessage: ", "") // Strip an ugly prefix from XMLStreamException.
+                    .replaceAll("&quot;", "")));
       }
       throw new XmlException(e);
     } catch (JAXBException | XMLStreamException | IOException e) {
@@ -191,9 +198,9 @@ public class XmlTransformer {
     try {
       // Omit XML declaration because character-oriented output prevents us from knowing.
       getMarshaller(
-          STRICT.equals(validation) ? schema : null,
-          ImmutableMap.of(Marshaller.JAXB_FRAGMENT, true)).marshal(
-              checkNotNull(root, "root"), checkNotNull(writer, "writer"));
+              STRICT.equals(validation) ? schema : null,
+              ImmutableMap.of(Marshaller.JAXB_FRAGMENT, true))
+          .marshal(checkNotNull(root, "root"), checkNotNull(writer, "writer"));
     } catch (JAXBException e) {
       throw new XmlException(e);
     }
@@ -204,8 +211,8 @@ public class XmlTransformer {
    *
    * <p>The root object must be annotated with {@link javax.xml.bind.annotation.XmlRootElement}. If
    * the validation parameter is set to {@link ValidationMode#STRICT} this method will verify that
-   * your object strictly conforms to {@link #schema}. Because the output is streamed,
-   * {@link XmlException} will most likely be thrown <i>after</i> output has been written.
+   * your object strictly conforms to {@link #schema}. Because the output is streamed, {@link
+   * XmlException} will most likely be thrown <i>after</i> output has been written.
    *
    * @param root the object to write
    * @param out byte-oriented output for writing XML. This method won't close it.
@@ -218,9 +225,9 @@ public class XmlTransformer {
       throws XmlException {
     try {
       getMarshaller(
-          STRICT.equals(validation) ? schema : null,
-          ImmutableMap.of(Marshaller.JAXB_ENCODING, charset.toString())).marshal(
-              checkNotNull(root, "root"), checkNotNull(out, "out"));
+              STRICT.equals(validation) ? schema : null,
+              ImmutableMap.of(Marshaller.JAXB_ENCODING, charset.toString()))
+          .marshal(checkNotNull(root, "root"), checkNotNull(out, "out"));
     } catch (JAXBException e) {
       throw new XmlException(e);
     }
@@ -257,9 +264,13 @@ public class XmlTransformer {
     try (Closer closer = Closer.create()) {
       StreamSource[] sources = new StreamSource[schemaFilenames.size()];
       for (int i = 0; i < schemaFilenames.size(); ++i) {
-        sources[i] = new StreamSource(closer.register(
-            Resources.asByteSource(Resources.getResource(
-                XmlTransformer.class, "xsd/" + schemaFilenames.get(i))).openStream()));
+        sources[i] =
+            new StreamSource(
+                closer.register(
+                    Resources.asByteSource(
+                            Resources.getResource(
+                                XmlTransformer.class, "xsd/" + schemaFilenames.get(i)))
+                        .openStream()));
       }
       return SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(sources);
     } catch (IOException | SAXException e) {
@@ -268,8 +279,8 @@ public class XmlTransformer {
   }
 
   /** Creates a {@link JAXBContext} from multiple schema names. */
-  private static JAXBContext initJaxbContext(
-      Package pakkage, Collection<String> schemaNames) throws JAXBException {
+  private static JAXBContext initJaxbContext(Package pakkage, Collection<String> schemaNames)
+      throws JAXBException {
     String prefix = pakkage.getName() + ".";
     return JAXBContext.newInstance(prefix + Joiner.on(':' + prefix).join(schemaNames));
   }
@@ -306,11 +317,10 @@ public class XmlTransformer {
       transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
       transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
       transformer.transform(
-          new StreamSource(new StringReader(xmlString)),
-          new StreamResult(prettyXml));
+          new StreamSource(new StringReader(xmlString)), new StreamResult(prettyXml));
       return prettyXml.toString();
     } catch (TransformerException e) {
-      return xmlString;  // We couldn't prettify it, but that's ok; fail gracefully.
+      return xmlString; // We couldn't prettify it, but that's ok; fail gracefully.
     }
   }
 

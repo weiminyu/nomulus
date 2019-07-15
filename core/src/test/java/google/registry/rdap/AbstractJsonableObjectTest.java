@@ -41,50 +41,58 @@ public final class AbstractJsonableObjectTest {
 
   @Test
   public void testPrimitives() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement String myString = "Hello, world!";
-      @JsonableElement int myInt = 42;
-      @JsonableElement double myDouble = 3.14;
-      @JsonableElement boolean myBoolean = false;
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement String myString = "Hello, world!";
+          @JsonableElement int myInt = 42;
+          @JsonableElement double myDouble = 3.14;
+          @JsonableElement boolean myBoolean = false;
+        };
     assertThat(jsonable.toJson())
         .isEqualTo(
             createJson(
                 "{'myBoolean':false,'myDouble':3.14,'myInt':42,'myString':'Hello, world!'}"));
   }
 
-
   @Test
   public void testDateTime() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement DateTime dateTime = DateTime.parse("2019-01-02T13:53Z");
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement DateTime dateTime = DateTime.parse("2019-01-02T13:53Z");
+        };
     assertThat(jsonable.toJson()).isEqualTo(createJson("{'dateTime':'2019-01-02T13:53:00.000Z'}"));
   }
 
   @Test
   public void testRenaming() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement("newName") String myString = "Hello, world!";
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement("newName")
+          String myString = "Hello, world!";
+        };
     assertThat(jsonable.toJson()).isEqualTo(createJson("{'newName':'Hello, world!'}"));
   }
 
   @Test
   public void testDuplicateNames_fails() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement String myString = "A";
-      @JsonableElement("myString") String anotherString = "B";
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement String myString = "A";
+
+          @JsonableElement("myString")
+          String anotherString = "B";
+        };
     assertThat(assertThrows(JsonableException.class, () -> jsonable.toJson()))
-        .hasMessageThat().contains("Encountered the same field name 'myString' multiple times");
+        .hasMessageThat()
+        .contains("Encountered the same field name 'myString' multiple times");
   }
 
   @Test
   public void testMethod() {
     Jsonable jsonable =
         new AbstractJsonableObject() {
-          @JsonableElement String myString() {
+          @JsonableElement
+          String myString() {
             return "Hello, world!";
           }
         };
@@ -95,25 +103,28 @@ public final class AbstractJsonableObjectTest {
   public void testMethodWithArguments_fails() {
     Jsonable jsonable =
         new AbstractJsonableObject() {
-          @JsonableElement String myString(String in) {
+          @JsonableElement
+          String myString(String in) {
             return in;
           }
         };
     assertThat(assertThrows(JsonableException.class, () -> jsonable.toJson()))
-        .hasMessageThat().contains("must have no arguments");
+        .hasMessageThat()
+        .contains("must have no arguments");
   }
-
 
   @Test
   public void testRecursive() {
-    Jsonable myJsonableObject = new AbstractJsonableObject() {
-      @JsonableElement double myDouble = 3.14;
-      @JsonableElement boolean myBoolean = false;
-    };
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement Jsonable internalJsonableObject = myJsonableObject;
-      @JsonableElement int myInt = 42;
-    };
+    Jsonable myJsonableObject =
+        new AbstractJsonableObject() {
+          @JsonableElement double myDouble = 3.14;
+          @JsonableElement boolean myBoolean = false;
+        };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement Jsonable internalJsonableObject = myJsonableObject;
+          @JsonableElement int myInt = 42;
+        };
     assertThat(jsonable.toJson())
         .isEqualTo(
             createJson(
@@ -125,73 +136,87 @@ public final class AbstractJsonableObjectTest {
 
   @Test
   public void testList() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement
-      ImmutableList<String> myList = ImmutableList.of("my", "immutable", "list");
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement
+          ImmutableList<String> myList = ImmutableList.of("my", "immutable", "list");
+        };
     assertThat(jsonable.toJson()).isEqualTo(createJson("{'myList':['my','immutable','list']}"));
   }
 
   @Test
   public void testMultipleLists() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement
-      ImmutableList<String> myList = ImmutableList.of("my", "immutable", "list");
-      @JsonableElement("myList")
-      ImmutableList<Number> myList2 = ImmutableList.of(42, 3.14);
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement
+          ImmutableList<String> myList = ImmutableList.of("my", "immutable", "list");
+
+          @JsonableElement("myList")
+          ImmutableList<Number> myList2 = ImmutableList.of(42, 3.14);
+        };
     assertThat(jsonable.toJson())
         .isEqualTo(createJson("{'myList':['my','immutable','list',42,3.14]}"));
   }
 
   @Test
   public void testListElements() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement
-      ImmutableList<String> myList = ImmutableList.of("my", "immutable", "list");
-      @JsonableElement("myList[]")
-      Integer myListMeaningOfLife = 42;
-      @JsonableElement("myList[]")
-      Double myListPi = 3.14;
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement
+          ImmutableList<String> myList = ImmutableList.of("my", "immutable", "list");
+
+          @JsonableElement("myList[]")
+          Integer myListMeaningOfLife = 42;
+
+          @JsonableElement("myList[]")
+          Double myListPi = 3.14;
+        };
     assertThat(jsonable.toJson())
         .isEqualTo(createJson("{'myList':['my','immutable','list',42,3.14]}"));
   }
 
   @Test
   public void testListElementsWithoutList() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement("myList[]")
-      Integer myListMeaningOfLife = 42;
-      @JsonableElement("myList[]")
-      Double myListPi = 3.14;
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement("myList[]")
+          Integer myListMeaningOfLife = 42;
+
+          @JsonableElement("myList[]")
+          Double myListPi = 3.14;
+        };
     assertThat(jsonable.toJson()).isEqualTo(createJson("{'myList':[42,3.14]}"));
   }
 
   @Test
   public void testListOptionalElements() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement
-      ImmutableList<String> myList = ImmutableList.of("my", "immutable", "list");
-      @JsonableElement("myList[]")
-      Optional<Integer> myListMeaningOfLife = Optional.of(42);
-      @JsonableElement("myList[]")
-      Optional<Double> myListPi = Optional.empty();
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement
+          ImmutableList<String> myList = ImmutableList.of("my", "immutable", "list");
+
+          @JsonableElement("myList[]")
+          Optional<Integer> myListMeaningOfLife = Optional.of(42);
+
+          @JsonableElement("myList[]")
+          Optional<Double> myListPi = Optional.empty();
+        };
     assertThat(jsonable.toJson()).isEqualTo(createJson("{'myList':['my','immutable','list',42]}"));
   }
 
   @Test
   public void testList_sameNameAsElement_failes() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement("myList")
-      String myString = "A";
-      @JsonableElement("myList[]")
-      Optional<Integer> myListMeaningOfLife = Optional.of(42);
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement("myList")
+          String myString = "A";
+
+          @JsonableElement("myList[]")
+          Optional<Integer> myListMeaningOfLife = Optional.of(42);
+        };
     assertThat(assertThrows(JsonableException.class, () -> jsonable.toJson()))
-        .hasMessageThat().contains("Encountered the same field name 'myList' multiple times");
+        .hasMessageThat()
+        .contains("Encountered the same field name 'myList' multiple times");
   }
 
   @RestrictJsonNames({"allowed", "allowedList[]"})
@@ -212,24 +237,25 @@ public final class AbstractJsonableObjectTest {
 
   @Test
   public void testRestricted_withAllowedNames() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement
-      JsonableWithNameRestrictions allowed = new JsonableWithNameRestrictions();
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement
+          JsonableWithNameRestrictions allowed = new JsonableWithNameRestrictions();
 
-      @JsonableElement
-      ImmutableList<JsonableWithNameRestrictions> allowedList =
-          ImmutableList.of(new JsonableWithNameRestrictions());
-    };
+          @JsonableElement
+          ImmutableList<JsonableWithNameRestrictions> allowedList =
+              ImmutableList.of(new JsonableWithNameRestrictions());
+        };
     assertThat(jsonable.toJson())
         .isEqualTo(createJson("{'allowed':'someValue','allowedList':['someValue']}"));
   }
 
   @Test
   public void testRestricted_withWrongName_failes() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement
-      JsonableWithNameRestrictions wrong = new JsonableWithNameRestrictions();
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement JsonableWithNameRestrictions wrong = new JsonableWithNameRestrictions();
+        };
     assertThat(assertThrows(JsonableException.class, () -> jsonable.toJson()))
         .hasMessageThat()
         .contains("must be named one of ['allowed', 'allowedList[]'], but is named 'wrong'");
@@ -237,10 +263,10 @@ public final class AbstractJsonableObjectTest {
 
   @Test
   public void testRestricted_withNoNamesAllowed_fails() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement
-      JsonableWithNoAllowedNames wrong = new JsonableWithNoAllowedNames();
-    };
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement JsonableWithNoAllowedNames wrong = new JsonableWithNoAllowedNames();
+        };
     assertThat(assertThrows(JsonableException.class, () -> jsonable.toJson()))
         .hasMessageThat()
         .contains("is annotated with an empty RestrictJsonNames");
@@ -254,23 +280,25 @@ public final class AbstractJsonableObjectTest {
   @Test
   public void testRestricted_withNoNamesAllowed_canBeOutermost() {
     Jsonable jsonable = new JsonableObjectWithNoAllowedNames();
-    assertThat(jsonable.toJson())
-        .isEqualTo(createJson("{'key':'value'}"));
+    assertThat(jsonable.toJson()).isEqualTo(createJson("{'key':'value'}"));
   }
 
   @Test
   public void testRestricted_withNoNamesAllowed_canBeMerged() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement("*") final Jsonable inner = new JsonableObjectWithNoAllowedNames();
-      @JsonableElement final String otherKey = "otherValue";
-    };
-    assertThat(jsonable.toJson())
-        .isEqualTo(createJson("{'key':'value','otherKey':'otherValue'}"));
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement("*")
+          final Jsonable inner = new JsonableObjectWithNoAllowedNames();
+
+          @JsonableElement final String otherKey = "otherValue";
+        };
+    assertThat(jsonable.toJson()).isEqualTo(createJson("{'key':'value','otherKey':'otherValue'}"));
   }
 
   private abstract static class BaseWithStatic extends AbstractJsonableObject {
     @JsonableElement("messages[]")
     static final String MESSAGE_1 = "message 1";
+
     @JsonableElement("messages[]")
     static String getMessage2() {
       return "message 2";
@@ -290,12 +318,16 @@ public final class AbstractJsonableObjectTest {
   }
 
   private abstract static class BaseToOverride extends AbstractJsonableObject {
-    @JsonableElement String annotationOnlyOnBase() {
+    @JsonableElement
+    String annotationOnlyOnBase() {
       return "old value";
     }
-    @JsonableElement String annotationOnBoth() {
+
+    @JsonableElement
+    String annotationOnBoth() {
       return "old value";
     }
+
     String annotationOnlyOnInherited() {
       return "old value";
     }
@@ -306,12 +338,16 @@ public final class AbstractJsonableObjectTest {
     String annotationOnlyOnBase() {
       return "new value";
     }
+
     @Override
-    @JsonableElement String annotationOnBoth() {
+    @JsonableElement
+    String annotationOnBoth() {
       return "new value";
     }
+
     @Override
-    @JsonableElement String annotationOnlyOnInherited() {
+    @JsonableElement
+    String annotationOnlyOnInherited() {
       return "new value";
     }
   }
@@ -331,41 +367,54 @@ public final class AbstractJsonableObjectTest {
 
   @Test
   public void testMerge_works() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement String key = "value";
-      @JsonableElement("*") Object subObject = new AbstractJsonableObject() {
-        @JsonableElement String innerKey = "innerValue";
-      };
-    };
-    assertThat(jsonable.toJson())
-        .isEqualTo(createJson("{'key':'value','innerKey':'innerValue'}"));
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement String key = "value";
+
+          @JsonableElement("*")
+          Object subObject =
+              new AbstractJsonableObject() {
+                @JsonableElement String innerKey = "innerValue";
+              };
+        };
+    assertThat(jsonable.toJson()).isEqualTo(createJson("{'key':'value','innerKey':'innerValue'}"));
   }
 
   @Test
   public void testMerge_joinsArrays_works() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement("lst[]") String a = "value";
-      @JsonableElement("*") Object subObject = new AbstractJsonableObject() {
-        @JsonableElement("lst[]") String b = "innerValue";
-      };
-    };
-    assertThat(jsonable.toJson())
-        .isEqualTo(createJson("{'lst':['value','innerValue']}"));
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement("lst[]")
+          String a = "value";
+
+          @JsonableElement("*")
+          Object subObject =
+              new AbstractJsonableObject() {
+                @JsonableElement("lst[]")
+                String b = "innerValue";
+              };
+        };
+    assertThat(jsonable.toJson()).isEqualTo(createJson("{'lst':['value','innerValue']}"));
   }
 
   @Test
   public void testMerge_multiLayer_works() {
-    Jsonable jsonable = new AbstractJsonableObject() {
-      @JsonableElement String key = "value";
+    Jsonable jsonable =
+        new AbstractJsonableObject() {
+          @JsonableElement String key = "value";
 
-      @JsonableElement("*") Object middleObject = new AbstractJsonableObject() {
-        @JsonableElement String middleKey = "middleValue";
+          @JsonableElement("*")
+          Object middleObject =
+              new AbstractJsonableObject() {
+                @JsonableElement String middleKey = "middleValue";
 
-        @JsonableElement("*") Object subObject = new AbstractJsonableObject() {
-          @JsonableElement String innerKey = "innerValue";
+                @JsonableElement("*")
+                Object subObject =
+                    new AbstractJsonableObject() {
+                      @JsonableElement String innerKey = "innerValue";
+                    };
+              };
         };
-      };
-    };
     assertThat(jsonable.toJson())
         .isEqualTo(createJson("{'key':'value','middleKey':'middleValue','innerKey':'innerValue'}"));
   }

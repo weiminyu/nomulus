@@ -90,8 +90,8 @@ import org.joda.time.DateTime;
  * of the methods, is used as the first part of the link URL. For instance, if linkBase is
  * "http://rdap.org/dir/", the link URLs will look like "http://rdap.org/dir/domain/XXXX", etc.
  *
- * @see <a href="https://tools.ietf.org/html/rfc7483">
- *        RFC 7483: JSON Responses for the Registration Data Access Protocol (RDAP)</a>
+ * @see <a href="https://tools.ietf.org/html/rfc7483">RFC 7483: JSON Responses for the Registration
+ *     Data Access Protocol (RDAP)</a>
  */
 public class RdapJsonFormatter {
 
@@ -99,12 +99,21 @@ public class RdapJsonFormatter {
 
   private DateTime requestTime = null;
 
-  @Inject @Config("rdapTos") ImmutableList<String> rdapTos;
-  @Inject @Config("rdapTosStaticUrl") @Nullable String rdapTosStaticUrl;
+  @Inject
+  @Config("rdapTos")
+  ImmutableList<String> rdapTos;
+
+  @Inject
+  @Config("rdapTosStaticUrl")
+  @Nullable
+  String rdapTosStaticUrl;
+
   @Inject @FullServletPath String fullServletPath;
   @Inject RdapAuthorization rdapAuthorization;
   @Inject Clock clock;
-  @Inject RdapJsonFormatter() {}
+
+  @Inject
+  RdapJsonFormatter() {}
 
   /**
    * What type of data to generate.
@@ -228,8 +237,7 @@ public class RdapJsonFormatter {
   /** Creates the TOS notice that is added to every reply. */
   Notice createTosNotice() {
     String linkValue = makeRdapServletRelativeUrl("help", RdapHelpAction.TOS_PATH);
-    Link.Builder linkBuilder = Link.builder()
-        .setValue(linkValue);
+    Link.Builder linkBuilder = Link.builder().setValue(linkValue);
     if (rdapTosStaticUrl == null) {
       linkBuilder.setRel("self").setHref(linkValue).setType("application/rdap+json");
     } else {
@@ -927,16 +935,10 @@ public class RdapJsonFormatter {
     return eventsBuilder.build();
   }
 
-  /**
-   * Creates an RDAP event object as defined by RFC 7483.
-   */
+  /** Creates an RDAP event object as defined by RFC 7483. */
   private static Event makeEvent(
-      EventAction eventAction,
-      @Nullable String eventActor,
-      DateTime eventDate) {
-    Event.Builder builder = Event.builder()
-        .setEventAction(eventAction)
-        .setEventDate(eventDate);
+      EventAction eventAction, @Nullable String eventActor, DateTime eventDate) {
+    Event.Builder builder = Event.builder().setEventAction(eventAction).setEventDate(eventDate);
     if (eventActor != null) {
       builder.setEventActor(eventActor);
     }
@@ -1002,10 +1004,7 @@ public class RdapJsonFormatter {
     addressArray.add(
         new Locale("en", nullToEmpty(address.getCountryCode()))
             .getDisplayCountry(new Locale("en")));
-    vcardArrayBuilder.add(Vcard.create(
-        "adr",
-        "text",
-        addressArray));
+    vcardArrayBuilder.add(Vcard.create("adr", "text", addressArray));
   }
 
   /** Creates a vCard phone number entry. */
@@ -1034,8 +1033,7 @@ public class RdapJsonFormatter {
   private static ImmutableSet<RdapStatus> makeStatusValueList(
       ImmutableSet<StatusValue> statusValues, boolean isRedacted, boolean isDeleted) {
     Stream<RdapStatus> stream =
-        statusValues
-            .stream()
+        statusValues.stream()
             .map(status -> STATUS_TO_RDAP_STATUS_MAP.getOrDefault(status, RdapStatus.OBSCURED));
     if (isRedacted) {
       stream = Streams.concat(stream, Stream.of(RdapStatus.REMOVED));
@@ -1043,24 +1041,19 @@ public class RdapJsonFormatter {
     if (isDeleted) {
       stream =
           Streams.concat(
-              stream.filter(not(RdapStatus.ACTIVE::equals)),
-              Stream.of(RdapStatus.INACTIVE));
+              stream.filter(not(RdapStatus.ACTIVE::equals)), Stream.of(RdapStatus.INACTIVE));
     }
     return stream
         .sorted(Ordering.natural().onResultOf(RdapStatus::getDisplayName))
         .collect(toImmutableSet());
   }
 
-  /**
-   * Create a link relative to the RDAP server endpoint.
-   */
+  /** Create a link relative to the RDAP server endpoint. */
   String makeRdapServletRelativeUrl(String part, String... moreParts) {
     return makeServerRelativeUrl(fullServletPath, part, moreParts);
   }
 
-  /**
-   * Create a link relative to some base server
-   */
+  /** Create a link relative to some base server */
   static String makeServerRelativeUrl(String baseServer, String part, String... moreParts) {
     String relativePath = Paths.get(part, moreParts).toString();
     if (baseServer.endsWith("/")) {

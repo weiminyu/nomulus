@@ -51,13 +51,19 @@ public final class ContactCheckFlow implements Flow {
   @Inject @ClientId String clientId;
   @Inject ExtensionManager extensionManager;
   @Inject Clock clock;
-  @Inject @Config("maxChecks") int maxChecks;
+
+  @Inject
+  @Config("maxChecks")
+  int maxChecks;
+
   @Inject EppResponse.Builder responseBuilder;
-  @Inject ContactCheckFlow() {}
+
+  @Inject
+  ContactCheckFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
-    extensionManager.validate();  // There are no legal extensions for this flow.
+    extensionManager.validate(); // There are no legal extensions for this flow.
     validateClientIsLoggedIn(clientId);
     List<String> targetIds = ((Check) resourceCommand).getTargetIds();
     verifyTargetIdCount(targetIds, maxChecks);

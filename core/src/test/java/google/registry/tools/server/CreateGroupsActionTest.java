@@ -35,18 +35,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/**
- * Unit tests for {@link CreateGroupsAction}.
- */
+/** Unit tests for {@link CreateGroupsAction}. */
 @RunWith(JUnit4.class)
 public class CreateGroupsActionTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
+  @Rule public final InjectRule inject = new InjectRule();
 
   private final DirectoryGroupsConnection connection = mock(DirectoryGroupsConnection.class);
   private final Response response = mock(Response.class);
@@ -85,32 +79,35 @@ public class CreateGroupsActionTest {
     verify(response).setStatus(SC_OK);
     verify(response).setPayload("Success!");
     verifyGroupCreationCallsForNewRegistrar();
-    verify(connection).addMemberToGroup("registrar-primary-contacts@domain-registry.example",
-        "newregistrar-primary-contacts@domain-registry.example",
-        Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "registrar-primary-contacts@domain-registry.example",
+            "newregistrar-primary-contacts@domain-registry.example",
+            Role.MEMBER);
   }
 
   @Test
   public void test_createsSomeGroupsSuccessfully_whenOthersFail() throws Exception {
     when(connection.createGroup("newregistrar-primary-contacts@domain-registry.example"))
         .thenThrow(new RuntimeException("Could not contact server."));
-    doThrow(new RuntimeException("Invalid access.")).when(connection).addMemberToGroup(
-        "registrar-technical-contacts@domain-registry.example",
-        "newregistrar-technical-contacts@domain-registry.example",
-        Role.MEMBER);
+    doThrow(new RuntimeException("Invalid access."))
+        .when(connection)
+        .addMemberToGroup(
+            "registrar-technical-contacts@domain-registry.example",
+            "newregistrar-technical-contacts@domain-registry.example",
+            Role.MEMBER);
     InternalServerErrorException e =
         assertThrows(InternalServerErrorException.class, () -> runAction("NewRegistrar"));
     String responseString = e.toString();
-      assertThat(responseString).contains("abuse => Success");
-      assertThat(responseString).contains("billing => Success");
-      assertThat(responseString).contains("legal => Success");
-      assertThat(responseString).contains("marketing => Success");
-      assertThat(responseString).contains("whois-inquiry => Success");
-      assertThat(responseString).contains(
-          "primary => java.lang.RuntimeException: Could not contact server.");
-      assertThat(responseString).contains(
-          "technical => java.lang.RuntimeException: Invalid access.");
-      verifyGroupCreationCallsForNewRegistrar();
+    assertThat(responseString).contains("abuse => Success");
+    assertThat(responseString).contains("billing => Success");
+    assertThat(responseString).contains("legal => Success");
+    assertThat(responseString).contains("marketing => Success");
+    assertThat(responseString).contains("whois-inquiry => Success");
+    assertThat(responseString)
+        .contains("primary => java.lang.RuntimeException: Could not contact server.");
+    assertThat(responseString).contains("technical => java.lang.RuntimeException: Invalid access.");
+    verifyGroupCreationCallsForNewRegistrar();
   }
 
   private void verifyGroupCreationCallsForNewRegistrar() throws Exception {
@@ -121,27 +118,38 @@ public class CreateGroupsActionTest {
     verify(connection).createGroup("newregistrar-marketing-contacts@domain-registry.example");
     verify(connection).createGroup("newregistrar-technical-contacts@domain-registry.example");
     verify(connection).createGroup("newregistrar-whois-inquiry-contacts@domain-registry.example");
-    verify(connection).addMemberToGroup("registrar-abuse-contacts@domain-registry.example",
-        "newregistrar-abuse-contacts@domain-registry.example",
-        Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "registrar-abuse-contacts@domain-registry.example",
+            "newregistrar-abuse-contacts@domain-registry.example",
+            Role.MEMBER);
     // Note that addMemberToGroup for primary is verified separately for the success test because
     // the exception thrown on group creation in the failure test causes the servlet not to get to
     // this line.
-    verify(connection).addMemberToGroup("registrar-billing-contacts@domain-registry.example",
-        "newregistrar-billing-contacts@domain-registry.example",
-        Role.MEMBER);
-    verify(connection).addMemberToGroup("registrar-legal-contacts@domain-registry.example",
-        "newregistrar-legal-contacts@domain-registry.example",
-        Role.MEMBER);
-    verify(connection).addMemberToGroup("registrar-marketing-contacts@domain-registry.example",
-        "newregistrar-marketing-contacts@domain-registry.example",
-        Role.MEMBER);
-    verify(connection).addMemberToGroup("registrar-technical-contacts@domain-registry.example",
-        "newregistrar-technical-contacts@domain-registry.example",
-        Role.MEMBER);
-    verify(connection).addMemberToGroup(
-        "registrar-whois-inquiry-contacts@domain-registry.example",
-        "newregistrar-whois-inquiry-contacts@domain-registry.example",
-        Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "registrar-billing-contacts@domain-registry.example",
+            "newregistrar-billing-contacts@domain-registry.example",
+            Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "registrar-legal-contacts@domain-registry.example",
+            "newregistrar-legal-contacts@domain-registry.example",
+            Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "registrar-marketing-contacts@domain-registry.example",
+            "newregistrar-marketing-contacts@domain-registry.example",
+            Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "registrar-technical-contacts@domain-registry.example",
+            "newregistrar-technical-contacts@domain-registry.example",
+            Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "registrar-whois-inquiry-contacts@domain-registry.example",
+            "newregistrar-whois-inquiry-contacts@domain-registry.example",
+            Role.MEMBER);
   }
 }

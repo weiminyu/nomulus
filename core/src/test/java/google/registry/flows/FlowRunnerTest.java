@@ -50,8 +50,7 @@ import org.mockito.Mockito;
 @RunWith(JUnit4.class)
 public class FlowRunnerTest extends ShardableTestCase {
 
-  @Rule
-  public final AppEngineRule appEngineRule = new AppEngineRule.Builder().build();
+  @Rule public final AppEngineRule appEngineRule = new AppEngineRule.Builder().build();
 
   private final FlowRunner flowRunner = new FlowRunner();
   private final EppMetric.Builder eppMetricBuilder = EppMetric.builderForRequest(new FakeClock());

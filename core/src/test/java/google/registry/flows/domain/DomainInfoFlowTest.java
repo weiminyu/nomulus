@@ -593,10 +593,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
   public void testFeeExtension_createCommand() throws Exception {
     setEppInput(
         "domain_info_fee.xml",
-        updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "create",
-            "PERIOD", "2"));
+        updateSubstitutions(SUBSTITUTION_BASE, "COMMAND", "create", "PERIOD", "2"));
     persistTestEntities(false);
     doSuccessfulTest(
         "domain_info_fee_response.xml",
@@ -613,10 +610,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
   public void testFeeExtension_renewCommand() throws Exception {
     setEppInput(
         "domain_info_fee.xml",
-        updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "renew",
-            "PERIOD", "2"));
+        updateSubstitutions(SUBSTITUTION_BASE, "COMMAND", "renew", "PERIOD", "2"));
     persistTestEntities(false);
     doSuccessfulTest(
         "domain_info_fee_response.xml",
@@ -633,10 +627,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
   public void testFeeExtension_transferCommand() throws Exception {
     setEppInput(
         "domain_info_fee.xml",
-        updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "transfer",
-            "PERIOD", "1"));
+        updateSubstitutions(SUBSTITUTION_BASE, "COMMAND", "transfer", "PERIOD", "1"));
     persistTestEntities(false);
     doSuccessfulTest(
         "domain_info_fee_response.xml",
@@ -653,10 +644,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
   public void testFeeExtension_restoreCommand() throws Exception {
     setEppInput(
         "domain_info_fee.xml",
-        updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "restore",
-            "PERIOD", "1"));
+        updateSubstitutions(SUBSTITUTION_BASE, "COMMAND", "restore", "PERIOD", "1"));
     persistTestEntities(false);
     doSuccessfulTest("domain_info_fee_restore_response.xml", false);
   }
@@ -668,10 +656,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
     setEppInput(
         "domain_info_fee.xml",
         updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "NAME", "rich.example",
-            "COMMAND", "create",
-            "PERIOD", "1"));
+            SUBSTITUTION_BASE, "NAME", "rich.example", "COMMAND", "create", "PERIOD", "1"));
     persistTestEntities("rich.example", false);
     doSuccessfulTest(
         "domain_info_fee_premium_response.xml",
@@ -686,10 +671,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
     setEppInput(
         "domain_info_fee.xml",
         updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "NAME", "rich.example",
-            "COMMAND", "renew",
-            "PERIOD", "1"));
+            SUBSTITUTION_BASE, "NAME", "rich.example", "COMMAND", "renew", "PERIOD", "1"));
     persistTestEntities("rich.example", false);
     doSuccessfulTest(
         "domain_info_fee_premium_response.xml",
@@ -704,10 +686,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
     setEppInput(
         "domain_info_fee.xml",
         updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "NAME", "rich.example",
-            "COMMAND", "transfer",
-            "PERIOD", "1"));
+            SUBSTITUTION_BASE, "NAME", "rich.example", "COMMAND", "transfer", "PERIOD", "1"));
     persistTestEntities("rich.example", false);
     doSuccessfulTest(
         "domain_info_fee_premium_response.xml",
@@ -722,10 +701,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
     setEppInput(
         "domain_info_fee.xml",
         updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "NAME", "rich.example",
-            "COMMAND", "restore",
-            "PERIOD", "1"));
+            SUBSTITUTION_BASE, "NAME", "rich.example", "COMMAND", "restore", "PERIOD", "1"));
     persistTestEntities("rich.example", false);
     doSuccessfulTest("domain_info_fee_restore_premium_response.xml", false);
   }
@@ -736,10 +712,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
     setEppInput(
         "domain_info_fee.xml",
         updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "create",
-            "CURRENCY", "EUR",
-            "PERIOD", "1"));
+            SUBSTITUTION_BASE, "COMMAND", "create", "CURRENCY", "EUR", "PERIOD", "1"));
     persistTestEntities(false);
     EppException thrown = assertThrows(CurrencyUnitMismatchException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
@@ -750,10 +723,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
     setEppInput(
         "domain_info_fee.xml",
         updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "create",
-            "CURRENCY", "BAD",
-            "PERIOD", "1"));
+            SUBSTITUTION_BASE, "COMMAND", "create", "CURRENCY", "BAD", "PERIOD", "1"));
     EppException thrown = assertThrows(UnknownCurrencyEppException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
   }
@@ -763,11 +733,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
   public void testFeeExtension_periodNotInYears() {
     setEppInput(
         "domain_info_fee.xml",
-        updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "create",
-            "PERIOD", "2",
-            "UNIT", "m"));
+        updateSubstitutions(SUBSTITUTION_BASE, "COMMAND", "create", "PERIOD", "2", "UNIT", "m"));
     persistTestEntities(false);
     EppException thrown = assertThrows(BadPeriodUnitException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
@@ -796,10 +762,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
   public void testFeeExtension_multiyearRestore() {
     setEppInput(
         "domain_info_fee.xml",
-        updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "restore",
-            "PERIOD", "2"));
+        updateSubstitutions(SUBSTITUTION_BASE, "COMMAND", "restore", "PERIOD", "2"));
     persistTestEntities(false);
     EppException thrown = assertThrows(RestoresAreAlwaysForOneYearException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
@@ -810,10 +773,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
   public void testFeeExtension_multiyearTransfer() {
     setEppInput(
         "domain_info_fee.xml",
-        updateSubstitutions(
-            SUBSTITUTION_BASE,
-            "COMMAND", "transfer",
-            "PERIOD", "2"));
+        updateSubstitutions(SUBSTITUTION_BASE, "COMMAND", "transfer", "PERIOD", "2"));
     persistTestEntities(false);
     EppException thrown = assertThrows(TransfersAreAlwaysForOneYearException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
@@ -830,8 +790,7 @@ public class DomainInfoFlowTest extends ResourceFlowTestCase<DomainInfoFlow, Dom
     // Get all of the keys loaded in the flow, with each distinct load() call as a list of keys.
     int numReadsWithContactsOrHosts =
         (int)
-            RequestCapturingAsyncDatastoreService.getReads()
-                .stream()
+            RequestCapturingAsyncDatastoreService.getReads().stream()
                 .skip(numPreviousReads)
                 .filter(
                     keys ->

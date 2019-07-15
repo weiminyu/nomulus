@@ -27,22 +27,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  * commands.
  *
  * <p>This object holds XML data which JAXB will unmarshal from an EPP domain check command
- * extension.  The XML will have the following enclosing structure:
+ * extension. The XML will have the following enclosing structure:
  *
- * <pre> {@code
- *   <epp>
- *     <command>
- *       <create>
- *         <!-- domain check XML data -->
- *       </create>
- *       <extension>
- *         <launch:check>
- *           <!-- launch check XML payload data -->
- *         </launch:check>
- *       </extension>
- *     </command>
- *   </epp>
- * } </pre>
+ * <pre>{@code
+ * <epp>
+ *   <command>
+ *     <create>
+ *       <!-- domain check XML data -->
+ *     </create>
+ *     <extension>
+ *       <launch:check>
+ *         <!-- launch check XML payload data -->
+ *       </launch:check>
+ *     </extension>
+ *   </command>
+ * </epp>
+ * }</pre>
  *
  * @see CommandExtension
  */
@@ -69,8 +69,7 @@ public class LaunchCheckExtension extends ImmutableObject implements CommandExte
    */
   LaunchPhase phase;
 
-  @XmlAttribute
-  CheckType type;
+  @XmlAttribute CheckType type;
 
   public CheckType getCheckType() {
     return firstNonNull(type, DEFAULT_CHECK_TYPE);

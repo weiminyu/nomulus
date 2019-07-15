@@ -44,8 +44,8 @@ import org.joda.time.DateTime;
 @ReportedOn
 @Entity
 @ExternalMessagingName("contact")
-public class ContactResource extends EppResource implements
-    ForeignKeyedEppResource, ResourceWithTransferData {
+public class ContactResource extends EppResource
+    implements ForeignKeyedEppResource, ResourceWithTransferData {
 
   /**
    * Unique identifier for this contact.
@@ -64,8 +64,8 @@ public class ContactResource extends EppResource implements
   PostalInfo localizedPostalInfo;
 
   /**
-   * Internationalized postal info for the contact. Personal info; cleared by
-   * {@link Builder#wipeOut}.
+   * Internationalized postal info for the contact. Personal info; cleared by {@link
+   * Builder#wipeOut}.
    */
   @IgnoreSave(IfNull.class)
   PostalInfo internationalizedPostalInfo;
@@ -75,8 +75,7 @@ public class ContactResource extends EppResource implements
    * postal name, or if null, the localized postal name, or if that is null as well, null. Personal
    * info; cleared by {@link Builder#wipeOut}.
    */
-  @Index
-  String searchName;
+  @Index String searchName;
 
   /** Contact’s voice number. Personal info; cleared by {@link Builder#wipeOut}. */
   @IgnoreSave(IfNull.class)
@@ -207,29 +206,32 @@ public class ContactResource extends EppResource implements
     }
 
     public Builder setLocalizedPostalInfo(PostalInfo localizedPostalInfo) {
-      checkArgument(localizedPostalInfo == null
-          || Type.LOCALIZED.equals(localizedPostalInfo.getType()));
+      checkArgument(
+          localizedPostalInfo == null || Type.LOCALIZED.equals(localizedPostalInfo.getType()));
       getInstance().localizedPostalInfo = localizedPostalInfo;
       return this;
     }
 
     public Builder setInternationalizedPostalInfo(PostalInfo internationalizedPostalInfo) {
-      checkArgument(internationalizedPostalInfo == null
-          || Type.INTERNATIONALIZED.equals(internationalizedPostalInfo.getType()));
+      checkArgument(
+          internationalizedPostalInfo == null
+              || Type.INTERNATIONALIZED.equals(internationalizedPostalInfo.getType()));
       getInstance().internationalizedPostalInfo = internationalizedPostalInfo;
       return this;
     }
 
     public Builder overlayLocalizedPostalInfo(PostalInfo localizedPostalInfo) {
-      return setLocalizedPostalInfo(getInstance().localizedPostalInfo == null
-          ? localizedPostalInfo
-          : getInstance().localizedPostalInfo.overlay(localizedPostalInfo));
+      return setLocalizedPostalInfo(
+          getInstance().localizedPostalInfo == null
+              ? localizedPostalInfo
+              : getInstance().localizedPostalInfo.overlay(localizedPostalInfo));
     }
 
     public Builder overlayInternationalizedPostalInfo(PostalInfo internationalizedPostalInfo) {
-      return setInternationalizedPostalInfo(getInstance().internationalizedPostalInfo == null
-          ? internationalizedPostalInfo
-          : getInstance().internationalizedPostalInfo.overlay(internationalizedPostalInfo));
+      return setInternationalizedPostalInfo(
+          getInstance().internationalizedPostalInfo == null
+              ? internationalizedPostalInfo
+              : getInstance().internationalizedPostalInfo.overlay(internationalizedPostalInfo));
     }
 
     public Builder setVoiceNumber(ContactPhoneNumber voiceNumber) {

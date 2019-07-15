@@ -49,13 +49,9 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class ReservedListTest {
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   FakeClock clock = new FakeClock(DateTime.parse("2010-01-01T10:00:00Z"));
 
@@ -114,14 +110,10 @@ public class ReservedListTest {
 
   @Test
   public void testGetReservationTypes_concatsMultipleListsCorrectly() {
-    ReservedList rl1 = persistReservedList(
-        "reserved1",
-        "lol,FULLY_BLOCKED # yup",
-        "cat,FULLY_BLOCKED");
-    ReservedList rl2 = persistReservedList(
-        "reserved2",
-        "roflcopter,FULLY_BLOCKED",
-        "snowcrash,FULLY_BLOCKED");
+    ReservedList rl1 =
+        persistReservedList("reserved1", "lol,FULLY_BLOCKED # yup", "cat,FULLY_BLOCKED");
+    ReservedList rl2 =
+        persistReservedList("reserved2", "roflcopter,FULLY_BLOCKED", "snowcrash,FULLY_BLOCKED");
     createTld("tld");
     persistResource(Registry.get("tld").asBuilder().setReservedLists(rl1, rl2).build());
 
@@ -169,13 +161,11 @@ public class ReservedListTest {
     assertThat(getReservationTypes("snowcrash", "tld")).containsExactly(FULLY_BLOCKED);
   }
 
-
   @Test
   public void testGetReservationTypes_worksAfterReservedListRemovedUsingSet() {
-    ReservedList rl1 = persistReservedList(
-        "reserved1", "lol,FULLY_BLOCKED", "cat,FULLY_BLOCKED");
-    ReservedList rl2 = persistReservedList(
-        "reserved2", "roflcopter,FULLY_BLOCKED", "snowcrash,FULLY_BLOCKED");
+    ReservedList rl1 = persistReservedList("reserved1", "lol,FULLY_BLOCKED", "cat,FULLY_BLOCKED");
+    ReservedList rl2 =
+        persistReservedList("reserved2", "roflcopter,FULLY_BLOCKED", "snowcrash,FULLY_BLOCKED");
     createTld("tld");
     persistResource(Registry.get("tld").asBuilder().setReservedLists(rl1, rl2).build());
     assertThat(getReservationTypes("roflcopter", "tld")).containsExactly(FULLY_BLOCKED);
@@ -205,8 +195,8 @@ public class ReservedListTest {
 
   @Test
   public void testGetReservationTypes_combinesMultipleLists() {
-    ReservedList rl1 = persistReservedList(
-        "reserved1", "lol,NAME_COLLISION", "roflcopter,ALLOWED_IN_SUNRISE");
+    ReservedList rl1 =
+        persistReservedList("reserved1", "lol,NAME_COLLISION", "roflcopter,ALLOWED_IN_SUNRISE");
     ReservedList rl2 = persistReservedList("reserved2", "lol,FULLY_BLOCKED");
     createTld("tld");
     persistResource(Registry.get("tld").asBuilder().setReservedLists(rl1, rl2).build());
@@ -244,11 +234,12 @@ public class ReservedListTest {
 
   @Test
   public void testSave_commentsArePersistedCorrectly() {
-    ReservedList reservedList = persistReservedList(
-        "reserved",
-        "trombone,FULLY_BLOCKED  # yup",
-        "oysters,FULLY_BLOCKED #  this is a loooong comment",
-        "nullcomment,ALLOWED_IN_SUNRISE  #");
+    ReservedList reservedList =
+        persistReservedList(
+            "reserved",
+            "trombone,FULLY_BLOCKED  # yup",
+            "oysters,FULLY_BLOCKED #  this is a loooong comment",
+            "nullcomment,ALLOWED_IN_SUNRISE  #");
     assertThat(reservedList.getReservedListEntries()).hasSize(3);
 
     ReservedListEntry trombone = reservedList.getReservedListEntries().get("trombone");
@@ -284,10 +275,12 @@ public class ReservedListTest {
   public void testSetFromInputLines() {
     ReservedList reservedList = persistReservedList("reserved", "trombone,FULLY_BLOCKED");
     assertThat(ReservedList.get("reserved").get().getReservedListEntries()).hasSize(1);
-    reservedList = reservedList.asBuilder()
-        .setReservedListMapFromLines(
-            ImmutableList.of("trombone,FULLY_BLOCKED", "trombone2,FULLY_BLOCKED"))
-        .build();
+    reservedList =
+        reservedList
+            .asBuilder()
+            .setReservedListMapFromLines(
+                ImmutableList.of("trombone,FULLY_BLOCKED", "trombone2,FULLY_BLOCKED"))
+            .build();
     assertThat(reservedList.getReservedListEntries()).hasSize(2);
   }
 

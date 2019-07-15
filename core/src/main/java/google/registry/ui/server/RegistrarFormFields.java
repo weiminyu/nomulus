@@ -48,9 +48,7 @@ public final class RegistrarFormFields {
   public static final String ASCII_ERROR = "Please only use ASCII-US characters.";
 
   public static final FormField<String, String> NAME_FIELD =
-      FormFields.NAME.asBuilderNamed("registrarName")
-          .required()
-          .build();
+      FormFields.NAME.asBuilderNamed("registrarName").required().build();
 
   public static final FormField<String, DateTime> LAST_UPDATE_TIME =
       FormFields.LABEL
@@ -60,55 +58,48 @@ public final class RegistrarFormFields {
           .build();
 
   public static final FormField<String, String> EMAIL_ADDRESS_FIELD_REQUIRED =
-      FormFields.EMAIL.asBuilderNamed("emailAddress")
+      FormFields.EMAIL
+          .asBuilderNamed("emailAddress")
           .matches(ASCII_PATTERN, ASCII_ERROR)
           .required()
           .build();
 
   public static final FormField<String, String> EMAIL_ADDRESS_FIELD_OPTIONAL =
-      FormFields.EMAIL.asBuilderNamed("emailAddress")
-          .matches(ASCII_PATTERN, ASCII_ERROR)
-          .build();
+      FormFields.EMAIL.asBuilderNamed("emailAddress").matches(ASCII_PATTERN, ASCII_ERROR).build();
 
   public static final FormField<String, String> ICANN_REFERRAL_EMAIL_FIELD =
-      FormFields.EMAIL.asBuilderNamed("icannReferralEmail")
+      FormFields.EMAIL
+          .asBuilderNamed("icannReferralEmail")
           .matches(ASCII_PATTERN, ASCII_ERROR)
           .required()
           .build();
 
   public static final FormField<String, String> PHONE_NUMBER_FIELD =
-      FormFields.PHONE_NUMBER.asBuilder()
-          .matches(ASCII_PATTERN, ASCII_ERROR)
-          .build();
+      FormFields.PHONE_NUMBER.asBuilder().matches(ASCII_PATTERN, ASCII_ERROR).build();
 
   public static final FormField<String, String> FAX_NUMBER_FIELD =
-      FormFields.PHONE_NUMBER.asBuilderNamed("faxNumber")
+      FormFields.PHONE_NUMBER
+          .asBuilderNamed("faxNumber")
           .matches(ASCII_PATTERN, ASCII_ERROR)
           .build();
 
   public static final FormField<String, Registrar.State> STATE_FIELD =
-      FormField.named("state")
-          .emptyToNull()
-          .asEnum(Registrar.State.class)
-          .build();
+      FormField.named("state").emptyToNull().asEnum(Registrar.State.class).build();
 
   public static final FormField<List<String>, Set<String>> ALLOWED_TLDS_FIELD =
-      FormFields.LABEL.asBuilderNamed("allowedTlds")
-          .asSet()
-          .build();
+      FormFields.LABEL.asBuilderNamed("allowedTlds").asSet().build();
 
   public static final FormField<String, String> WHOIS_SERVER_FIELD =
-      FormFields.LABEL.asBuilderNamed("whoisServer")
+      FormFields.LABEL
+          .asBuilderNamed("whoisServer")
           .transform(RegistrarFormFields::parseHostname)
           .build();
 
   public static final FormField<Boolean, Boolean> BLOCK_PREMIUM_NAMES_FIELD =
-      FormField.named("blockPremiumNames", Boolean.class)
-          .build();
+      FormField.named("blockPremiumNames", Boolean.class).build();
 
   public static final FormField<String, String> DRIVE_FOLDER_ID_FIELD =
-      FormFields.XS_NORMALIZED_STRING.asBuilderNamed("driveFolderId")
-          .build();
+      FormFields.XS_NORMALIZED_STRING.asBuilderNamed("driveFolderId").build();
 
   public static final FormField<String, String> CLIENT_CERTIFICATE_HASH_FIELD =
       FormField.named("clientCertificateHash")
@@ -141,18 +132,13 @@ public final class RegistrarFormFields {
       X509_PEM_CERTIFICATE.asBuilderNamed("failoverClientCertificate").build();
 
   public static final FormField<Long, Long> BILLING_IDENTIFIER_FIELD =
-      FormField.named("billingIdentifier", Long.class)
-          .range(atLeast(1))
-          .build();
+      FormField.named("billingIdentifier", Long.class).range(atLeast(1)).build();
 
   public static final FormField<Long, Long> IANA_IDENTIFIER_FIELD =
-      FormField.named("ianaIdentifier", Long.class)
-          .range(atLeast(1))
-          .build();
+      FormField.named("ianaIdentifier", Long.class).range(atLeast(1)).build();
 
   public static final FormField<String, String> URL_FIELD =
-      FormFields.MIN_TOKEN.asBuilderNamed("url")
-          .build();
+      FormFields.MIN_TOKEN.asBuilderNamed("url").build();
 
   public static final FormField<List<String>, List<CidrAddressBlock>> IP_ADDRESS_WHITELIST_FIELD =
       FormField.named("ipAddressWhitelist")
@@ -162,8 +148,7 @@ public final class RegistrarFormFields {
           .build();
 
   public static final FormField<String, String> PASSWORD_FIELD =
-      FormFields.PASSWORD.asBuilderNamed("password")
-          .build();
+      FormFields.PASSWORD.asBuilderNamed("password").build();
 
   public static final FormField<String, String> PHONE_PASSCODE_FIELD =
       FormField.named("phonePasscode")
@@ -172,38 +157,29 @@ public final class RegistrarFormFields {
           .build();
 
   public static final FormField<String, String> CONTACT_NAME_FIELD =
-      FormFields.NAME.asBuilderNamed("name")
-          .required()
-          .build();
+      FormFields.NAME.asBuilderNamed("name").required().build();
 
   public static final FormField<String, String> CONTACT_EMAIL_ADDRESS_FIELD =
-      FormFields.EMAIL.asBuilderNamed("emailAddress")
-          .required()
-          .build();
+      FormFields.EMAIL.asBuilderNamed("emailAddress").required().build();
 
   public static final FormField<Boolean, Boolean> CONTACT_VISIBLE_IN_WHOIS_AS_ADMIN_FIELD =
-      FormField.named("visibleInWhoisAsAdmin", Boolean.class)
-          .build();
+      FormField.named("visibleInWhoisAsAdmin", Boolean.class).build();
 
   public static final FormField<Boolean, Boolean> CONTACT_VISIBLE_IN_WHOIS_AS_TECH_FIELD =
-      FormField.named("visibleInWhoisAsTech", Boolean.class)
-          .build();
+      FormField.named("visibleInWhoisAsTech", Boolean.class).build();
 
   public static final FormField<Boolean, Boolean>
       PHONE_AND_EMAIL_VISIBLE_IN_DOMAIN_WHOIS_AS_ABUSE_FIELD =
           FormField.named("visibleInDomainWhoisAsAbuse", Boolean.class).build();
 
   public static final FormField<String, String> CONTACT_PHONE_NUMBER_FIELD =
-      FormFields.PHONE_NUMBER.asBuilder()
-          .build();
+      FormFields.PHONE_NUMBER.asBuilder().build();
 
   public static final FormField<String, String> CONTACT_FAX_NUMBER_FIELD =
-      FormFields.PHONE_NUMBER.asBuilderNamed("faxNumber")
-          .build();
+      FormFields.PHONE_NUMBER.asBuilderNamed("faxNumber").build();
 
   public static final FormField<String, String> CONTACT_GAE_USER_ID_FIELD =
-      FormFields.NAME.asBuilderNamed("gaeUserId")
-          .build();
+      FormFields.NAME.asBuilderNamed("gaeUserId").build();
 
   public static final FormField<String, Set<RegistrarContact.Type>> CONTACT_TYPES =
       FormField.named("types")
@@ -213,13 +189,16 @@ public final class RegistrarFormFields {
           .build();
 
   public static final FormField<List<Map<String, ?>>, List<RegistrarContact.Builder>>
-      CONTACTS_FIELD = FormField.mapNamed("contacts")
-          .transform(RegistrarContact.Builder.class, RegistrarFormFields::toRegistrarContactBuilder)
-          .asList()
-          .build();
+      CONTACTS_FIELD =
+          FormField.mapNamed("contacts")
+              .transform(
+                  RegistrarContact.Builder.class, RegistrarFormFields::toRegistrarContactBuilder)
+              .asList()
+              .build();
 
   public static final FormField<List<String>, List<String>> I18N_STREET_FIELD =
-      FormFields.XS_NORMALIZED_STRING.asBuilderNamed("street")
+      FormFields.XS_NORMALIZED_STRING
+          .asBuilderNamed("street")
           .range(closed(1, 255))
           .matches(ASCII_PATTERN, ASCII_ERROR)
           .asList()
@@ -228,7 +207,8 @@ public final class RegistrarFormFields {
           .build();
 
   public static final FormField<List<String>, List<String>> L10N_STREET_FIELD =
-      FormFields.XS_NORMALIZED_STRING.asBuilderNamed("street")
+      FormFields.XS_NORMALIZED_STRING
+          .asBuilderNamed("street")
           .range(closed(1, 255))
           .asList()
           .range(closed(1, 3))
@@ -236,47 +216,41 @@ public final class RegistrarFormFields {
           .build();
 
   public static final FormField<String, String> I18N_CITY_FIELD =
-      FormFields.NAME.asBuilderNamed("city")
-          .matches(ASCII_PATTERN, ASCII_ERROR)
-          .required()
-          .build();
+      FormFields.NAME.asBuilderNamed("city").matches(ASCII_PATTERN, ASCII_ERROR).required().build();
 
   public static final FormField<String, String> L10N_CITY_FIELD =
-      FormFields.NAME.asBuilderNamed("city")
-          .required()
-          .build();
+      FormFields.NAME.asBuilderNamed("city").required().build();
 
   public static final FormField<String, String> I18N_STATE_FIELD =
-      FormFields.XS_NORMALIZED_STRING.asBuilderNamed("state")
+      FormFields.XS_NORMALIZED_STRING
+          .asBuilderNamed("state")
           .range(atMost(255))
           .matches(ASCII_PATTERN, ASCII_ERROR)
           .build();
 
   public static final FormField<String, String> L10N_STATE_FIELD =
-      FormFields.XS_NORMALIZED_STRING.asBuilderNamed("state")
-          .range(atMost(255))
-          .build();
+      FormFields.XS_NORMALIZED_STRING.asBuilderNamed("state").range(atMost(255)).build();
 
   public static final FormField<String, String> I18N_ZIP_FIELD =
-      FormFields.XS_TOKEN.asBuilderNamed("zip")
+      FormFields.XS_TOKEN
+          .asBuilderNamed("zip")
           .range(atMost(16))
           .matches(ASCII_PATTERN, ASCII_ERROR)
           .build();
 
   public static final FormField<String, String> L10N_ZIP_FIELD =
-      FormFields.XS_TOKEN.asBuilderNamed("zip")
-          .range(atMost(16))
-          .build();
+      FormFields.XS_TOKEN.asBuilderNamed("zip").range(atMost(16)).build();
 
   public static final FormField<String, String> COUNTRY_CODE_FIELD =
-      FormFields.COUNTRY_CODE.asBuilder()
-          .required()
-          .build();
+      FormFields.COUNTRY_CODE.asBuilder().required().build();
 
   public static final FormField<Map<String, ?>, RegistrarAddress> L10N_ADDRESS_FIELD =
       FormField.mapNamed("localizedAddress")
-          .transform(RegistrarAddress.class, (args) -> toNewAddress(
-              args, L10N_STREET_FIELD, L10N_CITY_FIELD, L10N_STATE_FIELD, L10N_ZIP_FIELD))
+          .transform(
+              RegistrarAddress.class,
+              (args) ->
+                  toNewAddress(
+                      args, L10N_STREET_FIELD, L10N_CITY_FIELD, L10N_STATE_FIELD, L10N_ZIP_FIELD))
           .build();
 
   private static @Nullable RegistrarAddress toNewAddress(

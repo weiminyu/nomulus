@@ -45,8 +45,7 @@ public class FlowDocumentationTest {
   @Test
   public void testGeneratedMatchesGolden() throws IOException {
     // Read the markdown file.
-    Path goldenMarkdownPath =
-        GOLDEN_MARKDOWN_FILEPATH;
+    Path goldenMarkdownPath = GOLDEN_MARKDOWN_FILEPATH;
 
     String goldenMarkdown = new String(Files.readAllBytes(goldenMarkdownPath), UTF_8);
 

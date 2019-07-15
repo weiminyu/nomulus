@@ -44,8 +44,8 @@ public final class RdeUtil {
       ISODateTimeFormat.dateTimeNoMillis().withZoneUTC();
 
   /**
-   * Look at some bytes from {@code xmlInput} to ensure it appears to be a FULL XML deposit and
-   * then use a regular expression to extract the watermark timestamp which is returned.
+   * Look at some bytes from {@code xmlInput} to ensure it appears to be a FULL XML deposit and then
+   * use a regular expression to extract the watermark timestamp which is returned.
    *
    * @throws IOException
    * @throws XmlException
@@ -60,8 +60,8 @@ public final class RdeUtil {
     xmlInput.reset();
     String peekStr = new String(peek, UTF_8);
     if (!peekStr.contains("urn:ietf:params:xml:ns:rde-1.0")) {
-      throw new XmlException(String.format(
-          "Does not appear to be an XML RDE deposit\n%s", dumpHex(peek)));
+      throw new XmlException(
+          String.format("Does not appear to be an XML RDE deposit\n%s", dumpHex(peek)));
     }
     if (!peekStr.contains("type=\"FULL\"")) {
       throw new XmlException("Only FULL XML RDE deposits suppported at this time");

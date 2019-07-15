@@ -81,8 +81,7 @@ public class BigqueryConnection implements AutoCloseable {
 
   private static final Duration MIN_POLL_INTERVAL = Duration.millis(500);
 
-  @NonFinalForTesting
-  private static Sleeper sleeper = new SystemSleeper();
+  @NonFinalForTesting private static Sleeper sleeper = new SystemSleeper();
 
   /** Default name of the default dataset to use for requests to the API. */
   public static final String DEFAULT_DATASET_NAME = "testing";
@@ -125,8 +124,8 @@ public class BigqueryConnection implements AutoCloseable {
     }
 
     /**
-     * The BigqueryConnection takes ownership of this {@link ExecutorService} and will
-     * shut it down when the BigqueryConnection is closed.
+     * The BigqueryConnection takes ownership of this {@link ExecutorService} and will shut it down
+     * when the BigqueryConnection is closed.
      */
     public Builder setExecutorService(ExecutorService executorService) {
       instance.service = MoreExecutors.listeningDecorator(executorService);
@@ -146,7 +145,8 @@ public class BigqueryConnection implements AutoCloseable {
     public Builder setPollInterval(Duration pollInterval) {
       checkArgument(
           !pollInterval.isShorterThan(MIN_POLL_INTERVAL),
-          "poll interval must be at least %ldms", MIN_POLL_INTERVAL.getMillis());
+          "poll interval must be at least %ldms",
+          MIN_POLL_INTERVAL.getMillis());
       instance.pollInterval = pollInterval;
       return this;
     }
@@ -185,8 +185,8 @@ public class BigqueryConnection implements AutoCloseable {
     private final WriteDisposition writeDisposition;
 
     /**
-     * A query to package with this table if the type is VIEW; not immutable but also not visible
-     * to clients.
+     * A query to package with this table if the type is VIEW; not immutable but also not visible to
+     * clients.
      */
     private String query;
 
@@ -253,8 +253,8 @@ public class BigqueryConnection implements AutoCloseable {
     }
 
     /**
-     * Stores the provided query with this DestinationTable and returns it; used for packaging
-     * a query along with the DestinationTable before sending it to the table update logic.
+     * Stores the provided query with this DestinationTable and returns it; used for packaging a
+     * query along with the DestinationTable before sending it to the table update logic.
      */
     private DestinationTable withQuery(String query) {
       checkState(type == TableType.VIEW);
@@ -289,10 +289,7 @@ public class BigqueryConnection implements AutoCloseable {
     /** Returns a string representation of the given TableReference. */
     private static String tableReferenceToString(TableReference tableRef) {
       return String.format(
-          "%s:%s.%s",
-          tableRef.getProjectId(),
-          tableRef.getDatasetId(),
-          tableRef.getTableId());
+          "%s:%s.%s", tableRef.getProjectId(), tableRef.getDatasetId(), tableRef.getTableId());
     }
   }
 
@@ -307,9 +304,9 @@ public class BigqueryConnection implements AutoCloseable {
   }
 
   /**
-   * Closes the BigqueryConnection object by shutting down the executor service.  Clients
-   * should only call this after all ListenableFutures obtained from BigqueryConnection methods
-   * have resolved; this method does not block on their completion.
+   * Closes the BigqueryConnection object by shutting down the executor service. Clients should only
+   * call this after all ListenableFutures obtained from BigqueryConnection methods have resolved;
+   * this method does not block on their completion.
    */
   @Override
   public void close() {
@@ -340,7 +337,7 @@ public class BigqueryConnection implements AutoCloseable {
 
   /** Returns a random table name consisting only of the chars {@code [a-v0-9_]}. */
   private String getRandomTableName() {
-    byte[] randBytes = new byte[8];  // 64 bits of randomness ought to be plenty.
+    byte[] randBytes = new byte[8]; // 64 bits of randomness ought to be plenty.
     random.nextBytes(randBytes);
     return "_" + BaseEncoding.base32Hex().lowerCase().omitPadding().encode(randBytes);
   }
@@ -378,20 +375,21 @@ public class BigqueryConnection implements AutoCloseable {
 
   /**
    * Starts an asynchronous load job to populate the specified destination table with the given
-   * source URIs and source format.  Returns a ListenableFuture that holds the same destination
-   * table object on success.
+   * source URIs and source format. Returns a ListenableFuture that holds the same destination table
+   * object on success.
    */
   public ListenableFuture<DestinationTable> load(
-      DestinationTable dest,
-      SourceFormat sourceFormat,
-      Iterable<String> sourceUris) {
-    Job job = new Job()
-        .setConfiguration(new JobConfiguration()
-            .setLoad(new JobConfigurationLoad()
-                .setWriteDisposition(dest.getWriteDisposition().toString())
-                .setSourceFormat(sourceFormat.toString())
-                .setSourceUris(ImmutableList.copyOf(sourceUris))
-                .setDestinationTable(dest.getTableReference())));
+      DestinationTable dest, SourceFormat sourceFormat, Iterable<String> sourceUris) {
+    Job job =
+        new Job()
+            .setConfiguration(
+                new JobConfiguration()
+                    .setLoad(
+                        new JobConfigurationLoad()
+                            .setWriteDisposition(dest.getWriteDisposition().toString())
+                            .setSourceFormat(sourceFormat.toString())
+                            .setSourceUris(ImmutableList.copyOf(sourceUris))
+                            .setDestinationTable(dest.getTableReference())));
     return transform(runJobToCompletion(job, dest), this::updateTable, directExecutor());
   }
 
@@ -400,22 +398,23 @@ public class BigqueryConnection implements AutoCloseable {
    * of the specified query, or if the table is a view, to update the view to reflect that query.
    * Returns a ListenableFuture that holds the same destination table object on success.
    */
-  public ListenableFuture<DestinationTable> query(
-      String querySql,
-      DestinationTable dest) {
+  public ListenableFuture<DestinationTable> query(String querySql, DestinationTable dest) {
     if (dest.type == TableType.VIEW) {
       // Use Futures.transform() rather than calling apply() directly so that any exceptions thrown
       // by calling updateTable will be propagated on the get() call, not from here.
       return transform(
           Futures.immediateFuture(dest.withQuery(querySql)), this::updateTable, directExecutor());
     } else {
-      Job job = new Job()
-          .setConfiguration(new JobConfiguration()
-              .setQuery(new JobConfigurationQuery()
-                  .setQuery(querySql)
-                  .setDefaultDataset(getDataset())
-                  .setWriteDisposition(dest.getWriteDisposition().toString())
-                  .setDestinationTable(dest.getTableReference())));
+      Job job =
+          new Job()
+              .setConfiguration(
+                  new JobConfiguration()
+                      .setQuery(
+                          new JobConfigurationQuery()
+                              .setQuery(querySql)
+                              .setDefaultDataset(getDataset())
+                              .setWriteDisposition(dest.getWriteDisposition().toString())
+                              .setDestinationTable(dest.getTableReference())));
       return transform(runJobToCompletion(job, dest), this::updateTable, directExecutor());
     }
   }
@@ -423,18 +422,21 @@ public class BigqueryConnection implements AutoCloseable {
   /**
    * Starts an asynchronous query job to dump the results of the specified query into a local
    * ImmutableTable object, row-keyed by the row number (indexed from 1), column-keyed by the
-   * TableFieldSchema for that column, and with the value object as the cell value.  Note that null
+   * TableFieldSchema for that column, and with the value object as the cell value. Note that null
    * values will not actually be null, but they can be checked for using Data.isNull().
    *
    * <p>Returns a ListenableFuture that holds the ImmutableTable on success.
    */
-  public ListenableFuture<ImmutableTable<Integer, TableFieldSchema, Object>>
-      queryToLocalTable(String querySql) {
-    Job job = new Job()
-        .setConfiguration(new JobConfiguration()
-            .setQuery(new JobConfigurationQuery()
-                .setQuery(querySql)
-                .setDefaultDataset(getDataset())));
+  public ListenableFuture<ImmutableTable<Integer, TableFieldSchema, Object>> queryToLocalTable(
+      String querySql) {
+    Job job =
+        new Job()
+            .setConfiguration(
+                new JobConfiguration()
+                    .setQuery(
+                        new JobConfigurationQuery()
+                            .setQuery(querySql)
+                            .setDefaultDataset(getDataset())));
     return transform(runJobToCompletion(job), this::getQueryResults, directExecutor());
   }
 
@@ -442,24 +444,26 @@ public class BigqueryConnection implements AutoCloseable {
    * Returns the result of calling queryToLocalTable, but synchronously to avoid spawning new
    * background threads, which App Engine doesn't support.
    *
-   * @see <a href="https://cloud.google.com/appengine/docs/standard/java/runtime#Threads">
-   *   App Engine Runtime</a>
-   *
-   * <p>Returns the results of the query in an ImmutableTable on success.
+   * @see <a href="https://cloud.google.com/appengine/docs/standard/java/runtime#Threads">App Engine
+   *     Runtime</a>
+   *     <p>Returns the results of the query in an ImmutableTable on success.
    */
   public ImmutableTable<Integer, TableFieldSchema, Object> queryToLocalTableSync(String querySql) {
-    Job job = new Job()
-        .setConfiguration(new JobConfiguration()
-            .setQuery(new JobConfigurationQuery()
-                .setQuery(querySql)
-                .setDefaultDataset(getDataset())));
+    Job job =
+        new Job()
+            .setConfiguration(
+                new JobConfiguration()
+                    .setQuery(
+                        new JobConfigurationQuery()
+                            .setQuery(querySql)
+                            .setDefaultDataset(getDataset())));
     return getQueryResults(runJob(job));
   }
 
   /**
    * Returns the query results for the given job as an ImmutableTable, row-keyed by row number
    * (indexed from 1), column-keyed by the TableFieldSchema for that field, and with the value
-   * object as the cell value.  Note that null values will not actually be null (since we're using
+   * object as the cell value. Note that null values will not actually be null (since we're using
    * ImmutableTable) but they can be checked for using Data.isNull().
    *
    * <p>This table is fully materialized in memory (not lazily loaded), so it should not be used
@@ -472,10 +476,12 @@ public class BigqueryConnection implements AutoCloseable {
       String pageToken = null;
       int rowNumber = 1;
       while (true) {
-        GetQueryResultsResponse queryResults = bigquery.jobs()
-              .getQueryResults(getProjectId(), job.getJobReference().getJobId())
-              .setPageToken(pageToken)
-              .execute();
+        GetQueryResultsResponse queryResults =
+            bigquery
+                .jobs()
+                .getQueryResults(getProjectId(), job.getJobReference().getJobId())
+                .setPageToken(pageToken)
+                .execute();
         // If the job isn't complete yet, retry; getQueryResults() waits for up to 10 seconds on
         // each invocation so this will effectively poll for completion.
         if (queryResults.getJobComplete()) {
@@ -501,9 +507,9 @@ public class BigqueryConnection implements AutoCloseable {
   }
 
   /**
-   * Starts an asynchronous job to extract the specified source table and output it to the
-   * given GCS filepath in the specified destination format, optionally printing headers.
-   * Returns a ListenableFuture that holds the destination GCS URI on success.
+   * Starts an asynchronous job to extract the specified source table and output it to the given GCS
+   * filepath in the specified destination format, optionally printing headers. Returns a
+   * ListenableFuture that holds the destination GCS URI on success.
    */
   private ListenableFuture<String> extractTable(
       DestinationTable sourceTable,
@@ -511,20 +517,23 @@ public class BigqueryConnection implements AutoCloseable {
       DestinationFormat destinationFormat,
       boolean printHeader) {
     checkArgument(sourceTable.type == TableType.TABLE);
-    Job job = new Job()
-        .setConfiguration(new JobConfiguration()
-            .setExtract(new JobConfigurationExtract()
-                .setSourceTable(sourceTable.getTableReference())
-                .setDestinationFormat(destinationFormat.toString())
-                .setDestinationUris(ImmutableList.of(destinationUri))
-                .setPrintHeader(printHeader)));
+    Job job =
+        new Job()
+            .setConfiguration(
+                new JobConfiguration()
+                    .setExtract(
+                        new JobConfigurationExtract()
+                            .setSourceTable(sourceTable.getTableReference())
+                            .setDestinationFormat(destinationFormat.toString())
+                            .setDestinationUris(ImmutableList.of(destinationUri))
+                            .setPrintHeader(printHeader)));
     return runJobToCompletion(job, destinationUri);
   }
 
   /**
    * Starts an asynchronous job to extract the specified source table or view and output it to the
-   * given GCS filepath in the specified destination format, optionally printing headers.
-   * Returns a ListenableFuture that holds the destination GCS URI on success.
+   * given GCS filepath in the specified destination format, optionally printing headers. Returns a
+   * ListenableFuture that holds the destination GCS URI on success.
    */
   public ListenableFuture<String> extract(
       DestinationTable sourceTable,
@@ -536,8 +545,7 @@ public class BigqueryConnection implements AutoCloseable {
     } else {
       // We can't extract directly from a view, so instead extract from a query dumping that view.
       return extractQuery(
-          SqlTemplate
-              .create("SELECT * FROM [%DATASET%.%TABLE%]")
+          SqlTemplate.create("SELECT * FROM [%DATASET%.%TABLE%]")
               .put("DATASET", sourceTable.getTableReference().getDatasetId())
               .put("TABLE", sourceTable.getTableReference().getTableId())
               .build(),
@@ -656,9 +664,7 @@ public class BigqueryConnection implements AutoCloseable {
 
   /** Runs job and returns a future that yields {@code result} when {@code job} is completed. */
   private <T> ListenableFuture<T> runJobToCompletion(
-      final Job job,
-      final T result,
-      @Nullable final AbstractInputStreamContent data) {
+      final Job job, final T result, @Nullable final AbstractInputStreamContent data) {
     return service.submit(
         () -> {
           runJob(job, data);
@@ -703,9 +709,7 @@ public class BigqueryConnection implements AutoCloseable {
 
   /** Returns dataset reference that can be used to avoid having to specify dataset in SQL code. */
   public DatasetReference getDataset() {
-    return new DatasetReference()
-        .setProjectId(getProjectId())
-        .setDatasetId(getDatasetId());
+    return new DatasetReference().setProjectId(getProjectId()).setDatasetId(getDatasetId());
   }
 
   /** Returns table reference with the projectId and datasetId filled out for you. */
@@ -717,15 +721,20 @@ public class BigqueryConnection implements AutoCloseable {
   }
 
   /**
-   * Helper that creates a dataset with this name if it doesn't already exist, and returns true
-   * if creation took place.
+   * Helper that creates a dataset with this name if it doesn't already exist, and returns true if
+   * creation took place.
    */
   public boolean createDatasetIfNeeded(String datasetName) throws IOException {
     if (!checkDatasetExists(datasetName)) {
-      bigquery.datasets()
-          .insert(getProjectId(), new Dataset().setDatasetReference(new DatasetReference()
-              .setProjectId(getProjectId())
-              .setDatasetId(datasetName)))
+      bigquery
+          .datasets()
+          .insert(
+              getProjectId(),
+              new Dataset()
+                  .setDatasetReference(
+                      new DatasetReference()
+                          .setProjectId(getProjectId())
+                          .setDatasetId(datasetName)))
           .execute();
       logger.atInfo().log("Created dataset: %s:%s\n", getProjectId(), datasetName);
       return true;
@@ -736,12 +745,15 @@ public class BigqueryConnection implements AutoCloseable {
   /** Create a table from a SQL query if it doesn't already exist. */
   public TableReference ensureTable(TableReference table, String sqlQuery) {
     try {
-      runJob(new Job()
-          .setConfiguration(new JobConfiguration()
-              .setQuery(new JobConfigurationQuery()
-                  .setQuery(sqlQuery)
-                  .setDefaultDataset(getDataset())
-                  .setDestinationTable(table))));
+      runJob(
+          new Job()
+              .setConfiguration(
+                  new JobConfiguration()
+                      .setQuery(
+                          new JobConfigurationQuery()
+                              .setQuery(sqlQuery)
+                              .setDefaultDataset(getDataset())
+                              .setDestinationTable(table))));
     } catch (BigqueryJobFailureException e) {
       if (e.getReason().equals("duplicate")) {
         // Table already exists.

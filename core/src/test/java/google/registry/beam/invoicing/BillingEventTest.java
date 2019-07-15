@@ -132,8 +132,9 @@ public class BillingEventTest {
   public void testConvertBillingEvent_toCsv() {
     BillingEvent event = BillingEvent.parseFromRecord(schemaAndRecord);
     assertThat(event.toCsv())
-        .isEqualTo("1,2017-10-24 09:06:03 UTC,2017-01-19 23:59:43 UTC,myRegistrar,"
-            + "12345-CRRHELLO,test,RENEW,example.test,123456,5,USD,20.50,AUTO_RENEW");
+        .isEqualTo(
+            "1,2017-10-24 09:06:03 UTC,2017-01-19 23:59:43 UTC,myRegistrar,"
+                + "12345-CRRHELLO,test,RENEW,example.test,123456,5,USD,20.50,AUTO_RENEW");
   }
 
   @Test
@@ -198,8 +199,9 @@ public class BillingEventTest {
   @Test
   public void testGetOverallInvoiceHeader() {
     assertThat(InvoiceGroupingKey.invoiceHeader())
-        .isEqualTo("StartDate,EndDate,ProductAccountKey,Amount,AmountCurrency,BillingProductCode,"
-            + "SalesChannel,LineItemType,UsageGroupingKey,Quantity,Description,UnitPrice,"
-            + "UnitPriceCurrency,PONumber");
+        .isEqualTo(
+            "StartDate,EndDate,ProductAccountKey,Amount,AmountCurrency,BillingProductCode,"
+                + "SalesChannel,LineItemType,UsageGroupingKey,Quantity,Description,UnitPrice,"
+                + "UnitPriceCurrency,PONumber");
   }
 }

@@ -22,9 +22,7 @@ import google.registry.request.JsonResponse;
 import google.registry.request.Parameter;
 import javax.inject.Inject;
 
-/**
- * Abstract base class for actions that update premium lists.
- */
+/** Abstract base class for actions that update premium lists. */
 public abstract class CreateOrUpdatePremiumListAction implements Runnable {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
@@ -35,8 +33,14 @@ public abstract class CreateOrUpdatePremiumListAction implements Runnable {
   public static final String INPUT_PARAM = "inputData";
 
   @Inject JsonResponse response;
-  @Inject @Parameter("premiumListName") String name;
-  @Inject @Parameter(INPUT_PARAM) String inputData;
+
+  @Inject
+  @Parameter("premiumListName")
+  String name;
+
+  @Inject
+  @Parameter(INPUT_PARAM)
+  String inputData;
 
   @Override
   public void run() {

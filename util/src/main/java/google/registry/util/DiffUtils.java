@@ -37,11 +37,9 @@ public final class DiffUtils {
    * diffed, otherwise the two objects are toStringed in Collection format "[a, b]".
    */
   private static class DiffPair {
-    @Nullable
-    final Object a;
+    @Nullable final Object a;
 
-    @Nullable
-    final Object b;
+    @Nullable final Object b;
 
     DiffPair(@Nullable Object a, @Nullable Object b) {
       this.a = a;
@@ -86,8 +84,10 @@ public final class DiffUtils {
         // prevents useless lines of the form "[null, []]" from appearing in diffs.
       } else {
         // The objects aren't equal, so output a diff.
-        if (aValue instanceof String && bValue instanceof String
-            && a.toString().contains("\n") && b.toString().contains("\n")) {
+        if (aValue instanceof String
+            && bValue instanceof String
+            && a.toString().contains("\n")
+            && b.toString().contains("\n")) {
           aValue = stringToMap((String) aValue);
           bValue = stringToMap((String) bValue);
         } else if (aValue instanceof Set && bValue instanceof Set) {
@@ -96,9 +96,11 @@ public final class DiffUtils {
           aValue = iterableToSortedMap((Iterable<?>) aValue);
           bValue = iterableToSortedMap((Iterable<?>) bValue);
         }
-        diff.put(key, (aValue instanceof Map && bValue instanceof Map)
-            ? deepDiff((Map<?, ?>) aValue, (Map<?, ?>) bValue, ignoreNullToCollection)
-            : new DiffPair(aValue, bValue));
+        diff.put(
+            key,
+            (aValue instanceof Map && bValue instanceof Map)
+                ? deepDiff((Map<?, ?>) aValue, (Map<?, ?>) bValue, ignoreNullToCollection)
+                : new DiffPair(aValue, bValue));
       }
     }
     return diff.build();
@@ -157,10 +159,13 @@ public final class DiffUtils {
     if (removed.isEmpty() && added.isEmpty()) {
       return "NO DIFFERENCES";
     }
-    return Joiner.on("\n    ").skipNulls().join("",
-        !added.isEmpty() ? ("ADDED:" + formatSetContents(added)) : null,
-        !removed.isEmpty() ? ("REMOVED:" + formatSetContents(removed)) : null,
-        "FINAL CONTENTS:" + formatSetContents(b));
+    return Joiner.on("\n    ")
+        .skipNulls()
+        .join(
+            "",
+            !added.isEmpty() ? ("ADDED:" + formatSetContents(added)) : null,
+            !removed.isEmpty() ? ("REMOVED:" + formatSetContents(removed)) : null,
+            "FINAL CONTENTS:" + formatSetContents(b));
   }
 
   /**

@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Encoded data representation of a {@link SignedMark} object.
  *
  * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-smd-02#section-2.4">
- *       draft-lozano-tmch-smd-02 § 2.4</a>
+ *     draft-lozano-tmch-smd-02 § 2.4</a>
  */
 @Embed
 @XmlRootElement(name = "encodedSignedMark")
@@ -38,8 +38,7 @@ public class EncodedSignedMark extends ImmutableObject implements AbstractSigned
   private static final String ENCODING_DEFAULT = "base64";
 
   /** Encoding used for contained data. Default is {@value #ENCODING_DEFAULT}. */
-  @XmlAttribute
-  String encoding;
+  @XmlAttribute String encoding;
 
   /**
    * Encoded data. This is stored in a Text field rather than a String because Objectify cannot
@@ -68,7 +67,7 @@ public class EncodedSignedMark extends ImmutableObject implements AbstractSigned
     try {
       return base64().decode(getEncodedData());
     } catch (IllegalArgumentException e) {
-      throw new IllegalStateException(e);  // Turn e into a runtime exception.
+      throw new IllegalStateException(e); // Turn e into a runtime exception.
     }
   }
 }

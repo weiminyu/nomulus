@@ -62,26 +62,30 @@ public final class ServletWrapperDelegatorServlet extends HttpServlet {
   @Override
   public void service(final HttpServletRequest req, final HttpServletResponse rsp)
       throws ServletException, IOException {
-    FutureTask<Void> task = new FutureTask<>(new Callable<Void>() {
-      @Nullable
-      @Override
-      public Void call() throws ServletException, IOException {
-        // Simulate the full filter chain with the servlet at the end.
-        final Iterator<Class<? extends Filter>> filtersIter = filterClasses.iterator();
-        FilterChain filterChain =
-            new FilterChain() {
+    FutureTask<Void> task =
+        new FutureTask<>(
+            new Callable<Void>() {
+              @Nullable
               @Override
-              public void doFilter(ServletRequest request, ServletResponse response)
-                  throws IOException, ServletException {
-                if (filtersIter.hasNext()) {
-                  instantiate(filtersIter.next()).doFilter(request, response, this);
-                } else {
-                  instantiate(servletClass).service(request, response);
-                }
-              }};
-        filterChain.doFilter(req, rsp);
-        return null;
-      }});
+              public Void call() throws ServletException, IOException {
+                // Simulate the full filter chain with the servlet at the end.
+                final Iterator<Class<? extends Filter>> filtersIter = filterClasses.iterator();
+                FilterChain filterChain =
+                    new FilterChain() {
+                      @Override
+                      public void doFilter(ServletRequest request, ServletResponse response)
+                          throws IOException, ServletException {
+                        if (filtersIter.hasNext()) {
+                          instantiate(filtersIter.next()).doFilter(request, response, this);
+                        } else {
+                          instantiate(servletClass).service(request, response);
+                        }
+                      }
+                    };
+                filterChain.doFilter(req, rsp);
+                return null;
+              }
+            });
     requestQueue.add(task);
     try {
       Uninterruptibles.getUninterruptibly(task);

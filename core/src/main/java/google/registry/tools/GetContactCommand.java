@@ -25,9 +25,7 @@ import java.util.List;
 @Parameters(separators = " =", commandDescription = "Show contact resource(s)")
 final class GetContactCommand extends GetEppResourceCommand {
 
-  @Parameter(
-      description = "Contact id(s)",
-      required = true)
+  @Parameter(description = "Contact id(s)", required = true)
   private List<String> mainParameters;
 
   @Override

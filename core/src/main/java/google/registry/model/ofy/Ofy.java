@@ -62,12 +62,10 @@ public class Ofy {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   /** Default clock for transactions that don't provide one. */
-  @NonFinalForTesting
-  static Clock clock = new SystemClock();
+  @NonFinalForTesting static Clock clock = new SystemClock();
 
   /** Default sleeper for transactions that don't provide one. */
-  @NonFinalForTesting
-  static Sleeper sleeper = new SystemSleeper();
+  @NonFinalForTesting static Sleeper sleeper = new SystemSleeper();
 
   /**
    * An injected clock that overrides the static clock.
@@ -242,9 +240,7 @@ public class Ofy {
   @VisibleForTesting
   <R> R transactCommitLoggedWork(CommitLoggedWork<R> work) {
     long baseRetryMillis = getBaseOfyRetryDuration().getMillis();
-    for (long attempt = 0, sleepMillis = baseRetryMillis;
-        true;
-        attempt++, sleepMillis *= 2) {
+    for (long attempt = 0, sleepMillis = baseRetryMillis; true; attempt++, sleepMillis *= 2) {
       try {
         ofy().transactNew(work);
         return work.getResult();
@@ -260,7 +256,7 @@ public class Ofy {
           return work.getResult();
         }
         if (attempt == NUM_RETRIES) {
-          throw e;  // Give up.
+          throw e; // Give up.
         }
         sleeper.sleepUninterruptibly(Duration.millis(sleepMillis));
         logger.atInfo().withCause(e).log(
@@ -274,24 +270,32 @@ public class Ofy {
    * its own retryable read-only transaction.
    */
   private <R> Boolean checkIfAlreadySucceeded(final CommitLoggedWork<R> work) {
-      return work.hasRun() && transactNewReadOnly(() -> {
-        CommitLogManifest manifest = work.getManifest();
-        if (manifest == null) {
-          // Work ran but no commit log was created. This might mean that the transaction did not
-          // write anything to Datastore. We can safely retry because it only reads. (Although the
-          // transaction might have written a task to a queue, we consider that safe to retry too
-          // since we generally assume that tasks might be doubly executed.) Alternatively it
-          // might mean that the transaction wrote to Datastore but turned off commit logs by
-          // exclusively using save/deleteWithoutBackups() rather than save/delete(). Although we
-          // have no hard proof that retrying is safe, we use these methods judiciously and it is
-          // reasonable to assume that if the transaction really did succeed that the retry will
-          // either be idempotent or will fail with a non-transient error.
-          return false;
-        }
-        return Objects.equals(
-            union(work.getMutations(), manifest),
-            ImmutableSet.copyOf(load().ancestor(manifest)));
-      });
+    return work.hasRun()
+        && transactNewReadOnly(
+            () -> {
+              CommitLogManifest manifest = work.getManifest();
+              if (manifest == null) {
+                // Work ran but no commit log was created. This might mean that the transaction did
+                // not
+                // write anything to Datastore. We can safely retry because it only reads. (Although
+                // the
+                // transaction might have written a task to a queue, we consider that safe to retry
+                // too
+                // since we generally assume that tasks might be doubly executed.) Alternatively it
+                // might mean that the transaction wrote to Datastore but turned off commit logs by
+                // exclusively using save/deleteWithoutBackups() rather than save/delete(). Although
+                // we
+                // have no hard proof that retrying is safe, we use these methods judiciously and it
+                // is
+                // reasonable to assume that if the transaction really did succeed that the retry
+                // will
+                // either be idempotent or will fail with a non-transient error.
+                return false;
+              }
+              return Objects.equals(
+                  union(work.getMutations(), manifest),
+                  ImmutableSet.copyOf(load().ancestor(manifest)));
+            });
   }
 
   /** A read-only transaction is useful to get strongly consistent reads at a shared timestamp. */
@@ -306,7 +310,7 @@ public class Ofy {
       // Expected; we killed the transaction as a safety measure, and now we can return the result.
       return readOnlyWork.getResult();
     }
-    throw new AssertionError();  // How on earth did we get here?
+    throw new AssertionError(); // How on earth did we get here?
   }
 
   public void transactNewReadOnly(Runnable work) {
@@ -384,8 +388,11 @@ public class Ofy {
     for (Object entityOrKey : entitiesOrKeys) {
       Class<?> entityClass = getBaseEntityClassFromEntityOrKey(entityOrKey);
       for (Class<? extends Annotation> annotation : annotations) {
-        checkArgument(!entityClass.isAnnotationPresent(annotation),
-            "Can't save/delete a @%s entity: %s", annotation.getSimpleName(), entityClass);
+        checkArgument(
+            !entityClass.isAnnotationPresent(annotation),
+            "Can't save/delete a @%s entity: %s",
+            annotation.getSimpleName(),
+            entityClass);
       }
     }
   }

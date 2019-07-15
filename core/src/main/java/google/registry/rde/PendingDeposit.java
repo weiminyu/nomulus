@@ -71,15 +71,7 @@ public abstract class PendingDeposit implements Serializable {
 
   static PendingDeposit create(
       String tld, DateTime watermark, RdeMode mode, CursorType cursor, Duration interval) {
-    return new AutoValue_PendingDeposit(
-        false,
-        tld,
-        watermark,
-        mode,
-        cursor,
-        interval,
-        null,
-        null);
+    return new AutoValue_PendingDeposit(false, tld, watermark, mode, cursor, interval, null, null);
   }
 
   static PendingDeposit createInManualOperation(
@@ -89,14 +81,7 @@ public abstract class PendingDeposit implements Serializable {
       String directoryWithTrailingSlash,
       @Nullable Integer revision) {
     return new AutoValue_PendingDeposit(
-        true,
-        tld,
-        watermark,
-        mode,
-        null,
-        null,
-        directoryWithTrailingSlash,
-        revision);
+        true, tld, watermark, mode, null, null, directoryWithTrailingSlash, revision);
   }
 
   PendingDeposit() {}

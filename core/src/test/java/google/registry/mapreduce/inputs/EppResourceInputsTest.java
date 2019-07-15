@@ -55,8 +55,8 @@ public class EppResourceInputsTest {
 
   private static final double EPSILON = 0.0001;
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
+
   @SuppressWarnings("unchecked")
   private <T> T serializeAndDeserialize(T obj) throws Exception {
     try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -141,8 +141,7 @@ public class EppResourceInputsTest {
       persistResource(EppResourceIndex.create(getBucketKey(i), Key.create(domain)));
     }
     Set<DomainBase> seen = new HashSet<>();
-    for (InputReader<DomainBase> reader
-        : createEntityInput(DomainBase.class).createReaders()) {
+    for (InputReader<DomainBase> reader : createEntityInput(DomainBase.class).createReaders()) {
       reader.beginShard();
       reader.beginSlice();
       seen.add(reader.next());
@@ -187,8 +186,7 @@ public class EppResourceInputsTest {
     // Should be ignored. We'll know if it isn't because the progress counts will be off.
     persistActiveContact("contact");
     Set<DomainBase> seen = new HashSet<>();
-    InputReader<DomainBase> reader =
-        createEntityInput(DomainBase.class).createReaders().get(0);
+    InputReader<DomainBase> reader = createEntityInput(DomainBase.class).createReaders().get(0);
     reader.beginShard();
     reader.beginSlice();
     assertThat(reader.getProgress()).isWithin(EPSILON).of(0);
@@ -214,8 +212,9 @@ public class EppResourceInputsTest {
     persistEppResourceInFirstBucket(newContactResource("contact"));
     Set<EppResource> seen = new HashSet<>();
     InputReader<EppResource> reader =
-        EppResourceInputs.<EppResource>createEntityInput(
-              DomainBase.class, HostResource.class).createReaders().get(0);
+        EppResourceInputs.<EppResource>createEntityInput(DomainBase.class, HostResource.class)
+            .createReaders()
+            .get(0);
     reader.beginShard();
     reader.beginSlice();
     assertThat(reader.getProgress()).isWithin(EPSILON).of(0);

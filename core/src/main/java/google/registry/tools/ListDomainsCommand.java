@@ -37,8 +37,7 @@ final class ListDomainsCommand extends ListObjectsCommand {
 
   @Parameter(
       names = {"-n", "--limit"},
-      description = "Max number of domains to list, most recent first; defaults to no limit."
-  )
+      description = "Max number of domains to list, most recent first; defaults to no limit.")
   private int maxDomains = Integer.MAX_VALUE;
 
   @Override

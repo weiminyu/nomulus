@@ -72,9 +72,8 @@ public final class ContactUpdateFlow implements TransactionalFlow {
    * requires special checking, since you must be able to clear the status off the object with an
    * update.
    */
-  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES = ImmutableSet.of(
-      StatusValue.PENDING_DELETE,
-      StatusValue.SERVER_UPDATE_PROHIBITED);
+  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES =
+      ImmutableSet.of(StatusValue.PENDING_DELETE, StatusValue.SERVER_UPDATE_PROHIBITED);
 
   @Inject ResourceCommand resourceCommand;
   @Inject ExtensionManager extensionManager;
@@ -84,7 +83,9 @@ public final class ContactUpdateFlow implements TransactionalFlow {
   @Inject @Superuser boolean isSuperuser;
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject ContactUpdateFlow() {}
+
+  @Inject
+  ContactUpdateFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -97,7 +98,7 @@ public final class ContactUpdateFlow implements TransactionalFlow {
     verifyOptionalAuthInfo(authInfo, existingContact);
     ImmutableSet<StatusValue> statusToRemove = command.getInnerRemove().getStatusValues();
     ImmutableSet<StatusValue> statusesToAdd = command.getInnerAdd().getStatusValues();
-    if (!isSuperuser) {  // The superuser can update any contact and set any status.
+    if (!isSuperuser) { // The superuser can update any contact and set any status.
       verifyResourceOwnership(clientId, existingContact);
       verifyAllStatusesAreClientSettable(union(statusesToAdd, statusToRemove));
     }
@@ -105,7 +106,7 @@ public final class ContactUpdateFlow implements TransactionalFlow {
     historyBuilder
         .setType(HistoryEntry.Type.CONTACT_UPDATE)
         .setModificationTime(now)
-        .setXmlBytes(null)  // We don't want to store contact details in the history entry.
+        .setXmlBytes(null) // We don't want to store contact details in the history entry.
         .setParent(Key.create(existingContact));
     checkSameValuesNotAddedAndRemoved(statusesToAdd, statusToRemove);
     ContactResource.Builder builder = existingContact.asBuilder();
@@ -130,17 +131,18 @@ public final class ContactUpdateFlow implements TransactionalFlow {
         builder.setInternationalizedPostalInfo(null);
       }
     }
-    ContactResource newContact = builder
-        .setLastEppUpdateTime(now)
-        .setLastEppUpdateClientId(clientId)
-        .setAuthInfo(preferFirst(change.getAuthInfo(), existingContact.getAuthInfo()))
-        .setDisclose(preferFirst(change.getDisclose(), existingContact.getDisclose()))
-        .setEmailAddress(preferFirst(change.getEmail(), existingContact.getEmailAddress()))
-        .setFaxNumber(preferFirst(change.getFax(), existingContact.getFaxNumber()))
-        .setVoiceNumber(preferFirst(change.getVoice(), existingContact.getVoiceNumber()))
-        .addStatusValues(statusesToAdd)
-        .removeStatusValues(statusToRemove)
-        .build();
+    ContactResource newContact =
+        builder
+            .setLastEppUpdateTime(now)
+            .setLastEppUpdateClientId(clientId)
+            .setAuthInfo(preferFirst(change.getAuthInfo(), existingContact.getAuthInfo()))
+            .setDisclose(preferFirst(change.getDisclose(), existingContact.getDisclose()))
+            .setEmailAddress(preferFirst(change.getEmail(), existingContact.getEmailAddress()))
+            .setFaxNumber(preferFirst(change.getFax(), existingContact.getFaxNumber()))
+            .setVoiceNumber(preferFirst(change.getVoice(), existingContact.getVoiceNumber()))
+            .addStatusValues(statusesToAdd)
+            .removeStatusValues(statusToRemove)
+            .build();
     // If the resource is marked with clientUpdateProhibited, and this update did not clear that
     // status, then the update must be disallowed (unless a superuser is requesting the change).
     if (!isSuperuser

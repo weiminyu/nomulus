@@ -53,7 +53,7 @@ final class LoadSnapshotCommand extends BigqueryCommand {
   /** Runs the main snapshot import logic. */
   @Override
   public void runWithBigquery() throws Exception {
-    kindNames.removeAll(ImmutableList.of(""));  // Filter out any empty kind names.
+    kindNames.removeAll(ImmutableList.of("")); // Filter out any empty kind names.
     if (snapshotPrefix == null || kindNames.isEmpty()) {
       System.err.println("Nothing to import; specify --snapshot and at least one kind.");
       return;
@@ -69,8 +69,8 @@ final class LoadSnapshotCommand extends BigqueryCommand {
   private Map<String, ListenableFuture<?>> loadSnapshotKinds(List<String> kindNames) {
     ImmutableMap.Builder<String, ListenableFuture<?>> builder = new ImmutableMap.Builder<>();
     for (String kind : kindNames) {
-      String filename = String.format(
-          "gs://%s/%s.%s.backup_info", snapshotGcsBucket, snapshotPrefix, kind);
+      String filename =
+          String.format("gs://%s/%s.%s.backup_info", snapshotGcsBucket, snapshotPrefix, kind);
       builder.put(kind, loadSnapshotFile(filename, kind));
       System.err.println("Started load job for kind: " + kind);
     }
@@ -79,17 +79,19 @@ final class LoadSnapshotCommand extends BigqueryCommand {
 
   /** Starts a load job for the specified kind name, sourcing data from the given GCS file. */
   private ListenableFuture<?> loadSnapshotFile(String filename, String kindName) {
-    return bigquery().load(
-        bigquery().buildDestinationTable(kindName)
-            .description("Datastore snapshot import for " + kindName + ".")
-            .build(),
-        SourceFormat.DATASTORE_BACKUP,
-        ImmutableList.of(filename));
+    return bigquery()
+        .load(
+            bigquery()
+                .buildDestinationTable(kindName)
+                .description("Datastore snapshot import for " + kindName + ".")
+                .build(),
+            SourceFormat.DATASTORE_BACKUP,
+            ImmutableList.of(filename));
   }
 
   /**
-   * Block on the completion of the load jobs in the provided map, printing out information on
-   * each job's success or failure.
+   * Block on the completion of the load jobs in the provided map, printing out information on each
+   * job's success or failure.
    */
   private void waitForLoadJobs(Map<String, ListenableFuture<?>> loadJobs) throws Exception {
     final long startTime = System.currentTimeMillis();
@@ -121,7 +123,6 @@ final class LoadSnapshotCommand extends BigqueryCommand {
     List<?> results = Futures.successfulAsList(loadJobs.values()).get();
     int numSucceeded = (int) results.stream().filter(Objects::nonNull).count();
     System.err.printf(
-        "All load jobs have terminated: %d/%d successful.\n",
-        numSucceeded, loadJobs.size());
+        "All load jobs have terminated: %d/%d successful.\n", numSucceeded, loadJobs.size());
   }
 }

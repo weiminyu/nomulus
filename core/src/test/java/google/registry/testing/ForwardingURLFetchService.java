@@ -23,8 +23,8 @@ import java.net.URL;
 import java.util.concurrent.Future;
 
 /**
- * An implementation of the {@link URLFetchService} interface that forwards all requests through
- * a synchronous fetch call.
+ * An implementation of the {@link URLFetchService} interface that forwards all requests through a
+ * synchronous fetch call.
  */
 public abstract class ForwardingURLFetchService implements URLFetchService {
 

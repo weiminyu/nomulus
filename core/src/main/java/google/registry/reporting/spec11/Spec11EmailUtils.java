@@ -128,11 +128,18 @@ public class Spec11EmailUtils {
 
   private RegistrarThreatMatches filterOutNonPublishedMatches(
       RegistrarThreatMatches registrarThreatMatches) {
-    ImmutableList<ThreatMatch> filteredMatches = registrarThreatMatches.threatMatches().stream()
-        .filter(threatMatch ->
-            ofy().load().type(DomainBase.class).filter("fullyQualifiedDomainName",
-                threatMatch.fullyQualifiedDomainName()).first().now().shouldPublishToDns()
-        ).collect(toImmutableList());
+    ImmutableList<ThreatMatch> filteredMatches =
+        registrarThreatMatches.threatMatches().stream()
+            .filter(
+                threatMatch ->
+                    ofy()
+                        .load()
+                        .type(DomainBase.class)
+                        .filter("fullyQualifiedDomainName", threatMatch.fullyQualifiedDomainName())
+                        .first()
+                        .now()
+                        .shouldPublishToDns())
+            .collect(toImmutableList());
     return RegistrarThreatMatches.create(registrarThreatMatches.clientId(), filteredMatches);
   }
 

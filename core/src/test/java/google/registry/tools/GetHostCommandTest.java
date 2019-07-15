@@ -91,9 +91,7 @@ public class GetHostCommandTest extends CommandTestCase<GetHostCommand> {
   @Test
   public void testSuccess_hostDeletedInFuture() throws Exception {
     persistResource(
-        newHostResource("ns1.example.tld").asBuilder()
-            .setDeletionTime(now.plusDays(1))
-            .build());
+        newHostResource("ns1.example.tld").asBuilder().setDeletionTime(now.plusDays(1)).build());
     runCommand("ns1.example.tld", "--read_timestamp=" + now.plusMonths(1));
     assertInStdout("Host 'ns1.example.tld' does not exist or is deleted");
   }

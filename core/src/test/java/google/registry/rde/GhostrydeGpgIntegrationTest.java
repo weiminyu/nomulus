@@ -45,8 +45,7 @@ import org.junit.runner.RunWith;
 @SuppressWarnings("resource")
 public class GhostrydeGpgIntegrationTest extends ShardableTestCase {
 
-  @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
 
   @Rule
   public final GpgSystemCommandRule gpg =
@@ -55,18 +54,19 @@ public class GhostrydeGpgIntegrationTest extends ShardableTestCase {
           RdeTestData.loadBytes("pgp-private-keyring-registry.asc"));
 
   @DataPoints
-  public static GpgCommand[] commands = new GpgCommand[] {
-    new GpgCommand("gpg"),
-    new GpgCommand("gpg2"),
-  };
+  public static GpgCommand[] commands =
+      new GpgCommand[] {
+        new GpgCommand("gpg"), new GpgCommand("gpg2"),
+      };
 
   @DataPoints
-  public static Content[] contents = new Content[] {
-    new Content("(◕‿◕)"),
-    new Content(repeat("Fanatics have their dreams, wherewith they weave\n", 1000)),
-    new Content("\0yolo"),
-    new Content(""),
-  };
+  public static Content[] contents =
+      new Content[] {
+        new Content("(◕‿◕)"),
+        new Content(repeat("Fanatics have their dreams, wherewith they weave\n", 1000)),
+        new Content("\0yolo"),
+        new Content(""),
+      };
 
   @Theory
   public void test(GpgCommand cmd, Content content) throws Exception {

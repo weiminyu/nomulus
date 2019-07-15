@@ -88,10 +88,7 @@ public class LockDomainCommandTest extends EppToolCommandTestCase<LockDomainComm
   @Test
   public void testSuccess_alreadyLockedDomain_performsNoAction() throws Exception {
     persistResource(
-        newDomainBase("example.tld")
-            .asBuilder()
-            .addStatusValues(REGISTRY_LOCK_STATUSES)
-            .build());
+        newDomainBase("example.tld").asBuilder().addStatusValues(REGISTRY_LOCK_STATUSES).build());
     runCommandForced("--client=NewRegistrar", "example.tld");
   }
 

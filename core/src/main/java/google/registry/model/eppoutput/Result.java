@@ -34,7 +34,7 @@ public class Result extends ImmutableObject {
    * [RFC5321]. EPP uses four decimal digits to describe the success or failure of each EPP command.
    * Each of the digits of the reply have special significance."
    *
-   * "The first digit denotes command success or failure. The second digit denotes the response
+   * <p>"The first digit denotes command success or failure. The second digit denotes the response
    * category, such as command syntax or security. The third and fourth digits provide explicit
    * response detail within each response category."
    */
@@ -132,19 +132,18 @@ public class Result extends ImmutableObject {
     /**
      * An RFC 4646 language code.
      *
-     * @see <a href="http://tools.ietf.org/html/rfc4646">
-     *     RFC 4646 - Tags for Identifying Languages</a>
+     * @see <a href="http://tools.ietf.org/html/rfc4646">RFC 4646 - Tags for Identifying
+     *     Languages</a>
      */
     public final String msgLang;
 
-    /** @param msg a human-readable description of the response code; required.  */
+    /** @param msg a human-readable description of the response code; required. */
     Code(String msg) {
       this.code = Integer.parseInt(enumToXml(this));
       Preconditions.checkArgument(
-          (int) Math.log10(code) == 3,
-          "Response code must be a four-digit (positive) number.");
+          (int) Math.log10(code) == 3, "Response code must be a four-digit (positive) number.");
       this.msg = Preconditions.checkNotNull(msg, "A message must be specified.");
-      this.msgLang = "en";  // All of our messages are English.
+      this.msgLang = "en"; // All of our messages are English.
     }
 
     /** @return true iff the response code is in the 1xxx category, representing success. */
@@ -154,8 +153,7 @@ public class Result extends ImmutableObject {
   }
 
   /** The result code for this result. This is always present. */
-  @XmlAttribute
-  Code code;
+  @XmlAttribute Code code;
 
   /** An explanation of the result code. */
   String msg;
@@ -173,8 +171,7 @@ public class Result extends ImmutableObject {
     instance.code = code;
     // If no message was set, pick up a default message from the Code enum.
     Preconditions.checkState(
-        !code.isSuccess() || msg == null,
-        "Only error result codes may have a message");
+        !code.isSuccess() || msg == null, "Only error result codes may have a message");
     instance.msg = MoreObjects.firstNonNull(msg, code.msg);
     return instance;
   }

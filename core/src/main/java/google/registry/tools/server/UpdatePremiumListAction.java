@@ -43,7 +43,8 @@ public class UpdatePremiumListAction extends CreateOrUpdatePremiumListAction {
 
   public static final String PATH = "/_dr/admin/updatePremiumList";
 
-  @Inject UpdatePremiumListAction() {}
+  @Inject
+  UpdatePremiumListAction() {}
 
   @Override
   protected void savePremiumList() {

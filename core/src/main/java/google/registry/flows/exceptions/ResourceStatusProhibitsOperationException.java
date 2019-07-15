@@ -21,8 +21,7 @@ import google.registry.model.eppcommon.StatusValue;
 import java.util.Set;
 
 /** Resource status prohibits this operation. */
-public class ResourceStatusProhibitsOperationException
-    extends StatusProhibitsOperationException {
+public class ResourceStatusProhibitsOperationException extends StatusProhibitsOperationException {
   public ResourceStatusProhibitsOperationException(Set<StatusValue> statuses) {
     super("Operation disallowed by status: " + formatStatusValues(statuses));
   }

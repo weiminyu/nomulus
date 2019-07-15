@@ -97,9 +97,9 @@ public class CheckBackupAction implements Runnable {
   @Override
   public void run() {
     try {
-    if (requestMethod == POST) {
+      if (requestMethod == POST) {
         checkAndLoadBackupIfComplete();
-    } else {
+      } else {
         // This is a GET request.
         // TODO(weiminyu): consider moving this functionality to Registry tool.
         response.setPayload(getExportStatus().toPrettyString());

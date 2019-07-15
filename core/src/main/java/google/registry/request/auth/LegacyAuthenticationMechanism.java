@@ -57,8 +57,7 @@ public class LegacyAuthenticationMechanism implements AuthenticationMechanism {
     }
 
     return AuthResult.create(
-        USER,
-        UserAuthInfo.create(userService.getCurrentUser(), userService.isUserAdmin()));
+        USER, UserAuthInfo.create(userService.getCurrentUser(), userService.isUserAdmin()));
   }
 
   private boolean validateXsrf(HttpServletRequest request) {

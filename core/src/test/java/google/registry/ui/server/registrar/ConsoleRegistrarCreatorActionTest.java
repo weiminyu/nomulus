@@ -63,15 +63,11 @@ import org.mockito.junit.MockitoRule;
 @RunWith(JUnit4.class)
 public final class ConsoleRegistrarCreatorActionTest {
 
-  @Rule
-  public final AppEngineRule appEngineRule = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngineRule = AppEngineRule.builder().withDatastore().build();
 
   @Rule public final MockitoRule mocks = MockitoJUnit.rule();
 
-  @Rule
-  public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
+  @Rule public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
 
   private final FakeResponse response = new FakeResponse();
   private final ConsoleRegistrarCreatorAction action = new ConsoleRegistrarCreatorAction();
@@ -174,7 +170,6 @@ public final class ConsoleRegistrarCreatorActionTest {
     action.city = Optional.of("my city");
     action.countryCode = Optional.of("CC");
 
-
     action.method = Method.POST;
     action.run();
 
@@ -211,11 +206,13 @@ public final class ConsoleRegistrarCreatorActionTest {
     assertThat(registrar.getState()).isEqualTo(Registrar.State.PENDING);
     assertThat(registrar.getType()).isEqualTo(Registrar.Type.REAL);
 
-    assertThat(registrar.getLocalizedAddress()).isEqualTo(new RegistrarAddress.Builder()
-        .setStreet(ImmutableList.of("my street"))
-        .setCity("my city")
-        .setCountryCode("CC")
-        .build());
+    assertThat(registrar.getLocalizedAddress())
+        .isEqualTo(
+            new RegistrarAddress.Builder()
+                .setStreet(ImmutableList.of("my street"))
+                .setCity("my city")
+                .setCountryCode("CC")
+                .build());
 
     assertThat(registrar.getContacts())
         .containsExactly(
@@ -246,7 +243,6 @@ public final class ConsoleRegistrarCreatorActionTest {
     action.optionalZip = Optional.of("12345-678");
     action.countryCode = Optional.of("CC");
 
-
     action.method = Method.POST;
     action.run();
 
@@ -256,13 +252,15 @@ public final class ConsoleRegistrarCreatorActionTest {
 
     Registrar registrar = loadByClientId("myclientid").orElse(null);
     assertThat(registrar).isNotNull();
-    assertThat(registrar.getLocalizedAddress()).isEqualTo(new RegistrarAddress.Builder()
-        .setStreet(ImmutableList.of("my street", "more street", "final street"))
-        .setCity("my city")
-        .setState("province")
-        .setZip("12345-678")
-        .setCountryCode("CC")
-        .build());
+    assertThat(registrar.getLocalizedAddress())
+        .isEqualTo(
+            new RegistrarAddress.Builder()
+                .setStreet(ImmutableList.of("my street", "more street", "final street"))
+                .setCity("my city")
+                .setState("province")
+                .setZip("12345-678")
+                .setCountryCode("CC")
+                .build());
   }
 
   @Test
@@ -317,11 +315,7 @@ public final class ConsoleRegistrarCreatorActionTest {
 
     action.method = Method.POST;
 
-    action.billingAccount =
-        Optional.of(
-            ""
-                + "JPY=billing-account-1\n"
-                + "jpy=billing-account-2\n");
+    action.billingAccount = Optional.of("" + "JPY=billing-account-1\n" + "jpy=billing-account-2\n");
     action.run();
 
     assertThat(response.getPayload())
@@ -347,10 +341,7 @@ public final class ConsoleRegistrarCreatorActionTest {
 
     action.billingAccount =
         Optional.of(
-            ""
-                + "JPY=billing-account-1\n"
-                + "xyz=billing-account-2\n"
-                + "usd=billing-account-3\n");
+            "" + "JPY=billing-account-1\n" + "xyz=billing-account-2\n" + "usd=billing-account-3\n");
     action.run();
 
     assertThat(response.getPayload())
@@ -373,11 +364,7 @@ public final class ConsoleRegistrarCreatorActionTest {
     action.method = Method.POST;
 
     action.billingAccount =
-        Optional.of(
-            ""
-                + "JPY=billing-account-1\n"
-                + "some bad line\n"
-                + "usd=billing-account-2\n");
+        Optional.of("" + "JPY=billing-account-1\n" + "some bad line\n" + "usd=billing-account-2\n");
     action.run();
 
     assertThat(response.getPayload())

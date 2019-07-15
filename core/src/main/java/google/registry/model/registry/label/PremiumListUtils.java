@@ -61,6 +61,7 @@ public final class PremiumListUtils {
     }
 
     abstract PremiumListCheckOutcome checkOutcome();
+
     abstract Optional<Money> premiumPrice();
   }
 
@@ -138,8 +139,7 @@ public final class PremiumListUtils {
    * <p>This is the only valid way to save these kinds of entities!
    */
   public static PremiumList savePremiumListAndEntries(
-      final PremiumList premiumList,
-      ImmutableMap<String, PremiumListEntry> premiumListEntries) {
+      final PremiumList premiumList, ImmutableMap<String, PremiumListEntry> premiumListEntries) {
     final Optional<PremiumList> oldPremiumList = PremiumList.getUncached(premiumList.getName());
 
     // Create the new revision (with its Bloom filter) and parent the entries on it.
@@ -155,25 +155,33 @@ public final class PremiumListUtils {
     }
 
     // Save the new PremiumList and revision itself.
-    PremiumList updated = ofy().transactNew(() -> {
-      DateTime now = ofy().getTransactionTime();
-      // Assert that the premium list hasn't been changed since we started this process.
-      PremiumList existing = ofy().load()
-          .type(PremiumList.class)
-          .parent(getCrossTldKey())
-          .id(premiumList.getName())
-          .now();
-      checkState(
-          Objects.equals(existing, oldPremiumList.orElse(null)),
-          "PremiumList was concurrently edited");
-      PremiumList newList = premiumList.asBuilder()
-          .setLastUpdateTime(now)
-          .setCreationTime(oldPremiumList.isPresent() ? oldPremiumList.get().creationTime : now)
-          .setRevision(newRevisionKey)
-          .build();
-      ofy().save().entities(newList, newRevision);
-      return newList;
-    });
+    PremiumList updated =
+        ofy()
+            .transactNew(
+                () -> {
+                  DateTime now = ofy().getTransactionTime();
+                  // Assert that the premium list hasn't been changed since we started this process.
+                  PremiumList existing =
+                      ofy()
+                          .load()
+                          .type(PremiumList.class)
+                          .parent(getCrossTldKey())
+                          .id(premiumList.getName())
+                          .now();
+                  checkState(
+                      Objects.equals(existing, oldPremiumList.orElse(null)),
+                      "PremiumList was concurrently edited");
+                  PremiumList newList =
+                      premiumList
+                          .asBuilder()
+                          .setLastUpdateTime(now)
+                          .setCreationTime(
+                              oldPremiumList.isPresent() ? oldPremiumList.get().creationTime : now)
+                          .setRevision(newRevisionKey)
+                          .build();
+                  ofy().save().entities(newList, newRevision);
+                  return newList;
+                });
 
     // Invalidate the cache on this premium list so the change will take effect instantly. This only
     // clears the cache on the same instance that the update was run on, which will typically be the

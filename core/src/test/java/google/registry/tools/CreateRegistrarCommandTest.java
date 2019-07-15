@@ -688,7 +688,6 @@ public class CreateRegistrarCommandTest extends CommandTestCase<CreateRegistrarC
     assertThat(registrar.getFaxNumber()).isNull();
     assertThat(registrar.getUrl()).isNull();
     assertThat(registrar.getDriveFolderId()).isNull();
-
   }
 
   @Test
@@ -1255,7 +1254,6 @@ public class CreateRegistrarCommandTest extends CommandTestCase<CreateRegistrarC
                 "--icann_referral_email=foo@bar.test",
                 "clientz"));
   }
-
 
   @Test
   public void testFailure_missingState() {

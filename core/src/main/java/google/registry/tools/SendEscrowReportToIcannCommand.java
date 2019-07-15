@@ -33,8 +33,7 @@ final class SendEscrowReportToIcannCommand implements CommandWithRemoteApi {
       required = true)
   private List<Path> files;
 
-  @Inject
-  RdeReporter rdeReporter;
+  @Inject RdeReporter rdeReporter;
 
   @Override
   public void run() throws Exception {

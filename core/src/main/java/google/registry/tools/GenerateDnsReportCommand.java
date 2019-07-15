@@ -54,8 +54,7 @@ final class GenerateDnsReportCommand implements CommandWithRemoteApi {
       validateWith = PathParameter.OutputFile.class)
   private Path output = Paths.get("/dev/stdout");
 
-  @Inject
-  Clock clock;
+  @Inject Clock clock;
 
   @Override
   public void run() throws Exception {
@@ -97,9 +96,7 @@ final class GenerateDnsReportCommand implements CommandWithRemoteApi {
       ImmutableList<String> nameservers =
           ImmutableList.sortedCopyOf(domain.loadNameserverFullyQualifiedHostNames());
       ImmutableList<Map<String, ?>> dsData =
-          domain
-              .getDsData()
-              .stream()
+          domain.getDsData().stream()
               .map(
                   dsData1 ->
                       ImmutableMap.of(
@@ -121,15 +118,12 @@ final class GenerateDnsReportCommand implements CommandWithRemoteApi {
 
     private void write(HostResource nameserver) {
       ImmutableList<String> ipAddresses =
-          nameserver
-              .getInetAddresses()
-              .stream()
+          nameserver.getInetAddresses().stream()
               .map(InetAddress::getHostAddress)
               .sorted()
               .collect(toImmutableList());
-      ImmutableMap<String, ?> map  = ImmutableMap.of(
-          "host", nameserver.getFullyQualifiedHostName(),
-          "ips", ipAddresses);
+      ImmutableMap<String, ?> map =
+          ImmutableMap.of("host", nameserver.getFullyQualifiedHostName(), "ips", ipAddresses);
       writeJson(map);
     }
 

@@ -38,4 +38,3 @@ public enum KeyringKeyName {
   RDE_STAGING_PUBLIC_KEY,
   SAFE_BROWSING_API_KEY,
 }
-

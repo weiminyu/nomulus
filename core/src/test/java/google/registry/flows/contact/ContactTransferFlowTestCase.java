@@ -37,7 +37,7 @@ import org.junit.Before;
  * @param <R> the resource type
  */
 public class ContactTransferFlowTestCase<F extends Flow, R extends EppResource>
-    extends ResourceFlowTestCase<F, R>{
+    extends ResourceFlowTestCase<F, R> {
 
   // Transfer is requested on the 6th and expires on the 11th.
   // The "now" of this flow is on the 9th, 3 days in.
@@ -58,26 +58,28 @@ public class ContactTransferFlowTestCase<F extends Flow, R extends EppResource>
   public void initContactTest() {
     // Registrar ClientZ is used in tests that need another registrar that definitely doesn't own
     // the resources in question.
-    persistResource(
-        AppEngineRule.makeRegistrar1().asBuilder().setClientId("ClientZ").build());
+    persistResource(AppEngineRule.makeRegistrar1().asBuilder().setClientId("ClientZ").build());
   }
 
   /** Adds a contact that has a pending transfer on it from TheRegistrar to NewRegistrar. */
   protected void setupContactWithPendingTransfer() {
-    contact = persistContactWithPendingTransfer(
-        newContactResource("sh8013"),
-        TRANSFER_REQUEST_TIME,
-        TRANSFER_EXPIRATION_TIME,
-        TRANSFER_REQUEST_TIME);
+    contact =
+        persistContactWithPendingTransfer(
+            newContactResource("sh8013"),
+            TRANSFER_REQUEST_TIME,
+            TRANSFER_EXPIRATION_TIME,
+            TRANSFER_REQUEST_TIME);
   }
 
   /** Changes the transfer status on the persisted contact. */
   protected void changeTransferStatus(TransferStatus transferStatus) {
-    contact = persistResource(
-        contact.asBuilder()
-            .setTransferData(
-                contact.getTransferData().asBuilder().setTransferStatus(transferStatus).build())
-            .build());
+    contact =
+        persistResource(
+            contact
+                .asBuilder()
+                .setTransferData(
+                    contact.getTransferData().asBuilder().setTransferStatus(transferStatus).build())
+                .build());
     clock.advanceOneMilli();
   }
 

@@ -20,9 +20,9 @@ import google.registry.model.eppcommon.Address;
 /**
  * EPP Contact Address
  *
- * <p>This class is embedded inside the {@link PostalInfo} of an EPP contact to hold its
- * address. The fields are all defined in parent class {@link Address}, but the subclass is still
- * necessary to pick up the contact namespace.
+ * <p>This class is embedded inside the {@link PostalInfo} of an EPP contact to hold its address.
+ * The fields are all defined in parent class {@link Address}, but the subclass is still necessary
+ * to pick up the contact namespace.
  *
  * <p>This does not implement {@code Overlayable} because it is intended to be bulk replaced on
  * update.

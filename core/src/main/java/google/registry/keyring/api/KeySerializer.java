@@ -41,7 +41,6 @@ import org.bouncycastle.openpgp.operator.jcajce.JcaPGPDigestCalculatorProviderBu
  */
 public final class KeySerializer {
 
-
   private KeySerializer() {}
 
   /**
@@ -68,10 +67,8 @@ public final class KeySerializer {
 
   /** Deserialize a PGPPublicKey */
   public static PGPPublicKey deserializePublicKey(byte[] serialized) throws IOException {
-    return
-        new BcPGPPublicKeyRing(
-            PGPUtil.getDecoderStream(
-                new ByteArrayInputStream(serialized))).getPublicKey();
+    return new BcPGPPublicKeyRing(PGPUtil.getDecoderStream(new ByteArrayInputStream(serialized)))
+        .getPublicKey();
   }
 
   /** Serializes a string */
@@ -101,29 +98,27 @@ public final class KeySerializer {
       // BLOCK-----" (or similar) footer.
       try (ArmoredOutputStream out = new ArmoredOutputStream(byteStream)) {
         new PGPSecretKey(
-            keyPair.getPrivateKey(),
-            keyPair.getPublicKey(),
-            new JcaPGPDigestCalculatorProviderBuilder()
-                .setProvider("BC")
-                .build()
-                .get(HashAlgorithmTags.SHA256),
-            true,
-            null).encode(out);
+                keyPair.getPrivateKey(),
+                keyPair.getPublicKey(),
+                new JcaPGPDigestCalculatorProviderBuilder()
+                    .setProvider("BC")
+                    .build()
+                    .get(HashAlgorithmTags.SHA256),
+                true,
+                null)
+            .encode(out);
       }
       return byteStream.toByteArray();
     }
   }
 
   /** Deserialize a PGPKeyPair */
-  public static PGPKeyPair deserializeKeyPair(byte[] serialized)
-      throws IOException, PGPException {
+  public static PGPKeyPair deserializeKeyPair(byte[] serialized) throws IOException, PGPException {
     PGPSecretKey secretKey =
-        new BcPGPSecretKeyRing(
-            PGPUtil.getDecoderStream(
-                new ByteArrayInputStream(serialized))).getSecretKey();
+        new BcPGPSecretKeyRing(PGPUtil.getDecoderStream(new ByteArrayInputStream(serialized)))
+            .getSecretKey();
     return new PGPKeyPair(
-        secretKey.getPublicKey(),
-        secretKey.extractPrivateKey(createSecretKeyDecryptor()));
+        secretKey.getPublicKey(), secretKey.extractPrivateKey(createSecretKeyDecryptor()));
   }
 
   private static PBESecretKeyDecryptor createSecretKeyDecryptor() {

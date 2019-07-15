@@ -34,13 +34,25 @@ import org.joda.time.Duration;
 public class DnsMetrics {
 
   /** Disposition of a publish request. */
-  public enum PublishStatus { ACCEPTED, REJECTED }
+  public enum PublishStatus {
+    ACCEPTED,
+    REJECTED
+  }
 
   /** Disposition of writer.commit(). */
-  public enum CommitStatus { SUCCESS, FAILURE }
+  public enum CommitStatus {
+    SUCCESS,
+    FAILURE
+  }
 
   /** Disposition of the publish action. */
-  public enum ActionStatus { SUCCESS, COMMIT_FAILURE, LOCK_FAILURE, BAD_WRITER, BAD_LOCK_INDEX }
+  public enum ActionStatus {
+    SUCCESS,
+    COMMIT_FAILURE,
+    LOCK_FAILURE,
+    BAD_WRITER,
+    BAD_LOCK_INDEX
+  }
 
   private static final ImmutableSet<LabelDescriptor> LABEL_DESCRIPTORS_FOR_PUBLISH_REQUESTS =
       ImmutableSet.of(
@@ -67,8 +79,7 @@ public class DnsMetrics {
 
   // Fibonacci fitter more suitible for integer-type values. Allows values between 0 and 10946,
   // which is the 21th Fibonacci number.
-  private static final DistributionFitter FIBONACCI_FITTER =
-      FibonacciFitter.create(10946);
+  private static final DistributionFitter FIBONACCI_FITTER = FibonacciFitter.create(10946);
 
   private static final IncrementableMetric publishDomainRequests =
       MetricRegistryImpl.getDefault()
@@ -238,12 +249,13 @@ public class DnsMetrics {
 
     if (batchSize > 0) {
       normalizedProcessingTimePerCommitDist.record(
-          (double) processingDuration.getMillis() / batchSize,
-          tld, status.name(), dnsWriter);
+          (double) processingDuration.getMillis() / batchSize, tld, status.name(), dnsWriter);
       normalizedProcessingTimePerItemDist.record(
           (double) processingDuration.getMillis() / batchSize,
           batchSize,
-          tld, status.name(), dnsWriter);
+          tld,
+          status.name(),
+          dnsWriter);
     }
 
     totalBatchSizePerCommitDist.record(batchSize, tld, status.name(), dnsWriter);

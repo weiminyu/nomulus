@@ -37,8 +37,7 @@ public class DateTimeParameterTest {
   @Test
   public void testConvert_iso8601_returnsSameAsDateTimeParse() {
     String exampleDate = "2014-01-01T01:02:03.004Z";
-    assertThat(instance.convert(exampleDate))
-        .isEqualTo(DateTime.parse(exampleDate));
+    assertThat(instance.convert(exampleDate)).isEqualTo(DateTime.parse(exampleDate));
   }
 
   @Test

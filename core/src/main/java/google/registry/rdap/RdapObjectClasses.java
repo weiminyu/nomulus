@@ -41,22 +41,23 @@ import google.registry.rdap.RdapDataStructures.Remark;
 import google.registry.util.Idn;
 import java.util.Optional;
 
-/**
- * Object Classes defined in RFC7483 section 5.
- */
+/** Object Classes defined in RFC7483 section 5. */
 final class RdapObjectClasses {
 
   /**
    * Temporary implementation of VCards.
    *
-   * Will create a better implementation soon.
+   * <p>Will create a better implementation soon.
    */
   @RestrictJsonNames({})
   @AutoValue
   abstract static class Vcard implements Jsonable {
     abstract String property();
+
     abstract ImmutableMap<String, ImmutableList<String>> parameters();
+
     abstract String valueType();
+
     abstract JsonElement value();
 
     static Vcard create(
@@ -122,6 +123,7 @@ final class RdapObjectClasses {
     @AutoValue.Builder
     abstract static class Builder {
       abstract ImmutableList.Builder<Vcard> vcardsBuilder();
+
       Builder add(Vcard vcard) {
         vcardsBuilder().add(vcard);
         return this;
@@ -148,7 +150,7 @@ final class RdapObjectClasses {
   /**
    * An object that can be used to create a TopLevelReply.
    *
-   * All Actions need to return an object of this type.
+   * <p>All Actions need to return an object of this type.
    */
   abstract static class ReplyPayloadBase extends AbstractJsonableObject {
     final BoilerplateType boilerplateType;
@@ -171,10 +173,14 @@ final class RdapObjectClasses {
     @JsonableElement("rdapConformance")
     static final RdapConformance RDAP_CONFORMANCE = RdapConformance.INSTANCE;
 
-    @JsonableElement("*") abstract ReplyPayloadBase aAreplyObject();
-    @JsonableElement("notices[]") abstract Notice aTosNotice();
+    @JsonableElement("*")
+    abstract ReplyPayloadBase aAreplyObject();
 
-    @JsonableElement("notices") ImmutableList<Notice> boilerplateNotices() {
+    @JsonableElement("notices[]")
+    abstract Notice aTosNotice();
+
+    @JsonableElement("notices")
+    ImmutableList<Notice> boilerplateNotices() {
       switch (aAreplyObject().boilerplateType) {
         case DOMAIN:
           return RdapIcannStandardInformation.domainBoilerplateNotices;
@@ -199,13 +205,26 @@ final class RdapObjectClasses {
   private abstract static class RdapObjectBase extends ReplyPayloadBase {
     @JsonableElement final ObjectClassName objectClassName;
 
-    @JsonableElement abstract Optional<String> handle();
-    @JsonableElement abstract ImmutableList<PublicId> publicIds();
-    @JsonableElement abstract ImmutableList<RdapEntity> entities();
-    @JsonableElement abstract ImmutableList<RdapStatus> status();
-    @JsonableElement abstract ImmutableList<Remark> remarks();
-    @JsonableElement abstract ImmutableList<Link> links();
-    @JsonableElement abstract ImmutableList<Event> events();
+    @JsonableElement
+    abstract Optional<String> handle();
+
+    @JsonableElement
+    abstract ImmutableList<PublicId> publicIds();
+
+    @JsonableElement
+    abstract ImmutableList<RdapEntity> entities();
+
+    @JsonableElement
+    abstract ImmutableList<RdapStatus> status();
+
+    @JsonableElement
+    abstract ImmutableList<Remark> remarks();
+
+    @JsonableElement
+    abstract ImmutableList<Link> links();
+
+    @JsonableElement
+    abstract ImmutableList<Event> events();
 
     /**
      * Required event for all response objects, but not for internal objects.
@@ -234,15 +253,21 @@ final class RdapObjectClasses {
       this.objectClassName = objectClassName;
     }
 
-
     abstract static class Builder<B extends Builder<?>> {
       abstract B setHandle(String handle);
+
       abstract ImmutableList.Builder<PublicId> publicIdsBuilder();
+
       abstract ImmutableList.Builder<RdapEntity> entitiesBuilder();
+
       abstract ImmutableList.Builder<RdapStatus> statusBuilder();
+
       abstract ImmutableList.Builder<Remark> remarksBuilder();
+
       abstract ImmutableList.Builder<Link> linksBuilder();
+
       abstract B setPort43(Port43WhoisServer port43);
+
       abstract ImmutableList.Builder<Event> eventsBuilder();
 
       abstract B setLastUpdateOfRdapDatabaseEvent(Event event);
@@ -292,9 +317,14 @@ final class RdapObjectClasses {
       super(BoilerplateType.ENTITY, ObjectClassName.ENTITY);
     }
 
-    @JsonableElement abstract Optional<VcardArray> vcardArray();
-    @JsonableElement abstract ImmutableSet<Role> roles();
-    @JsonableElement abstract ImmutableList<EventWithoutActor> asEventActor();
+    @JsonableElement
+    abstract Optional<VcardArray> vcardArray();
+
+    @JsonableElement
+    abstract ImmutableSet<Role> roles();
+
+    @JsonableElement
+    abstract ImmutableList<EventWithoutActor> asEventActor();
 
     private abstract static class Builder<B extends Builder<B>> extends RdapObjectBase.Builder<B> {
       abstract B setVcardArray(VcardArray vcardArray);
@@ -358,9 +388,11 @@ final class RdapObjectClasses {
    */
   private abstract static class RdapNamedObjectBase extends RdapObjectBase {
 
-    @JsonableElement abstract String ldhName();
+    @JsonableElement
+    abstract String ldhName();
 
-    @JsonableElement final Optional<String> unicodeName() {
+    @JsonableElement
+    final Optional<String> unicodeName() {
       // Only include the unicodeName field if there are unicode characters.
       //
       // TODO(b/127490882) Consider removing the condition (i.e. always having the unicodeName
@@ -385,14 +417,13 @@ final class RdapObjectClasses {
     }
   }
 
-  /**
-   * The Nameserver Object Class defined in 5.2 of RFC7483.
-   */
+  /** The Nameserver Object Class defined in 5.2 of RFC7483. */
   @RestrictJsonNames({"nameservers[]", "nameserverSearchResults[]"})
   @AutoValue
   abstract static class RdapNameserver extends RdapNamedObjectBase {
 
-    @JsonableElement Optional<IpAddresses> ipAddresses() {
+    @JsonableElement
+    Optional<IpAddresses> ipAddresses() {
       if (ipv6().isEmpty() && ipv4().isEmpty()) {
         return Optional.empty();
       }
@@ -400,14 +431,17 @@ final class RdapObjectClasses {
     }
 
     abstract ImmutableList<String> ipv6();
+
     abstract ImmutableList<String> ipv4();
 
     class IpAddresses extends AbstractJsonableObject {
-      @JsonableElement ImmutableList<String> v6() {
+      @JsonableElement
+      ImmutableList<String> v6() {
         return Ordering.natural().immutableSortedCopy(ipv6());
       }
 
-      @JsonableElement ImmutableList<String> v4() {
+      @JsonableElement
+      ImmutableList<String> v4() {
         return Ordering.natural().immutableSortedCopy(ipv4());
       }
     }
@@ -423,6 +457,7 @@ final class RdapObjectClasses {
     @AutoValue.Builder
     abstract static class Builder extends RdapNamedObjectBase.Builder<Builder> {
       abstract ImmutableList.Builder<String> ipv6Builder();
+
       abstract ImmutableList.Builder<String> ipv4Builder();
 
       abstract RdapNameserver build();
@@ -506,13 +541,14 @@ final class RdapObjectClasses {
   /**
    * The Domain Object Class defined in 5.3 of RFC7483.
    *
-   * We're missing the "variants", "secureDNS", "network" fields
+   * <p>We're missing the "variants", "secureDNS", "network" fields
    */
   @RestrictJsonNames("domainSearchResults[]")
   @AutoValue
   abstract static class RdapDomain extends RdapNamedObjectBase {
 
-    @JsonableElement abstract ImmutableList<RdapNameserver> nameservers();
+    @JsonableElement
+    abstract ImmutableList<RdapNameserver> nameservers();
 
     @JsonableElement("secureDNS")
     abstract Optional<SecureDns> secureDns();
@@ -535,18 +571,21 @@ final class RdapObjectClasses {
     }
   }
 
-  /**
-   * Error Response Body defined in 6 of RFC7483.
-   */
+  /** Error Response Body defined in 6 of RFC7483. */
   @RestrictJsonNames({})
   @AutoValue
   abstract static class ErrorResponse extends ReplyPayloadBase {
 
     @JsonableElement final LanguageIdentifier lang = LanguageIdentifier.EN;
 
-    @JsonableElement abstract int errorCode();
-    @JsonableElement abstract String title();
-    @JsonableElement abstract ImmutableList<String> description();
+    @JsonableElement
+    abstract int errorCode();
+
+    @JsonableElement
+    abstract String title();
+
+    @JsonableElement
+    abstract ImmutableList<String> description();
 
     ErrorResponse() {
       super(BoilerplateType.OTHER);
@@ -567,7 +606,8 @@ final class RdapObjectClasses {
   @RestrictJsonNames({})
   @AutoValue
   abstract static class HelpResponse extends ReplyPayloadBase {
-    @JsonableElement("notices[]") abstract Optional<Notice> helpNotice();
+    @JsonableElement("notices[]")
+    abstract Optional<Notice> helpNotice();
 
     HelpResponse() {
       super(BoilerplateType.OTHER);

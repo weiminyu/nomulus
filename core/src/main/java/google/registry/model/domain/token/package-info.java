@@ -13,14 +13,12 @@
 // limitations under the License.
 
 @XmlSchema(
-  namespace = "urn:ietf:params:xml:ns:allocationToken-1.0",
-  xmlns =
-      @XmlNs(
-        prefix = "allocationToken",
-        namespaceURI = "urn:ietf:params:xml:ns:allocationToken-1.0"
-      ),
-  elementFormDefault = XmlNsForm.QUALIFIED
-)
+    namespace = "urn:ietf:params:xml:ns:allocationToken-1.0",
+    xmlns =
+        @XmlNs(
+            prefix = "allocationToken",
+            namespaceURI = "urn:ietf:params:xml:ns:allocationToken-1.0"),
+    elementFormDefault = XmlNsForm.QUALIFIED)
 @XmlAccessorType(XmlAccessType.FIELD)
 package google.registry.model.domain.token;
 

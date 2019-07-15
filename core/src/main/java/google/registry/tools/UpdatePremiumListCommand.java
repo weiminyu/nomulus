@@ -28,4 +28,3 @@ class UpdatePremiumListCommand extends CreateOrUpdatePremiumListCommand {
     return UpdatePremiumListAction.PATH;
   }
 }
-

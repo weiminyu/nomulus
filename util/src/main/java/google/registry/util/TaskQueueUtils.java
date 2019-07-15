@@ -40,9 +40,7 @@ public class TaskQueueUtils implements Serializable {
     this.retrier = retrier;
   }
 
-  @NonFinalForTesting
-  @VisibleForTesting
-  static int BATCH_SIZE = 1000;
+  @NonFinalForTesting @VisibleForTesting static int BATCH_SIZE = 1000;
 
   /**
    * The batch size to use for App Engine task queue operations.
@@ -91,8 +89,7 @@ public class TaskQueueUtils implements Serializable {
 
   /** Deletes the specified tasks from the queue in batches, with retrying. */
   public void deleteTasks(Queue queue, List<TaskHandle> tasks) {
-    Lists.partition(tasks, BATCH_SIZE)
-        .stream()
+    Lists.partition(tasks, BATCH_SIZE).stream()
         .forEach(
             batch ->
                 retrier.callWithRetry(

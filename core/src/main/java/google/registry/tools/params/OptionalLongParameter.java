@@ -16,4 +16,4 @@ package google.registry.tools.params;
 
 /** Optional wrapper for LongParameter. */
 public final class OptionalLongParameter
-  extends OptionalParameterConverterValidator<Long, LongParameter> {}
+    extends OptionalParameterConverterValidator<Long, LongParameter> {}

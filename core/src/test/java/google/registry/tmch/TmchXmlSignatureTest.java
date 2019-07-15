@@ -42,13 +42,9 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TmchXmlSignatureTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   // This should be a date which falls within the validity range of the test files contained in the
   // testdata/active directory. Note that test files claiming to be valid for a particular date
@@ -76,8 +72,7 @@ public class TmchXmlSignatureTest {
       new TmchXmlSignature(new TmchCertificateAuthority(TmchCaMode.PILOT, clock));
 
   @Before
-  public void before() {
-  }
+  public void before() {}
 
   @Test
   public void testWrongCertificateAuthority() {

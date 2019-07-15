@@ -30,15 +30,14 @@ import org.joda.money.CurrencyUnit;
 @XmlRootElement(name = "check")
 public class FeeCheckCommandExtensionV06 extends ImmutableObject
     implements FeeCheckCommandExtension<
-        FeeCheckCommandExtensionItemV06,
-        FeeCheckResponseExtensionV06> {
+        FeeCheckCommandExtensionItemV06, FeeCheckResponseExtensionV06> {
 
   @XmlElement(name = "domain")
   Set<FeeCheckCommandExtensionItemV06> items;
 
   @Override
   public CurrencyUnit getCurrency() {
-    return null;  // This version of the fee extension doesn't specify a top-level currency.
+    return null; // This version of the fee extension doesn't specify a top-level currency.
   }
 
   @Override

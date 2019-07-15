@@ -40,9 +40,9 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
   private static final DateTimeFormatter UNMARSHAL_FORMAT = ISODateTimeFormat.dateTimeParser();
 
   /**
-   * Parses an ISO timestamp string into a UTC {@link LocalDate} object, converting timezones
-   * and truncating time to midnight if necessary. If {@code timestamp} is empty or {@code null}
-   * then {@code null} is returned.
+   * Parses an ISO timestamp string into a UTC {@link LocalDate} object, converting timezones and
+   * truncating time to midnight if necessary. If {@code timestamp} is empty or {@code null} then
+   * {@code null} is returned.
    */
   @Nullable
   @CheckForNull
@@ -55,8 +55,8 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
   }
 
   /**
-   * Converts {@link LocalDate} to UTC and returns it as an RFC3339 string. If {@code timestamp}
-   * is {@code null} then an empty string is returned.
+   * Converts {@link LocalDate} to UTC and returns it as an RFC3339 string. If {@code timestamp} is
+   * {@code null} then an empty string is returned.
    */
   @Override
   public String marshal(@Nullable LocalDate date) {

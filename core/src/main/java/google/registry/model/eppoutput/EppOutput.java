@@ -24,8 +24,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "epp")
 public class EppOutput extends ImmutableObject {
   @XmlElements({
-      @XmlElement(name = "response", type = EppResponse.class),
-      @XmlElement(name = "greeting", type = Greeting.class) })
+    @XmlElement(name = "response", type = EppResponse.class),
+    @XmlElement(name = "greeting", type = Greeting.class)
+  })
   ResponseOrGreeting responseOrGreeting;
 
   public static EppOutput create(ResponseOrGreeting responseOrGreeting) {

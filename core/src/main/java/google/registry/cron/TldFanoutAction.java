@@ -107,15 +107,39 @@ public final class TldFanoutAction implements Runnable {
 
   @Inject TaskQueueUtils taskQueueUtils;
   @Inject Response response;
-  @Inject @Parameter(ENDPOINT_PARAM) String endpoint;
-  @Inject @Parameter(QUEUE_PARAM) String queue;
-  @Inject @Parameter(FOR_EACH_REAL_TLD_PARAM) boolean forEachRealTld;
-  @Inject @Parameter(FOR_EACH_TEST_TLD_PARAM) boolean forEachTestTld;
-  @Inject @Parameter(RUN_IN_EMPTY_PARAM) boolean runInEmpty;
-  @Inject @Parameter(EXCLUDE_PARAM) ImmutableSet<String> excludes;
-  @Inject @Parameter(JITTER_SECONDS_PARAM) Optional<Integer> jitterSeconds;
+
+  @Inject
+  @Parameter(ENDPOINT_PARAM)
+  String endpoint;
+
+  @Inject
+  @Parameter(QUEUE_PARAM)
+  String queue;
+
+  @Inject
+  @Parameter(FOR_EACH_REAL_TLD_PARAM)
+  boolean forEachRealTld;
+
+  @Inject
+  @Parameter(FOR_EACH_TEST_TLD_PARAM)
+  boolean forEachTestTld;
+
+  @Inject
+  @Parameter(RUN_IN_EMPTY_PARAM)
+  boolean runInEmpty;
+
+  @Inject
+  @Parameter(EXCLUDE_PARAM)
+  ImmutableSet<String> excludes;
+
+  @Inject
+  @Parameter(JITTER_SECONDS_PARAM)
+  Optional<Integer> jitterSeconds;
+
   @Inject @ParameterMap ImmutableListMultimap<String, String> params;
-  @Inject TldFanoutAction() {}
+
+  @Inject
+  TldFanoutAction() {}
 
   @Override
   public void run() {
@@ -126,8 +150,7 @@ public final class TldFanoutAction implements Runnable {
         runInEmpty || forEachTestTld || forEachRealTld,
         "At least one of runInEmpty, forEachTestTld, forEachRealTld must be given");
     checkArgument(
-        !(runInEmpty && !excludes.isEmpty()),
-        "Can't specify 'exclude' with 'runInEmpty'");
+        !(runInEmpty && !excludes.isEmpty()), "Can't specify 'exclude' with 'runInEmpty'");
     ImmutableSet<String> tlds =
         runInEmpty
             ? ImmutableSet.of("")

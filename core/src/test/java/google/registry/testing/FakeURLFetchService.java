@@ -23,8 +23,8 @@ import java.net.URL;
 import java.util.Map;
 
 /**
- * A fake {@link URLFetchService} that serves constructed {@link HTTPResponse} objects from
- * a simple {@link Map} ({@link URL} to {@link HTTPResponse}) lookup.
+ * A fake {@link URLFetchService} that serves constructed {@link HTTPResponse} objects from a simple
+ * {@link Map} ({@link URL} to {@link HTTPResponse}) lookup.
  */
 public class FakeURLFetchService extends ForwardingURLFetchService {
 

@@ -56,8 +56,7 @@ public class DomainNameUtilsTest {
   @Test
   public void testGetSecondLevelDomain_insufficientDomainNameDepth() {
     IllegalArgumentException thrown =
-        assertThrows(
-            IllegalArgumentException.class, () -> getSecondLevelDomain("bar", "bar"));
+        assertThrows(IllegalArgumentException.class, () -> getSecondLevelDomain("bar", "bar"));
     assertThat(thrown)
         .hasMessageThat()
         .isEqualTo("hostName must be at least one level below the tld");
@@ -66,8 +65,7 @@ public class DomainNameUtilsTest {
   @Test
   public void testGetSecondLevelDomain_domainNotUnderTld() {
     IllegalArgumentException thrown =
-        assertThrows(
-            IllegalArgumentException.class, () -> getSecondLevelDomain("foo.bar", "abc"));
+        assertThrows(IllegalArgumentException.class, () -> getSecondLevelDomain("foo.bar", "abc"));
     assertThat(thrown).hasMessageThat().isEqualTo("hostName must be under the tld");
   }
 }

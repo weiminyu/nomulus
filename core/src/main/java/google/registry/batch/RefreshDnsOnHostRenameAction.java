@@ -84,11 +84,17 @@ public class RefreshDnsOnHostRenameAction implements Runnable {
   @Inject AsyncTaskMetrics asyncTaskMetrics;
   @Inject Clock clock;
   @Inject MapreduceRunner mrRunner;
-  @Inject @Named(QUEUE_ASYNC_HOST_RENAME) Queue pullQueue;
+
+  @Inject
+  @Named(QUEUE_ASYNC_HOST_RENAME)
+  Queue pullQueue;
+
   @Inject RequestStatusChecker requestStatusChecker;
   @Inject Response response;
   @Inject Retrier retrier;
-  @Inject RefreshDnsOnHostRenameAction() {}
+
+  @Inject
+  RefreshDnsOnHostRenameAction() {}
 
   @Override
   public void run() {
@@ -181,8 +187,7 @@ public class RefreshDnsOnHostRenameAction implements Runnable {
   }
 
   /** Map over domains and refresh the DNS of those that reference the renamed hosts. */
-  public static class RefreshDnsOnHostRenameMapper
-      extends Mapper<DomainBase, Boolean, Boolean> {
+  public static class RefreshDnsOnHostRenameMapper extends Mapper<DomainBase, Boolean, Boolean> {
 
     private static final long serialVersionUID = -5261698524424335531L;
     private static final DnsQueue dnsQueue = DnsQueue.create();
@@ -293,24 +298,31 @@ public class RefreshDnsOnHostRenameAction implements Runnable {
     private static final long serialVersionUID = 1772812852271288622L;
 
     abstract Key<HostResource> hostKey();
+
     abstract DateTime lastUpdateTime();
+
     abstract DateTime requestedTime();
+
     abstract boolean isRefreshNeeded();
+
     abstract TaskHandle task();
 
     @AutoValue.Builder
     abstract static class Builder {
       abstract Builder setHostKey(Key<HostResource> hostKey);
+
       abstract Builder setLastUpdateTime(DateTime lastUpdateTime);
+
       abstract Builder setRequestedTime(DateTime requestedTime);
+
       abstract Builder setIsRefreshNeeded(boolean isRefreshNeeded);
+
       abstract Builder setTask(TaskHandle task);
+
       abstract DnsRefreshRequest build();
     }
 
-    /**
-     * Returns a packaged-up {@link DnsRefreshRequest} parsed from a task queue task.
-     */
+    /** Returns a packaged-up {@link DnsRefreshRequest} parsed from a task queue task. */
     static DnsRefreshRequest createFromTask(TaskHandle task, DateTime now) throws Exception {
       ImmutableMap<String, String> params = ImmutableMap.copyOf(task.extractParams());
       Key<HostResource> hostKey =

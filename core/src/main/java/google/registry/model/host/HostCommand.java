@@ -42,13 +42,13 @@ public class HostCommand {
   }
 
   /**
-   * A create command for a {@link HostResource}, mapping "createType" from
-   * {@link "http://tools.ietf.org/html/rfc5732"}.
+   * A create command for a {@link HostResource}, mapping "createType" from {@link
+   * "http://tools.ietf.org/html/rfc5732"}.
    */
-  @XmlType(propOrder = {"targetId", "inetAddresses" })
+  @XmlType(propOrder = {"targetId", "inetAddresses"})
   @XmlRootElement
-  public static class Create
-      extends HostCreateOrChange implements ResourceCreateOrChange<HostResource.Builder> {
+  public static class Create extends HostCreateOrChange
+      implements ResourceCreateOrChange<HostResource.Builder> {
     /** IP Addresses for this host. Can be null if this is an external host. */
     @XmlElement(name = "addr")
     Set<InetAddress> inetAddresses;
@@ -73,8 +73,8 @@ public class HostCommand {
   /** An update to a {@link HostResource}. */
   @XmlRootElement
   @XmlType(propOrder = {"targetId", "innerAdd", "innerRemove", "innerChange"})
-  public static class Update extends ResourceUpdate
-      <Update.AddRemove, HostResource.Builder, Update.Change> {
+  public static class Update
+      extends ResourceUpdate<Update.AddRemove, HostResource.Builder, Update.Change> {
 
     @XmlElement(name = "chg")
     protected Change innerChange;
@@ -101,7 +101,7 @@ public class HostCommand {
     }
 
     /** The add/remove type on a host update command. */
-    @XmlType(propOrder = { "inetAddresses", "statusValues" })
+    @XmlType(propOrder = {"inetAddresses", "statusValues"})
     public static class AddRemove extends ResourceUpdate.AddRemove {
       /** IP Addresses for this host. Can be null if this is an external host. */
       @XmlElement(name = "addr")

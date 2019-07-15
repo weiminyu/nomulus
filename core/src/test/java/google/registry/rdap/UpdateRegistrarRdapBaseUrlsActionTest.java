@@ -87,6 +87,7 @@ public final class UpdateRegistrarRdapBaseUrlsActionTest extends ShardableTestCa
     void addNextResponse(MockLowLevelHttpResponse response) {
       simulatedResponses.add(response);
     }
+
     List<MockLowLevelHttpRequest> getRequestsSent() {
       return requestsSent;
     }
@@ -146,18 +147,18 @@ public final class UpdateRegistrarRdapBaseUrlsActionTest extends ShardableTestCa
       String clientId, Long ianaId, Registrar.Type type, String... rdapBaseUrls) {
     persistSimpleResource(
         new Registrar.Builder()
-        .setClientId(clientId)
-        .setRegistrarName(clientId)
-        .setType(type)
-        .setIanaIdentifier(ianaId)
-        .setRdapBaseUrls(ImmutableSet.copyOf(rdapBaseUrls))
-        .setLocalizedAddress(
-            new RegistrarAddress.Builder()
-            .setStreet(ImmutableList.of("123 fake st"))
-            .setCity("fakeCity")
-            .setCountryCode("XX")
-            .build())
-        .build());
+            .setClientId(clientId)
+            .setRegistrarName(clientId)
+            .setType(type)
+            .setIanaIdentifier(ianaId)
+            .setRdapBaseUrls(ImmutableSet.copyOf(rdapBaseUrls))
+            .setLocalizedAddress(
+                new RegistrarAddress.Builder()
+                    .setStreet(ImmutableList.of("123 fake st"))
+                    .setCity("fakeCity")
+                    .setCountryCode("XX")
+                    .build())
+            .build());
   }
 
   @Test
@@ -230,14 +231,16 @@ public final class UpdateRegistrarRdapBaseUrlsActionTest extends ShardableTestCa
   @Test
   public void testNoTlds() {
     deleteTld("tld");
-    assertThat(assertThrows(IllegalArgumentException.class, action::run)).hasMessageThat()
+    assertThat(assertThrows(IllegalArgumentException.class, action::run))
+        .hasMessageThat()
         .isEqualTo("There must exist at least one REAL TLD.");
   }
 
   @Test
   public void testOnlyTestTlds() {
     persistResource(Registry.get("tld").asBuilder().setTldType(TldType.TEST).build());
-    assertThat(assertThrows(IllegalArgumentException.class, action::run)).hasMessageThat()
+    assertThat(assertThrows(IllegalArgumentException.class, action::run))
+        .hasMessageThat()
         .isEqualTo("There must exist at least one REAL TLD.");
   }
 
@@ -249,7 +252,8 @@ public final class UpdateRegistrarRdapBaseUrlsActionTest extends ShardableTestCa
 
     // the first TLD request will return a bad cookie but the second will succeed
     MockLowLevelHttpResponse badLoginResponse = new MockLowLevelHttpResponse();
-    badLoginResponse.addHeader("Set-Cookie",
+    badLoginResponse.addHeader(
+        "Set-Cookie",
         "Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/mosapi/v1/app; Secure; HttpOnly");
 
     httpTransport.addNextResponse(badLoginResponse);
@@ -265,14 +269,16 @@ public final class UpdateRegistrarRdapBaseUrlsActionTest extends ShardableTestCa
     action.httpTransport = httpTransport;
 
     MockLowLevelHttpResponse badLoginResponse = new MockLowLevelHttpResponse();
-    badLoginResponse.addHeader("Set-Cookie",
+    badLoginResponse.addHeader(
+        "Set-Cookie",
         "Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/mosapi/v1/app; Secure; HttpOnly");
 
     // it should fail for both TLDs
     httpTransport.addNextResponse(badLoginResponse);
     httpTransport.addNextResponse(badLoginResponse);
 
-    assertThat(assertThrows(RuntimeException.class, action::run)).hasMessageThat()
+    assertThat(assertThrows(RuntimeException.class, action::run))
+        .hasMessageThat()
         .isEqualTo("Error contacting MosAPI server. Tried TLDs [secondtld, tld]");
   }
 

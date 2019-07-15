@@ -88,20 +88,32 @@ public final class OteStatusActionTest {
     assertThat(getFailingResultDetails(results))
         .containsExactly(
             ImmutableMap.of(
-                "description", StatType.HOST_DELETES.getDescription(),
-                "requirement", StatType.HOST_DELETES.getRequirement(),
-                "timesPerformed", 0,
-                "completed", false),
+                "description",
+                StatType.HOST_DELETES.getDescription(),
+                "requirement",
+                StatType.HOST_DELETES.getRequirement(),
+                "timesPerformed",
+                0,
+                "completed",
+                false),
             ImmutableMap.of(
-                "description", StatType.DOMAIN_RESTORES.getDescription(),
-                "requirement", StatType.DOMAIN_RESTORES.getRequirement(),
-                "timesPerformed", 0,
-                "completed", false),
+                "description",
+                StatType.DOMAIN_RESTORES.getDescription(),
+                "requirement",
+                StatType.DOMAIN_RESTORES.getRequirement(),
+                "timesPerformed",
+                0,
+                "completed",
+                false),
             ImmutableMap.of(
-                "description", StatType.DOMAIN_CREATES_IDN.getDescription(),
-                "requirement", StatType.DOMAIN_CREATES_IDN.getRequirement(),
-                "timesPerformed", 0,
-                "completed", false));
+                "description",
+                StatType.DOMAIN_CREATES_IDN.getDescription(),
+                "requirement",
+                StatType.DOMAIN_CREATES_IDN.getRequirement(),
+                "timesPerformed",
+                0,
+                "completed",
+                false));
   }
 
   @Test
@@ -115,8 +127,7 @@ public final class OteStatusActionTest {
   @Test
   public void testFailure_registrarDoesntExist() {
     assertThat(action.handleJsonRequest(ImmutableMap.of("clientId", "nonexistent-3")))
-        .containsExactlyEntriesIn(
-            errorResultWithMessage("Registrar nonexistent-3 does not exist"));
+        .containsExactlyEntriesIn(errorResultWithMessage("Registrar nonexistent-3 does not exist"));
   }
 
   @Test
@@ -149,8 +160,8 @@ public final class OteStatusActionTest {
   private List<Map<?, ?>> getFailingResultDetails(Map<String, ?> results) {
     return ((List<Map<?, ?>>) results.get("details"))
         .stream()
-        .filter(result -> !Boolean.TRUE.equals(result.get("completed")))
-        .collect(toImmutableList());
+            .filter(result -> !Boolean.TRUE.equals(result.get("completed")))
+            .collect(toImmutableList());
   }
 
   private ImmutableMap<String, ?> errorResultWithMessage(String message) {

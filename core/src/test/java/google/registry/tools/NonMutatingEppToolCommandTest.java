@@ -34,8 +34,7 @@ public class NonMutatingEppToolCommandTest
     @Parameter(names = {"--client"})
     String clientId;
 
-    @Parameter
-    List<String> xmlPayloads;
+    @Parameter List<String> xmlPayloads;
 
     @Override
     void initEppToolCommand() {

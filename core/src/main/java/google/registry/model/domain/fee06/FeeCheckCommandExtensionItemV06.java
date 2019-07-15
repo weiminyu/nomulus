@@ -30,7 +30,7 @@ public class FeeCheckCommandExtensionItemV06 extends FeeCheckCommandExtensionIte
 
   CurrencyUnit currency;
 
-  /** The command being checked.  */
+  /** The command being checked. */
   FeeExtensionCommandDescriptor command;
 
   /** The name of the command being checked. */

@@ -43,8 +43,9 @@ import org.joda.time.Duration;
  *
  * <h3>Component Definition</h3>
  *
- * <p>Action instances are supplied on a per-request basis by invoking the methods on {@code C}.
- * For example:
+ * <p>Action instances are supplied on a per-request basis by invoking the methods on {@code C}. For
+ * example:
+ *
  * <pre>
  * {@literal @Component}
  * interface ServerComponent {
@@ -52,9 +53,10 @@ import org.joda.time.Duration;
  * }</pre>
  *
  * <p>The rules for component methods are as follows:
+ *
  * <ol>
- * <li>Methods whose raw return type does not implement {@code Runnable} will be ignored
- * <li>Methods whose raw return type does not have an {@code @Action} annotation are ignored
+ *   <li>Methods whose raw return type does not implement {@code Runnable} will be ignored
+ *   <li>Methods whose raw return type does not have an {@code @Action} annotation are ignored
  * </ol>
  *
  * <h3>Security Features</h3>
@@ -70,8 +72,7 @@ public class RequestHandler<C> {
   private final RequestAuthenticator requestAuthenticator;
   private final SystemClock clock = new SystemClock();
 
-  @NonFinalForTesting
-  RequestMetrics requestMetrics = new RequestMetrics();
+  @NonFinalForTesting RequestMetrics requestMetrics = new RequestMetrics();
 
   /**
    * Constructor for subclasses to create a new request handler for a specific request component.
@@ -97,9 +98,7 @@ public class RequestHandler<C> {
       Provider<? extends RequestComponentBuilder<C>> requestComponentBuilderProvider,
       RequestAuthenticator requestAuthenticator) {
     return new RequestHandler<>(
-        checkNotNull(component),
-        requestComponentBuilderProvider,
-        requestAuthenticator);
+        checkNotNull(component), requestComponentBuilderProvider, requestAuthenticator);
   }
 
   private RequestHandler(
@@ -109,8 +108,9 @@ public class RequestHandler<C> {
     // If the component class isn't explicitly provided, infer it from the class's own typing.
     // This is safe only for use by subclasses of RequestHandler where the generic parameter is
     // preserved at runtime, so only expose that option via the protected constructor.
-    this.router = Router.create(
-        component != null ? component : new TypeInstantiator<C>(getClass()){}.getExactType());
+    this.router =
+        Router.create(
+            component != null ? component : new TypeInstantiator<C>(getClass()) {}.getExactType());
     this.requestComponentBuilderProvider = checkNotNull(requestComponentBuilderProvider);
     this.requestAuthenticator = checkNotNull(requestAuthenticator);
   }
@@ -147,9 +147,11 @@ public class RequestHandler<C> {
     }
 
     // Build a new request component using any modules we've constructed by this point.
-    C component = requestComponentBuilderProvider.get()
-        .requestModule(new RequestModule(req, rsp, authResult.get()))
-        .build();
+    C component =
+        requestComponentBuilderProvider
+            .get()
+            .requestModule(new RequestModule(req, rsp, authResult.get()))
+            .build();
     // Apply the selected Route to the component to produce an Action instance, and run it.
     boolean success = true;
     DateTime startTime = clock.nowUtc();

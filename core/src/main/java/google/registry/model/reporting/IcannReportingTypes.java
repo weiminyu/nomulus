@@ -38,7 +38,7 @@ public final class IcannReportingTypes {
     DOMAIN_TRANSFER_QUERY("srs-dom-transfer-query"),
     DOMAIN_TRANSFER_REJECT("srs-dom-transfer-reject"),
     DOMAIN_TRANSFER_REQUEST("srs-dom-transfer-request"),
-    DOMAIN_UPDATE("srs-dom-update"),  // Note: does not include domain restore requests.
+    DOMAIN_UPDATE("srs-dom-update"), // Note: does not include domain restore requests.
     HOST_CHECK("srs-host-check"),
     HOST_CREATE("srs-host-create"),
     HOST_DELETE("srs-host-delete"),

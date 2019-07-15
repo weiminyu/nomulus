@@ -71,20 +71,27 @@ import org.joda.time.Duration;
 @ReportingSpec(ActivityReportField.CONTACT_TRANSFER_REQUEST)
 public final class ContactTransferRequestFlow implements TransactionalFlow {
 
-  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES = ImmutableSet.of(
-      StatusValue.CLIENT_TRANSFER_PROHIBITED,
-      StatusValue.PENDING_DELETE,
-      StatusValue.SERVER_TRANSFER_PROHIBITED);
+  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES =
+      ImmutableSet.of(
+          StatusValue.CLIENT_TRANSFER_PROHIBITED,
+          StatusValue.PENDING_DELETE,
+          StatusValue.SERVER_TRANSFER_PROHIBITED);
 
   @Inject ExtensionManager extensionManager;
   @Inject Optional<AuthInfo> authInfo;
   @Inject @ClientId String gainingClientId;
   @Inject @TargetId String targetId;
-  @Inject @Config("contactAutomaticTransferLength") Duration automaticTransferLength;
+
+  @Inject
+  @Config("contactAutomaticTransferLength")
+  Duration automaticTransferLength;
+
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject Trid trid;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject ContactTransferRequestFlow() {}
+
+  @Inject
+  ContactTransferRequestFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -105,52 +112,60 @@ public final class ContactTransferRequestFlow implements TransactionalFlow {
       throw new ObjectAlreadySponsoredException();
     }
     verifyNoDisallowedStatuses(existingContact, DISALLOWED_STATUSES);
-    HistoryEntry historyEntry = historyBuilder
-        .setType(HistoryEntry.Type.CONTACT_TRANSFER_REQUEST)
-        .setModificationTime(now)
-        .setParent(Key.create(existingContact))
-        .build();
+    HistoryEntry historyEntry =
+        historyBuilder
+            .setType(HistoryEntry.Type.CONTACT_TRANSFER_REQUEST)
+            .setModificationTime(now)
+            .setParent(Key.create(existingContact))
+            .build();
     DateTime transferExpirationTime = now.plus(automaticTransferLength);
-    TransferData serverApproveTransferData = new TransferData.Builder()
-        .setTransferRequestTime(now)
-        .setTransferRequestTrid(trid)
-        .setGainingClientId(gainingClientId)
-        .setLosingClientId(losingClientId)
-        .setPendingTransferExpirationTime(transferExpirationTime)
-        .setTransferStatus(TransferStatus.SERVER_APPROVED)
-        .build();
+    TransferData serverApproveTransferData =
+        new TransferData.Builder()
+            .setTransferRequestTime(now)
+            .setTransferRequestTrid(trid)
+            .setGainingClientId(gainingClientId)
+            .setLosingClientId(losingClientId)
+            .setPendingTransferExpirationTime(transferExpirationTime)
+            .setTransferStatus(TransferStatus.SERVER_APPROVED)
+            .build();
     // If the transfer is server approved, this message will be sent to the losing registrar. */
     PollMessage serverApproveLosingPollMessage =
         createLosingTransferPollMessage(targetId, serverApproveTransferData, historyEntry);
     // If the transfer is server approved, this message will be sent to the gaining registrar. */
     PollMessage serverApproveGainingPollMessage =
         createGainingTransferPollMessage(targetId, serverApproveTransferData, historyEntry);
-    TransferData pendingTransferData = serverApproveTransferData.asBuilder()
-        .setTransferStatus(TransferStatus.PENDING)
-        .setServerApproveEntities(
-            ImmutableSet.of(
-                Key.create(serverApproveGainingPollMessage),
-                Key.create(serverApproveLosingPollMessage)))
-        .build();
+    TransferData pendingTransferData =
+        serverApproveTransferData
+            .asBuilder()
+            .setTransferStatus(TransferStatus.PENDING)
+            .setServerApproveEntities(
+                ImmutableSet.of(
+                    Key.create(serverApproveGainingPollMessage),
+                    Key.create(serverApproveLosingPollMessage)))
+            .build();
     // When a transfer is requested, a poll message is created to notify the losing registrar.
     PollMessage requestPollMessage =
-        createLosingTransferPollMessage(targetId, pendingTransferData, historyEntry).asBuilder()
-            .setEventTime(now)  // Unlike the serverApprove messages, this applies immediately.
+        createLosingTransferPollMessage(targetId, pendingTransferData, historyEntry)
+            .asBuilder()
+            .setEventTime(now) // Unlike the serverApprove messages, this applies immediately.
             .build();
-    ContactResource newContact = existingContact.asBuilder()
-        .setTransferData(pendingTransferData)
-        .addStatusValue(StatusValue.PENDING_TRANSFER)
-        .build();
-    ofy().save().<Object>entities(
-        newContact,
-        historyEntry,
-        requestPollMessage,
-        serverApproveGainingPollMessage,
-        serverApproveLosingPollMessage);
+    ContactResource newContact =
+        existingContact
+            .asBuilder()
+            .setTransferData(pendingTransferData)
+            .addStatusValue(StatusValue.PENDING_TRANSFER)
+            .build();
+    ofy()
+        .save()
+        .<Object>entities(
+            newContact,
+            historyEntry,
+            requestPollMessage,
+            serverApproveGainingPollMessage,
+            serverApproveLosingPollMessage);
     return responseBuilder
         .setResultFromCode(SUCCESS_WITH_ACTION_PENDING)
         .setResData(createTransferResponse(targetId, newContact.getTransferData()))
         .build();
   }
 }
-

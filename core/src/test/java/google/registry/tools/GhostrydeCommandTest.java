@@ -35,30 +35,30 @@ import org.junit.Test;
 /** Unit tests for {@link GhostrydeCommand}. */
 public class GhostrydeCommandTest extends CommandTestCase<GhostrydeCommand> {
 
-  private static final byte[] SONG_BY_CHRISTINA_ROSSETTI = (""
-      + "When I am dead, my dearest,       \n"
-      + "  Sing no sad songs for me;       \n"
-      + "Plant thou no roses at my head,   \n"
-      + "  Nor shady cypress tree:         \n"
-      + "Be the green grass above me       \n"
-      + "  With showers and dewdrops wet;  \n"
-      + "And if thou wilt, remember,       \n"
-      + "  And if thou wilt, forget.       \n"
-      + "                                  \n"
-      + "I shall not see the shadows,      \n"
-      + "  I shall not feel the rain;      \n"
-      + "I shall not hear the nightingale  \n"
-      + "  Sing on, as if in pain:         \n"
-      + "And dreaming through the twilight \n"
-      + "  That doth not rise nor set,     \n"
-      + "Haply I may remember,             \n"
-      + "  And haply may forget.           \n").getBytes(UTF_8);
+  private static final byte[] SONG_BY_CHRISTINA_ROSSETTI =
+      (""
+              + "When I am dead, my dearest,       \n"
+              + "  Sing no sad songs for me;       \n"
+              + "Plant thou no roses at my head,   \n"
+              + "  Nor shady cypress tree:         \n"
+              + "Be the green grass above me       \n"
+              + "  With showers and dewdrops wet;  \n"
+              + "And if thou wilt, remember,       \n"
+              + "  And if thou wilt, forget.       \n"
+              + "                                  \n"
+              + "I shall not see the shadows,      \n"
+              + "  I shall not feel the rain;      \n"
+              + "I shall not hear the nightingale  \n"
+              + "  Sing on, as if in pain:         \n"
+              + "And dreaming through the twilight \n"
+              + "  That doth not rise nor set,     \n"
+              + "Haply I may remember,             \n"
+              + "  And haply may forget.           \n")
+          .getBytes(UTF_8);
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
-  @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
 
   private Keyring keyring;
   private PrintStream orgStdout;

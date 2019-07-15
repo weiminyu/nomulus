@@ -25,8 +25,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * Represents a Registry Grace Period status, as defined by
- * <a href="https://tools.ietf.org/html/rfc3915">RFC 3915</a>.
+ * Represents a Registry Grace Period status, as defined by <a
+ * href="https://tools.ietf.org/html/rfc3915">RFC 3915</a>.
  *
  * @see <a href="https://www.icann.org/resources/pages/epp-status-codes-2014-06-16-en">EPP Status
  *     Codes</a>
@@ -106,7 +106,7 @@ public enum GracePeriodStatus implements EppEnum {
   /**
    * Maps from xmlName to {@link GracePeriodStatus}.
    *
-   * If no match is found for xmlName, null is returned.
+   * <p>If no match is found for xmlName, null is returned.
    */
   @Nullable
   public static GracePeriodStatus fromXmlName(String xmlName) {

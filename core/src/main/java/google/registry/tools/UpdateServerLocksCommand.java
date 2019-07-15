@@ -31,8 +31,7 @@ import java.util.List;
 import java.util.Set;
 
 /** A command to execute a domain check claims epp command. */
-@Parameters(separators = " =",
-    commandDescription = "Toggle server locks on a domain.")
+@Parameters(separators = " =", commandDescription = "Toggle server locks on a domain.")
 final class UpdateServerLocksCommand extends MutatingEppToolCommand {
 
   @Parameter(
@@ -49,15 +48,17 @@ final class UpdateServerLocksCommand extends MutatingEppToolCommand {
 
   @Parameter(
       names = {"-a", "--apply"},
-      description = "Comma-delimited set of locks to apply (or 'all'). "
-          + "Valid locks: serverDeleteProhibited, serverHold, serverRenewProhibited, "
-          + "serverTransferProhibited, serverUpdateProhibited")
+      description =
+          "Comma-delimited set of locks to apply (or 'all'). "
+              + "Valid locks: serverDeleteProhibited, serverHold, serverRenewProhibited, "
+              + "serverTransferProhibited, serverUpdateProhibited")
   private List<String> locksToApply = new ArrayList<>();
 
   @Parameter(
       names = {"-r", "--remove"},
-      description = "Comma-delimited set of locks to remove (or 'all'). "
-          + "Valid locks: same as for 'apply'.")
+      description =
+          "Comma-delimited set of locks to remove (or 'all'). "
+              + "Valid locks: same as for 'apply'.")
   private List<String> locksToRemove = new ArrayList<>();
 
   @Parameter(
@@ -72,12 +73,13 @@ final class UpdateServerLocksCommand extends MutatingEppToolCommand {
       arity = 1)
   private boolean requestedByRegistrar;
 
-  private static final ImmutableSet<String> ALLOWED_VALUES = ImmutableSet.of(
-      StatusValue.SERVER_DELETE_PROHIBITED.getXmlName(),
-      StatusValue.SERVER_HOLD.getXmlName(),
-      StatusValue.SERVER_RENEW_PROHIBITED.getXmlName(),
-      StatusValue.SERVER_TRANSFER_PROHIBITED.getXmlName(),
-      StatusValue.SERVER_UPDATE_PROHIBITED.getXmlName());
+  private static final ImmutableSet<String> ALLOWED_VALUES =
+      ImmutableSet.of(
+          StatusValue.SERVER_DELETE_PROHIBITED.getXmlName(),
+          StatusValue.SERVER_HOLD.getXmlName(),
+          StatusValue.SERVER_RENEW_PROHIBITED.getXmlName(),
+          StatusValue.SERVER_TRANSFER_PROHIBITED.getXmlName(),
+          StatusValue.SERVER_UPDATE_PROHIBITED.getXmlName());
 
   private static Set<String> getStatusValuesSet(List<String> statusValues) {
     Set<String> statusValuesSet = ImmutableSet.copyOf(statusValues);
@@ -97,18 +99,18 @@ final class UpdateServerLocksCommand extends MutatingEppToolCommand {
     Set<String> valuesToApply = getStatusValuesSet(locksToApply);
     Set<String> valuesToRemove = getStatusValuesSet(locksToRemove);
     checkArgument(
-        intersection(valuesToApply, valuesToRemove).isEmpty(),
-        "Add and remove actions overlap");
+        intersection(valuesToApply, valuesToRemove).isEmpty(), "Add and remove actions overlap");
     checkArgument(
-        !union(valuesToApply, valuesToRemove).isEmpty(),
-        "Add and remove actions are both empty");
+        !union(valuesToApply, valuesToRemove).isEmpty(), "Add and remove actions are both empty");
     setSoyTemplate(
         UpdateServerLocksSoyInfo.getInstance(), UpdateServerLocksSoyInfo.UPDATESERVERLOCKS);
-    addSoyRecord(clientId, new SoyMapData(
-        "domainName", domainName,
-        "locksToApply", valuesToApply,
-        "locksToRemove", valuesToRemove,
-        "reason", reason,
-        "requestedByRegistrar", requestedByRegistrar));
+    addSoyRecord(
+        clientId,
+        new SoyMapData(
+            "domainName", domainName,
+            "locksToApply", valuesToApply,
+            "locksToRemove", valuesToRemove,
+            "reason", reason,
+            "requestedByRegistrar", requestedByRegistrar));
   }
 }

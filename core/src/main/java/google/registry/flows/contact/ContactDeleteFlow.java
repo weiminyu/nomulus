@@ -63,10 +63,11 @@ import org.joda.time.DateTime;
 @ReportingSpec(ActivityReportField.CONTACT_DELETE)
 public final class ContactDeleteFlow implements TransactionalFlow {
 
-  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES = ImmutableSet.of(
-      StatusValue.CLIENT_DELETE_PROHIBITED,
-      StatusValue.PENDING_DELETE,
-      StatusValue.SERVER_DELETE_PROHIBITED);
+  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES =
+      ImmutableSet.of(
+          StatusValue.CLIENT_DELETE_PROHIBITED,
+          StatusValue.PENDING_DELETE,
+          StatusValue.SERVER_DELETE_PROHIBITED);
 
   @Inject ExtensionManager extensionManager;
   @Inject @ClientId String clientId;
@@ -77,7 +78,9 @@ public final class ContactDeleteFlow implements TransactionalFlow {
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject AsyncTaskEnqueuer asyncTaskEnqueuer;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject ContactDeleteFlow() {}
+
+  @Inject
+  ContactDeleteFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {

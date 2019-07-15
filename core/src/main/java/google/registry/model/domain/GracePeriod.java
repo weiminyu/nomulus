@@ -28,8 +28,8 @@ import org.joda.time.DateTime;
 /**
  * A domain grace period with an expiration time.
  *
- * <p>When a grace period expires, it is lazily removed from the {@link DomainBase} the next
- * time the resource is loaded from Datastore.
+ * <p>When a grace period expires, it is lazily removed from the {@link DomainBase} the next time
+ * the resource is loaded from Datastore.
  */
 @Embed
 public class GracePeriod extends ImmutableObject {
@@ -45,8 +45,8 @@ public class GracePeriod extends ImmutableObject {
 
   /**
    * The one-time billing event corresponding to the action that triggered this grace period, or
-   * null if not applicable.  Not set for autorenew grace periods (which instead use the field
-   * {@code billingEventRecurring}) or for redemption grace periods (since deletes have no cost).
+   * null if not applicable. Not set for autorenew grace periods (which instead use the field {@code
+   * billingEventRecurring}) or for redemption grace periods (since deletes have no cost).
    */
   // NB: Would @IgnoreSave(IfNull.class), but not allowed for @Embed collections.
   Key<BillingEvent.OneTime> billingEventOneTime = null;
@@ -79,7 +79,6 @@ public class GracePeriod extends ImmutableObject {
    * Returns the one time billing event. The value will only be non-null if the type of this grace
    * period is not AUTO_RENEW.
    */
-
   public Key<BillingEvent.OneTime> getOneTimeBillingEvent() {
     return billingEventOneTime;
   }
@@ -93,12 +92,13 @@ public class GracePeriod extends ImmutableObject {
   }
 
   private static GracePeriod createInternal(
-       GracePeriodStatus type,
-       DateTime expirationTime,
-       String clientId,
-       @Nullable Key<BillingEvent.OneTime> billingEventOneTime,
-       @Nullable Key<BillingEvent.Recurring> billingEventRecurring) {
-    checkArgument((billingEventOneTime == null) || (billingEventRecurring == null),
+      GracePeriodStatus type,
+      DateTime expirationTime,
+      String clientId,
+      @Nullable Key<BillingEvent.OneTime> billingEventOneTime,
+      @Nullable Key<BillingEvent.Recurring> billingEventRecurring) {
+    checkArgument(
+        (billingEventOneTime == null) || (billingEventRecurring == null),
         "A grace period can have at most one billing event");
     checkArgument(
         (billingEventRecurring != null) == GracePeriodStatus.AUTO_RENEW.equals(type),
@@ -115,9 +115,9 @@ public class GracePeriod extends ImmutableObject {
   /**
    * Creates a GracePeriod for an (optional) OneTime billing event.
    *
-   * <p>Normal callers should always use {@link #forBillingEvent} instead, assuming they do not
-   * need to avoid loading the BillingEvent from Datastore.  This method should typically be
-   * called only from test code to explicitly construct GracePeriods.
+   * <p>Normal callers should always use {@link #forBillingEvent} instead, assuming they do not need
+   * to avoid loading the BillingEvent from Datastore. This method should typically be called only
+   * from test code to explicitly construct GracePeriods.
    */
   public static GracePeriod create(
       GracePeriodStatus type,

@@ -29,8 +29,8 @@ import org.joda.money.CurrencyUnit;
  */
 @XmlRootElement(name = "chkData")
 @XmlType(propOrder = {"currency", "items"})
-public class FeeCheckResponseExtensionV12
-    extends ImmutableObject implements FeeCheckResponseExtension<FeeCheckResponseExtensionItemV12> {
+public class FeeCheckResponseExtensionV12 extends ImmutableObject
+    implements FeeCheckResponseExtension<FeeCheckResponseExtensionItemV12> {
 
   CurrencyUnit currency;
 
@@ -49,8 +49,8 @@ public class FeeCheckResponseExtensionV12
     return items;
   }
 
-  static FeeCheckResponseExtensionV12
-      create(CurrencyUnit currency, ImmutableList<FeeCheckResponseExtensionItemV12> items) {
+  static FeeCheckResponseExtensionV12 create(
+      CurrencyUnit currency, ImmutableList<FeeCheckResponseExtensionItemV12> items) {
     FeeCheckResponseExtensionV12 instance = new FeeCheckResponseExtensionV12();
     instance.currency = currency;
     instance.items = items;

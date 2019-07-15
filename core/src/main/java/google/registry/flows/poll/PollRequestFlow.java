@@ -52,11 +52,13 @@ public class PollRequestFlow implements Flow {
   @Inject @PollMessageId String messageId;
   @Inject Clock clock;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject PollRequestFlow() {}
+
+  @Inject
+  PollRequestFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
-    extensionManager.validate();  // There are no legal extensions for this flow.
+    extensionManager.validate(); // There are no legal extensions for this flow.
     validateClientIsLoggedIn(clientId);
     if (!messageId.isEmpty()) {
       throw new UnexpectedMessageIdException();
@@ -69,12 +71,13 @@ public class PollRequestFlow implements Flow {
     }
     return responseBuilder
         .setResultFromCode(SUCCESS_WITH_ACK_MESSAGE)
-        .setMessageQueueInfo(new MessageQueueInfo.Builder()
-            .setQueueDate(pollMessage.getEventTime())
-            .setMsg(pollMessage.getMsg())
-            .setQueueLength(getPollMessagesQuery(clientId, now).count())
-            .setMessageId(makePollMessageExternalId(pollMessage))
-            .build())
+        .setMessageQueueInfo(
+            new MessageQueueInfo.Builder()
+                .setQueueDate(pollMessage.getEventTime())
+                .setMsg(pollMessage.getMsg())
+                .setQueueLength(getPollMessagesQuery(clientId, now).count())
+                .setMessageId(makePollMessageExternalId(pollMessage))
+                .build())
         .setMultipleResData(pollMessage.getResponseData())
         .build();
   }

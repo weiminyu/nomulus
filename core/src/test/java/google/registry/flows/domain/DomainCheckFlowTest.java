@@ -77,8 +77,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /** Unit tests for {@link DomainCheckFlow}. */
-public class DomainCheckFlowTest
-    extends ResourceCheckFlowTestCase<DomainCheckFlow, DomainBase> {
+public class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, DomainBase> {
 
   public DomainCheckFlowTest() {
     setEppInput("domain_check_one_tld.xml");

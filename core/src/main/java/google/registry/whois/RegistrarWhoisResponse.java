@@ -29,12 +29,14 @@ class RegistrarWhoisResponse extends WhoisResponseImpl {
   private final Registrar registrar;
 
   /**
-   * Used in the emitter below to signal either admin or tech
-   * contacts.  NB, this is purposely distinct from the
-   * RegistrarContact.Type.{ADMIN,TECH} as they don't carry equivalent
-   * meaning in our system. Sigh.
+   * Used in the emitter below to signal either admin or tech contacts. NB, this is purposely
+   * distinct from the RegistrarContact.Type.{ADMIN,TECH} as they don't carry equivalent meaning in
+   * our system. Sigh.
    */
-  private enum AdminOrTech { ADMIN, TECH }
+  private enum AdminOrTech {
+    ADMIN,
+    TECH
+  }
 
   /** Creates a new WHOIS registrar response on the given registrar object. */
   RegistrarWhoisResponse(Registrar registrar, DateTime timestamp) {
@@ -71,17 +73,13 @@ class RegistrarWhoisResponse extends WhoisResponseImpl {
   static class RegistrarEmitter extends Emitter<RegistrarEmitter> {
     /** Emits the registrar contact of the given type. */
     RegistrarEmitter emitRegistrarContacts(
-        String contactLabel,
-        Iterable<RegistrarContact> contacts,
-        AdminOrTech type) {
+        String contactLabel, Iterable<RegistrarContact> contacts, AdminOrTech type) {
       for (RegistrarContact contact : contacts) {
         if ((type == AdminOrTech.ADMIN && contact.getVisibleInWhoisAsAdmin())
             || (type == AdminOrTech.TECH && contact.getVisibleInWhoisAsTech())) {
           emitField(contactLabel + " Contact", contact.getName())
               .emitPhonesAndEmail(
-                  contact.getPhoneNumber(),
-                  contact.getFaxNumber(),
-                  contact.getEmailAddress());
+                  contact.getPhoneNumber(), contact.getFaxNumber(), contact.getEmailAddress());
         }
       }
       return this;

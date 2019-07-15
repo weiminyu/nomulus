@@ -174,7 +174,8 @@ public class EppControllerTest extends ShardableTestCase {
         false,
         "GET / HTTP/1.1\n\n".getBytes(UTF_8));
 
-    assertAboutLogs().that(logHandler)
+    assertAboutLogs()
+        .that(logHandler)
         .hasLogAtLevelWithMessage(INFO, "EPP request XML unmarshalling failed");
     LogRecord logRecord =
         findFirstLogRecordWithMessagePrefix(logHandler, "EPP request XML unmarshalling failed");
@@ -182,7 +183,7 @@ public class EppControllerTest extends ShardableTestCase {
     assertThat(messageParts.size()).isAtLeast(2);
     Map<String, Object> json = parseJsonMap(messageParts.get(1));
     assertThat(json).containsEntry("clientId", "some-client");
-    assertThat(json).containsEntry("resultCode", 2001L);  // Must be Long to compare equal.
+    assertThat(json).containsEntry("resultCode", 2001L); // Must be Long to compare equal.
     assertThat(json).containsEntry("resultMessage", "Command syntax error");
     assertThat(json)
         .containsEntry("xmlBytes", base64().encode("GET / HTTP/1.1\n\n".getBytes(UTF_8)));
@@ -199,7 +200,8 @@ public class EppControllerTest extends ShardableTestCase {
         false,
         true,
         domainCreateXml.getBytes(UTF_8));
-    assertAboutLogs().that(logHandler)
+    assertAboutLogs()
+        .that(logHandler)
         .hasLogAtLevelWithMessage(INFO, "Flow returned failure response");
     LogRecord logRecord =
         findFirstLogRecordWithMessagePrefix(logHandler, "Flow returned failure response");
@@ -218,7 +220,8 @@ public class EppControllerTest extends ShardableTestCase {
         false,
         true,
         domainCreateXml.getBytes(UTF_8));
-    assertAboutLogs().that(logHandler)
+    assertAboutLogs()
+        .that(logHandler)
         .hasLogAtLevelWithMessage(INFO, "Flow returned failure response");
     LogRecord logRecord =
         findFirstLogRecordWithMessagePrefix(logHandler, "Flow returned failure response");
@@ -235,7 +238,8 @@ public class EppControllerTest extends ShardableTestCase {
         false,
         true,
         domainCreateXml.getBytes(UTF_8));
-    assertAboutLogs().that(logHandler)
+    assertAboutLogs()
+        .that(logHandler)
         .hasLogAtLevelWithMessage(SEVERE, "Unexpected failure in flow execution");
     LogRecord logRecord =
         findFirstLogRecordWithMessagePrefix(logHandler, "Unexpected failure in flow execution");

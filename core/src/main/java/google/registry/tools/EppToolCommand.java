@@ -77,8 +77,8 @@ abstract class EppToolCommand extends ConfirmingCommand
   }
 
   /**
-   * Helper function for grouping sets of domain names into respective TLDs. Useful for batched
-   * EPP calls when invoking commands (i.e. domain check) with sets of domains across multiple TLDs.
+   * Helper function for grouping sets of domain names into respective TLDs. Useful for batched EPP
+   * calls when invoking commands (i.e. domain check) with sets of domains across multiple TLDs.
    */
   protected static Multimap<String, String> validateAndGroupDomainNamesByTld(List<String> names) {
     ImmutableMultimap.Builder<String, String> builder = new ImmutableMultimap.Builder<>();
@@ -108,13 +108,15 @@ abstract class EppToolCommand extends ConfirmingCommand
   protected void addSoyRecord(String clientId, SoyRecord record) {
     checkNotNull(soyFileInfo, "SoyFileInfo is missing, cannot add record.");
     checkNotNull(soyRenderer, "SoyRenderer is missing, cannot add record.");
-    addXmlCommand(clientId, SoyFileSet.builder()
-        .add(getResource(soyFileInfo.getClass(), soyFileInfo.getFileName()))
-        .build()
-        .compileToTofu()
-        .newRenderer(soyRenderer)
-        .setData(record)
-        .render());
+    addXmlCommand(
+        clientId,
+        SoyFileSet.builder()
+            .add(getResource(soyFileInfo.getClass(), soyFileInfo.getFileName()))
+            .build()
+            .compileToTofu()
+            .newRenderer(soyRenderer)
+            .setData(record)
+            .render());
   }
 
   /** Subclasses can override to implement a dry run flag. False by default. */
@@ -129,8 +131,11 @@ abstract class EppToolCommand extends ConfirmingCommand
 
   @Override
   public String prompt() throws IOException {
-    String prompt = addHeader("Command(s)", Joiner.on("\n").join(commands)
-        + (force ? "" : addHeader("Dry Run", Joiner.on("\n").join(processCommands(true)))));
+    String prompt =
+        addHeader(
+            "Command(s)",
+            Joiner.on("\n").join(commands)
+                + (force ? "" : addHeader("Dry Run", Joiner.on("\n").join(processCommands(true)))));
     force = force || isDryRun();
     return prompt;
   }

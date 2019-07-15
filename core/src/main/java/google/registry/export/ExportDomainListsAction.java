@@ -73,9 +73,17 @@ public class ExportDomainListsAction implements Runnable {
 
   @Inject MapreduceRunner mrRunner;
   @Inject Response response;
-  @Inject @Config("domainListsGcsBucket") String gcsBucket;
-  @Inject @Config("gcsBufferSize") int gcsBufferSize;
-  @Inject ExportDomainListsAction() {}
+
+  @Inject
+  @Config("domainListsGcsBucket")
+  String gcsBucket;
+
+  @Inject
+  @Config("gcsBufferSize")
+  int gcsBufferSize;
+
+  @Inject
+  ExportDomainListsAction() {}
 
   @Override
   public void run() {

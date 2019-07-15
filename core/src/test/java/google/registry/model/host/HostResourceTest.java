@@ -106,15 +106,24 @@ public class HostResourceTest extends EntityTestCase {
 
   @Test
   public void testEmptyStringsBecomeNull() {
-    assertThat(new HostResource.Builder().setPersistedCurrentSponsorClientId(null).build()
-        .getPersistedCurrentSponsorClientId())
-            .isNull();
-    assertThat(new HostResource.Builder().setPersistedCurrentSponsorClientId("").build()
-        .getPersistedCurrentSponsorClientId())
-            .isNull();
-    assertThat(new HostResource.Builder().setPersistedCurrentSponsorClientId(" ").build()
-        .getPersistedCurrentSponsorClientId())
-            .isNotNull();
+    assertThat(
+            new HostResource.Builder()
+                .setPersistedCurrentSponsorClientId(null)
+                .build()
+                .getPersistedCurrentSponsorClientId())
+        .isNull();
+    assertThat(
+            new HostResource.Builder()
+                .setPersistedCurrentSponsorClientId("")
+                .build()
+                .getPersistedCurrentSponsorClientId())
+        .isNull();
+    assertThat(
+            new HostResource.Builder()
+                .setPersistedCurrentSponsorClientId(" ")
+                .build()
+                .getPersistedCurrentSponsorClientId())
+        .isNotNull();
   }
 
   @Test
@@ -138,15 +147,17 @@ public class HostResourceTest extends EntityTestCase {
         .hasExactlyStatusValues(StatusValue.OK);
     // If there are other status values, OK should be suppressed.
     assertAboutHosts()
-        .that(new HostResource.Builder()
-            .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_HOLD))
-            .build())
+        .that(
+            new HostResource.Builder()
+                .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_HOLD))
+                .build())
         .hasExactlyStatusValues(StatusValue.CLIENT_HOLD);
     // When OK is suppressed, it should be removed even if it was originally there.
     assertAboutHosts()
-        .that(new HostResource.Builder()
-            .setStatusValues(ImmutableSet.of(StatusValue.OK, StatusValue.CLIENT_HOLD))
-            .build())
+        .that(
+            new HostResource.Builder()
+                .setStatusValues(ImmutableSet.of(StatusValue.OK, StatusValue.CLIENT_HOLD))
+                .build())
         .hasExactlyStatusValues(StatusValue.CLIENT_HOLD);
   }
 
@@ -181,10 +192,7 @@ public class HostResourceTest extends EntityTestCase {
   @Test
   public void testComputeLastTransferTime_hostNeverSwitchedDomains_domainWasNeverTransferred() {
     domain = domain.asBuilder().setLastTransferTime(null).build();
-    host = host.asBuilder()
-        .setLastTransferTime(null)
-        .setLastSuperordinateChange(null)
-        .build();
+    host = host.asBuilder().setLastTransferTime(null).setLastSuperordinateChange(null).build();
     assertThat(host.computeLastTransferTime(domain)).isNull();
   }
 
@@ -194,11 +202,12 @@ public class HostResourceTest extends EntityTestCase {
     // Domain was transferred on Day 2.
     // Host was always subordinate to domain (and was created before the transfer).
     domain = domain.asBuilder().setLastTransferTime(day2).build();
-    host = host.asBuilder()
-        .setCreationTimeForTest(day1)
-        .setLastTransferTime(null)
-        .setLastSuperordinateChange(null)
-        .build();
+    host =
+        host.asBuilder()
+            .setCreationTimeForTest(day1)
+            .setLastTransferTime(null)
+            .setLastSuperordinateChange(null)
+            .build();
     assertThat(host.computeLastTransferTime(domain)).isEqualTo(day2);
   }
 
@@ -230,10 +239,7 @@ public class HostResourceTest extends EntityTestCase {
     // Host was made subordinate to domain on Day 2.
     // Domain was never transferred.
     domain = domain.asBuilder().setLastTransferTime(null).build();
-    host = host.asBuilder()
-        .setLastTransferTime(day1)
-        .setLastSuperordinateChange(day2)
-        .build();
+    host = host.asBuilder().setLastTransferTime(day1).setLastSuperordinateChange(day2).build();
     assertThat(host.computeLastTransferTime(domain)).isEqualTo(day1);
   }
 
@@ -243,10 +249,7 @@ public class HostResourceTest extends EntityTestCase {
     // Domain was transferred on Day 2.
     // Host was made subordinate to domain on Day 3.
     domain = domain.asBuilder().setLastTransferTime(day2).build();
-    host = host.asBuilder()
-        .setLastTransferTime(day1)
-        .setLastSuperordinateChange(day3)
-        .build();
+    host = host.asBuilder().setLastTransferTime(day1).setLastSuperordinateChange(day3).build();
     assertThat(host.computeLastTransferTime(domain)).isEqualTo(day1);
   }
 
@@ -256,10 +259,7 @@ public class HostResourceTest extends EntityTestCase {
     // Host was made subordinate to domain on Day 2.
     // Domain was transferred on Day 3.
     domain = domain.asBuilder().setLastTransferTime(day3).build();
-    host = host.asBuilder()
-        .setLastTransferTime(day1)
-        .setLastSuperordinateChange(day2)
-        .build();
+    host = host.asBuilder().setLastTransferTime(day1).setLastSuperordinateChange(day2).build();
     assertThat(host.computeLastTransferTime(domain)).isEqualTo(day3);
   }
 }

@@ -78,15 +78,9 @@ public final class ListDomainsAction extends ListObjectsAction<DomainBase> {
     ImmutableList.Builder<DomainBase> domainsBuilder = new ImmutableList.Builder<>();
     for (List<String> tldsBatch : Lists.partition(tlds.asList(), maxNumSubqueries)) {
       domainsBuilder.addAll(
-          ofy()
-              .load()
-              .type(DomainBase.class)
-              .filter("tld in", tldsBatch)
+          ofy().load().type(DomainBase.class).filter("tld in", tldsBatch)
               // Get the N most recently created domains (requires ordering in descending order).
-              .order("-creationTime")
-              .limit(limit)
-              .list()
-              .stream()
+              .order("-creationTime").limit(limit).list().stream()
               .map(EppResourceUtils.transformAtTime(now))
               // Deleted entities must be filtered out post-query because queries don't allow
               // ordering with two filters.
@@ -96,9 +90,7 @@ public final class ListDomainsAction extends ListObjectsAction<DomainBase> {
     // Combine the batches together by sorting all domains together with newest first, applying the
     // limit, and then reversing for display order.
     return ImmutableSet.copyOf(
-        domainsBuilder
-            .build()
-            .stream()
+        domainsBuilder.build().stream()
             .sorted(comparing(EppResource::getCreationTime).reversed())
             .limit(limit)
             .collect(toImmutableList())

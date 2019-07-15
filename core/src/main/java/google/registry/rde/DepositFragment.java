@@ -24,7 +24,9 @@ public abstract class DepositFragment implements Serializable {
   private static final long serialVersionUID = -5241410684255467454L;
 
   public abstract RdeResourceType type();
+
   public abstract String xml();
+
   public abstract String error();
 
   public static DepositFragment create(RdeResourceType type, String xml, String error) {

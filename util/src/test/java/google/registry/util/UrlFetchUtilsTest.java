@@ -45,9 +45,7 @@ import org.mockito.ArgumentCaptor;
 @RunWith(JUnit4.class)
 public class UrlFetchUtilsTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().build();
 
   private final Random random = mock(Random.class);
 
@@ -82,12 +80,13 @@ public class UrlFetchUtilsTest {
                 + "boundary=\"------------------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"");
     assertThat(addedHeaders.get(1).getName()).isEqualTo(CONTENT_LENGTH);
     assertThat(addedHeaders.get(1).getValue()).isEqualTo("294");
-    String payload = "--------------------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\n"
-        + "Content-Disposition: form-data; name=\"lol\"; filename=\"cat\"\r\n"
-        + "Content-Type: text/csv; charset=utf-8\r\n"
-        + "\r\n"
-        + "The nice people at the store say hello. ヘ(◕。◕ヘ)\r\n"
-        + "--------------------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA--\r\n";
+    String payload =
+        "--------------------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\r\n"
+            + "Content-Disposition: form-data; name=\"lol\"; filename=\"cat\"\r\n"
+            + "Content-Type: text/csv; charset=utf-8\r\n"
+            + "\r\n"
+            + "The nice people at the store say hello. ヘ(◕。◕ヘ)\r\n"
+            + "--------------------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA--\r\n";
     verify(request).setPayload(payload.getBytes(UTF_8));
     verifyNoMoreInteractions(request);
   }

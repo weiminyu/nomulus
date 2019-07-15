@@ -65,9 +65,9 @@ public class OfyFilterTest {
    * Key.create looks up kind metadata for the class of the object it is given. If this happens
    * before the first reference to ObjectifyService, which statically triggers type registrations,
    * then the create will fail. Note that this is only a problem if the type in question doesn't
-   * call ObjectifyService.allocateId() inside its own builder or create method, since if it
-   * does that would trigger the statics as well. In this example, Registrar has a string id, so
-   * the bug occurs, were it not for OfyFilter.
+   * call ObjectifyService.allocateId() inside its own builder or create method, since if it does
+   * that would trigger the statics as well. In this example, Registrar has a string id, so the bug
+   * occurs, were it not for OfyFilter.
    */
   @Test
   public void testFilterRegistersTypes() {

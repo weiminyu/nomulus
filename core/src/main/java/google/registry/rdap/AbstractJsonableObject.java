@@ -53,19 +53,18 @@ import org.joda.time.DateTime;
  * <p>This implementation is geared towards RDAP replies, and hence has RDAP-specific quirks.
  * Specifically:
  *
- * - Fields with empty arrays are not shown at all
+ * <p>- Fields with empty arrays are not shown at all
  *
- * - VCards are a built-in special case (Not implemented yet)
+ * <p>- VCards are a built-in special case (Not implemented yet)
  *
- * - DateTime conversion is specifically supported as if it were a primitive
+ * <p>- DateTime conversion is specifically supported as if it were a primitive
  *
- * - Arrays are considered to be SETS rather than lists, meaning repeated values are removed and the
- *   order isn't guaranteed
+ * <p>- Arrays are considered to be SETS rather than lists, meaning repeated values are removed and
+ * the order isn't guaranteed
  *
- * Usage:
+ * <p>Usage:
  *
- * {@link JsonableElement}
- * -----------------------
+ * <p>{@link JsonableElement} -----------------------
  *
  * <pre>
  * - JsonableElement annotates Members that become JSON object fields:
@@ -137,8 +136,7 @@ import org.joda.time.DateTime;
  * }
  * </pre>
  *
- * {@link RestrictJsonNames}
- * -------------------------
+ * {@link RestrictJsonNames} -------------------------
  *
  * <pre>
  * - RestrictJsonNames is a way to prevent typos in the JsonableElement names.
@@ -280,9 +278,7 @@ abstract class AbstractJsonableObject implements Jsonable {
    */
   private Iterable<Field> getAllJsonableElementFields() {
     ImmutableList.Builder<Field> builder = new ImmutableList.Builder<>();
-    for (Class<?> clazz = this.getClass();
-        clazz != null;
-        clazz = clazz.getSuperclass()) {
+    for (Class<?> clazz = this.getClass(); clazz != null; clazz = clazz.getSuperclass()) {
       for (Field field : clazz.getDeclaredFields()) {
         if (!field.isAnnotationPresent(JsonableElement.class)) {
           continue;
@@ -302,9 +298,7 @@ abstract class AbstractJsonableObject implements Jsonable {
   private Iterable<Method> getAllJsonableElementMethods() {
     ImmutableList.Builder<Method> builder = new ImmutableList.Builder<>();
     HashSet<String> seenNames = new HashSet<>();
-    for (Class<?> clazz = this.getClass();
-        clazz != null;
-        clazz = clazz.getSuperclass()) {
+    for (Class<?> clazz = this.getClass(); clazz != null; clazz = clazz.getSuperclass()) {
       for (Method method : clazz.getDeclaredMethods()) {
         if (!method.isAnnotationPresent(JsonableElement.class)) {
           continue;
@@ -348,9 +342,7 @@ abstract class AbstractJsonableObject implements Jsonable {
       return JsonNull.INSTANCE;
     }
     throw new IllegalArgumentException(
-        String.format(
-            "Unknows object type '%s' in member '%s'",
-            object.getClass(), member));
+        String.format("Unknows object type '%s' in member '%s'", object.getClass(), member));
   }
 
   /**
@@ -435,8 +427,7 @@ abstract class AbstractJsonableObject implements Jsonable {
         return;
       }
 
-      String name =
-          jsonableElement.value().isEmpty() ? member.getName() : jsonableElement.value();
+      String name = jsonableElement.value().isEmpty() ? member.getName() : jsonableElement.value();
 
       // If this is an Iterable, return a stream of the inner elements
       if (object instanceof Iterable) {
@@ -478,7 +469,8 @@ abstract class AbstractJsonableObject implements Jsonable {
         } else {
           // Both this and the other object have element with the same name. That's only OK if that
           // element is an array - in which case we merge the arrays.
-          checkState((ourElement instanceof JsonArray) && (otherElement instanceof JsonArray),
+          checkState(
+              (ourElement instanceof JsonArray) && (otherElement instanceof JsonArray),
               "Encountered the same field name '%s' multiple times: '%s' vs. '%s'",
               name,
               member,
@@ -486,7 +478,6 @@ abstract class AbstractJsonableObject implements Jsonable {
           ((JsonArray) ourElement).addAll((JsonArray) otherElement);
         }
       }
-
     }
 
     private void addObject(String name, Member member, Object object) {
@@ -507,11 +498,12 @@ abstract class AbstractJsonableObject implements Jsonable {
         jsonArray = new JsonArray();
         jsonObject.add(name, jsonArray);
       } else {
-        checkState(innerElement instanceof JsonArray,
-          "Encountered the same field name '%s' multiple times: '%s' vs. '%s'",
-          name,
-          member,
-          seenNames.get(name));
+        checkState(
+            innerElement instanceof JsonArray,
+            "Encountered the same field name '%s' multiple times: '%s' vs. '%s'",
+            name,
+            member,
+            seenNames.get(name));
         jsonArray = (JsonArray) innerElement;
       }
       seenNames.put(name, member);

@@ -635,18 +635,14 @@ public class DomainDeleteFlowTest extends ResourceFlowTestCase<DomainDeleteFlow,
     PollMessage gainingPollMessage = getOnlyPollMessage("NewRegistrar");
     assertThat(gainingPollMessage.getEventTime()).isEqualTo(clock.nowUtc());
     assertThat(
-            gainingPollMessage
-                .getResponseData()
-                .stream()
+            gainingPollMessage.getResponseData().stream()
                 .filter(TransferResponse.class::isInstance)
                 .map(TransferResponse.class::cast)
                 .collect(onlyElement())
                 .getTransferStatus())
         .isEqualTo(TransferStatus.SERVER_CANCELLED);
     PendingActionNotificationResponse panData =
-        gainingPollMessage
-            .getResponseData()
-            .stream()
+        gainingPollMessage.getResponseData().stream()
             .filter(PendingActionNotificationResponse.class::isInstance)
             .map(PendingActionNotificationResponse.class::cast)
             .collect(onlyElement());

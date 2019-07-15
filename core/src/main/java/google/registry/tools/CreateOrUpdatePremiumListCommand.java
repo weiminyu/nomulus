@@ -46,8 +46,9 @@ abstract class CreateOrUpdatePremiumListCommand extends ConfirmingCommand
   @Nullable
   @Parameter(
       names = {"-n", "--name"},
-      description = "The name of this premium list (defaults to filename if not specified). "
-          + "This is almost always the name of the TLD this premium list will be used on.")
+      description =
+          "The name of this premium list (defaults to filename if not specified). "
+              + "This is almost always the name of the TLD this premium list will be used on.")
   String name;
 
   @Parameter(
@@ -92,8 +93,11 @@ abstract class CreateOrUpdatePremiumListCommand extends ConfirmingCommand
     params.put(NAME_PARAM, name);
     String inputFileContents = new String(Files.readAllBytes(inputFile), UTF_8);
     String requestBody =
-        Joiner.on('&').withKeyValueSeparator("=").join(
-            ImmutableMap.of(INPUT_PARAM, URLEncoder.encode(inputFileContents, UTF_8.toString())));
+        Joiner.on('&')
+            .withKeyValueSeparator("=")
+            .join(
+                ImmutableMap.of(
+                    INPUT_PARAM, URLEncoder.encode(inputFileContents, UTF_8.toString())));
 
     ImmutableMap<String, ?> extraParams = getParameterMap();
     if (extraParams != null) {

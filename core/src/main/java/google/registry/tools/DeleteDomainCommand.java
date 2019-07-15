@@ -58,10 +58,12 @@ final class DeleteDomainCommand extends MutatingEppToolCommand {
       superuser = true;
     }
     setSoyTemplate(DeleteDomainSoyInfo.getInstance(), DeleteDomainSoyInfo.DELETEDOMAIN);
-    addSoyRecord(clientId, new SoyMapData(
-        "domainName", domainName,
-        "immediately", immediately,
-        "reason", reason,
-        "requestedByRegistrar", requestedByRegistrar));
+    addSoyRecord(
+        clientId,
+        new SoyMapData(
+            "domainName", domainName,
+            "immediately", immediately,
+            "reason", reason,
+            "requestedByRegistrar", requestedByRegistrar));
   }
 }

@@ -97,15 +97,36 @@ public class GenerateZoneFilesAction implements Runnable, JsonActionRunner.JsonA
 
   @Inject MapreduceRunner mrRunner;
   @Inject JsonActionRunner jsonActionRunner;
-  @Inject @Config("zoneFilesBucket") String bucket;
-  @Inject @Config("gcsBufferSize") int gcsBufferSize;
-  @Inject @Config("commitLogDatastoreRetention") Duration datastoreRetention;
-  @Inject @Config("dnsDefaultATtl") Duration dnsDefaultATtl;
+
+  @Inject
+  @Config("zoneFilesBucket")
+  String bucket;
+
+  @Inject
+  @Config("gcsBufferSize")
+  int gcsBufferSize;
+
+  @Inject
+  @Config("commitLogDatastoreRetention")
+  Duration datastoreRetention;
+
+  @Inject
+  @Config("dnsDefaultATtl")
+  Duration dnsDefaultATtl;
+
   @SuppressWarnings("DurationVariableWithUnits") // false-positive Error Prone check
-  @Inject @Config("dnsDefaultNsTtl") Duration dnsDefaultNsTtl;
-  @Inject @Config("dnsDefaultDsTtl") Duration dnsDefaultDsTtl;
+  @Inject
+  @Config("dnsDefaultNsTtl")
+  Duration dnsDefaultNsTtl;
+
+  @Inject
+  @Config("dnsDefaultDsTtl")
+  Duration dnsDefaultDsTtl;
+
   @Inject Clock clock;
-  @Inject GenerateZoneFilesAction() {}
+
+  @Inject
+  GenerateZoneFilesAction() {}
 
   @Override
   public void run() {
@@ -125,9 +146,9 @@ public class GenerateZoneFilesAction implements Runnable, JsonActionRunner.JsonA
       throw new BadRequestException("Invalid export time: must be > 2 minutes ago");
     }
     if (exportTime.isBefore(now.minus(datastoreRetention))) {
-      throw new BadRequestException(String.format(
-          "Invalid export time: must be < %d days ago",
-          datastoreRetention.getStandardDays()));
+      throw new BadRequestException(
+          String.format(
+              "Invalid export time: must be < %d days ago", datastoreRetention.getStandardDays()));
     }
     if (!exportTime.equals(exportTime.toDateTime(UTC).withTimeAtStartOfDay())) {
       throw new BadRequestException("Invalid export time: must be midnight UTC");
@@ -181,7 +202,7 @@ public class GenerateZoneFilesAction implements Runnable, JsonActionRunner.JsonA
 
     @Override
     public void map(EppResource resource) {
-      if (resource == null) {  // Force the reducer to always generate a bind header for each tld.
+      if (resource == null) { // Force the reducer to always generate a bind header for each tld.
         for (String tld : tlds) {
           emit(tld, null);
         }
@@ -270,26 +291,21 @@ public class GenerateZoneFilesAction implements Runnable, JsonActionRunner.JsonA
   /**
    * Generates DNS records for a domain (NS and DS).
    *
-   * For domain foo.tld, these look like this:
-   * {@code
-   *   foo 180 IN NS ns.example.com.
-   *   foo 86400 IN DS 1 2 3 000102
-   * }
+   * <p>For domain foo.tld, these look like this: {@code foo 180 IN NS ns.example.com. foo 86400 IN
+   * DS 1 2 3 000102 }
    */
   private static String domainStanza(
-      DomainBase domain,
-      DateTime exportTime,
-      Duration dnsDefaultNsTtl,
-      Duration dnsDefaultDsTtl) {
+      DomainBase domain, DateTime exportTime, Duration dnsDefaultNsTtl, Duration dnsDefaultDsTtl) {
     StringBuilder result = new StringBuilder();
     String domainLabel = stripTld(domain.getFullyQualifiedDomainName(), domain.getTld());
     for (HostResource nameserver : ofy().load().keys(domain.getNameservers()).values()) {
-      result.append(String.format(
-          NS_FORMAT,
-          domainLabel,
-          dnsDefaultNsTtl.getStandardSeconds(),
-          // Load the nameservers at the export time in case they've been renamed or deleted.
-          loadAtPointInTime(nameserver, exportTime).now().getFullyQualifiedHostName()));
+      result.append(
+          String.format(
+              NS_FORMAT,
+              domainLabel,
+              dnsDefaultNsTtl.getStandardSeconds(),
+              // Load the nameservers at the export time in case they've been renamed or deleted.
+              loadAtPointInTime(nameserver, exportTime).now().getFullyQualifiedHostName()));
     }
     for (DelegationSignerData dsData : domain.getDsData()) {
       result.append(
@@ -308,23 +324,21 @@ public class GenerateZoneFilesAction implements Runnable, JsonActionRunner.JsonA
   /**
    * Generates DNS records for a domain (A and AAAA).
    *
-   * <p>These look like this:
-   * {@code
-   *   ns.foo.tld 3600 IN A 127.0.0.1
-   *   ns.foo.tld 3600 IN AAAA 0:0:0:0:0:0:0:1
-   * }
+   * <p>These look like this: {@code ns.foo.tld 3600 IN A 127.0.0.1 ns.foo.tld 3600 IN AAAA
+   * 0:0:0:0:0:0:0:1 }
    */
   private static String hostStanza(HostResource host, Duration dnsDefaultATtl, String tld) {
     StringBuilder result = new StringBuilder();
     for (InetAddress addr : host.getInetAddresses()) {
       // must be either IPv4 or IPv6
       String rrSetClass = (addr instanceof Inet4Address) ? "A" : "AAAA";
-      result.append(String.format(
-          A_FORMAT,
-          stripTld(host.getFullyQualifiedHostName(), tld),
-          dnsDefaultATtl.getStandardSeconds(),
-          rrSetClass,
-          addr.getHostAddress()));
+      result.append(
+          String.format(
+              A_FORMAT,
+              stripTld(host.getFullyQualifiedHostName(), tld),
+              dnsDefaultATtl.getStandardSeconds(),
+              rrSetClass,
+              addr.getHostAddress()));
     }
     return result.toString();
   }
@@ -332,11 +346,11 @@ public class GenerateZoneFilesAction implements Runnable, JsonActionRunner.JsonA
   /**
    * Removes the TLD, if present, from a fully-qualified name.
    *
-   * <p>This would not work if a fully qualified host name in a different TLD were passed. But
-   * we only generate glue records for in-bailiwick name servers, meaning that the TLD will always
+   * <p>This would not work if a fully qualified host name in a different TLD were passed. But we
+   * only generate glue records for in-bailiwick name servers, meaning that the TLD will always
    * match.
    *
-   * If, for some unforeseen reason, the TLD is not present, indicate an error condition, so that
+   * <p>If, for some unforeseen reason, the TLD is not present, indicate an error condition, so that
    * our process for comparing Datastore and DNS data will realize that something is amiss.
    */
   private static String stripTld(String fullyQualifiedName, String tld) {

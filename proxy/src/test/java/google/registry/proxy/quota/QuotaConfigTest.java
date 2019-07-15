@@ -33,8 +33,7 @@ public class QuotaConfigTest {
 
   private static QuotaConfig loadQuotaConfig(String filename) {
     return new QuotaConfig(
-        new Yaml()
-            .loadAs(readResourceUtf8(QuotaConfigTest.class, filename), Quota.class),
+        new Yaml().loadAs(readResourceUtf8(QuotaConfigTest.class, filename), Quota.class),
         "theProtocol");
   }
 

@@ -23,15 +23,11 @@ import com.googlecode.objectify.Key;
 import google.registry.model.EppResource;
 import java.util.List;
 
-/**
- * Command to get info on a Datastore resource by websafe key.
- */
+/** Command to get info on a Datastore resource by websafe key. */
 @Parameters(separators = " =", commandDescription = "Fetch a Datastore resource by websafe key")
 final class GetResourceByKeyCommand implements CommandWithRemoteApi {
 
-  @Parameter(
-      description = "Websafe key string(s)",
-      required = true)
+  @Parameter(description = "Websafe key string(s)", required = true)
   private List<String> mainParameters;
 
   @Parameter(

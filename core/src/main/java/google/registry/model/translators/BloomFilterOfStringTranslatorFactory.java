@@ -44,14 +44,14 @@ public class BloomFilterOfStringTranslatorFactory
   public Translator<BloomFilter<String>> create(
       Path path, Property property, Type type, CreateContext ctx) {
     if (!BloomFilter.class.equals(erase(type))) {
-      return null;  // Skip me and try to find another matching translator
+      return null; // Skip me and try to find another matching translator
     }
     Type fieldBloomFilterType = getTypeParameter(type, BloomFilter.class.getTypeParameters()[0]);
     if (fieldBloomFilterType == null) {
-      return null;  // No type information is available
+      return null; // No type information is available
     }
     if (!TypeToken.of(String.class).getType().equals(fieldBloomFilterType)) {
-      return null;  // We can only handle BloomFilters of CharSequences
+      return null; // We can only handle BloomFilters of CharSequences
     }
 
     return new ValueTranslator<BloomFilter<String>, Blob>(path, Blob.class) {

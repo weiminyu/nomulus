@@ -22,18 +22,20 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /** Holds information about a mark derived from a court opinion. */
-@XmlType(propOrder = {
-    "id",
-    "markName",
-    "markHolders",
-    "contacts",
-    "labels",
-    "goodsAndServices",
-    "referenceNumber",
-    "protectionDate",
-    "countryCode",
-    "regions",
-    "courtName"})
+@XmlType(
+    propOrder = {
+      "id",
+      "markName",
+      "markHolders",
+      "contacts",
+      "labels",
+      "goodsAndServices",
+      "referenceNumber",
+      "protectionDate",
+      "countryCode",
+      "regions",
+      "courtName"
+    })
 public class CourtMark extends ProtectedMark {
 
   /** The two-character code of the country where the court is located. */

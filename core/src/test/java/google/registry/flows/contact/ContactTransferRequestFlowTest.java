@@ -84,8 +84,10 @@ public class ContactTransferRequestFlowTest
 
     // Transfer should have been requested. Verify correct fields were set.
     contact = reloadResourceByForeignKey();
-    assertAboutContacts().that(contact)
-        .hasCurrentSponsorClientId("TheRegistrar").and()
+    assertAboutContacts()
+        .that(contact)
+        .hasCurrentSponsorClientId("TheRegistrar")
+        .and()
         .hasOnlyOneHistoryEntryWhich()
         .hasType(HistoryEntry.Type.CONTACT_TRANSFER_REQUEST);
     Trid expectedTrid =
@@ -113,15 +115,15 @@ public class ContactTransferRequestFlowTest
         getOnlyElement(getPollMessages("TheRegistrar", clock.nowUtc()));
 
     // If we fast forward AUTOMATIC_TRANSFER_DAYS the transfer should have happened.
-    assertAboutContacts().that(contact.cloneProjectedAtTime(afterTransfer))
+    assertAboutContacts()
+        .that(contact.cloneProjectedAtTime(afterTransfer))
         .hasCurrentSponsorClientId("NewRegistrar");
     assertThat(getPollMessages("NewRegistrar", afterTransfer)).hasSize(1);
     assertThat(getPollMessages("TheRegistrar", afterTransfer)).hasSize(2);
     PollMessage gainingApproveMessage =
         getOnlyElement(getPollMessages("NewRegistrar", afterTransfer));
     PollMessage losingApproveMessage =
-        getPollMessages("TheRegistrar", afterTransfer)
-            .stream()
+        getPollMessages("TheRegistrar", afterTransfer).stream()
             .filter(not(equalTo(losingRequestMessage)))
             .collect(onlyElement());
 
@@ -129,9 +131,10 @@ public class ContactTransferRequestFlowTest
     // poll messages, the approval notice ones for gaining and losing registrars.
     assertPollMessagesEqual(
         Iterables.filter(
-            ofy().load()
+            ofy()
+                .load()
                 // Use toArray() to coerce the type to something keys() will accept.
-                .keys(contact.getTransferData().getServerApproveEntities().toArray(new Key<?>[]{}))
+                .keys(contact.getTransferData().getServerApproveEntities().toArray(new Key<?>[] {}))
                 .values(),
             PollMessage.class),
         ImmutableList.of(gainingApproveMessage, losingApproveMessage));

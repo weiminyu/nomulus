@@ -139,8 +139,7 @@ public abstract class ProtocolModuleTest {
   /** Excludes handler providers that are not of interested for testing. */
   private ImmutableList<Provider<? extends ChannelHandler>> excludeHandlerProvidersForTesting(
       ImmutableList<Provider<? extends ChannelHandler>> handlerProviders) {
-    return handlerProviders
-        .stream()
+    return handlerProviders.stream()
         .filter(handlerProvider -> !excludedHandlers.contains(handlerProvider.get().getClass()))
         .collect(toImmutableList());
   }

@@ -50,8 +50,8 @@ public class SendEmailService {
   }
 
   /**
-   * Converts the provided message content into a {@link javax.mail.Message} and sends it with
-   * retry on transient failures.
+   * Converts the provided message content into a {@link javax.mail.Message} and sends it with retry
+   * on transient failures.
    */
   public void sendEmail(EmailMessage emailMessage) {
     retrier.callWithRetry(

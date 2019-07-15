@@ -74,16 +74,17 @@ public class RegistrarContactCommandTest extends CommandTestCase<RegistrarContac
   @Test
   public void testUpdate() throws Exception {
     Registrar registrar = loadRegistrar("NewRegistrar");
-    ImmutableList<RegistrarContact> contacts = ImmutableList.of(
-        new RegistrarContact.Builder()
-            .setParent(registrar)
-            .setName("Judith Doe")
-            .setEmailAddress("judith.doe@example.com")
-            .setTypes(ImmutableSet.of(WHOIS))
-            .setVisibleInWhoisAsAdmin(true)
-            .setVisibleInWhoisAsTech(true)
-            .setVisibleInDomainWhoisAsAbuse(false)
-            .build());
+    ImmutableList<RegistrarContact> contacts =
+        ImmutableList.of(
+            new RegistrarContact.Builder()
+                .setParent(registrar)
+                .setName("Judith Doe")
+                .setEmailAddress("judith.doe@example.com")
+                .setTypes(ImmutableSet.of(WHOIS))
+                .setVisibleInWhoisAsAdmin(true)
+                .setVisibleInWhoisAsTech(true)
+                .setVisibleInDomainWhoisAsAbuse(false)
+                .build());
     persistSimpleResources(contacts);
     runCommandForced(
         "--mode=UPDATE",
@@ -97,18 +98,19 @@ public class RegistrarContactCommandTest extends CommandTestCase<RegistrarContac
         "--visible_in_domain_whois_as_abuse=false",
         "NewRegistrar");
     RegistrarContact registrarContact = loadRegistrar("NewRegistrar").getContacts().asList().get(1);
-    assertThat(registrarContact).isEqualTo(
-        new RegistrarContact.Builder()
-            .setParent(registrar)
-            .setName("Judith Registrar")
-            .setEmailAddress("judith.doe@example.com")
-            .setPhoneNumber("+1.2125650000")
-            .setFaxNumber("+1.2125650001")
-            .setTypes(ImmutableSet.of(WHOIS))
-            .setVisibleInWhoisAsAdmin(true)
-            .setVisibleInWhoisAsTech(false)
-            .setVisibleInDomainWhoisAsAbuse(false)
-            .build());
+    assertThat(registrarContact)
+        .isEqualTo(
+            new RegistrarContact.Builder()
+                .setParent(registrar)
+                .setName("Judith Registrar")
+                .setEmailAddress("judith.doe@example.com")
+                .setPhoneNumber("+1.2125650000")
+                .setFaxNumber("+1.2125650001")
+                .setTypes(ImmutableSet.of(WHOIS))
+                .setVisibleInWhoisAsAdmin(true)
+                .setVisibleInWhoisAsTech(false)
+                .setVisibleInDomainWhoisAsAbuse(false)
+                .build());
   }
 
   @Test
@@ -212,19 +214,20 @@ public class RegistrarContactCommandTest extends CommandTestCase<RegistrarContac
   @Test
   public void testUpdate_emptyCommandModifiesNothing() throws Exception {
     Registrar registrar = loadRegistrar("NewRegistrar");
-    RegistrarContact existingContact = persistSimpleResource(
-        new RegistrarContact.Builder()
-            .setParent(registrar)
-            .setName("John Doe")
-            .setEmailAddress("john.doe@example.com")
-            .setGaeUserId("11111")
-            .setPhoneNumber("123-456-7890")
-            .setFaxNumber("123-456-7890")
-            .setTypes(ImmutableSet.of(ADMIN, ABUSE))
-            .setVisibleInWhoisAsAdmin(true)
-            .setVisibleInWhoisAsTech(true)
-            .setVisibleInDomainWhoisAsAbuse(true)
-            .build());
+    RegistrarContact existingContact =
+        persistSimpleResource(
+            new RegistrarContact.Builder()
+                .setParent(registrar)
+                .setName("John Doe")
+                .setEmailAddress("john.doe@example.com")
+                .setGaeUserId("11111")
+                .setPhoneNumber("123-456-7890")
+                .setFaxNumber("123-456-7890")
+                .setTypes(ImmutableSet.of(ADMIN, ABUSE))
+                .setVisibleInWhoisAsAdmin(true)
+                .setVisibleInWhoisAsTech(true)
+                .setVisibleInDomainWhoisAsAbuse(true)
+                .build());
     runCommandForced("--mode=UPDATE", "--email=john.doe@example.com", "NewRegistrar");
     RegistrarContact registrarContact = loadRegistrar("NewRegistrar").getContacts().asList().get(1);
     assertThat(registrarContact.getEmailAddress()).isEqualTo(existingContact.getEmailAddress());
@@ -277,10 +280,7 @@ public class RegistrarContactCommandTest extends CommandTestCase<RegistrarContac
             .setTypes(ImmutableSet.of(ADMIN, ABUSE))
             .build());
     runCommandForced(
-        "--mode=UPDATE",
-        "--email=john.doe@example.com",
-        "--contact_type=",
-        "NewRegistrar");
+        "--mode=UPDATE", "--email=john.doe@example.com", "--contact_type=", "NewRegistrar");
     RegistrarContact registrarContact = loadRegistrar("NewRegistrar").getContacts().asList().get(1);
     assertThat(registrarContact.getTypes()).isEmpty();
   }
@@ -298,26 +298,24 @@ public class RegistrarContactCommandTest extends CommandTestCase<RegistrarContac
         "--visible_in_domain_whois_as_abuse=true",
         "NewRegistrar");
     RegistrarContact registrarContact = loadRegistrar("NewRegistrar").getContacts().asList().get(1);
-    assertThat(registrarContact).isEqualTo(
-        new RegistrarContact.Builder()
-            .setParent(registrar)
-            .setName("Jim Doe")
-            .setEmailAddress("jim.doe@example.com")
-            .setTypes(ImmutableSet.of(ADMIN, ABUSE))
-            .setVisibleInWhoisAsAdmin(true)
-            .setVisibleInWhoisAsTech(false)
-            .setVisibleInDomainWhoisAsAbuse(true)
-            .build());
+    assertThat(registrarContact)
+        .isEqualTo(
+            new RegistrarContact.Builder()
+                .setParent(registrar)
+                .setName("Jim Doe")
+                .setEmailAddress("jim.doe@example.com")
+                .setTypes(ImmutableSet.of(ADMIN, ABUSE))
+                .setVisibleInWhoisAsAdmin(true)
+                .setVisibleInWhoisAsTech(false)
+                .setVisibleInDomainWhoisAsAbuse(true)
+                .build());
     assertThat(registrarContact.getGaeUserId()).isNull();
   }
 
   @Test
   public void testDelete() throws Exception {
     assertThat(loadRegistrar("NewRegistrar").getContacts()).isNotEmpty();
-    runCommandForced(
-        "--mode=DELETE",
-        "--email=janedoe@theregistrar.com",
-        "NewRegistrar");
+    runCommandForced("--mode=DELETE", "--email=janedoe@theregistrar.com", "NewRegistrar");
     assertThat(loadRegistrar("NewRegistrar").getContacts()).isEmpty();
   }
 

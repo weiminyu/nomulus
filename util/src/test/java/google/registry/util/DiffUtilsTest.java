@@ -55,8 +55,7 @@ public class DiffUtilsTest {
 
   @Test
   public void test_prettyPrintSetDiff_addedAndRemovedElements() {
-    assertThat(prettyPrintSetDiff(
-        ImmutableSet.of("a", "b", "c"), ImmutableSet.of("a", "y", "z")))
+    assertThat(prettyPrintSetDiff(ImmutableSet.of("a", "b", "c"), ImmutableSet.of("a", "y", "z")))
         .isEqualTo("\n    ADDED: [y, z]\n    REMOVED: [b, c]\n    FINAL CONTENTS: [a, y, z]");
   }
 
@@ -78,16 +77,16 @@ public class DiffUtilsTest {
     DummyObject b = DummyObject.create("b");
     DummyObject c = DummyObject.create("c");
 
-    assertThat(prettyPrintSetDiff(
-        ImmutableSet.of(a, b), ImmutableSet.of(a, c)))
-        .isEqualTo("\n"
-            + "    ADDED:\n"
-            + "        {c}\n"
-            + "    REMOVED:\n"
-            + "        {b}\n"
-            + "    FINAL CONTENTS:\n"
-            + "        {a},\n"
-            + "        {c}");
+    assertThat(prettyPrintSetDiff(ImmutableSet.of(a, b), ImmutableSet.of(a, c)))
+        .isEqualTo(
+            "\n"
+                + "    ADDED:\n"
+                + "        {c}\n"
+                + "    REMOVED:\n"
+                + "        {b}\n"
+                + "    FINAL CONTENTS:\n"
+                + "        {a},\n"
+                + "        {c}");
   }
 
   private static class DummyObject {

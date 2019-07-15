@@ -46,27 +46,27 @@ public class RegistryToolEnvironmentTest {
 
   @Test
   public void testFromArgs_shortNotation_works() {
-    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] { "-e", "alpha" }))
+    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] {"-e", "alpha"}))
         .isEqualTo(RegistryToolEnvironment.ALPHA);
   }
 
   @Test
   public void testFromArgs_longNotation_works() {
-    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] { "--environment", "alpha" }))
+    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] {"--environment", "alpha"}))
         .isEqualTo(RegistryToolEnvironment.ALPHA);
   }
 
   @Test
   public void testFromArgs_uppercase_works() {
-    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] { "-e", "QA" }))
+    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] {"-e", "QA"}))
         .isEqualTo(RegistryToolEnvironment.QA);
   }
 
   @Test
   public void testFromArgs_equalsNotation_works() {
-    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] { "-e=sandbox" }))
+    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] {"-e=sandbox"}))
         .isEqualTo(RegistryToolEnvironment.SANDBOX);
-    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] { "--environment=sandbox" }))
+    assertThat(RegistryToolEnvironment.parseFromArgs(new String[] {"--environment=sandbox"}))
         .isEqualTo(RegistryToolEnvironment.SANDBOX);
   }
 
@@ -88,20 +88,19 @@ public class RegistryToolEnvironmentTest {
 
   @Test
   public void testFromArgs_extraEnvFlagAfterCommandName_getsIgnored() {
-    String[] args = new String[] {
-        "-e", "alpha",
-        "registrar_activity_report",
-        "-e", "1406851199"};
+    String[] args = new String[] {"-e", "alpha", "registrar_activity_report", "-e", "1406851199"};
     assertThat(RegistryToolEnvironment.parseFromArgs(args))
         .isEqualTo(RegistryToolEnvironment.ALPHA);
   }
 
   @Test
   public void testFromArgs_loggingFlagWithUnderscores_isntConsideredCommand() {
-    String[] args = new String[] {
-        "--logging_properties_file", "my_file.properties",
-        "-e", "alpha",
-        "list_tlds"};
+    String[] args =
+        new String[] {
+          "--logging_properties_file", "my_file.properties",
+          "-e", "alpha",
+          "list_tlds"
+        };
     assertThat(RegistryToolEnvironment.parseFromArgs(args))
         .isEqualTo(RegistryToolEnvironment.ALPHA);
   }

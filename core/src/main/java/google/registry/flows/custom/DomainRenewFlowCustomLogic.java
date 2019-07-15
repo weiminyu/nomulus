@@ -68,8 +68,8 @@ public class DomainRenewFlowCustomLogic extends BaseFlowCustomLogic {
   /**
    * A hook that runs before the response is returned.
    *
-   * <p>This takes the {@link DomainBase} and {@link ResponseExtension}s as input and returns
-   * them, potentially with modifications.
+   * <p>This takes the {@link DomainBase} and {@link ResponseExtension}s as input and returns them,
+   * potentially with modifications.
    */
   @SuppressWarnings("unused")
   public BeforeResponseReturnData beforeResponse(BeforeResponseParameters parameters)

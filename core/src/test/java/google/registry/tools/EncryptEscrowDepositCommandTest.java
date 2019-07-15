@@ -28,11 +28,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /** Unit tests for {@link EncryptEscrowDepositCommand}. */
-public class EncryptEscrowDepositCommandTest
-    extends CommandTestCase<EncryptEscrowDepositCommand> {
+public class EncryptEscrowDepositCommandTest extends CommandTestCase<EncryptEscrowDepositCommand> {
 
-  @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
 
   private final ByteSource depositXml = loadBytes(RdeTestData.class, "deposit_full.xml");
 
@@ -53,13 +51,10 @@ public class EncryptEscrowDepositCommandTest
     File outDir = tmpDir.newFolder();
     File depositFile = tmpDir.newFile("deposit.xml");
     Files.write(depositXml.read(), depositFile);
-    runCommand(
-        "--tld=lol",
-        "--input=" + depositFile.getPath(),
-        "--outdir=" + outDir.getPath());
-    assertThat(outDir.list()).asList().containsExactly(
-        "lol_2010-10-17_full_S1_R0.ryde",
-        "lol_2010-10-17_full_S1_R0.sig",
-        "lol.pub");
+    runCommand("--tld=lol", "--input=" + depositFile.getPath(), "--outdir=" + outDir.getPath());
+    assertThat(outDir.list())
+        .asList()
+        .containsExactly(
+            "lol_2010-10-17_full_S1_R0.ryde", "lol_2010-10-17_full_S1_R0.sig", "lol.pub");
   }
 }

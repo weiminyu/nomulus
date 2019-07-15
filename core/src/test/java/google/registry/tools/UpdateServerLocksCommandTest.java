@@ -24,36 +24,56 @@ public class UpdateServerLocksCommandTest extends EppToolCommandTestCase<UpdateS
 
   @Test
   public void testSuccess_applyOne() throws Exception {
-    runCommandForced("--client=NewRegistrar", "--registrar_request=true", "--reason=Test",
-        "--domain_name=example.tld", "--apply=serverRenewProhibited");
+    runCommandForced(
+        "--client=NewRegistrar",
+        "--registrar_request=true",
+        "--reason=Test",
+        "--domain_name=example.tld",
+        "--apply=serverRenewProhibited");
     eppVerifier.verifySent("update_server_locks_apply_one.xml");
   }
 
   @Test
   public void testSuccess_multipleWordReason() throws Exception {
-    runCommandForced("--client=NewRegistrar", "--registrar_request=false",
-        "--reason=\"Test this\"", "--domain_name=example.tld", "--apply=serverRenewProhibited");
+    runCommandForced(
+        "--client=NewRegistrar",
+        "--registrar_request=false",
+        "--reason=\"Test this\"",
+        "--domain_name=example.tld",
+        "--apply=serverRenewProhibited");
     eppVerifier.verifySent("update_server_locks_multiple_word_reason.xml");
   }
 
   @Test
   public void testSuccess_removeOne() throws Exception {
-    runCommandForced("--client=NewRegistrar", "--registrar_request=true", "--reason=Test",
-        "--domain_name=example.tld", "--remove=serverRenewProhibited");
+    runCommandForced(
+        "--client=NewRegistrar",
+        "--registrar_request=true",
+        "--reason=Test",
+        "--domain_name=example.tld",
+        "--remove=serverRenewProhibited");
     eppVerifier.verifySent("update_server_locks_remove_one.xml");
   }
 
   @Test
   public void testSuccess_applyAll() throws Exception {
-    runCommandForced("--client=NewRegistrar", "--registrar_request=true", "--reason=Test",
-        "--domain_name=example.tld", "--apply=all");
+    runCommandForced(
+        "--client=NewRegistrar",
+        "--registrar_request=true",
+        "--reason=Test",
+        "--domain_name=example.tld",
+        "--apply=all");
     eppVerifier.verifySent("update_server_locks_apply_all.xml");
   }
 
   @Test
   public void testSuccess_removeAll() throws Exception {
-    runCommandForced("--client=NewRegistrar", "--registrar_request=true", "--reason=Test",
-        "--domain_name=example.tld", "--remove=all");
+    runCommandForced(
+        "--client=NewRegistrar",
+        "--registrar_request=true",
+        "--reason=Test",
+        "--domain_name=example.tld",
+        "--remove=all");
     eppVerifier.verifySent("update_server_locks_remove_all.xml");
   }
 

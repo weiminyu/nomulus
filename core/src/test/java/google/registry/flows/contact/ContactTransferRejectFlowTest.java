@@ -59,10 +59,8 @@ public class ContactTransferRejectFlowTest
       throws Exception {
     setEppInput(commandFilename);
     // Look in the future and make sure the poll messages for implicit ack are there.
-    assertThat(getPollMessages("NewRegistrar", clock.nowUtc().plusMonths(1)))
-        .hasSize(1);
-    assertThat(getPollMessages("TheRegistrar", clock.nowUtc().plusMonths(1)))
-        .hasSize(1);
+    assertThat(getPollMessages("NewRegistrar", clock.nowUtc().plusMonths(1))).hasSize(1);
+    assertThat(getPollMessages("TheRegistrar", clock.nowUtc().plusMonths(1))).hasSize(1);
 
     // Setup done; run the test.
     contact = reloadResourceByForeignKey();
@@ -72,38 +70,36 @@ public class ContactTransferRejectFlowTest
 
     // Transfer should have failed. Verify correct fields were set.
     contact = reloadResourceByForeignKey();
-    assertAboutContacts().that(contact)
-        .hasCurrentSponsorClientId("TheRegistrar").and()
-        .hasLastTransferTimeNotEqualTo(clock.nowUtc()).and()
+    assertAboutContacts()
+        .that(contact)
+        .hasCurrentSponsorClientId("TheRegistrar")
+        .and()
+        .hasLastTransferTimeNotEqualTo(clock.nowUtc())
+        .and()
         .hasOneHistoryEntryEachOfTypes(
-            HistoryEntry.Type.CONTACT_TRANSFER_REQUEST,
-            HistoryEntry.Type.CONTACT_TRANSFER_REJECT);
+            HistoryEntry.Type.CONTACT_TRANSFER_REQUEST, HistoryEntry.Type.CONTACT_TRANSFER_REJECT);
     assertThat(contact.getTransferData())
         .isEqualTo(
-            originalTransferData.copyConstantFieldsToBuilder()
+            originalTransferData
+                .copyConstantFieldsToBuilder()
                 .setTransferStatus(TransferStatus.CLIENT_REJECTED)
                 .setPendingTransferExpirationTime(clock.nowUtc())
                 .build());
     // The poll message (in the future) to the losing registrar for implicit ack should be gone.
-    assertThat(getPollMessages("TheRegistrar", clock.nowUtc().plusMonths(1)))
-        .isEmpty();
+    assertThat(getPollMessages("TheRegistrar", clock.nowUtc().plusMonths(1))).isEmpty();
     // The poll message in the future to the gaining registrar should be gone too, but there
     // should be one at the current time to the gaining registrar.
     PollMessage gainingPollMessage = getOnlyPollMessage("NewRegistrar");
     assertThat(gainingPollMessage.getEventTime()).isEqualTo(clock.nowUtc());
     assertThat(
-            gainingPollMessage
-                .getResponseData()
-                .stream()
+            gainingPollMessage.getResponseData().stream()
                 .filter(TransferResponse.class::isInstance)
                 .map(TransferResponse.class::cast)
                 .collect(onlyElement())
                 .getTransferStatus())
         .isEqualTo(TransferStatus.CLIENT_REJECTED);
     PendingActionNotificationResponse panData =
-        gainingPollMessage
-            .getResponseData()
-            .stream()
+        gainingPollMessage.getResponseData().stream()
             .filter(PendingActionNotificationResponse.class::isInstance)
             .map(PendingActionNotificationResponse.class::cast)
             .collect(onlyElement());
@@ -133,8 +129,8 @@ public class ContactTransferRejectFlowTest
 
   @Test
   public void testSuccess_domainAuthInfo() throws Exception {
-    doSuccessfulTest("contact_transfer_reject_with_authinfo.xml",
-        "contact_transfer_reject_response.xml");
+    doSuccessfulTest(
+        "contact_transfer_reject_with_authinfo.xml", "contact_transfer_reject_response.xml");
   }
 
   @Test

@@ -25,10 +25,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class EppXxeAttackTest extends EppTestCase {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Test
   public void testRemoteXmlExternalEntity() throws Exception {
@@ -37,8 +34,10 @@ public class EppXxeAttackTest extends EppTestCase {
         .hasResponse(
             "response_error_no_cltrid.xml",
             ImmutableMap.of(
-                "CODE", "2001",
-                "MSG", "Syntax error at line 11, column 34: "
+                "CODE",
+                "2001",
+                "MSG",
+                "Syntax error at line 11, column 34: "
                     + "The entity &quot;remote&quot; was referenced, but not declared."));
     assertThatLogoutSucceeds();
   }
@@ -50,8 +49,10 @@ public class EppXxeAttackTest extends EppTestCase {
         .hasResponse(
             "response_error_no_cltrid.xml",
             ImmutableMap.of(
-                "CODE", "2001",
-                "MSG", "Syntax error at line 11, column 31: "
+                "CODE",
+                "2001",
+                "MSG",
+                "Syntax error at line 11, column 31: "
                     + "The entity &quot;ent&quot; was referenced, but not declared."));
     assertThatLogoutSucceeds();
   }
@@ -63,8 +64,10 @@ public class EppXxeAttackTest extends EppTestCase {
         .hasResponse(
             "response_error_no_cltrid.xml",
             ImmutableMap.of(
-                "CODE", "2001",
-                "MSG", "Syntax error at line 20, column 32: "
+                "CODE",
+                "2001",
+                "MSG",
+                "Syntax error at line 20, column 32: "
                     + "The entity &quot;lol9&quot; was referenced, but not declared."));
     assertThatLogoutSucceeds();
   }

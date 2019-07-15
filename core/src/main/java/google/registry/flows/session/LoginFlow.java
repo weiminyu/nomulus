@@ -75,7 +75,9 @@ public class LoginFlow implements Flow {
   @Inject TransportCredentials credentials;
   @Inject @ClientId String clientId;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject LoginFlow() {}
+
+  @Inject
+  LoginFlow() {}
 
   /** Run the flow and log errors. */
   @Override
@@ -90,7 +92,7 @@ public class LoginFlow implements Flow {
 
   /** Run the flow without bothering to log errors. The {@link #run} method will do that for us. */
   public final EppResponse runWithoutLogging() throws EppException {
-    extensionManager.validate();  // There are no legal extensions for this flow.
+    extensionManager.validate(); // There are no legal extensions for this flow.
     Login login = (Login) eppInput.getCommandWrapper().getCommand();
     if (!clientId.isEmpty()) {
       throw new AlreadyLoggedInException();
@@ -100,9 +102,10 @@ public class LoginFlow implements Flow {
       throw new UnsupportedLanguageException();
     }
     Services services = login.getServices();
-    Set<String> unsupportedObjectServices = difference(
-        nullToEmpty(services.getObjectServices()),
-        ProtocolDefinition.SUPPORTED_OBJECT_SERVICES);
+    Set<String> unsupportedObjectServices =
+        difference(
+            nullToEmpty(services.getObjectServices()),
+            ProtocolDefinition.SUPPORTED_OBJECT_SERVICES);
     if (!unsupportedObjectServices.isEmpty()) {
       throw new UnimplementedObjectServiceException();
     }
@@ -133,7 +136,7 @@ public class LoginFlow implements Flow {
     if (!registrar.get().isLive()) {
       throw new RegistrarAccountNotActiveException();
     }
-    if (login.getNewPassword() != null) {  // We don't support in-band password changes.
+    if (login.getNewPassword() != null) { // We don't support in-band password changes.
       throw new PasswordChangesNotSupportedException();
     }
 

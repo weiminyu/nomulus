@@ -38,8 +38,8 @@ public class MetricsModule {
 
   @Singleton
   @Provides
-  static Monitoring provideMonitoring(GoogleCredentialsBundle credentialsBundle,
-      ProxyConfig config) {
+  static Monitoring provideMonitoring(
+      GoogleCredentialsBundle credentialsBundle, ProxyConfig config) {
     return new Monitoring.Builder(
             credentialsBundle.getHttpTransport(),
             credentialsBundle.getJsonFactory(),

@@ -49,9 +49,7 @@ public final class RegistryTestServerMain {
       validateWith = HostAndPortParameter.class)
   private HostAndPort address = HostAndPort.fromString("[::]:8080");
 
-  @Parameter(
-      names = "--fixtures",
-      description = "Fixtures to load into Datastore.")
+  @Parameter(names = "--fixtures", description = "Fixtures to load into Datastore.")
   private List<Fixture> fixtures = ImmutableList.of(Fixture.BASIC);
 
   @Parameter(
@@ -70,14 +68,10 @@ public final class RegistryTestServerMain {
       arity = 1)
   private boolean loginIsAdmin = true;
 
-  @Parameter(
-      names = "--jetty_debug",
-      description = "Enables Jetty debug logging.")
+  @Parameter(names = "--jetty_debug", description = "Enables Jetty debug logging.")
   private boolean jettyDebug;
 
-  @Parameter(
-      names = "--jetty_verbose",
-      description = "Enables Jetty verbose logging.")
+  @Parameter(names = "--jetty_verbose", description = "Enables Jetty verbose logging.")
   private boolean jettyVerbose;
 
   @Parameter(
@@ -107,51 +101,54 @@ public final class RegistryTestServerMain {
       System.setProperty("VERBOSE", "true");
     }
 
-    System.out.printf("\n"
-        + "        CHARLESTON ROAD REGISTRY SHARED REGISTRATION SYSTEM\n"
-        + "                      ICANN-GTLD-AGB-20120604\n\n%s"
-        + "        ▓█████▄  ▒█████   ███▄ ▄███▓ ▄▄▄       ██▓ ███▄    █\n"
-        + "        ▒██▀ ██▌▒██▒  ██▒▓██▒▀█▀ ██▒▒████▄    ▓██▒ ██ ▀█   █\n"
-        + "        ░██   █▌▒██░  ██▒▓██    ▓██░▒██  ▀█▄  ▒██▒▓██  ▀█ ██▒\n"
-        + "        ░▓█▄   ▌▒██   ██░▒██    ▒██ ░██▄▄▄▄██ ░██░▓██▒  ▐▌██▒\n"
-        + "        ░▒████▓ ░ ████▓▒░▒██▒   ░██▒ ▓█   ▓██▒░██░▒██░   ▓██░\n"
-        + "         ▒▒▓  ▒ ░ ▒░▒░▒░ ░ ▒░   ░  ░ ▒▒   ▓▒█░░▓  ░ ▒░   ▒ ▒\n"
-        + "         ░ ▒  ▒   ░ ▒ ▒░ ░  ░      ░  ▒   ▒▒ ░ ▒ ░░ ░░   ░ ▒░\n"
-        + "         ░ ░  ░ ░ ░ ░ ▒  ░      ░     ░   ▒    ▒ ░   ░   ░ ░\n"
-        + "           ░        ░ ░         ░         ░  ░ ░           ░\n"
-        + "         ░\n%s"
-        + "    ██▀███  ▓█████   ▄████  ██▓  ██████ ▄▄▄█████▓ ██▀███ ▓██   ██▓\n"
-        + "    ▓██ ▒ ██▒▓█   ▀  ██▒ ▀█▒▓██▒▒██    ▒ ▓  ██▒ ▓▒▓██ ▒ ██▒▒██  ██▒\n"
-        + "    ▓██ ░▄█ ▒▒███   ▒██░▄▄▄░▒██▒░ ▓██▄   ▒ ▓██░ ▒░▓██ ░▄█ ▒ ▒██ ██░\n"
-        + "    ▒██▀▀█▄  ▒▓█  ▄ ░▓█  ██▓░██░  ▒   ██▒░ ▓██▓ ░ ▒██▀▀█▄   ░ ▐██▓░\n"
-        + "    ░██▓ ▒██▒░▒████▒░▒▓███▀▒░██░▒██████▒▒  ▒██▒ ░ ░██▓ ▒██▒ ░ ██▒▓░\n"
-        + "    ░ ▒▓ ░▒▓░░░ ▒░ ░ ░▒   ▒ ░▓  ▒ ▒▓▒ ▒ ░  ▒ ░░   ░ ▒▓ ░▒▓░  ██▒▒▒\n"
-        + "    ░▒ ░ ▒░ ░ ░  ░  ░   ░  ▒ ░░ ░▒  ░ ░    ░      ░▒ ░ ▒░▓██ ░▒░\n"
-        + "    ░░   ░    ░   ░ ░   ░  ▒ ░░  ░  ░    ░        ░░   ░ ▒ ▒ ░░\n"
-        + "     ░        ░  ░      ░  ░        ░              ░     ░ ░\n"
-        + "                                                         ░ ░\n%s"
-        + "(✿◕ ‿◕ )ノ%s\n",
+    System.out.printf(
+        "\n"
+            + "        CHARLESTON ROAD REGISTRY SHARED REGISTRATION SYSTEM\n"
+            + "                      ICANN-GTLD-AGB-20120604\n\n%s"
+            + "        ▓█████▄  ▒█████   ███▄ ▄███▓ ▄▄▄       ██▓ ███▄    █\n"
+            + "        ▒██▀ ██▌▒██▒  ██▒▓██▒▀█▀ ██▒▒████▄    ▓██▒ ██ ▀█   █\n"
+            + "        ░██   █▌▒██░  ██▒▓██    ▓██░▒██  ▀█▄  ▒██▒▓██  ▀█ ██▒\n"
+            + "        ░▓█▄   ▌▒██   ██░▒██    ▒██ ░██▄▄▄▄██ ░██░▓██▒  ▐▌██▒\n"
+            + "        ░▒████▓ ░ ████▓▒░▒██▒   ░██▒ ▓█   ▓██▒░██░▒██░   ▓██░\n"
+            + "         ▒▒▓  ▒ ░ ▒░▒░▒░ ░ ▒░   ░  ░ ▒▒   ▓▒█░░▓  ░ ▒░   ▒ ▒\n"
+            + "         ░ ▒  ▒   ░ ▒ ▒░ ░  ░      ░  ▒   ▒▒ ░ ▒ ░░ ░░   ░ ▒░\n"
+            + "         ░ ░  ░ ░ ░ ░ ▒  ░      ░     ░   ▒    ▒ ░   ░   ░ ░\n"
+            + "           ░        ░ ░         ░         ░  ░ ░           ░\n"
+            + "         ░\n%s"
+            + "    ██▀███  ▓█████   ▄████  ██▓  ██████ ▄▄▄█████▓ ██▀███ ▓██   ██▓\n"
+            + "    ▓██ ▒ ██▒▓█   ▀  ██▒ ▀█▒▓██▒▒██    ▒ ▓  ██▒ ▓▒▓██ ▒ ██▒▒██  ██▒\n"
+            + "    ▓██ ░▄█ ▒▒███   ▒██░▄▄▄░▒██▒░ ▓██▄   ▒ ▓██░ ▒░▓██ ░▄█ ▒ ▒██ ██░\n"
+            + "    ▒██▀▀█▄  ▒▓█  ▄ ░▓█  ██▓░██░  ▒   ██▒░ ▓██▓ ░ ▒██▀▀█▄   ░ ▐██▓░\n"
+            + "    ░██▓ ▒██▒░▒████▒░▒▓███▀▒░██░▒██████▒▒  ▒██▒ ░ ░██▓ ▒██▒ ░ ██▒▓░\n"
+            + "    ░ ▒▓ ░▒▓░░░ ▒░ ░ ░▒   ▒ ░▓  ▒ ▒▓▒ ▒ ░  ▒ ░░   ░ ▒▓ ░▒▓░  ██▒▒▒\n"
+            + "    ░▒ ░ ▒░ ░ ░  ░  ░   ░  ▒ ░░ ░▒  ░ ░    ░      ░▒ ░ ▒░▓██ ░▒░\n"
+            + "    ░░   ░    ░   ░ ░   ░  ▒ ░░  ░  ░    ░        ░░   ░ ▒ ▒ ░░\n"
+            + "     ░        ░  ░      ░  ░        ░              ░     ░ ░\n"
+            + "                                                         ░ ░\n%s"
+            + "(✿◕ ‿◕ )ノ%s\n",
         LIGHT_PURPLE, ORANGE, PINK, RESET);
 
     final RegistryTestServer server = new RegistryTestServer(address);
-    Statement runner = new Statement() {
-      @Override
-      public void evaluate() throws InterruptedException {
-        System.out.printf("%sLoading Datastore fixtures...%s\n", BLUE, RESET);
-        for (Fixture fixture : fixtures) {
-          fixture.load();
-        }
-        System.out.printf("%sStarting Jetty6 HTTP Server...%s\n", BLUE, RESET);
-        server.start();
-        System.out.printf("%sListening on: %s%s\n", PURPLE, server.getUrl("/"), RESET);
-        try {
-          while (true) {
-            server.process();
+    Statement runner =
+        new Statement() {
+          @Override
+          public void evaluate() throws InterruptedException {
+            System.out.printf("%sLoading Datastore fixtures...%s\n", BLUE, RESET);
+            for (Fixture fixture : fixtures) {
+              fixture.load();
+            }
+            System.out.printf("%sStarting Jetty6 HTTP Server...%s\n", BLUE, RESET);
+            server.start();
+            System.out.printf("%sListening on: %s%s\n", PURPLE, server.getUrl("/"), RESET);
+            try {
+              while (true) {
+                server.process();
+              }
+            } finally {
+              server.stop();
+            }
           }
-        } finally {
-          server.stop();
-        }
-      }};
+        };
 
     System.out.printf("%sLoading AppEngineRule...%s\n", BLUE, RESET);
     AppEngineRule.builder()
@@ -159,9 +156,10 @@ public final class RegistryTestServerMain {
         .withUrlFetch()
         .withTaskQueue()
         .withLocalModules()
-        .withUserService(loginIsAdmin
-            ? UserInfo.createAdmin(loginEmail, loginUserId)
-            : UserInfo.create(loginEmail, loginUserId))
+        .withUserService(
+            loginIsAdmin
+                ? UserInfo.createAdmin(loginEmail, loginUserId)
+                : UserInfo.create(loginEmail, loginUserId))
         .build()
         .apply(runner, Description.EMPTY)
         .evaluate();

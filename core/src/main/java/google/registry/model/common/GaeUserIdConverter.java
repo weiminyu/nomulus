@@ -28,15 +28,14 @@ import google.registry.model.annotations.NotBackedUp.Reason;
 import java.util.List;
 
 /**
- * A helper class to convert email addresses to GAE user ids. It does so by persisting a User
- * object with the email address to Datastore, and then immediately reading it back.
+ * A helper class to convert email addresses to GAE user ids. It does so by persisting a User object
+ * with the email address to Datastore, and then immediately reading it back.
  */
 @Entity
 @NotBackedUp(reason = Reason.TRANSIENT)
 public class GaeUserIdConverter extends ImmutableObject {
 
-  @Id
-  public long id;
+  @Id public long id;
 
   User user;
 

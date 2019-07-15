@@ -44,7 +44,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.mockito.ArgumentMatcher;
 
-/** Tests for {@link DriveConnection}.*/
+/** Tests for {@link DriveConnection}. */
 @RunWith(JUnit4.class)
 public class DriveConnectionTest {
   private final Drive drive = mock(Drive.class);
@@ -123,27 +123,26 @@ public class DriveConnectionTest {
 
   @Test
   public void testCreateFolderAtRoot() throws Exception {
-    when(files.insert(new File()
-        .setTitle("title")
-        .setMimeType("application/vnd.google-apps.folder")))
-            .thenReturn(insert);
+    when(files.insert(
+            new File().setTitle("title").setMimeType("application/vnd.google-apps.folder")))
+        .thenReturn(insert);
     assertThat(driveConnection.createFolder("title", null)).isEqualTo("id");
   }
 
   @Test
   public void testCreateFolderInFolder() throws Exception {
-    when(files.insert(new File()
-        .setTitle("title")
-        .setMimeType("application/vnd.google-apps.folder")
-        .setParents(ImmutableList.of(new ParentReference().setId("parent")))))
-            .thenReturn(insert);
+    when(files.insert(
+            new File()
+                .setTitle("title")
+                .setMimeType("application/vnd.google-apps.folder")
+                .setParents(ImmutableList.of(new ParentReference().setId("parent")))))
+        .thenReturn(insert);
     assertThat(driveConnection.createFolder("title", "parent")).isEqualTo("id");
   }
 
   @Test
   public void testListFiles_noQueryWithPagination() throws Exception {
-    assertThat(driveConnection.listFiles("driveFolderId"))
-        .containsExactlyElementsIn(allChildren);
+    assertThat(driveConnection.listFiles("driveFolderId")).containsExactlyElementsIn(allChildren);
     verify(childrenList).setPageToken("page2");
     verify(childrenList).setPageToken(null);
     verify(childrenList, times(0)).setQ(anyString());
@@ -172,11 +171,9 @@ public class DriveConnectionTest {
         .thenReturn(insert);
     ChildList emptyChildList = new ChildList().setItems(ImmutableList.of()).setNextPageToken(null);
     when(childrenList.execute()).thenReturn(emptyChildList);
-    assertThat(driveConnection.createOrUpdateFile(
-            "title",
-            MediaType.WEBM_VIDEO,
-            "driveFolderId",
-            DATA))
+    assertThat(
+            driveConnection.createOrUpdateFile(
+                "title", MediaType.WEBM_VIDEO, "driveFolderId", DATA))
         .isEqualTo("id");
   }
 
@@ -185,26 +182,26 @@ public class DriveConnectionTest {
     when(files.update(
             eq("id"), eq(new File().setTitle("title")), argThat(hasByteArrayContent(DATA))))
         .thenReturn(update);
-    ChildList childList = new ChildList()
-        .setItems(ImmutableList.of(new ChildReference().setId("id")))
-        .setNextPageToken(null);
+    ChildList childList =
+        new ChildList()
+            .setItems(ImmutableList.of(new ChildReference().setId("id")))
+            .setNextPageToken(null);
     when(childrenList.execute()).thenReturn(childList);
-    assertThat(driveConnection.createOrUpdateFile(
-            "title",
-            MediaType.WEBM_VIDEO,
-            "driveFolderId",
-            DATA))
+    assertThat(
+            driveConnection.createOrUpdateFile(
+                "title", MediaType.WEBM_VIDEO, "driveFolderId", DATA))
         .isEqualTo("id");
   }
 
   @Test
   public void testCreateOrUpdateFile_throwsExceptionWhenMultipleFilesWithNameAlreadyExist()
       throws Exception {
-    ChildList childList = new ChildList()
-      .setItems(ImmutableList.of(
-          new ChildReference().setId("id1"),
-          new ChildReference().setId("id2")))
-      .setNextPageToken(null);
+    ChildList childList =
+        new ChildList()
+            .setItems(
+                ImmutableList.of(
+                    new ChildReference().setId("id1"), new ChildReference().setId("id2")))
+            .setNextPageToken(null);
     when(childrenList.execute()).thenReturn(childList);
     IllegalStateException thrown =
         assertThrows(

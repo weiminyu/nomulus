@@ -39,8 +39,7 @@ import org.junit.runners.JUnit4;
 /** Unit tests for {@link PathParameter}. */
 @RunWith(JUnit4.class)
 public class PathParameterTest {
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  @Rule public final TemporaryFolder folder = new TemporaryFolder();
 
   // ================================ Test Convert ==============================================
 

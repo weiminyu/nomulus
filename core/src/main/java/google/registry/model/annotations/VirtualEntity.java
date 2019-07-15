@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 /**
  * Annotation for an Objectify {@link Entity} to indicate that it is a "virtual entity".
  *
- * <p>A virtual entity type exists only to define part of the parentage key hierarchy for its
- * child entities, and is never actually persisted and thus has no fields besides its ID field.
+ * <p>A virtual entity type exists only to define part of the parentage key hierarchy for its child
+ * entities, and is never actually persisted and thus has no fields besides its ID field.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

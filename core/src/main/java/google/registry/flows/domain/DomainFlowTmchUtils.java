@@ -63,8 +63,7 @@ public final class DomainFlowTmchUtils {
     if (!(signedMarks.get(0) instanceof EncodedSignedMark)) {
       throw new SignedMarksMustBeEncodedException();
     }
-    SignedMark signedMark =
-        verifyEncodedSignedMark((EncodedSignedMark) signedMarks.get(0), now);
+    SignedMark signedMark = verifyEncodedSignedMark((EncodedSignedMark) signedMarks.get(0), now);
     return verifySignedMarkValidForDomainLabel(signedMark, domainLabel);
   }
 
@@ -113,10 +112,7 @@ public final class DomainFlowTmchUtils {
       throw new SignedMarkSignatureException();
     } catch (GeneralSecurityException e) {
       throw new SignedMarkCertificateInvalidException();
-    } catch (IOException
-        | MarshalException
-        | SAXException
-        | ParserConfigurationException e) {
+    } catch (IOException | MarshalException | SAXException | ParserConfigurationException e) {
       throw new SignedMarkParsingErrorException();
     }
 
@@ -138,8 +134,8 @@ public final class DomainFlowTmchUtils {
         return true;
       }
     }
-    for (ProtectedMark protectedMark
-        : concat(mark.getTreatyOrStatuteMarks(), mark.getCourtMarks())) {
+    for (ProtectedMark protectedMark :
+        concat(mark.getTreatyOrStatuteMarks(), mark.getCourtMarks())) {
       if (protectedMark.getLabels().contains(label)) {
         return true;
       }
@@ -253,5 +249,4 @@ public final class DomainFlowTmchUtils {
       super("Signed mark data is improperly encoded");
     }
   }
-
 }

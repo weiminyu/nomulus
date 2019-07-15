@@ -72,20 +72,15 @@ public abstract class PollMessage extends ImmutableObject
     implements Buildable, TransferServerApproveEntity {
 
   /** Entity id. */
-  @Id
-  long id;
+  @Id long id;
 
-  @Parent
-  @DoNotHydrate
-  Key<HistoryEntry> parent;
+  @Parent @DoNotHydrate Key<HistoryEntry> parent;
 
   /** The registrar that this poll message will be delivered to. */
-  @Index
-  String clientId;
+  @Index String clientId;
 
   /** The time when the poll message should be delivered. May be in the future. */
-  @Index
-  DateTime eventTime;
+  @Index DateTime eventTime;
 
   /** Human readable message that will be returned with this poll message. */
   String msg;
@@ -209,8 +204,7 @@ public abstract class PollMessage extends ImmutableObject
     /** A builder for {@link OneTime} since it is immutable. */
     public static class Builder extends PollMessage.Builder<OneTime, Builder> {
 
-      public Builder() {
-      }
+      public Builder() {}
 
       private Builder(OneTime instance) {
         super(instance);
@@ -219,36 +213,31 @@ public abstract class PollMessage extends ImmutableObject
       public Builder setResponseData(ImmutableList<? extends ResponseData> responseData) {
         getInstance().contactPendingActionNotificationResponses =
             forceEmptyToNull(
-                responseData
-                    .stream()
+                responseData.stream()
                     .filter(ContactPendingActionNotificationResponse.class::isInstance)
                     .map(ContactPendingActionNotificationResponse.class::cast)
                     .collect(toImmutableList()));
         getInstance().contactTransferResponses =
             forceEmptyToNull(
-                responseData
-                    .stream()
+                responseData.stream()
                     .filter(ContactTransferResponse.class::isInstance)
                     .map(ContactTransferResponse.class::cast)
                     .collect(toImmutableList()));
         getInstance().domainPendingActionNotificationResponses =
             forceEmptyToNull(
-                responseData
-                    .stream()
+                responseData.stream()
                     .filter(DomainPendingActionNotificationResponse.class::isInstance)
                     .map(DomainPendingActionNotificationResponse.class::cast)
                     .collect(toImmutableList()));
         getInstance().domainTransferResponses =
             forceEmptyToNull(
-                responseData
-                    .stream()
+                responseData.stream()
                     .filter(DomainTransferResponse.class::isInstance)
                     .map(DomainTransferResponse.class::cast)
                     .collect(toImmutableList()));
         getInstance().hostPendingActionNotificationResponses =
             forceEmptyToNull(
-                responseData
-                    .stream()
+                responseData.stream()
                     .filter(HostPendingActionNotificationResponse.class::isInstance)
                     .map(HostPendingActionNotificationResponse.class::cast)
                     .collect(toImmutableList()));
@@ -271,8 +260,7 @@ public abstract class PollMessage extends ImmutableObject
     String targetId;
 
     /** The autorenew recurs annually between {@link #eventTime} and this time. */
-    @Index
-    DateTime autorenewEndTime;
+    @Index DateTime autorenewEndTime;
 
     public String getTargetId() {
       return targetId;
@@ -286,8 +274,7 @@ public abstract class PollMessage extends ImmutableObject
     public ImmutableList<ResponseData> getResponseData() {
       // Note that the event time is when the auto-renew occured, so the expiration time in the
       // response should be 1 year past that, since it denotes the new expiration time.
-      return ImmutableList.of(
-          DomainRenewData.create(getTargetId(), getEventTime().plusYears(1)));
+      return ImmutableList.of(DomainRenewData.create(getTargetId(), getEventTime().plusYears(1)));
     }
 
     @Override

@@ -22,16 +22,12 @@ import google.registry.rdap.AbstractJsonableObject.RestrictJsonNames;
 import java.util.Optional;
 import org.joda.time.DateTime;
 
-/**
- * Data Structures defined in RFC7483 section 4.
- */
+/** Data Structures defined in RFC7483 section 4. */
 final class RdapDataStructures {
 
   private RdapDataStructures() {}
 
-  /**
-   * RDAP conformance defined in 4.1 of RFC7483.
-   */
+  /** RDAP conformance defined in 4.1 of RFC7483. */
   @RestrictJsonNames("rdapConformance")
   static final class RdapConformance implements Jsonable {
 
@@ -57,20 +53,30 @@ final class RdapDataStructures {
     }
   }
 
-  /**
-   * Links defined in 4.2 of RFC7483.
-   */
+  /** Links defined in 4.2 of RFC7483. */
   @RestrictJsonNames("links[]")
   @AutoValue
   abstract static class Link extends AbstractJsonableObject {
-    @JsonableElement abstract String href();
+    @JsonableElement
+    abstract String href();
 
-    @JsonableElement abstract Optional<String> rel();
-    @JsonableElement abstract Optional<String> hreflang();
-    @JsonableElement abstract Optional<String> title();
-    @JsonableElement abstract Optional<String> media();
-    @JsonableElement abstract Optional<String> type();
-    @JsonableElement abstract Optional<String> value();
+    @JsonableElement
+    abstract Optional<String> rel();
+
+    @JsonableElement
+    abstract Optional<String> hreflang();
+
+    @JsonableElement
+    abstract Optional<String> title();
+
+    @JsonableElement
+    abstract Optional<String> media();
+
+    @JsonableElement
+    abstract Optional<String> type();
+
+    @JsonableElement
+    abstract Optional<String> value();
 
     static Builder builder() {
       return new AutoValue_RdapDataStructures_Link.Builder();
@@ -79,11 +85,17 @@ final class RdapDataStructures {
     @AutoValue.Builder
     abstract static class Builder {
       abstract Builder setHref(String href);
+
       abstract Builder setRel(String rel);
+
       abstract Builder setHreflang(String hrefLang);
+
       abstract Builder setTitle(String title);
+
       abstract Builder setMedia(String media);
+
       abstract Builder setType(String type);
+
       abstract Builder setValue(String value);
 
       abstract Link build();
@@ -99,14 +111,22 @@ final class RdapDataStructures {
    * Remarks.
    */
   private abstract static class NoticeOrRemark extends AbstractJsonableObject {
-    @JsonableElement abstract Optional<String> title();
-    @JsonableElement abstract ImmutableList<String> description();
-    @JsonableElement abstract ImmutableList<Link> links();
+    @JsonableElement
+    abstract Optional<String> title();
+
+    @JsonableElement
+    abstract ImmutableList<String> description();
+
+    @JsonableElement
+    abstract ImmutableList<Link> links();
 
     abstract static class Builder<B extends Builder<?>> {
       abstract B setTitle(String title);
+
       abstract B setDescription(ImmutableList<String> description);
+
       abstract B setDescription(String... description);
+
       abstract ImmutableList.Builder<Link> linksBuilder();
 
       @SuppressWarnings("unchecked")
@@ -137,7 +157,6 @@ final class RdapDataStructures {
       RESULT_TRUNCATED_AUTHORIZATION("result set truncated due to authorization"),
       RESULT_TRUNCATED_LOAD("result set truncated due to excessive load"),
       RESULT_TRUNCATED_UNEXPLAINABLE("result set truncated due to unexplainable reasons");
-
 
       private final String rfc7483String;
 
@@ -220,7 +239,7 @@ final class RdapDataStructures {
   /**
    * Language Identifier defined in 4.4 of RFC7483.
    *
-   * The allowed values are described in RFC5646.
+   * <p>The allowed values are described in RFC5646.
    */
   @RestrictJsonNames("lang")
   enum LanguageIdentifier implements Jsonable {
@@ -245,14 +264,20 @@ final class RdapDataStructures {
    * versions - one with and one without.
    */
   private abstract static class EventBase extends AbstractJsonableObject {
-    @JsonableElement abstract EventAction eventAction();
-    @JsonableElement abstract DateTime eventDate();
-    @JsonableElement abstract ImmutableList<Link> links();
+    @JsonableElement
+    abstract EventAction eventAction();
 
+    @JsonableElement
+    abstract DateTime eventDate();
+
+    @JsonableElement
+    abstract ImmutableList<Link> links();
 
     abstract static class Builder<B extends Builder<?>> {
       abstract B setEventAction(EventAction eventAction);
+
       abstract B setEventDate(DateTime eventDate);
+
       abstract ImmutableList.Builder<Link> linksBuilder();
 
       @SuppressWarnings("unchecked")
@@ -293,7 +318,6 @@ final class RdapDataStructures {
     }
   }
 
-
   /**
    * Events defined in 4.5 of RFC7483.
    *
@@ -308,29 +332,27 @@ final class RdapDataStructures {
       return new AutoValue_RdapDataStructures_EventWithoutActor.Builder();
     }
 
-
     @AutoValue.Builder
     abstract static class Builder extends EventBase.Builder<Builder> {
       abstract EventWithoutActor build();
     }
   }
 
-  /**
-   * Events defined in 4.5 of RFC7483.
-   */
+  /** Events defined in 4.5 of RFC7483. */
   @RestrictJsonNames("events[]")
   @AutoValue
   abstract static class Event extends EventBase {
-    @JsonableElement abstract Optional<String> eventActor();
+    @JsonableElement
+    abstract Optional<String> eventActor();
 
     static Builder builder() {
       return new AutoValue_RdapDataStructures_Event.Builder();
     }
 
-
     @AutoValue.Builder
     abstract static class Builder extends EventBase.Builder<Builder> {
       abstract Builder setEventActor(String eventActor);
+
       abstract Event build();
     }
   }
@@ -449,7 +471,8 @@ final class RdapDataStructures {
     @JsonableElement
     abstract PublicId.Type type();
 
-    @JsonableElement abstract String identifier();
+    @JsonableElement
+    abstract String identifier();
 
     static PublicId create(PublicId.Type type, String identifier) {
       return new AutoValue_RdapDataStructures_PublicId(type, identifier);

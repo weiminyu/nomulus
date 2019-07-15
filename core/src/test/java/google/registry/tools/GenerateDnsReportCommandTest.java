@@ -55,8 +55,7 @@ import org.junit.rules.TemporaryFolder;
 /** Unit tests for {@link GenerateDnsReportCommand}. */
 public class GenerateDnsReportCommandTest extends CommandTestCase<GenerateDnsReportCommand> {
 
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  @Rule public final TemporaryFolder folder = new TemporaryFolder();
 
   private final DateTime now = DateTime.now(UTC);
   private final FakeClock clock = new FakeClock();
@@ -74,52 +73,60 @@ public class GenerateDnsReportCommandTest extends CommandTestCase<GenerateDnsRep
   private HostResource nameserver4;
   private DomainBase domain1;
 
-  private static final ImmutableList<?> DS_DATA_OUTPUT = ImmutableList.of(
-      ImmutableMap.of(
-          "keyTag", 12345L,
-          "algorithm", 3L,
-          "digestType", 1L,
-          "digest", "49FD46E6C4B45C55D4AC"),
-      ImmutableMap.of(
-          "keyTag", 56789L,
-          "algorithm", 2L,
-          "digestType", 4L,
-          "digest", "69FD46E6C4A45C55D4AC"));
+  private static final ImmutableList<?> DS_DATA_OUTPUT =
+      ImmutableList.of(
+          ImmutableMap.of(
+              "keyTag", 12345L,
+              "algorithm", 3L,
+              "digestType", 1L,
+              "digest", "49FD46E6C4B45C55D4AC"),
+          ImmutableMap.of(
+              "keyTag", 56789L,
+              "algorithm", 2L,
+              "digestType", 4L,
+              "digest", "69FD46E6C4A45C55D4AC"));
 
   private static final List<?> DS_DATA_OUTPUT_REVERSED = Lists.reverse(DS_DATA_OUTPUT);
 
-  private static final ImmutableMap<String, ?> DOMAIN1_OUTPUT = ImmutableMap.of(
-      "domain", "example.xn--q9jyb4c",
-      "nameservers", ImmutableList.of(
-          "ns1.example.xn--q9jyb4c",
-          "ns2.example.xn--q9jyb4c"),
-      "dsData", DS_DATA_OUTPUT);
+  private static final ImmutableMap<String, ?> DOMAIN1_OUTPUT =
+      ImmutableMap.of(
+          "domain",
+          "example.xn--q9jyb4c",
+          "nameservers",
+          ImmutableList.of("ns1.example.xn--q9jyb4c", "ns2.example.xn--q9jyb4c"),
+          "dsData",
+          DS_DATA_OUTPUT);
 
   // We can't guarantee inner ordering
-  private static final ImmutableMap<String, ?> DOMAIN1_OUTPUT_ALT = ImmutableMap.of(
-      "domain", "example.xn--q9jyb4c",
-      "nameservers", ImmutableList.of(
+  private static final ImmutableMap<String, ?> DOMAIN1_OUTPUT_ALT =
+      ImmutableMap.of(
+          "domain",
+          "example.xn--q9jyb4c",
+          "nameservers",
+          ImmutableList.of("ns1.example.xn--q9jyb4c", "ns2.example.xn--q9jyb4c"),
+          "dsData",
+          DS_DATA_OUTPUT_REVERSED);
+
+  private static final ImmutableMap<String, ?> DOMAIN2_OUTPUT =
+      ImmutableMap.of(
+          "domain",
+          "foobar.xn--q9jyb4c",
+          "nameservers",
+          ImmutableList.of("ns1.google.com", "ns2.google.com"));
+
+  private static final ImmutableMap<String, ?> NAMESERVER1_OUTPUT =
+      ImmutableMap.of(
+          "host",
           "ns1.example.xn--q9jyb4c",
-          "ns2.example.xn--q9jyb4c"),
-      "dsData", DS_DATA_OUTPUT_REVERSED);
+          "ips",
+          ImmutableList.of("192.168.1.2", "2607:f8b0:400d:c00:0:0:0:c0"));
 
-  private static final ImmutableMap<String, ?> DOMAIN2_OUTPUT = ImmutableMap.of(
-      "domain", "foobar.xn--q9jyb4c",
-      "nameservers", ImmutableList.of(
-          "ns1.google.com",
-          "ns2.google.com"));
-
-  private static final ImmutableMap<String, ?> NAMESERVER1_OUTPUT = ImmutableMap.of(
-      "host", "ns1.example.xn--q9jyb4c",
-      "ips", ImmutableList.of(
-          "192.168.1.2",
-          "2607:f8b0:400d:c00:0:0:0:c0"));
-
-  private static final ImmutableMap<String, ?> NAMESERVER2_OUTPUT = ImmutableMap.of(
-      "host", "ns2.example.xn--q9jyb4c",
-      "ips", ImmutableList.of(
-          "192.168.1.1",
-          "2607:f8b0:400d:c00:0:0:0:c1"));
+  private static final ImmutableMap<String, ?> NAMESERVER2_OUTPUT =
+      ImmutableMap.of(
+          "host",
+          "ns2.example.xn--q9jyb4c",
+          "ips",
+          ImmutableList.of("192.168.1.1", "2607:f8b0:400d:c00:0:0:0:c1"));
 
   @Before
   public void init() throws Exception {
@@ -128,31 +135,43 @@ public class GenerateDnsReportCommandTest extends CommandTestCase<GenerateDnsRep
     clock.setTo(now);
 
     createTlds("xn--q9jyb4c", "example");
-    nameserver1 = persistResource(
-        newHostResource("ns1.example.xn--q9jyb4c")
-            .asBuilder()
-            .setInetAddresses(ImmutableSet.of(
-                InetAddresses.forString("2607:f8b0:400d:c00::c0"),
-                InetAddresses.forString("192.168.1.2")))
-            .build());
-    nameserver2 = persistResource(
-        newHostResource("ns2.example.xn--q9jyb4c")
-            .asBuilder()
-            .setInetAddresses(ImmutableSet.of(
-                InetAddresses.forString("192.168.1.1"),
-                InetAddresses.forString("2607:f8b0:400d:c00::c1")))
-            .build());
+    nameserver1 =
+        persistResource(
+            newHostResource("ns1.example.xn--q9jyb4c")
+                .asBuilder()
+                .setInetAddresses(
+                    ImmutableSet.of(
+                        InetAddresses.forString("2607:f8b0:400d:c00::c0"),
+                        InetAddresses.forString("192.168.1.2")))
+                .build());
+    nameserver2 =
+        persistResource(
+            newHostResource("ns2.example.xn--q9jyb4c")
+                .asBuilder()
+                .setInetAddresses(
+                    ImmutableSet.of(
+                        InetAddresses.forString("192.168.1.1"),
+                        InetAddresses.forString("2607:f8b0:400d:c00::c1")))
+                .build());
     nameserver3 = persistActiveHost("ns1.google.com");
     nameserver4 = persistActiveHost("ns2.google.com");
-    domain1 = persistResource(newDomainBase("example.xn--q9jyb4c").asBuilder()
-        .setNameservers(ImmutableSet.of(Key.create(nameserver1), Key.create(nameserver2)))
-        .setDsData(ImmutableSet.of(
-            DelegationSignerData.create(12345, 3, 1, base16().decode("49FD46E6C4B45C55D4AC")),
-            DelegationSignerData.create(56789, 2, 4, base16().decode("69FD46E6C4A45C55D4AC"))))
-        .build());
-    persistResource(newDomainBase("foobar.xn--q9jyb4c").asBuilder()
-        .setNameservers(ImmutableSet.of(Key.create(nameserver3), Key.create(nameserver4)))
-        .build());
+    domain1 =
+        persistResource(
+            newDomainBase("example.xn--q9jyb4c")
+                .asBuilder()
+                .setNameservers(ImmutableSet.of(Key.create(nameserver1), Key.create(nameserver2)))
+                .setDsData(
+                    ImmutableSet.of(
+                        DelegationSignerData.create(
+                            12345, 3, 1, base16().decode("49FD46E6C4B45C55D4AC")),
+                        DelegationSignerData.create(
+                            56789, 2, 4, base16().decode("69FD46E6C4A45C55D4AC"))))
+                .build());
+    persistResource(
+        newDomainBase("foobar.xn--q9jyb4c")
+            .asBuilder()
+            .setNameservers(ImmutableSet.of(Key.create(nameserver3), Key.create(nameserver4)))
+            .build());
     // Persist a domain in a different tld that should be ignored.
     persistActiveDomain("should-be-ignored.example");
   }

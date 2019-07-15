@@ -14,7 +14,6 @@
 
 package google.registry.beam.spec11;
 
-
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.http.HttpStatus.SC_OK;
 
@@ -175,7 +174,7 @@ public class SafeBrowsingTransforms {
               }
             },
             IOException.class);
-      } catch (URISyntaxException | JSONException  e) {
+      } catch (URISyntaxException | JSONException e) {
         // Fail the pipeline on a parsing exception- this indicates the API likely changed.
         throw new RuntimeException("Caught parsing exception, failing pipeline.", e);
       } finally {

@@ -34,8 +34,7 @@ import org.junit.runners.JUnit4;
 /**
  * Unit tests for security_settings.js use of {@link RegistrarSettingsAction}.
  *
- * <p>The default read and session validation tests are handled by the
- * superclass.
+ * <p>The default read and session validation tests are handled by the superclass.
  */
 @RunWith(JUnit4.class)
 public class SecuritySettingsTest extends RegistrarSettingsActionTestCase {
@@ -47,10 +46,9 @@ public class SecuritySettingsTest extends RegistrarSettingsActionTestCase {
             .asBuilder()
             .setClientCertificate(SAMPLE_CERT, clock.nowUtc())
             .build();
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", modified.toJsonMap()));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of("op", "update", "id", CLIENT_ID, "args", modified.toJsonMap()));
     assertThat(response).containsEntry("status", "SUCCESS");
     assertThat(response).containsEntry("results", ImmutableList.of(modified.toJsonMap()));
     assertThat(loadRegistrar(CLIENT_ID)).isEqualTo(modified);
@@ -62,10 +60,12 @@ public class SecuritySettingsTest extends RegistrarSettingsActionTestCase {
   public void testPost_updateCert_failure() {
     Map<String, Object> reqJson = loadRegistrar(CLIENT_ID).toJsonMap();
     reqJson.put("clientCertificate", "BLAH");
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", reqJson));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of(
+                "op", "update",
+                "id", CLIENT_ID,
+                "args", reqJson));
     assertThat(response).containsEntry("status", "ERROR");
     assertThat(response).containsEntry("message", "Invalid X.509 PEM certificate");
     assertMetric(CLIENT_ID, "update", "[OWNER]", "ERROR: FormFieldException");
@@ -76,8 +76,8 @@ public class SecuritySettingsTest extends RegistrarSettingsActionTestCase {
     Map<String, Object> jsonMap = loadRegistrar(CLIENT_ID).toJsonMap();
     jsonMap.put("clientCertificate", SAMPLE_CERT);
     jsonMap.put("failoverClientCertificate", null);
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update", "id", CLIENT_ID, "args", jsonMap));
+    Map<String, Object> response =
+        action.handleJsonRequest(ImmutableMap.of("op", "update", "id", CLIENT_ID, "args", jsonMap));
     assertThat(response).containsEntry("status", "SUCCESS");
     Registrar registrar = loadRegistrar(CLIENT_ID);
     assertThat(registrar.getClientCertificate()).isEqualTo(SAMPLE_CERT);
@@ -92,8 +92,8 @@ public class SecuritySettingsTest extends RegistrarSettingsActionTestCase {
   public void testChangeFailoverCertificate() throws Exception {
     Map<String, Object> jsonMap = loadRegistrar(CLIENT_ID).toJsonMap();
     jsonMap.put("failoverClientCertificate", SAMPLE_CERT2);
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update", "id", CLIENT_ID, "args", jsonMap));
+    Map<String, Object> response =
+        action.handleJsonRequest(ImmutableMap.of("op", "update", "id", CLIENT_ID, "args", jsonMap));
     assertThat(response).containsEntry("status", "SUCCESS");
     Registrar registrar = loadRegistrar(CLIENT_ID);
     assertThat(registrar.getFailoverClientCertificate()).isEqualTo(SAMPLE_CERT2);
@@ -114,8 +114,8 @@ public class SecuritySettingsTest extends RegistrarSettingsActionTestCase {
     Map<String, Object> jsonMap = initialRegistrar.toJsonMap();
     jsonMap.put("clientCertificate", null);
     jsonMap.put("failoverClientCertificate", "");
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update", "id", CLIENT_ID, "args", jsonMap));
+    Map<String, Object> response =
+        action.handleJsonRequest(ImmutableMap.of("op", "update", "id", CLIENT_ID, "args", jsonMap));
     assertThat(response).containsEntry("status", "SUCCESS");
     Registrar registrar = loadRegistrar(CLIENT_ID);
     assertThat(registrar.getClientCertificate()).isEqualTo(SAMPLE_CERT);

@@ -94,8 +94,7 @@ public class RefreshDnsForAllDomainsAction implements Runnable {
   }
 
   /** Mapper to refresh DNS for all active domain resources. */
-  public static class RefreshDnsForAllDomainsActionMapper
-      extends Mapper<DomainBase, Void, Void> {
+  public static class RefreshDnsForAllDomainsActionMapper extends Mapper<DomainBase, Void, Void> {
 
     private static final long serialVersionUID = -5103865047156795489L;
 

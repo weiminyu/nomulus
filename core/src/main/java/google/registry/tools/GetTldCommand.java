@@ -25,9 +25,7 @@ import java.util.List;
 @Parameters(separators = " =", commandDescription = "Show TLD record(s)")
 final class GetTldCommand implements CommandWithRemoteApi {
 
-  @Parameter(
-      description = "TLD(s) to show",
-      required = true)
+  @Parameter(description = "TLD(s) to show", required = true)
   private List<String> mainParameters;
 
   @Override

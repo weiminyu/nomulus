@@ -57,7 +57,6 @@ public class ListDatastoreOperationsCommand implements Command {
     }
 
     DateTime earliestStartingTime = clock.nowUtc().minus(startTimeFilter);
-    return Optional.of(
-        String.format("metadata.common.startTime>\"%s\"", earliestStartingTime));
+    return Optional.of(String.format("metadata.common.startTime>\"%s\"", earliestStartingTime));
   }
 }

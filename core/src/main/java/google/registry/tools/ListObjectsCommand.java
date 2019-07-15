@@ -44,8 +44,9 @@ abstract class ListObjectsCommand implements CommandWithConnection, CommandWithR
   @Nullable
   @Parameter(
       names = {"--header"},
-      description = "Whether or not to print a header row for the resulting output - default is to "
-          + "only print headers when more than one column is output",
+      description =
+          "Whether or not to print a header row for the resulting output - default is to "
+              + "only print headers when more than one column is output",
       arity = 1)
   private Boolean printHeaderRow;
 
@@ -109,7 +110,7 @@ abstract class ListObjectsCommand implements CommandWithConnection, CommandWithR
         throw new VerifyException("Server returned an error with no error message");
       }
       throw new VerifyException(String.format("Server returned an error with message '%s'", obj));
-    // Handle success.
+      // Handle success.
     } else if (status.equals("success")) {
       obj = responseMap.get("lines");
       if (obj == null) {
@@ -121,7 +122,7 @@ abstract class ListObjectsCommand implements CommandWithConnection, CommandWithR
       for (Object lineObj : (List<?>) obj) {
         System.out.println(lineObj);
       }
-    // Handle unexpected status values.
+      // Handle unexpected status values.
     } else {
       throw new VerifyException("Server returned unexpected status");
     }

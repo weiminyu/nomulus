@@ -28,22 +28,19 @@ public class FormFieldExceptionTest {
   @Test
   public void testGetFieldName_multiplePropagations_joinsUsingJsonNotation() {
     assertThat(
-        new FormFieldException("This field is required.")
-            .propagate("attack")
-            .propagate("cat")
-            .propagate(0)
-            .propagate("lol")
-            .getFieldName())
-                .isEqualTo("lol[0].cat.attack");
+            new FormFieldException("This field is required.")
+                .propagate("attack")
+                .propagate("cat")
+                .propagate(0)
+                .propagate("lol")
+                .getFieldName())
+        .isEqualTo("lol[0].cat.attack");
   }
 
   @Test
   public void testGetFieldName_singlePropagations_noFancyJoining() {
-    assertThat(
-        new FormFieldException("This field is required.")
-            .propagate("cat")
-            .getFieldName())
-                .isEqualTo("cat");
+    assertThat(new FormFieldException("This field is required.").propagate("cat").getFieldName())
+        .isEqualTo("cat");
   }
 
   @Test
@@ -55,8 +52,8 @@ public class FormFieldExceptionTest {
 
   @Test
   public void testNullness() {
-    NullPointerTester tester = new NullPointerTester()
-        .setDefault(FormField.class, FormField.named("love").build());
+    NullPointerTester tester =
+        new NullPointerTester().setDefault(FormField.class, FormField.named("love").build());
     tester.testAllPublicConstructors(FormFieldException.class);
     tester.testAllPublicStaticMethods(FormFieldException.class);
     tester.testAllPublicInstanceMethods(new FormFieldException("lol"));

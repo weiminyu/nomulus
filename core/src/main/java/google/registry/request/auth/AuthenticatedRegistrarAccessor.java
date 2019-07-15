@@ -51,8 +51,8 @@ import javax.inject.Inject;
  * <p>A user is an "admin" if they are a GAE-admin, or if their email is in the "Support" G Suite
  * group.
  *
- * <p>NOTE: to check whether the user is in the "Support" G Suite group, we need a connection to
- * G Suite. This in turn requires we have valid JsonCredentials, which not all environments have set
+ * <p>NOTE: to check whether the user is in the "Support" G Suite group, we need a connection to G
+ * Suite. This in turn requires we have valid JsonCredentials, which not all environments have set
  * up. This connection will be created lazily (only if needed).
  *
  * <p>Specifically, we don't instantiate the connection if: (a) gSuiteSupportGroupEmailAddress isn't
@@ -143,9 +143,7 @@ public class AuthenticatedRegistrarAccessor {
     return new AuthenticatedRegistrarAccessor("TestUserId", isAdmin, roleMap);
   }
 
-  /**
-   * Returns whether this user is allowed to create new Registrars and TLDs.
-   */
+  /** Returns whether this user is allowed to create new Registrars and TLDs. */
   public boolean isAdmin() {
     return isAdmin;
   }
@@ -303,9 +301,7 @@ public class AuthenticatedRegistrarAccessor {
    * Returns a map of registrar client IDs to roles for all registrars that the user has access to.
    */
   private static ImmutableSetMultimap<String, Role> createRoleMap(
-      AuthResult authResult,
-      boolean isAdmin,
-      String registryAdminClientId) {
+      AuthResult authResult, boolean isAdmin, String registryAdminClientId) {
 
     if (!authResult.userAuthInfo().isPresent()) {
       return ImmutableSetMultimap.of();

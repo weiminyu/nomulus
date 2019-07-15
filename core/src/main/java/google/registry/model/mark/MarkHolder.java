@@ -34,8 +34,7 @@ public class MarkHolder extends CommonMarkContactFields {
     LICENSEE
   }
 
-  @XmlAttribute
-  EntitlementType entitlement;
+  @XmlAttribute EntitlementType entitlement;
 
   public EntitlementType getEntitlementType() {
     return entitlement;

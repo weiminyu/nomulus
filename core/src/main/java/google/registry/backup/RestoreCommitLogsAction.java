@@ -66,7 +66,7 @@ public class RestoreCommitLogsAction implements Runnable {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  static final int BLOCK_SIZE = 1024 * 1024;  // Buffer 1mb at a time, for no particular reason.
+  static final int BLOCK_SIZE = 1024 * 1024; // Buffer 1mb at a time, for no particular reason.
 
   public static final String PATH = "/_dr/task/restoreCommitLogs";
   static final String DRY_RUN_PARAM = "dryRun";
@@ -74,13 +74,25 @@ public class RestoreCommitLogsAction implements Runnable {
   static final String TO_TIME_PARAM = "toTime";
 
   @Inject GcsService gcsService;
-  @Inject @Parameter(DRY_RUN_PARAM) boolean dryRun;
-  @Inject @Parameter(FROM_TIME_PARAM) DateTime fromTime;
-  @Inject @Parameter(TO_TIME_PARAM) DateTime toTime;
+
+  @Inject
+  @Parameter(DRY_RUN_PARAM)
+  boolean dryRun;
+
+  @Inject
+  @Parameter(FROM_TIME_PARAM)
+  DateTime fromTime;
+
+  @Inject
+  @Parameter(TO_TIME_PARAM)
+  DateTime toTime;
+
   @Inject DatastoreService datastoreService;
   @Inject GcsDiffFileLister diffLister;
   @Inject Retrier retrier;
-  @Inject RestoreCommitLogsAction() {}
+
+  @Inject
+  RestoreCommitLogsAction() {}
 
   @Override
   public void run() {
@@ -101,12 +113,13 @@ public class RestoreCommitLogsAction implements Runnable {
     CommitLogCheckpoint lastCheckpoint = null;
     for (GcsFileMetadata metadata : diffFiles) {
       logger.atInfo().log("Restoring: %s", metadata.getFilename().getObjectName());
-      try (InputStream input = Channels.newInputStream(
-          gcsService.openPrefetchingReadChannel(metadata.getFilename(), 0, BLOCK_SIZE))) {
+      try (InputStream input =
+          Channels.newInputStream(
+              gcsService.openPrefetchingReadChannel(metadata.getFilename(), 0, BLOCK_SIZE))) {
         PeekingIterator<ImmutableObject> commitLogs =
             peekingIterator(createDeserializingIterator(input));
         lastCheckpoint = (CommitLogCheckpoint) commitLogs.next();
-        saveOfy(ImmutableList.of(lastCheckpoint));  // Save the checkpoint itself.
+        saveOfy(ImmutableList.of(lastCheckpoint)); // Save the checkpoint itself.
         while (commitLogs.hasNext()) {
           CommitLogManifest manifest = restoreOneTransaction(commitLogs);
           bucketTimestamps.put(manifest.getBucketId(), manifest.getCommitTime());
@@ -118,9 +131,7 @@ public class RestoreCommitLogsAction implements Runnable {
     // Restore the CommitLogCheckpointRoot and CommitLogBuckets.
     saveOfy(
         Streams.concat(
-                bucketTimestamps
-                    .entrySet()
-                    .stream()
+                bucketTimestamps.entrySet().stream()
                     .map(
                         entry ->
                             new CommitLogBucket.Builder()
@@ -187,5 +198,4 @@ public class RestoreCommitLogsAction implements Runnable {
         ? new ResultNow<Void>(null)
         : ofy().deleteWithoutBackup().keys(keysToDelete);
   }
-
 }

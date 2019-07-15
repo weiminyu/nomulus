@@ -26,9 +26,6 @@ public interface RequestStatusChecker extends Serializable {
    */
   String getLogId();
 
-  /**
-   * Returns true if the given request is currently running.
-   */
+  /** Returns true if the given request is currently running. */
   boolean isRunning(String requestLogId);
 }
-

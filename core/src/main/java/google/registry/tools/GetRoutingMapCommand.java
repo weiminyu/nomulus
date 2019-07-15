@@ -23,12 +23,11 @@ import google.registry.request.RouterDisplayHelper;
 final class GetRoutingMapCommand implements Command {
 
   @Parameter(
-    names = {"-c", "--class"},
-    description =
-        "Request component class (e.g. google.registry.module.backend.BackendRequestComponent)"
-        + " for which routing map should be generated",
-    required = true
-  )
+      names = {"-c", "--class"},
+      description =
+          "Request component class (e.g. google.registry.module.backend.BackendRequestComponent)"
+              + " for which routing map should be generated",
+      required = true)
   private String serviceClassName;
 
   @Override

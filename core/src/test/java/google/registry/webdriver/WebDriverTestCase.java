@@ -20,8 +20,7 @@ import org.junit.Rule;
 
 /** Base class for tests that needs a {@link WebDriverPlusScreenDifferRule}. */
 public class WebDriverTestCase {
-  @ClassRule
-  public static final DockerWebDriverRule webDriverProvider = new DockerWebDriverRule();
+  @ClassRule public static final DockerWebDriverRule webDriverProvider = new DockerWebDriverRule();
   public final AttemptNumber attemptNumber = new AttemptNumber();
 
   @Rule

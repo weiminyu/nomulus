@@ -119,33 +119,34 @@ public final class RdeMarshaller implements Serializable {
 
   /** Turns {@link ContactResource} object into an XML fragment. */
   public DepositFragment marshalContact(ContactResource contact) {
-    return marshalResource(RdeResourceType.CONTACT, contact,
-        ContactResourceToXjcConverter.convert(contact));
+    return marshalResource(
+        RdeResourceType.CONTACT, contact, ContactResourceToXjcConverter.convert(contact));
   }
 
   /** Turns {@link DomainBase} object into an XML fragment. */
   public DepositFragment marshalDomain(DomainBase domain, RdeMode mode) {
-    return marshalResource(RdeResourceType.DOMAIN, domain,
-        DomainBaseToXjcConverter.convert(domain, mode));
+    return marshalResource(
+        RdeResourceType.DOMAIN, domain, DomainBaseToXjcConverter.convert(domain, mode));
   }
 
   /** Turns {@link HostResource} object into an XML fragment. */
-  public DepositFragment marshalSubordinateHost(
-      HostResource host, DomainBase superordinateDomain) {
-    return marshalResource(RdeResourceType.HOST, host,
+  public DepositFragment marshalSubordinateHost(HostResource host, DomainBase superordinateDomain) {
+    return marshalResource(
+        RdeResourceType.HOST,
+        host,
         HostResourceToXjcConverter.convertSubordinate(host, superordinateDomain));
   }
 
   /** Turns {@link HostResource} object into an XML fragment. */
   public DepositFragment marshalExternalHost(HostResource host) {
-    return marshalResource(RdeResourceType.HOST, host,
-        HostResourceToXjcConverter.convertExternal(host));
+    return marshalResource(
+        RdeResourceType.HOST, host, HostResourceToXjcConverter.convertExternal(host));
   }
 
   /** Turns {@link Registrar} object into an XML fragment. */
   public DepositFragment marshalRegistrar(Registrar registrar) {
-    return marshalResource(RdeResourceType.REGISTRAR, registrar,
-        RegistrarToXjcConverter.convert(registrar));
+    return marshalResource(
+        RdeResourceType.REGISTRAR, registrar, RegistrarToXjcConverter.convert(registrar));
   }
 
   /** Turns {@link IdnTable} object into an XML fragment. */
@@ -164,10 +165,12 @@ public final class RdeMarshaller implements Serializable {
     try {
       xml = marshal(element);
     } catch (MarshalException e) {
-      error = String.format("RDE XML schema validation failed: %s\n%s%s\n",
-          Key.create(resource),
-          e.getLinkedException(),
-          getMarshaller().marshalLenient(element));
+      error =
+          String.format(
+              "RDE XML schema validation failed: %s\n%s%s\n",
+              Key.create(resource),
+              e.getLinkedException(),
+              getMarshaller().marshalLenient(element));
       logger.atSevere().withCause(e).log(error);
     }
     return DepositFragment.create(type, xml, error);
@@ -175,7 +178,7 @@ public final class RdeMarshaller implements Serializable {
 
   private XmlFragmentMarshaller getMarshaller() {
     return memoizedMarshaller != null
-        ?  memoizedMarshaller
+        ? memoizedMarshaller
         : (memoizedMarshaller = XjcXmlTransformer.get().createFragmentMarshaller());
   }
 }

@@ -64,8 +64,8 @@ public final class ReservedList
    * reservation type.
    */
   @Embed
-  public static class ReservedListEntry
-      extends DomainLabelEntry<ReservationType, ReservedListEntry> implements Buildable {
+  public static class ReservedListEntry extends DomainLabelEntry<ReservationType, ReservedListEntry>
+      implements Buildable {
 
     ReservationType reservationType;
 
@@ -165,8 +165,7 @@ public final class ReservedList
     if (label.length() == 0) {
       return ImmutableSet.of(FULLY_BLOCKED);
     }
-    return getReservedListEntries(label, tld)
-        .stream()
+    return getReservedListEntries(label, tld).stream()
         .map(ReservedListEntry::getValue)
         .collect(toImmutableSet());
   }
@@ -199,8 +198,7 @@ public final class ReservedList
 
   private static ImmutableSet<ReservedList> loadReservedLists(
       ImmutableSet<Key<ReservedList>> reservedListKeys) {
-    return reservedListKeys
-        .stream()
+    return reservedListKeys.stream()
         .map(
             (listKey) -> {
               try {
@@ -228,7 +226,8 @@ public final class ReservedList
                       .parent(getCrossTldKey())
                       .id(listName)
                       .now();
-                }});
+                }
+              });
 
   /**
    * Gets the {@link ReservationType} of a label in a single ReservedList, or returns an absent
@@ -253,8 +252,10 @@ public final class ReservedList
     String line = lineAndComment.get(0);
     String comment = lineAndComment.get(1);
     List<String> parts = Splitter.on(',').trimResults().splitToList(line);
-    checkArgument(parts.size() == 2 || parts.size() == 3,
-        "Could not parse line in reserved list: %s", originalLine);
+    checkArgument(
+        parts.size() == 2 || parts.size() == 3,
+        "Could not parse line in reserved list: %s",
+        originalLine);
     String label = parts.get(0);
     ReservationType reservationType = ReservationType.valueOf(parts.get(1));
     return ReservedListEntry.create(label, reservationType, comment);
@@ -265,9 +266,7 @@ public final class ReservedList
     return new Builder(clone(this));
   }
 
-  /**
-   * A builder for constructing {@link ReservedList} objects, since they are immutable.
-   */
+  /** A builder for constructing {@link ReservedList} objects, since they are immutable. */
   public static class Builder extends BaseDomainLabelList.Builder<ReservedList, Builder> {
     public Builder() {}
 

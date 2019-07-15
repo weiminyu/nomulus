@@ -36,23 +36,21 @@ import org.joda.time.DateTime;
  * Entity representing a point-in-time consistent view of Datastore, based on commit logs.
  *
  * <p>Conceptually, this entity consists of two pieces of information: the checkpoint "wall" time
- * and a set of bucket checkpoint times.  The former is the ID for this checkpoint (constrained
- * to be unique upon checkpoint creation) and also represents the approximate wall time of the
- * consistent Datastore view this checkpoint represents.  The latter is really a mapping from
- * bucket ID to timestamp, where the timestamp dictates the upper bound (inclusive) on commit logs
- * from that bucket to include when restoring Datastore to this checkpoint.
+ * and a set of bucket checkpoint times. The former is the ID for this checkpoint (constrained to be
+ * unique upon checkpoint creation) and also represents the approximate wall time of the consistent
+ * Datastore view this checkpoint represents. The latter is really a mapping from bucket ID to
+ * timestamp, where the timestamp dictates the upper bound (inclusive) on commit logs from that
+ * bucket to include when restoring Datastore to this checkpoint.
  */
 @Entity
 @NotBackedUp(reason = Reason.COMMIT_LOGS)
 public class CommitLogCheckpoint extends ImmutableObject {
 
   /** Shared singleton parent entity for commit log checkpoints. */
-  @Parent
-  Key<CommitLogCheckpointRoot> parent = CommitLogCheckpointRoot.getKey();
+  @Parent Key<CommitLogCheckpointRoot> parent = CommitLogCheckpointRoot.getKey();
 
   /** The checkpoint's approximate "wall" time (in millis since the epoch). */
-  @Id
-  long checkpointTime;
+  @Id long checkpointTime;
 
   /** Bucket checkpoint times for this checkpoint, ordered to match up with buckets 1-N. */
   List<DateTime> bucketTimestamps = new ArrayList<>();

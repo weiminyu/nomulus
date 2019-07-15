@@ -26,8 +26,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 /** Unit tests for {@link CreateRegistrarGroupsCommand}. */
-public class CreateRegistrarGroupsCommandTest extends
-    CommandTestCase<CreateRegistrarGroupsCommand> {
+public class CreateRegistrarGroupsCommandTest
+    extends CommandTestCase<CreateRegistrarGroupsCommand> {
 
   @Mock private AppEngineConnection connection;
 

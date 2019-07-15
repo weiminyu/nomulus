@@ -56,11 +56,8 @@ public class IcannReportingStagingActionTest {
   IcannReportingStagingAction action;
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withLocalModules()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withLocalModules().withTaskQueue().build();
 
   @Before
   public void setUp() throws Exception {
@@ -182,10 +179,7 @@ public class IcannReportingStagingActionTest {
   public void testInvalidSubdir_throwsException() {
     action.overrideSubdir = Optional.of("/whoops");
     BadRequestException thrown =
-        assertThrows(
-            BadRequestException.class,
-            () ->
-                action.getSubdir(new YearMonth(2017, 6)));
+        assertThrows(BadRequestException.class, () -> action.getSubdir(new YearMonth(2017, 6)));
     assertThat(thrown)
         .hasMessageThat()
         .contains("subdir must not start or end with a \"/\", got /whoops instead.");

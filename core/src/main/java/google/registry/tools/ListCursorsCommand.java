@@ -51,8 +51,7 @@ final class ListCursorsCommand implements CommandWithRemoteApi {
   @Override
   public void run() {
     Map<Registry, Key<Cursor>> registries =
-        Registries.getTlds()
-            .stream()
+        Registries.getTlds().stream()
             .map(Registry::get)
             .filter(r -> r.getTldType() == filterTldType)
             .filter(r -> !filterEscrowEnabled || r.getEscrowEnabled())
@@ -61,9 +60,7 @@ final class ListCursorsCommand implements CommandWithRemoteApi {
     if (!registries.isEmpty()) {
       String header = String.format(OUTPUT_FMT, "TLD", "Cursor Time", "Last Update Time");
       System.out.printf("%s\n%s\n", header, Strings.repeat("-", header.length()));
-      registries
-          .entrySet()
-          .stream()
+      registries.entrySet().stream()
           .map(
               e ->
                   renderLine(

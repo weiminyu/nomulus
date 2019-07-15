@@ -34,11 +34,7 @@ public final class JSchModule {
       @Key("rdeSshClientPublicKey") String publicKey) {
     JSch jsch = new JSch();
     try {
-      jsch.addIdentity(
-          identity,
-          privateKey.getBytes(UTF_8),
-          publicKey.getBytes(UTF_8),
-          null);
+      jsch.addIdentity(identity, privateKey.getBytes(UTF_8), publicKey.getBytes(UTF_8), null);
     } catch (JSchException e) {
       throw new RuntimeException(e);
     }

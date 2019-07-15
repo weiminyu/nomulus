@@ -34,13 +34,9 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class XsrfTokenManagerTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public InjectRule inject = new InjectRule();
+  @Rule public InjectRule inject = new InjectRule();
 
   private final User testUser = new User("test@example.com", "test@example.com");
   private final FakeClock clock = new FakeClock(START_OF_TIME);

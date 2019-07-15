@@ -161,7 +161,6 @@ public class KmsKeyringTest {
     String marksdbSmdrlLoginAndPassword = keyring.getMarksdbSmdrlLoginAndPassword();
 
     assertThat(marksdbSmdrlLoginAndPassword).isEqualTo("marksdb-smdrl-login-stringmoo");
-
   }
 
   @Test

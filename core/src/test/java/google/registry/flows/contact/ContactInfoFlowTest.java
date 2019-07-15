@@ -49,47 +49,49 @@ public class ContactInfoFlowTest extends ResourceFlowTestCase<ContactInfoFlow, C
   }
 
   private ContactResource persistContactResource(boolean active) {
-    ContactResource contact = persistResource(
-        new ContactResource.Builder()
-            .setContactId("sh8013")
-            .setRepoId("2FF-ROID")
-            .setDeletionTime(active ? null : clock.nowUtc().minusDays(1))
-            .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_DELETE_PROHIBITED))
-            .setInternationalizedPostalInfo(new PostalInfo.Builder()
-                .setType(Type.INTERNATIONALIZED)
-                .setName("John Doe")
-                .setOrg("Example Inc.")
-                .setAddress(new ContactAddress.Builder()
-                    .setStreet(ImmutableList.of("123 Example Dr.", "Suite 100"))
-                    .setCity("Dulles")
-                    .setState("VA")
-                    .setZip("20166-6503")
-                    .setCountryCode("US")
-                    .build())
-                .build())
-            .setVoiceNumber(
-                new ContactPhoneNumber.Builder()
-                .setPhoneNumber("+1.7035555555")
-                .setExtension("1234")
-                .build())
-            .setFaxNumber(
-                new ContactPhoneNumber.Builder()
-                .setPhoneNumber("+1.7035555556")
-                .build())
-            .setEmailAddress("jdoe@example.com")
-            .setPersistedCurrentSponsorClientId("TheRegistrar")
-            .setCreationClientId("NewRegistrar")
-            .setLastEppUpdateClientId("NewRegistrar")
-            .setCreationTimeForTest(DateTime.parse("1999-04-03T22:00:00.0Z"))
-            .setLastEppUpdateTime(DateTime.parse("1999-12-03T09:00:00.0Z"))
-            .setLastTransferTime(DateTime.parse("2000-04-08T09:00:00.0Z"))
-            .setAuthInfo(ContactAuthInfo.create(PasswordAuth.create("2fooBAR")))
-            .setDisclose(new Disclose.Builder()
-                .setFlag(true)
-                .setVoice(new PresenceMarker())
-                .setEmail(new PresenceMarker())
-                .build())
-            .build());
+    ContactResource contact =
+        persistResource(
+            new ContactResource.Builder()
+                .setContactId("sh8013")
+                .setRepoId("2FF-ROID")
+                .setDeletionTime(active ? null : clock.nowUtc().minusDays(1))
+                .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_DELETE_PROHIBITED))
+                .setInternationalizedPostalInfo(
+                    new PostalInfo.Builder()
+                        .setType(Type.INTERNATIONALIZED)
+                        .setName("John Doe")
+                        .setOrg("Example Inc.")
+                        .setAddress(
+                            new ContactAddress.Builder()
+                                .setStreet(ImmutableList.of("123 Example Dr.", "Suite 100"))
+                                .setCity("Dulles")
+                                .setState("VA")
+                                .setZip("20166-6503")
+                                .setCountryCode("US")
+                                .build())
+                        .build())
+                .setVoiceNumber(
+                    new ContactPhoneNumber.Builder()
+                        .setPhoneNumber("+1.7035555555")
+                        .setExtension("1234")
+                        .build())
+                .setFaxNumber(
+                    new ContactPhoneNumber.Builder().setPhoneNumber("+1.7035555556").build())
+                .setEmailAddress("jdoe@example.com")
+                .setPersistedCurrentSponsorClientId("TheRegistrar")
+                .setCreationClientId("NewRegistrar")
+                .setLastEppUpdateClientId("NewRegistrar")
+                .setCreationTimeForTest(DateTime.parse("1999-04-03T22:00:00.0Z"))
+                .setLastEppUpdateTime(DateTime.parse("1999-12-03T09:00:00.0Z"))
+                .setLastTransferTime(DateTime.parse("2000-04-08T09:00:00.0Z"))
+                .setAuthInfo(ContactAuthInfo.create(PasswordAuth.create("2fooBAR")))
+                .setDisclose(
+                    new Disclose.Builder()
+                        .setFlag(true)
+                        .setVoice(new PresenceMarker())
+                        .setEmail(new PresenceMarker())
+                        .build())
+                .build());
     assertThat(isDeleted(contact, clock.nowUtc())).isNotEqualTo(active);
     return contact;
   }

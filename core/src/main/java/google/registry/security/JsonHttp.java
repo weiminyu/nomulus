@@ -53,8 +53,7 @@ public final class JsonHttp {
   @Nullable
   @SuppressWarnings("unchecked")
   public static Map<String, ?> read(HttpServletRequest req) throws IOException {
-    if (!"POST".equals(req.getMethod())
-        && !"PUT".equals(req.getMethod())) {
+    if (!"POST".equals(req.getMethod()) && !"PUT".equals(req.getMethod())) {
       logger.atWarning().log("JSON request payload only allowed for POST/PUT");
       return null;
     }

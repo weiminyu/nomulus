@@ -29,4 +29,3 @@ public class DeploySpec11PipelineCommand implements Command {
     spec11Pipeline.deploy();
   }
 }
-

@@ -76,8 +76,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class EppInput extends ImmutableObject {
 
   @XmlElements({
-      @XmlElement(name = "command", type = CommandWrapper.class),
-      @XmlElement(name = "hello", type = Hello.class) })
+    @XmlElement(name = "command", type = CommandWrapper.class),
+    @XmlElement(name = "hello", type = Hello.class)
+  })
   CommandWrapper commandWrapper;
 
   public CommandWrapper getCommandWrapper() {
@@ -89,23 +90,24 @@ public class EppInput extends ImmutableObject {
    * the {@code <command>} element (e.g. "create" or "poll"), or "hello" for the hello command.
    */
   public String getCommandType() {
-    return Ascii.toLowerCase((commandWrapper instanceof Hello)
-        ? Hello.class.getSimpleName()
-        : commandWrapper.getCommand().getClass().getSimpleName());
+    return Ascii.toLowerCase(
+        (commandWrapper instanceof Hello)
+            ? Hello.class.getSimpleName()
+            : commandWrapper.getCommand().getClass().getSimpleName());
   }
 
   /**
-   * Returns the EPP resource type ("domain", "contact", or "host") for commands that operate on
-   * EPP resources, otherwise absent.
+   * Returns the EPP resource type ("domain", "contact", or "host") for commands that operate on EPP
+   * resources, otherwise absent.
    */
   public Optional<String> getResourceType() {
     ResourceCommand resourceCommand = getResourceCommand();
     if (resourceCommand != null) {
-       XmlSchema xmlSchemaAnnotation =
-           resourceCommand.getClass().getPackage().getAnnotation(XmlSchema.class);
-       if (xmlSchemaAnnotation != null && xmlSchemaAnnotation.xmlns().length > 0) {
-         return Optional.of(xmlSchemaAnnotation.xmlns()[0].prefix());
-       }
+      XmlSchema xmlSchemaAnnotation =
+          resourceCommand.getClass().getPackage().getAnnotation(XmlSchema.class);
+      if (xmlSchemaAnnotation != null && xmlSchemaAnnotation.xmlns().length > 0) {
+        return Optional.of(xmlSchemaAnnotation.xmlns()[0].prefix());
+      }
     }
     return Optional.empty();
   }
@@ -163,24 +165,25 @@ public class EppInput extends ImmutableObject {
   /** A command that has an extension inside of it. */
   public static class ResourceCommandWrapper extends InnerCommand {
     @XmlElementRefs({
-        @XmlElementRef(type = ContactCommand.Check.class),
-        @XmlElementRef(type = ContactCommand.Create.class),
-        @XmlElementRef(type = ContactCommand.Delete.class),
-        @XmlElementRef(type = ContactCommand.Info.class),
-        @XmlElementRef(type = ContactCommand.Transfer.class),
-        @XmlElementRef(type = ContactCommand.Update.class),
-        @XmlElementRef(type = DomainCommand.Check.class),
-        @XmlElementRef(type = DomainCommand.Create.class),
-        @XmlElementRef(type = DomainCommand.Delete.class),
-        @XmlElementRef(type = DomainCommand.Info.class),
-        @XmlElementRef(type = DomainCommand.Renew.class),
-        @XmlElementRef(type = DomainCommand.Transfer.class),
-        @XmlElementRef(type = DomainCommand.Update.class),
-        @XmlElementRef(type = HostCommand.Check.class),
-        @XmlElementRef(type = HostCommand.Create.class),
-        @XmlElementRef(type = HostCommand.Delete.class),
-        @XmlElementRef(type = HostCommand.Info.class),
-        @XmlElementRef(type = HostCommand.Update.class)})
+      @XmlElementRef(type = ContactCommand.Check.class),
+      @XmlElementRef(type = ContactCommand.Create.class),
+      @XmlElementRef(type = ContactCommand.Delete.class),
+      @XmlElementRef(type = ContactCommand.Info.class),
+      @XmlElementRef(type = ContactCommand.Transfer.class),
+      @XmlElementRef(type = ContactCommand.Update.class),
+      @XmlElementRef(type = DomainCommand.Check.class),
+      @XmlElementRef(type = DomainCommand.Create.class),
+      @XmlElementRef(type = DomainCommand.Delete.class),
+      @XmlElementRef(type = DomainCommand.Info.class),
+      @XmlElementRef(type = DomainCommand.Renew.class),
+      @XmlElementRef(type = DomainCommand.Transfer.class),
+      @XmlElementRef(type = DomainCommand.Update.class),
+      @XmlElementRef(type = HostCommand.Check.class),
+      @XmlElementRef(type = HostCommand.Create.class),
+      @XmlElementRef(type = HostCommand.Delete.class),
+      @XmlElementRef(type = HostCommand.Info.class),
+      @XmlElementRef(type = HostCommand.Update.class)
+    })
     ResourceCommand resourceCommand;
 
     public ResourceCommand getResourceCommand() {
@@ -250,11 +253,9 @@ public class EppInput extends ImmutableObject {
       REQUEST
     }
 
-    @XmlAttribute
-    PollOp op;
+    @XmlAttribute PollOp op;
 
-    @XmlAttribute
-    String msgID;
+    @XmlAttribute String msgID;
 
     public PollOp getPollOp() {
       return op;
@@ -309,53 +310,55 @@ public class EppInput extends ImmutableObject {
   @XmlType(propOrder = {"command", "extension", "clTRID"})
   public static class CommandWrapper extends ImmutableObject {
     @XmlElements({
-        @XmlElement(name = "check", type = Check.class),
-        @XmlElement(name = "create", type = Create.class),
-        @XmlElement(name = "delete", type = Delete.class),
-        @XmlElement(name = "info", type = Info.class),
-        @XmlElement(name = "login", type = Login.class),
-        @XmlElement(name = "logout", type = Logout.class),
-        @XmlElement(name = "poll", type = Poll.class),
-        @XmlElement(name = "renew", type = Renew.class),
-        @XmlElement(name = "transfer", type = Transfer.class),
-        @XmlElement(name = "update", type = Update.class) })
+      @XmlElement(name = "check", type = Check.class),
+      @XmlElement(name = "create", type = Create.class),
+      @XmlElement(name = "delete", type = Delete.class),
+      @XmlElement(name = "info", type = Info.class),
+      @XmlElement(name = "login", type = Login.class),
+      @XmlElement(name = "logout", type = Logout.class),
+      @XmlElement(name = "poll", type = Poll.class),
+      @XmlElement(name = "renew", type = Renew.class),
+      @XmlElement(name = "transfer", type = Transfer.class),
+      @XmlElement(name = "update", type = Update.class)
+    })
     InnerCommand command;
 
     /** Zero or more command extensions. */
     @XmlElementRefs({
-        // allocation token extension
-        @XmlElementRef(type = AllocationTokenExtension.class),
-        // fee extension version 0.6
-        @XmlElementRef(type = FeeCheckCommandExtensionV06.class),
-        @XmlElementRef(type = FeeInfoCommandExtensionV06.class),
-        @XmlElementRef(type = FeeCreateCommandExtensionV06.class),
-        @XmlElementRef(type = FeeRenewCommandExtensionV06.class),
-        @XmlElementRef(type = FeeTransferCommandExtensionV06.class),
-        @XmlElementRef(type = FeeUpdateCommandExtensionV06.class),
-        // fee extension version 0.11
-        @XmlElementRef(type = FeeCheckCommandExtensionV11.class),
-        @XmlElementRef(type = FeeCreateCommandExtensionV11.class),
-        @XmlElementRef(type = FeeRenewCommandExtensionV11.class),
-        @XmlElementRef(type = FeeTransferCommandExtensionV11.class),
-        @XmlElementRef(type = FeeUpdateCommandExtensionV11.class),
-        // fee extension version 0.12
-        @XmlElementRef(type = FeeCheckCommandExtensionV12.class),
-        @XmlElementRef(type = FeeCreateCommandExtensionV12.class),
-        @XmlElementRef(type = FeeRenewCommandExtensionV12.class),
-        @XmlElementRef(type = FeeTransferCommandExtensionV12.class),
-        @XmlElementRef(type = FeeUpdateCommandExtensionV12.class),
-        // other extensions
-        @XmlElementRef(type = LaunchCheckExtension.class),
-        @XmlElementRef(type = LaunchCreateExtension.class),
-        @XmlElementRef(type = LaunchDeleteExtension.class),
-        @XmlElementRef(type = LaunchInfoExtension.class),
-        @XmlElementRef(type = LaunchUpdateExtension.class),
-        @XmlElementRef(type = MetadataExtension.class),
-        @XmlElementRef(type = RgpUpdateExtension.class),
-        @XmlElementRef(type = SecDnsCreateExtension.class),
-        @XmlElementRef(type = SecDnsUpdateExtension.class),
-        @XmlElementRef(type = DomainTransferRequestSuperuserExtension.class),
-        @XmlElementRef(type = DomainDeleteSuperuserExtension.class) })
+      // allocation token extension
+      @XmlElementRef(type = AllocationTokenExtension.class),
+      // fee extension version 0.6
+      @XmlElementRef(type = FeeCheckCommandExtensionV06.class),
+      @XmlElementRef(type = FeeInfoCommandExtensionV06.class),
+      @XmlElementRef(type = FeeCreateCommandExtensionV06.class),
+      @XmlElementRef(type = FeeRenewCommandExtensionV06.class),
+      @XmlElementRef(type = FeeTransferCommandExtensionV06.class),
+      @XmlElementRef(type = FeeUpdateCommandExtensionV06.class),
+      // fee extension version 0.11
+      @XmlElementRef(type = FeeCheckCommandExtensionV11.class),
+      @XmlElementRef(type = FeeCreateCommandExtensionV11.class),
+      @XmlElementRef(type = FeeRenewCommandExtensionV11.class),
+      @XmlElementRef(type = FeeTransferCommandExtensionV11.class),
+      @XmlElementRef(type = FeeUpdateCommandExtensionV11.class),
+      // fee extension version 0.12
+      @XmlElementRef(type = FeeCheckCommandExtensionV12.class),
+      @XmlElementRef(type = FeeCreateCommandExtensionV12.class),
+      @XmlElementRef(type = FeeRenewCommandExtensionV12.class),
+      @XmlElementRef(type = FeeTransferCommandExtensionV12.class),
+      @XmlElementRef(type = FeeUpdateCommandExtensionV12.class),
+      // other extensions
+      @XmlElementRef(type = LaunchCheckExtension.class),
+      @XmlElementRef(type = LaunchCreateExtension.class),
+      @XmlElementRef(type = LaunchDeleteExtension.class),
+      @XmlElementRef(type = LaunchInfoExtension.class),
+      @XmlElementRef(type = LaunchUpdateExtension.class),
+      @XmlElementRef(type = MetadataExtension.class),
+      @XmlElementRef(type = RgpUpdateExtension.class),
+      @XmlElementRef(type = SecDnsCreateExtension.class),
+      @XmlElementRef(type = SecDnsUpdateExtension.class),
+      @XmlElementRef(type = DomainTransferRequestSuperuserExtension.class),
+      @XmlElementRef(type = DomainDeleteSuperuserExtension.class)
+    })
     @XmlElementWrapper
     List<CommandExtension> extension;
 
@@ -414,15 +417,15 @@ public class EppInput extends ImmutableObject {
   }
 
   /**
-   * RFC 5730 says we should check the version and return special error code 2100 if it isn't
-   * what we support, but it also specifies a schema that only allows 1.0 in the version field, so
-   * any other version doesn't validate. As a result, if we didn't do this here it would throw a
-   * {@code SyntaxErrorException} when it failed to validate.
+   * RFC 5730 says we should check the version and return special error code 2100 if it isn't what
+   * we support, but it also specifies a schema that only allows 1.0 in the version field, so any
+   * other version doesn't validate. As a result, if we didn't do this here it would throw a {@code
+   * SyntaxErrorException} when it failed to validate.
    *
-   * @see <a href="http://tools.ietf.org/html/rfc5730#page-41">
-   *     RFC 5730 - EPP - Command error responses</a>
+   * @see <a href="http://tools.ietf.org/html/rfc5730#page-41">RFC 5730 - EPP - Command error
+   *     responses</a>
    */
-  public static class VersionAdapter extends XmlAdapter<String, String>  {
+  public static class VersionAdapter extends XmlAdapter<String, String> {
     @Override
     public String unmarshal(String version) throws Exception {
       if (!"1.0".equals(version)) {

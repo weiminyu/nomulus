@@ -60,6 +60,7 @@ public class DnsMessageTransportTest {
   private Message simpleQuery;
   private Message expectedResponse;
   private DnsMessageTransport resolver;
+
   @Before
   public void before() throws Exception {
     simpleQuery =

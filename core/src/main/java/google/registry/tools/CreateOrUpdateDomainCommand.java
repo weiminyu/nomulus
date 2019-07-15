@@ -39,10 +39,9 @@ import java.util.Set;
 abstract class CreateOrUpdateDomainCommand extends MutatingEppToolCommand {
 
   @Parameter(
-    names = {"-c", "--client"},
-    description = "Client identifier of the registrar to execute the command as",
-    required = true
-  )
+      names = {"-c", "--client"},
+      description = "Client identifier of the registrar to execute the command as",
+      required = true)
   String clientId;
 
   @Parameter(description = "Names of the domains", required = true)
@@ -56,36 +55,31 @@ abstract class CreateOrUpdateDomainCommand extends MutatingEppToolCommand {
   Set<String> nameservers = new HashSet<>();
 
   @Parameter(
-    names = {"-r", "--registrant"},
-    description = "Domain registrant."
-  )
+      names = {"-r", "--registrant"},
+      description = "Domain registrant.")
   String registrant;
 
   @Parameter(
-    names = {"-a", "--admins"},
-    description = "Comma-separated list of admin contacts."
-  )
+      names = {"-a", "--admins"},
+      description = "Comma-separated list of admin contacts.")
   List<String> admins = new ArrayList<>();
 
   @Parameter(
-    names = {"-t", "--techs"},
-    description = "Comma-separated list of technical contacts."
-  )
+      names = {"-t", "--techs"},
+      description = "Comma-separated list of technical contacts.")
   List<String> techs = new ArrayList<>();
 
   @Parameter(
-    names = {"-p", "--password"},
-    description = "Password."
-  )
+      names = {"-p", "--password"},
+      description = "Password.")
   String password;
 
   @Parameter(
-    names = "--ds_records",
-    description =
-        "Comma-separated list of DS records. Each DS record is given as "
-        + "<keyTag> <alg> <digestType> <digest>, in order, as it appears in the Zonefile.",
-    converter = DsRecordConverter.class
-  )
+      names = "--ds_records",
+      description =
+          "Comma-separated list of DS records. Each DS record is given as "
+              + "<keyTag> <alg> <digestType> <digest>, in order, as it appears in the Zonefile.",
+      converter = DsRecordConverter.class)
   List<DsRecord> dsRecords = new ArrayList<>();
 
   Set<String> domains;
@@ -96,8 +90,11 @@ abstract class CreateOrUpdateDomainCommand extends MutatingEppToolCommand {
         Splitter.on(CharMatcher.whitespace()).omitEmptyStrings();
 
     public abstract int keyTag();
+
     public abstract int alg();
+
     public abstract int digestType();
+
     public abstract String digest();
 
     private static DsRecord create(int keyTag, int alg, int digestType, String digest) {

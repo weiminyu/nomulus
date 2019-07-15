@@ -32,19 +32,20 @@ public final class UrlChecker {
   /** Probes {@code url} until it becomes available. */
   public static void waitUntilAvailable(final URL url, int timeoutMs) {
     try {
-      Void unusedReturnValue = SimpleTimeLimiter.create(newCachedThreadPool())
-          .callWithTimeout(
-              () -> {
-                int exponentialBackoffMs = 1;
-                while (true) {
-                  if (isAvailable(url)) {
-                    return null;
-                  }
-                  Thread.sleep(exponentialBackoffMs *= 2);
-                }
-              },
-              timeoutMs,
-              TimeUnit.MILLISECONDS);
+      Void unusedReturnValue =
+          SimpleTimeLimiter.create(newCachedThreadPool())
+              .callWithTimeout(
+                  () -> {
+                    int exponentialBackoffMs = 1;
+                    while (true) {
+                      if (isAvailable(url)) {
+                        return null;
+                      }
+                      Thread.sleep(exponentialBackoffMs *= 2);
+                    }
+                  },
+                  timeoutMs,
+                  TimeUnit.MILLISECONDS);
     } catch (Exception e) {
       throwIfUnchecked(e);
       throw new RuntimeException(e);

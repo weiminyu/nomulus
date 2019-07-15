@@ -25,10 +25,12 @@ public enum RdeMode {
   /**
    * BRDA Periodic Access to Thin Registration Data.
    *
-   * <p>This mode of operation provides ICANN with minimal information about registered domains
-   * and their associated registrars, per gTLD Registry Agreement, Specification 4 § 3.1.
+   * <p>This mode of operation provides ICANN with minimal information about registered domains and
+   * their associated registrars, per gTLD Registry Agreement, Specification 4 § 3.1.
    *
-   * @see <a href="http://newgtlds.icann.org/en/applicants/agb/agreement-approved-09jan14-en.htm">Registry Agreement</a>
+   * @see <a
+   *     href="http://newgtlds.icann.org/en/applicants/agb/agreement-approved-09jan14-en.htm">Registry
+   *     Agreement</a>
    */
   THIN;
 

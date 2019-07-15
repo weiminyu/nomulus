@@ -34,8 +34,8 @@ import org.bouncycastle.openpgp.PGPPublicKey;
 @Module
 public final class TmchModule {
 
-  private static final PGPPublicKey MARKSDB_PUBLIC_KEY = TmchData
-      .loadPublicKey(asByteSource(getResource(TmchModule.class, "marksdb-public-key.asc")));
+  private static final PGPPublicKey MARKSDB_PUBLIC_KEY =
+      TmchData.loadPublicKey(asByteSource(getResource(TmchModule.class, "marksdb-public-key.asc")));
 
   @Provides
   @Key("marksdbPublicKey")

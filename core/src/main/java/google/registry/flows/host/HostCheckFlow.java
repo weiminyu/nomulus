@@ -50,14 +50,20 @@ public final class HostCheckFlow implements Flow {
   @Inject ResourceCommand resourceCommand;
   @Inject @ClientId String clientId;
   @Inject ExtensionManager extensionManager;
-  @Inject @Config("maxChecks") int maxChecks;
+
+  @Inject
+  @Config("maxChecks")
+  int maxChecks;
+
   @Inject Clock clock;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject HostCheckFlow() {}
+
+  @Inject
+  HostCheckFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
-    extensionManager.validate();  // There are no legal extensions for this flow.
+    extensionManager.validate(); // There are no legal extensions for this flow.
     validateClientIsLoggedIn(clientId);
     List<String> targetIds = ((Check) resourceCommand).getTargetIds();
     verifyTargetIdCount(targetIds, maxChecks);

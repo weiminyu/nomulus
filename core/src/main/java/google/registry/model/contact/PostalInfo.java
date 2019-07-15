@@ -29,8 +29,8 @@ import javax.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
- * Implementation of both "postalInfoType" and "chgPostalInfoType" from
- * {@link "http://tools.ietf.org/html/rfc5733"}.
+ * Implementation of both "postalInfoType" and "chgPostalInfoType" from {@link
+ * "http://tools.ietf.org/html/rfc5733"}.
  */
 @Embed
 @XmlType(propOrder = {"name", "org", "address", "type"})
@@ -53,8 +53,7 @@ public class PostalInfo extends ImmutableObject implements Overlayable<PostalInf
   @XmlElement(name = "addr")
   ContactAddress address;
 
-  @XmlAttribute
-  Type type;
+  @XmlAttribute Type type;
 
   public String getName() {
     return name;

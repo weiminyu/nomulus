@@ -56,14 +56,12 @@ public class EntityClassesTest {
   @Test
   public void testEntityClasses_entitySubclassesHaveKindsMatchingBaseEntities() {
     Set<String> baseEntityKinds =
-        ALL_CLASSES
-            .stream()
+        ALL_CLASSES.stream()
             .filter(hasAnnotation(Entity.class))
             .map(Key::getKind)
             .collect(toImmutableSet());
     Set<String> entitySubclassKinds =
-        ALL_CLASSES
-            .stream()
+        ALL_CLASSES.stream()
             .filter(hasAnnotation(EntitySubclass.class))
             .map(Key::getKind)
             .collect(toImmutableSet());

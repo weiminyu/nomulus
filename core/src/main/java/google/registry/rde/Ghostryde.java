@@ -45,10 +45,9 @@ import org.joda.time.DateTime;
 /**
  * Utility class for reading and writing data in the ghostryde container format.
  *
- * <p>Whenever we stage sensitive data to cloud storage (like XML RDE deposit data), we
- * <a href="http://youtu.be/YPNJjL9iznY">GHOST RYDE IT</a> first to keep it safe from the prying
- * eyes of anyone with access to the <a href="https://cloud.google.com/console">Google Cloud
- * Console</a>.
+ * <p>Whenever we stage sensitive data to cloud storage (like XML RDE deposit data), we <a
+ * href="http://youtu.be/YPNJjL9iznY">GHOST RYDE IT</a> first to keep it safe from the prying eyes
+ * of anyone with access to the <a href="https://cloud.google.com/console">Google Cloud Console</a>.
  *
  * <p>The encryption is similar to the "regular" RyDE RDE deposit file encryption. The main
  * difference (and the reason we had to create a custom encryption) is that the RDE deposit has a
@@ -64,7 +63,7 @@ import org.joda.time.DateTime;
  *
  * <p>Here's how you write a file:
  *
- * <pre>   {@code
+ * <pre>{@code
  * File in = new File("lol.txt");
  * File out = new File("lol.txt.ghostryde");
  * File lengthOut = new File("lol.length.ghostryde");
@@ -73,11 +72,12 @@ import org.joda.time.DateTime;
  *     OutputStream ghostrydeEncoder = Ghostryde.encoder(output, publicKey, lengthOut);
  *     InputStream input = new FileInputStream(in)) &lbrace;
  *   ByteStreams.copy(input, ghostrydeEncoder);
- * &rbrace;}</pre>
+ * &rbrace;
+ * }</pre>
  *
  * <p>Here's how you read a file:
  *
- * <pre>   {@code
+ * <pre>{@code
  * File in = new File("lol.txt.ghostryde");
  * File out = new File("lol.txt");
  * Ghostryde ghost = new Ghostryde(1024);
@@ -85,14 +85,15 @@ import org.joda.time.DateTime;
  *     InputStream ghostrydeDecoder = new Ghostryde.decoder(fileInput, privateKey);
  *     OutputStream fileOutput = new FileOutputStream(out)) &lbrace;
  *   ByteStreams.copy(ghostryderDecoder, fileOutput);
- * &rbrace;}</pre>
+ * &rbrace;
+ * }</pre>
  *
  * <h2>Simple API</h2>
  *
  * <p>If you're writing test code or are certain your data can fit in memory, you might find these
  * static methods more convenient:
  *
- * <pre>   {@code
+ * <pre>{@code
  * byte[] data = "hello kitty".getBytes(UTF_8);
  * byte[] blob = Ghostryde.encode(data, publicKey);
  * byte[] result = Ghostryde.decode(blob, privateKey);
@@ -112,10 +113,11 @@ public final class Ghostryde {
 
   /**
    * For backwards compatibility reasons, we wrap the data in a PGP file, which preserves the
-   * original filename and modification time. However, these values are never used, so we just
-   * set them to a constant value.
+   * original filename and modification time. However, these values are never used, so we just set
+   * them to a constant value.
    */
   static final String INNER_FILENAME = "file.xml";
+
   static final DateTime INNER_MODIFICATION_TIME = DateTime.parse("2000-01-01TZ");
 
   /**
@@ -124,8 +126,7 @@ public final class Ghostryde {
    * @throws PGPException
    * @throws IOException
    */
-  public static byte[] encode(byte[] data, PGPPublicKey key)
-      throws IOException, PGPException {
+  public static byte[] encode(byte[] data, PGPPublicKey key) throws IOException, PGPException {
     checkNotNull(data, "data");
     checkArgument(key.isEncryptionKey(), "not an encryption key");
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -141,8 +142,7 @@ public final class Ghostryde {
    * @throws PGPException
    * @throws IOException
    */
-  public static byte[] decode(byte[] data, PGPPrivateKey key)
-      throws IOException, PGPException {
+  public static byte[] decode(byte[] data, PGPPrivateKey key) throws IOException, PGPException {
     checkNotNull(data, "data");
     ByteArrayInputStream dataStream = new ByteArrayInputStream(data);
     ByteArrayOutputStream output = new ByteArrayOutputStream();

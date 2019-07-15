@@ -56,12 +56,12 @@ import org.joda.time.Duration;
  * <p>This includes the TLDs (Registries), Registrars, and the RegistrarContacts that can access the
  * web console.
  *
- * This class is basically a "builder" for the parameters needed to generate the OT&amp;E entities.
- * Nothing is created until you call {@link #buildAndPersist}.
+ * <p>This class is basically a "builder" for the parameters needed to generate the OT&amp;E
+ * entities. Nothing is created until you call {@link #buildAndPersist}.
  *
- * Usage example:
+ * <p>Usage example:
  *
- * <pre>   {@code
+ * <pre>{@code
  * OteAccountBuilder.forClientId("example")
  *     .addContact("contact@email.com") // OPTIONAL
  *     .setPassword("password") // OPTIONAL
@@ -76,7 +76,7 @@ public final class OteAccountBuilder {
    * Validation regex for registrar base client IDs (3-14 lowercase alphanumeric characters).
    *
    * <p>The base client ID is appended with numbers to create four different test registrar accounts
-   * (e.g. reg-1, reg-3, reg-4, reg-5).  Registrar client IDs are of type clIDType in eppcom.xsd
+   * (e.g. reg-1, reg-3, reg-4, reg-5). Registrar client IDs are of type clIDType in eppcom.xsd
    * which is limited to 16 characters, hence the limit of 14 here to account for the dash and
    * numbers.
    *
@@ -138,7 +138,7 @@ public final class OteAccountBuilder {
    * Creates an OteAccountBuilder for the given base client ID.
    *
    * @param baseClientId the base clientId which will help name all the entities we create. Normally
-   * is the same as the "prod" clientId designated for this registrar.
+   *     is the same as the "prod" clientId designated for this registrar.
    */
   public static OteAccountBuilder forClientId(String baseClientId) {
     return new OteAccountBuilder(baseClientId);
@@ -286,10 +286,7 @@ public final class OteAccountBuilder {
   }
 
   private static Registry createTld(
-      String tldName,
-      TldState initialTldState,
-      boolean isEarlyAccess,
-      int roidSuffix) {
+      String tldName, TldState initialTldState, boolean isEarlyAccess, int roidSuffix) {
     String tldNameAlphaNumerical = tldName.replaceAll("[^a-z0-9]", "");
     Optional<PremiumList> premiumList = PremiumList.getUncached(DEFAULT_PREMIUM_LIST);
     checkState(premiumList.isPresent(), "Couldn't find premium list %s.", DEFAULT_PREMIUM_LIST);

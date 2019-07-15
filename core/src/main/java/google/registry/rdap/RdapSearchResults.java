@@ -39,14 +39,14 @@ import java.util.Optional;
 @AutoValue
 abstract class RdapSearchResults {
 
-  /**
-   * Responding To Searches defined in 8 of RFC7483.
-   */
+  /** Responding To Searches defined in 8 of RFC7483. */
   abstract static class BaseSearchResponse extends ReplyPayloadBase {
     abstract IncompletenessWarningType incompletenessWarningType();
+
     abstract ImmutableMap<String, URI> navigationLinks();
 
-    @JsonableElement("notices") ImmutableList<Notice> getIncompletenessWarnings() {
+    @JsonableElement("notices")
+    ImmutableList<Notice> getIncompletenessWarnings() {
       switch (incompletenessWarningType()) {
         case TRUNCATED:
           return TRUNCATION_NOTICES;
@@ -74,13 +74,17 @@ abstract class RdapSearchResults {
       }
       Notice.Builder builder =
           Notice.builder().setTitle("Navigation Links").setDescription("Links to related pages.");
-      navigationLinks().forEach((name, uri) ->
-          builder.linksBuilder()
-              .add(Link.builder()
-                  .setRel(name)
-                  .setHref(uri.toString())
-                  .setType("application/rdap+json")
-                  .build()));
+      navigationLinks()
+          .forEach(
+              (name, uri) ->
+                  builder
+                      .linksBuilder()
+                      .add(
+                          Link.builder()
+                              .setRel(name)
+                              .setHref(uri.toString())
+                              .setType("application/rdap+json")
+                              .build()));
       return Optional.of(builder.build());
     }
 
@@ -90,6 +94,7 @@ abstract class RdapSearchResults {
 
     abstract static class Builder<B extends Builder<?>> {
       abstract ImmutableMap.Builder<String, URI> navigationLinksBuilder();
+
       abstract B setIncompletenessWarningType(IncompletenessWarningType type);
 
       @SuppressWarnings("unchecked")
@@ -103,7 +108,8 @@ abstract class RdapSearchResults {
   @AutoValue
   abstract static class DomainSearchResponse extends BaseSearchResponse {
 
-    @JsonableElement abstract ImmutableList<RdapDomain> domainSearchResults();
+    @JsonableElement
+    abstract ImmutableList<RdapDomain> domainSearchResults();
 
     DomainSearchResponse() {
       super(BoilerplateType.DOMAIN);
@@ -124,7 +130,8 @@ abstract class RdapSearchResults {
   @AutoValue
   abstract static class EntitySearchResponse extends BaseSearchResponse {
 
-    @JsonableElement public abstract ImmutableList<RdapEntity> entitySearchResults();
+    @JsonableElement
+    public abstract ImmutableList<RdapEntity> entitySearchResults();
 
     EntitySearchResponse() {
       super(BoilerplateType.ENTITY);
@@ -145,7 +152,8 @@ abstract class RdapSearchResults {
   @AutoValue
   abstract static class NameserverSearchResponse extends BaseSearchResponse {
 
-    @JsonableElement public abstract ImmutableList<RdapNameserver> nameserverSearchResults();
+    @JsonableElement
+    public abstract ImmutableList<RdapNameserver> nameserverSearchResults();
 
     NameserverSearchResponse() {
       super(BoilerplateType.NAMESERVER);

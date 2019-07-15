@@ -42,8 +42,7 @@ final class CanonicalizeLabelsCommand implements Command {
       required = true)
   private List<String> mainParameters;
 
-  @NonFinalForTesting
-  private static InputStream stdin = System.in;
+  @NonFinalForTesting private static InputStream stdin = System.in;
 
   @Override
   public void run() throws IOException {
@@ -63,7 +62,7 @@ final class CanonicalizeLabelsCommand implements Command {
       if (canonical.startsWith(DomainNameUtils.ACE_PREFIX)
           && Idn.toUnicode(canonical).equals(canonical)) {
         System.err.println("Bad IDN: " + label);
-        continue;  // Bad IDN code points.
+        continue; // Bad IDN code points.
       }
       labels.add(canonical);
       if (!canonical.startsWith("xn--")) {
@@ -74,7 +73,7 @@ final class CanonicalizeLabelsCommand implements Command {
         labels.add(canonicalize(label.replaceAll("_", "-")));
       }
     }
-    labels.remove("");  // We used "" for invalid labels.
+    labels.remove(""); // We used "" for invalid labels.
     System.out.println(Joiner.on('\n').join(labels));
   }
 

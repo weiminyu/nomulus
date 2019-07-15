@@ -40,13 +40,19 @@ final class EscrowDepositEncryptor {
 
   private static final int PEEK_BUFFER_SIZE = 64 * 1024;
 
-  @Inject @Key("rdeSigningKey") Provider<PGPKeyPair> rdeSigningKey;
-  @Inject @Key("rdeReceiverKey") Provider<PGPPublicKey> rdeReceiverKey;
-  @Inject EscrowDepositEncryptor() {}
+  @Inject
+  @Key("rdeSigningKey")
+  Provider<PGPKeyPair> rdeSigningKey;
+
+  @Inject
+  @Key("rdeReceiverKey")
+  Provider<PGPPublicKey> rdeReceiverKey;
+
+  @Inject
+  EscrowDepositEncryptor() {}
 
   /** Creates a {@code .ryde} and {@code .sig} file, provided an XML deposit file. */
-  void encrypt(String tld, Path xmlFile, Path outdir)
-      throws IOException, XmlException {
+  void encrypt(String tld, Path xmlFile, Path outdir) throws IOException, XmlException {
     try (InputStream xmlFileInput = Files.newInputStream(xmlFile);
         BufferedInputStream xmlInput = new BufferedInputStream(xmlFileInput, PEEK_BUFFER_SIZE)) {
       DateTime watermark = RdeUtil.peekWatermark(xmlInput);
@@ -57,11 +63,12 @@ final class EscrowDepositEncryptor {
       PGPKeyPair signingKey = rdeSigningKey.get();
       try (OutputStream rydeOutput = Files.newOutputStream(rydePath);
           OutputStream sigOutput = Files.newOutputStream(sigPath);
-          RydeEncoder rydeEncoder = new RydeEncoder.Builder()
-              .setRydeOutput(rydeOutput, rdeReceiverKey.get())
-              .setSignatureOutput(sigOutput, signingKey)
-              .setFileMetadata(name, Files.size(xmlFile), watermark)
-              .build()) {
+          RydeEncoder rydeEncoder =
+              new RydeEncoder.Builder()
+                  .setRydeOutput(rydeOutput, rdeReceiverKey.get())
+                  .setSignatureOutput(sigOutput, signingKey)
+                  .setFileMetadata(name, Files.size(xmlFile), watermark)
+                  .build()) {
         ByteStreams.copy(xmlInput, rydeEncoder);
       }
       try (OutputStream pubOutput = Files.newOutputStream(pubPath);

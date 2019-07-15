@@ -33,8 +33,7 @@ public class EppToolCommandTest extends EppToolCommandTestCase<EppToolCommand> {
     @Parameter(names = {"--client"})
     String clientId;
 
-    @Parameter
-    List<String> xmlPayloads;
+    @Parameter List<String> xmlPayloads;
 
     @Override
     void initEppToolCommand() {
@@ -52,9 +51,7 @@ public class EppToolCommandTest extends EppToolCommandTestCase<EppToolCommand> {
   @Test
   public void testSuccess_singleXmlCommand() throws Exception {
     // The choice of xml file is arbitrary.
-    runCommandForced(
-        "--client=NewRegistrar",
-        ToolsTestData.loadFile("contact_create.xml"));
+    runCommandForced("--client=NewRegistrar", ToolsTestData.loadFile("contact_create.xml"));
     eppVerifier.verifySent("contact_create.xml");
   }
 

@@ -75,7 +75,10 @@ final class GenerateEscrowDepositCommand implements CommandWithRemoteApi {
   private String outdir;
 
   @Inject AppEngineServiceUtils appEngineServiceUtils;
-  @Inject @Named("rde-report") Queue queue;
+
+  @Inject
+  @Named("rde-report")
+  Queue queue;
 
   @Override
   public void run() {

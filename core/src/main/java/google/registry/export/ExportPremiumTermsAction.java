@@ -62,7 +62,10 @@ public class ExportPremiumTermsAction implements Runnable {
   @Config("premiumTermsExportDisclaimer")
   String exportDisclaimer;
 
-  @Inject @Parameter(RequestParameters.PARAM_TLD) String tld;
+  @Inject
+  @Parameter(RequestParameters.PARAM_TLD)
+  String tld;
+
   @Inject Response response;
 
   @Inject

@@ -18,16 +18,15 @@ import google.registry.util.TypeUtils.TypeInstantiator;
 import java.util.Optional;
 
 /**
- * Class for parameters that can handle special string "null" or empty values to
- * indicate a desire to pass an empty value (i.e. when clearing out nullable
- * fields on a resource).
+ * Class for parameters that can handle special string "null" or empty values to indicate a desire
+ * to pass an empty value (i.e. when clearing out nullable fields on a resource).
  */
 public class OptionalParameterConverterValidator<T, C extends ParameterConverterValidator<T>>
     extends ParameterConverterValidator<Optional<T>> {
 
   private static final String NULL_STRING = "null";
 
-  ParameterConverterValidator<T> validator = new TypeInstantiator<C>(getClass()){}.instantiate();
+  ParameterConverterValidator<T> validator = new TypeInstantiator<C>(getClass()) {}.instantiate();
 
   @Override
   public void validate(String name, String value) {

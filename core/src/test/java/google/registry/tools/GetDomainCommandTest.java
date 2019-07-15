@@ -69,8 +69,8 @@ public class GetDomainCommandTest extends CommandTestCase<GetDomainCommand> {
 
   @Test
   public void testSuccess_domainDeletedInFuture() throws Exception {
-    persistResource(newDomainBase("example.tld").asBuilder()
-        .setDeletionTime(now.plusDays(1)).build());
+    persistResource(
+        newDomainBase("example.tld").asBuilder().setDeletionTime(now.plusDays(1)).build());
     runCommand("example.tld", "--read_timestamp=" + now.plusMonths(1));
     assertInStdout("Domain 'example.tld' does not exist or is deleted");
   }

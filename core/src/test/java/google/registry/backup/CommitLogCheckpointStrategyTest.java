@@ -44,13 +44,9 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class CommitLogCheckpointStrategyTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   final FakeClock clock = new FakeClock(DateTime.parse("2000-01-01TZ"));
   final Ofy ofy = new Ofy(clock);
@@ -156,25 +152,26 @@ public class CommitLogCheckpointStrategyTest {
     writeCommitLogToBucket(1);
     writeCommitLogToBucket(2);
     writeCommitLogToBucket(3);
-    assertThat(strategy.readNewCommitLogsAndFindThreshold(
-        ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)))
-            .isEqualTo(now.minusMillis(1));
+    assertThat(
+            strategy.readNewCommitLogsAndFindThreshold(
+                ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)))
+        .isEqualTo(now.minusMillis(1));
   }
 
   @Test
   public void test_readNewCommitLogsAndFindThreshold_someNewCommits_returnsEarliestTimeMinusOne() {
     DateTime now = clock.nowUtc();
-    writeCommitLogToBucket(1);  // 1A
-    writeCommitLogToBucket(2);  // 2A
-    writeCommitLogToBucket(3);  // 3A
+    writeCommitLogToBucket(1); // 1A
+    writeCommitLogToBucket(2); // 2A
+    writeCommitLogToBucket(3); // 3A
     clock.advanceBy(Duration.millis(5));
-    writeCommitLogToBucket(1);  // 1B
-    writeCommitLogToBucket(2);  // 2B
-    writeCommitLogToBucket(3);  // 3B
+    writeCommitLogToBucket(1); // 1B
+    writeCommitLogToBucket(2); // 2B
+    writeCommitLogToBucket(3); // 3B
     clock.advanceBy(Duration.millis(5));
-    writeCommitLogToBucket(1);  // 1C
-    writeCommitLogToBucket(2);  // 2C
-    writeCommitLogToBucket(3);  // 3C
+    writeCommitLogToBucket(1); // 1C
+    writeCommitLogToBucket(2); // 2C
+    writeCommitLogToBucket(3); // 3C
     // First pass times: 1 at T0, 2 at T+5, 3 at T+10.
     // Commits 1A, 2B, 3C are the commits seen in the first pass.
     // Commits 2A, 3A, 3B are all old prior commits that should be ignored.
@@ -183,9 +180,10 @@ public class CommitLogCheckpointStrategyTest {
     // Commit 2C is the first new commit for bucket 2, at T+10.
     // Since 1B as a new commit is older than 1C, T+5 is the oldest new commit time.
     // Therefore, expect T+4 as the threshold time.
-    assertThat(strategy.readNewCommitLogsAndFindThreshold(
-        ImmutableMap.of(1, now, 2, now.plusMillis(5), 3, now.plusMillis(10))))
-            .isEqualTo(now.plusMillis(4));
+    assertThat(
+            strategy.readNewCommitLogsAndFindThreshold(
+                ImmutableMap.of(1, now, 2, now.plusMillis(5), 3, now.plusMillis(10))))
+        .isEqualTo(now.plusMillis(4));
   }
 
   @Test
@@ -226,9 +224,10 @@ public class CommitLogCheckpointStrategyTest {
   @Test
   public void test_computeCheckpoint_noCommitsAtAll_bucketCheckpointTimesAreStartOfTime() {
     assertThat(strategy.computeCheckpoint())
-        .isEqualTo(CommitLogCheckpoint.create(
-            clock.nowUtc(),
-            ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
+        .isEqualTo(
+            CommitLogCheckpoint.create(
+                clock.nowUtc(),
+                ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
   }
 
   @Test
@@ -242,25 +241,26 @@ public class CommitLogCheckpointStrategyTest {
     clock.advanceOneMilli();
     DateTime checkpointTime = clock.nowUtc();
     assertThat(strategy.computeCheckpoint())
-        .isEqualTo(CommitLogCheckpoint.create(
-            checkpointTime,
-            ImmutableMap.of(1, now, 2, now.plusMillis(1), 3, now.plusMillis(2))));
+        .isEqualTo(
+            CommitLogCheckpoint.create(
+                checkpointTime,
+                ImmutableMap.of(1, now, 2, now.plusMillis(1), 3, now.plusMillis(2))));
   }
 
   @Test
   public void test_computeCheckpoint_someNewCommits_bucketCheckpointTimesAreClampedToThreshold() {
     DateTime now = clock.nowUtc();
-    writeCommitLogToBucket(1);  // 1A
-    writeCommitLogToBucket(2);  // 2A
-    writeCommitLogToBucket(3);  // 3A
+    writeCommitLogToBucket(1); // 1A
+    writeCommitLogToBucket(2); // 2A
+    writeCommitLogToBucket(3); // 3A
     clock.advanceBy(Duration.millis(5));
-    writeCommitLogToBucket(1);  // 1B
-    writeCommitLogToBucket(2);  // 2B
-    writeCommitLogToBucket(3);  // 3B
+    writeCommitLogToBucket(1); // 1B
+    writeCommitLogToBucket(2); // 2B
+    writeCommitLogToBucket(3); // 3B
     clock.advanceBy(Duration.millis(5));
-    writeCommitLogToBucket(1);  // 1C
-    writeCommitLogToBucket(2);  // 2C
-    writeCommitLogToBucket(3);  // 3C
+    writeCommitLogToBucket(1); // 1C
+    writeCommitLogToBucket(2); // 2C
+    writeCommitLogToBucket(3); // 3C
 
     // Set first pass times: 1 at T0, 2 at T+5, 3 at T+10.
     saveBucketWithLastWrittenTime(1, now);
@@ -282,9 +282,9 @@ public class CommitLogCheckpointStrategyTest {
 
     // Bucket checkpoint times should be clamped as expected.
     assertThat(strategy.computeCheckpoint())
-        .isEqualTo(CommitLogCheckpoint.create(
-            checkpointTime,
-            ImmutableMap.of(1, now, 2, threshold, 3, threshold)));
+        .isEqualTo(
+            CommitLogCheckpoint.create(
+                checkpointTime, ImmutableMap.of(1, now, 2, threshold, 3, threshold)));
   }
 
   private void writeCommitLogToBucket(final int bucketId) {

@@ -57,7 +57,7 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
     extends ForwardingMap<DateTime, T> {
 
   /**
-   * A transition to a value of type {@code V} at a certain time.  This superclass only has a field
+   * A transition to a value of type {@code V} at a certain time. This superclass only has a field
    * for the {@code DateTime}, which means that subclasses should supply the field of type {@code V}
    * and implementations of the abstract getter and setter methods to access that field. This design
    * is so that subclasses tagged with @Embed can define a custom field name for their value, for
@@ -65,7 +65,7 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
    *
    * <p>The public visibility of this class exists only so that it can be subclassed; clients should
    * never call any methods on this class or attempt to access its members, but should instead treat
-   * it as a customizable implementation detail of {@code TimedTransitionProperty}.  However, note
+   * it as a customizable implementation detail of {@code TimedTransitionProperty}. However, note
    * that subclasses must also have public visibility so that they can be instantiated via
    * reflection in a call to {@code fromValueMap}.
    */
@@ -89,16 +89,15 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
   }
 
   /**
-   * Converts the provided value map into the equivalent transition map, using transition objects
-   * of the given TimedTransition subclass.  The value map must be sorted according to the natural
+   * Converts the provided value map into the equivalent transition map, using transition objects of
+   * the given TimedTransition subclass. The value map must be sorted according to the natural
    * ordering of its DateTime keys, and keys cannot be earlier than START_OF_TIME.
    */
   // NB: The Class<T> parameter could be eliminated by getting the class via reflection, but then
   // the callsite cannot infer T, so unless you explicitly call this as .<V, T>fromValueMap() it
   // will default to using just TimedTransition<V>, which fails at runtime.
   private static <V, T extends TimedTransition<V>> NavigableMap<DateTime, T> makeTransitionMap(
-      ImmutableSortedMap<DateTime, V> valueMap,
-      final Class<T> timedTransitionSubclass) {
+      ImmutableSortedMap<DateTime, V> valueMap, final Class<T> timedTransitionSubclass) {
     checkArgument(
         Ordering.natural().equals(valueMap.comparator()),
         "Timed transition value map must have transition time keys in chronological order");
@@ -122,10 +121,9 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
    * <p>This method should be the normal method for constructing a {@link TimedTransitionProperty}.
    */
   public static <V, T extends TimedTransition<V>> TimedTransitionProperty<V, T> fromValueMap(
-      ImmutableSortedMap<DateTime, V> valueMap,
-      final Class<T> timedTransitionSubclass) {
-    return new TimedTransitionProperty<>(ImmutableSortedMap.copyOf(
-        makeTransitionMap(valueMap, timedTransitionSubclass)));
+      ImmutableSortedMap<DateTime, V> valueMap, final Class<T> timedTransitionSubclass) {
+    return new TimedTransitionProperty<>(
+        ImmutableSortedMap.copyOf(makeTransitionMap(valueMap, timedTransitionSubclass)));
   }
 
   /**
@@ -161,8 +159,7 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
         "New transitions can only be appended after the last previous transition.");
     Map<DateTime, V> newInnerMap = new HashMap<>(currentMap);
     newInnerMap.put(transitionTime, transitionValue);
-    ImmutableSortedMap<DateTime, V> newMap =
-        ImmutableSortedMap.copyOf(newInnerMap);
+    ImmutableSortedMap<DateTime, V> newMap = ImmutableSortedMap.copyOf(newInnerMap);
     validateTimedTransitionMap(newMap, allowedTransitions, allowedTransitionMapName);
     return fromValueMap(newMap, transitionClass);
   }
@@ -175,7 +172,7 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
    * @param allowedTransitions optional map of all possible state-to-state transitions
    * @param allowedTransitionMapName optional transition map description string for error messages
    * @param initialValue optional initial value; if present, the first transition must have this
-   *        value
+   *     value
    * @param badInitialValueErrorMessage option error message string if the initial value is wrong
    */
   public static <V, T extends TimedTransitionProperty.TimedTransition<V>>
@@ -186,13 +183,9 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
           String allowedTransitionMapName,
           V initialValue,
           String badInitialValueErrorMessage) {
-    validateTimedTransitionMap(
-        newTransitions,
-        allowedTransitions,
-        allowedTransitionMapName);
+    validateTimedTransitionMap(newTransitions, allowedTransitions, allowedTransitionMapName);
     checkArgument(
-        newTransitions.firstEntry().getValue() == initialValue,
-        badInitialValueErrorMessage);
+        newTransitions.firstEntry().getValue() == initialValue, badInitialValueErrorMessage);
     return fromValueMap(newTransitions, transitionClass);
   }
 
@@ -265,7 +258,8 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
 
   /** Returns a new {@code TimedTransitionProperty} backed by the provided map instance. */
   private TimedTransitionProperty(NavigableMap<DateTime, T> backingMap) {
-    checkArgument(backingMap.get(START_OF_TIME) != null,
+    checkArgument(
+        backingMap.get(START_OF_TIME) != null,
         "Must provide transition entry for the start of time (Unix Epoch)");
     this.backingMap = backingMap;
   }
@@ -275,7 +269,8 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
    * transition entry for START_OF_TIME, and throws IllegalStateException if not.
    */
   public void checkValidity() {
-    checkState(backingMap.get(START_OF_TIME) != null,
+    checkState(
+        backingMap.get(START_OF_TIME) != null,
         "Timed transition values missing required entry for the start of time (Unix Epoch)");
   }
 
@@ -290,8 +285,8 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
   }
 
   /**
-   * Returns the value of the property that is active at the specified time.  The active value for
-   * a time before START_OF_TIME is extrapolated to be the value that is active at START_OF_TIME.
+   * Returns the value of the property that is active at the specified time. The active value for a
+   * time before START_OF_TIME is extrapolated to be the value that is active at START_OF_TIME.
    */
   public V getValueAtTime(DateTime time) {
     // Retrieve the current value by finding the latest transition before or at the given time,
@@ -299,9 +294,7 @@ public class TimedTransitionProperty<V, T extends TimedTransitionProperty.TimedT
     return backingMap.floorEntry(latestOf(START_OF_TIME, time)).getValue().getValue();
   }
 
-  /**
-   * Returns the time of the next transition.  Returns null if there is no subsequent transition.
-   */
+  /** Returns the time of the next transition. Returns null if there is no subsequent transition. */
   @Nullable
   public DateTime getNextTransitionAfter(DateTime time) {
     return backingMap.higherKey(latestOf(START_OF_TIME, time));

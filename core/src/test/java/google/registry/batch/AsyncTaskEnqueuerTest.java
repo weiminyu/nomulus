@@ -122,9 +122,7 @@ public class AsyncTaskEnqueuerTest extends ShardableTestCase {
             .header("content-type", "application/x-www-form-urlencoded")
             .param(PARAM_RESOURCE_KEY, Key.create(contact).getString())
             .param(PARAM_REQUESTED_TIME, now.toString())
-            .param(
-                PARAM_RESAVE_TIMES,
-                "2015-05-20T14:34:56.000Z,2015-05-21T15:34:56.000Z")
+            .param(PARAM_RESAVE_TIMES, "2015-05-20T14:34:56.000Z,2015-05-21T15:34:56.000Z")
             .etaDelta(
                 standardHours(24).minus(standardSeconds(30)),
                 standardHours(24).plus(standardSeconds(30))));

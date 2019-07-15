@@ -82,8 +82,7 @@ final class RegistrarLookupCommand implements WhoisCommand {
             return ImmutableMap.copyOf(map);
           });
 
-  @VisibleForTesting
-  final String registrarName;
+  @VisibleForTesting final String registrarName;
 
   RegistrarLookupCommand(String registrarName) {
     checkArgument(!isNullOrEmpty(registrarName), "registrarName");

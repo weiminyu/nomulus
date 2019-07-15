@@ -40,9 +40,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import org.joda.time.DateTime;
 
-/**
- * Dagger module for injecting common settings for batch actions.
- */
+/** Dagger module for injecting common settings for batch actions. */
 @Module
 public class BatchModule {
 

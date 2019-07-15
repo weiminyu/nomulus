@@ -64,54 +64,57 @@ public class RdapEntityActionTest extends RdapActionBaseTestCase<RdapEntityActio
   public void setUp() {
     // lol
     createTld("lol");
-    registrarLol = persistResource(makeRegistrar(
-        "evilregistrar", "Yes Virginia <script>", Registrar.State.ACTIVE, 101L));
+    registrarLol =
+        persistResource(
+            makeRegistrar("evilregistrar", "Yes Virginia <script>", Registrar.State.ACTIVE, 101L));
     persistSimpleResources(makeRegistrarContacts(registrarLol));
-    registrant = makeAndPersistContactResource(
-        "8372808-REG",
-        "(◕‿◕)",
-        "lol@cat.みんな",
-        ImmutableList.of("1 Smiley Row", "Suite みんな"),
-        clock.nowUtc(),
-        registrarLol);
-    adminContact = makeAndPersistContactResource(
-        "8372808-ADM",
-        "(◕‿◕)",
-        "lol@cat.みんな",
-        ImmutableList.of("1 Smiley Row", "Suite みんな"),
-        clock.nowUtc(),
-        registrarLol);
-    techContact = makeAndPersistContactResource(
-        "8372808-TEC",
-        "(◕‿◕)",
-        "lol@cat.みんな",
-        ImmutableList.of("1 Smiley Row", "Suite みんな"),
-        clock.nowUtc(),
-        registrarLol);
-    HostResource host1 =
-        persistResource(makeHostResource("ns1.cat.lol", "1.2.3.4"));
+    registrant =
+        makeAndPersistContactResource(
+            "8372808-REG",
+            "(◕‿◕)",
+            "lol@cat.みんな",
+            ImmutableList.of("1 Smiley Row", "Suite みんな"),
+            clock.nowUtc(),
+            registrarLol);
+    adminContact =
+        makeAndPersistContactResource(
+            "8372808-ADM",
+            "(◕‿◕)",
+            "lol@cat.みんな",
+            ImmutableList.of("1 Smiley Row", "Suite みんな"),
+            clock.nowUtc(),
+            registrarLol);
+    techContact =
+        makeAndPersistContactResource(
+            "8372808-TEC",
+            "(◕‿◕)",
+            "lol@cat.みんな",
+            ImmutableList.of("1 Smiley Row", "Suite みんな"),
+            clock.nowUtc(),
+            registrarLol);
+    HostResource host1 = persistResource(makeHostResource("ns1.cat.lol", "1.2.3.4"));
     HostResource host2 =
         persistResource(makeHostResource("ns2.cat.lol", "bad:f00d:cafe:0:0:0:15:beef"));
-    persistResource(makeDomainBase("cat.lol",
-        registrant,
-        adminContact,
-        techContact,
-        host1,
-        host2,
-        registrarLol));
+    persistResource(
+        makeDomainBase(
+            "cat.lol", registrant, adminContact, techContact, host1, host2, registrarLol));
     // xn--q9jyb4c
     createTld("xn--q9jyb4c");
-    Registrar registrarIdn = persistResource(
-        makeRegistrar("idnregistrar", "IDN Registrar", Registrar.State.ACTIVE, 102L));
+    Registrar registrarIdn =
+        persistResource(
+            makeRegistrar("idnregistrar", "IDN Registrar", Registrar.State.ACTIVE, 102L));
     persistSimpleResources(makeRegistrarContacts(registrarIdn));
     // 1.tld
     createTld("1.tld");
-    Registrar registrar1tld = persistResource(
-        makeRegistrar("1tldregistrar", "Multilevel Registrar", Registrar.State.ACTIVE, 103L));
+    Registrar registrar1tld =
+        persistResource(
+            makeRegistrar("1tldregistrar", "Multilevel Registrar", Registrar.State.ACTIVE, 103L));
     persistSimpleResources(makeRegistrarContacts(registrar1tld));
     // deleted registrar
-    Registrar registrarDeleted = persistResource(
-        makeRegistrar("deletedregistrar", "Yes Virginia <script>", Registrar.State.PENDING, 104L));
+    Registrar registrarDeleted =
+        persistResource(
+            makeRegistrar(
+                "deletedregistrar", "Yes Virginia <script>", Registrar.State.PENDING, 104L));
     persistSimpleResources(makeRegistrarContacts(registrarDeleted));
     // other contacts
     disconnectedContact =
@@ -138,26 +141,26 @@ public class RdapEntityActionTest extends RdapActionBaseTestCase<RdapEntityActio
       String expectedOutputFile) {
     return loadJsonFile(
         expectedOutputFile,
-        "NAME", handle,
-        "FULLNAME", fullName,
-        "ADDRESS", (address == null) ? "\"1 Smiley Row\", \"Suite みんな\"" : address,
-        "TYPE", "entity",
-        "STATUS", status);
+        "NAME",
+        handle,
+        "FULLNAME",
+        fullName,
+        "ADDRESS",
+        (address == null) ? "\"1 Smiley Row\", \"Suite みんな\"" : address,
+        "TYPE",
+        "entity",
+        "STATUS",
+        status);
   }
 
   private JsonObject generateExpectedJsonWithTopLevelEntries(
-      String handle,
-      String expectedOutputFile) {
+      String handle, String expectedOutputFile) {
     return generateExpectedJsonWithTopLevelEntries(
         handle, "(◕‿◕)", "active", null, expectedOutputFile);
   }
 
   private JsonObject generateExpectedJsonWithTopLevelEntries(
-      String handle,
-      String fullName,
-      String status,
-      String address,
-      String expectedOutputFile) {
+      String handle, String fullName, String status, String address, String expectedOutputFile) {
     JsonObject obj = generateExpectedJson(handle, fullName, status, address, expectedOutputFile);
     RdapTestHelper.addNonDomainBoilerplateNotices(obj, "https://example.tld/rdap/");
     return obj;
@@ -172,11 +175,7 @@ public class RdapEntityActionTest extends RdapActionBaseTestCase<RdapEntityActio
   }
 
   private void runSuccessfulHandleTest(
-      String handleQuery,
-      String fullName,
-      String rdapStatus,
-      String address,
-      String fileName) {
+      String handleQuery, String fullName, String rdapStatus, String address, String fileName) {
     assertThat(generateActualJson(handleQuery))
         .isEqualTo(
             generateExpectedJsonWithTopLevelEntries(
@@ -286,11 +285,7 @@ public class RdapEntityActionTest extends RdapActionBaseTestCase<RdapEntityActio
     login("evilregistrar");
     action.includeDeletedParam = Optional.of(true);
     runSuccessfulHandleTest(
-        deletedContact.getRepoId(),
-        "",
-        "inactive",
-        "",
-        "rdap_contact_deleted.json");
+        deletedContact.getRepoId(), "", "inactive", "", "rdap_contact_deleted.json");
   }
 
   @Test
@@ -298,11 +293,7 @@ public class RdapEntityActionTest extends RdapActionBaseTestCase<RdapEntityActio
     loginAsAdmin();
     action.includeDeletedParam = Optional.of(true);
     runSuccessfulHandleTest(
-        deletedContact.getRepoId(),
-        "",
-        "inactive",
-        "",
-        "rdap_contact_deleted.json");
+        deletedContact.getRepoId(), "", "inactive", "", "rdap_contact_deleted.json");
   }
 
   @Test
@@ -371,9 +362,10 @@ public class RdapEntityActionTest extends RdapActionBaseTestCase<RdapEntityActio
   @Test
   public void testQueryParameter_ignored() {
     login("evilregistrar");
-    assertThat(generateActualJson(techContact.getRepoId() + "?key=value")).isEqualTo(
-        generateExpectedJsonWithTopLevelEntries(
-            techContact.getRepoId(), "rdap_associated_contact.json"));
+    assertThat(generateActualJson(techContact.getRepoId() + "?key=value"))
+        .isEqualTo(
+            generateExpectedJsonWithTopLevelEntries(
+                techContact.getRepoId(), "rdap_associated_contact.json"));
     assertThat(response.getStatus()).isEqualTo(200);
   }
 

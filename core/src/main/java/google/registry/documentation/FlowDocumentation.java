@@ -39,15 +39,16 @@ import javax.annotation.Nullable;
 /**
  * Class to represent documentation information for a single EPP flow.
  *
- * <p>The static method getFlowDocs() on this class returns a list of FlowDocumentation
- * instances corresponding to the leaf flows in the flows package, constructing the instances
- * from class information returned from the javadoc system.  Each instance has methods for
- * retrieving relevant information about the flow, such as a description, error conditions, etc.
+ * <p>The static method getFlowDocs() on this class returns a list of FlowDocumentation instances
+ * corresponding to the leaf flows in the flows package, constructing the instances from class
+ * information returned from the javadoc system. Each instance has methods for retrieving relevant
+ * information about the flow, such as a description, error conditions, etc.
  */
 public class FlowDocumentation {
 
   /** Constants for names of various relevant packages and classes. */
   static final String FLOW_PACKAGE_NAME = "google.registry.flows";
+
   static final String BASE_FLOW_CLASS_NAME = FLOW_PACKAGE_NAME + ".Flow";
   static final String EXCEPTION_CLASS_NAME = FLOW_PACKAGE_NAME + ".EppException";
   static final String CODE_ANNOTATION_NAME = EXCEPTION_CLASS_NAME + ".EppResultCode";
@@ -71,7 +72,7 @@ public class FlowDocumentation {
   private final ListMultimap<Long, ErrorCase> errorsByCode;
 
   /**
-   * Creates a FlowDocumentation for this flow class using data from javadoc tags.  Not public
+   * Creates a FlowDocumentation for this flow class using data from javadoc tags. Not public
    * because clients should get FlowDocumentation objects via the DocumentationGenerator class.
    */
   protected FlowDocumentation(ClassDoc flowDoc) {
@@ -148,17 +149,17 @@ public class FlowDocumentation {
               .collect(onlyElement());
     } catch (NoSuchElementException | IllegalArgumentException e) {
       throw new BadErrorTagFormatException(
-          String.format("expected one @link tag in tag text but found %s: %s",
-              (e instanceof NoSuchElementException ? "none" : "multiple"),
-              tag.text()),
-          tag, e);
+          String.format(
+              "expected one @link tag in tag text but found %s: %s",
+              (e instanceof NoSuchElementException ? "none" : "multiple"), tag.text()),
+          tag,
+          e);
     }
     // Check to see if the @link tag references a valid class.
     ClassDoc exceptionRef = linkedTag.referencedClass();
     if (exceptionRef == null) {
       throw new BadErrorTagFormatException(
-          "could not resolve class from @link tag text: " + linkedTag.text(),
-          tag);
+          "could not resolve class from @link tag text: " + linkedTag.text(), tag);
     }
     // Try to convert the referenced class into an ErrorCase; fail if it's not an EppException.
     ErrorCase error;
@@ -167,7 +168,8 @@ public class FlowDocumentation {
     } catch (IllegalStateException | IllegalArgumentException e) {
       throw new BadErrorTagFormatException(
           "class referenced in @link is not a valid EppException: " + exceptionRef.qualifiedName(),
-          tag, e);
+          tag,
+          e);
     }
     // Success; store this as a parsed error case.
     errors.add(error);
@@ -177,9 +179,9 @@ public class FlowDocumentation {
   /**
    * Represents an error case for a flow, with a reason for the error and the EPP error code.
    *
-   * <p>This class is an immutable wrapper for the name of an EppException subclass that gets
-   * thrown to indicate an error condition.  It overrides equals() and hashCode() so that
-   * instances of this class can be used in collections in the normal fashion.
+   * <p>This class is an immutable wrapper for the name of an EppException subclass that gets thrown
+   * to indicate an error condition. It overrides equals() and hashCode() so that instances of this
+   * class can be used in collections in the normal fashion.
    */
   public static class ErrorCase {
 
@@ -203,7 +205,8 @@ public class FlowDocumentation {
       reason = exceptionDoc.commentText();
       ClassDoc highLevelExceptionDoc = getHighLevelExceptionFrom(exceptionDoc);
       errorCode = extractErrorCode(highLevelExceptionDoc);
-      checkArgument(!exceptionDoc.isAbstract(),
+      checkArgument(
+          !exceptionDoc.isAbstract(),
           "Cannot use an abstract subclass of EppException as an error case");
     }
 

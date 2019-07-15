@@ -35,10 +35,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TransferDataTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private final DateTime now = DateTime.now(UTC);
 
@@ -69,7 +66,8 @@ public class TransferDataTest {
             .setTransferPeriod(Period.create(5, Period.Unit.YEARS))
             .build();
     TransferData fullTransferData =
-        constantTransferData.asBuilder()
+        constantTransferData
+            .asBuilder()
             .setPendingTransferExpirationTime(now)
             .setTransferStatus(TransferStatus.PENDING)
             .setServerApproveEntities(

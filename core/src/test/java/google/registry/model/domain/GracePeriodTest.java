@@ -39,24 +39,27 @@ import org.junit.runners.JUnit4;
 public class GracePeriodTest {
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()  // Needed to be able to construct Keys.
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder()
+          .withDatastore() // Needed to be able to construct Keys.
+          .build();
+
   private final DateTime now = DateTime.now(UTC);
   private BillingEvent.OneTime onetime;
 
   @Before
   public void before() {
-    onetime = new BillingEvent.OneTime.Builder()
-      .setEventTime(now)
-      .setBillingTime(now.plusDays(1))
-      .setClientId("TheRegistrar")
-      .setCost(Money.of(CurrencyUnit.USD, 42))
-      .setParent(Key.create(HistoryEntry.class, 12345))
-      .setReason(Reason.CREATE)
-      .setPeriodYears(1)
-      .setTargetId("foo.google")
-      .build();
+    onetime =
+        new BillingEvent.OneTime.Builder()
+            .setEventTime(now)
+            .setBillingTime(now.plusDays(1))
+            .setClientId("TheRegistrar")
+            .setCost(Money.of(CurrencyUnit.USD, 42))
+            .setParent(Key.create(HistoryEntry.class, 12345))
+            .setReason(Reason.CREATE)
+            .setPeriodYears(1)
+            .setTargetId("foo.google")
+            .build();
   }
 
   @Test
@@ -72,8 +75,8 @@ public class GracePeriodTest {
 
   @Test
   public void testSuccess_createWithoutBillingEvent() {
-    GracePeriod gracePeriod = GracePeriod.createWithoutBillingEvent(
-        GracePeriodStatus.REDEMPTION, now, "TheRegistrar");
+    GracePeriod gracePeriod =
+        GracePeriod.createWithoutBillingEvent(GracePeriodStatus.REDEMPTION, now, "TheRegistrar");
     assertThat(gracePeriod.getType()).isEqualTo(GracePeriodStatus.REDEMPTION);
     assertThat(gracePeriod.getOneTimeBillingEvent()).isNull();
     assertThat(gracePeriod.getRecurringBillingEvent()).isNull();

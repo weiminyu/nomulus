@@ -96,7 +96,7 @@ public class ProtocolDefinition {
   /**
    * Converts a service extension enum to its URI.
    *
-   *  <p>This stores a map from URI back to the service extension enum.
+   * <p>This stores a map from URI back to the service extension enum.
    */
   private static final ImmutableMap<String, ServiceExtension> serviceExtensionByUri =
       uniqueIndex(EnumSet.allOf(ServiceExtension.class), ServiceExtension::getUri);
@@ -108,8 +108,7 @@ public class ProtocolDefinition {
 
   /** A set of all the visible extension URIs. */
   private static final ImmutableSet<String> visibleServiceExtensionUris =
-      EnumSet.allOf(ServiceExtension.class)
-          .stream()
+      EnumSet.allOf(ServiceExtension.class).stream()
           .filter(ServiceExtension::getVisible)
           .map(ServiceExtension::getUri)
           .collect(toImmutableSet());

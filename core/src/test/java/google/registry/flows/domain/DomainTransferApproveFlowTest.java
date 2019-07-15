@@ -215,9 +215,7 @@ public class DomainTransferApproveFlowTest
     assertThat(gainingAutorenewPollMessage.getEventTime())
         .isEqualTo(domain.getRegistrationExpirationTime());
     DomainTransferResponse transferResponse =
-        gainingTransferPollMessage
-            .getResponseData()
-            .stream()
+        gainingTransferPollMessage.getResponseData().stream()
             .filter(DomainTransferResponse.class::isInstance)
             .map(DomainTransferResponse.class::cast)
             .collect(onlyElement());
@@ -225,9 +223,7 @@ public class DomainTransferApproveFlowTest
     assertThat(transferResponse.getExtendedRegistrationExpirationTime())
         .isEqualTo(domain.getRegistrationExpirationTime());
     PendingActionNotificationResponse panData =
-        gainingTransferPollMessage
-            .getResponseData()
-            .stream()
+        gainingTransferPollMessage.getResponseData().stream()
             .filter(PendingActionNotificationResponse.class::isInstance)
             .map(PendingActionNotificationResponse.class::cast)
             .collect(onlyElement());

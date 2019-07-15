@@ -25,9 +25,7 @@ public final class RdeTestData {
     return TestDataHelper.loadBytes(RdeTestData.class, filename);
   }
 
-  /**
-   * Loads data from file in {@code rde/testdata/} as a String (assuming file is UTF-8).
-   */
+  /** Loads data from file in {@code rde/testdata/} as a String (assuming file is UTF-8). */
   public static String loadFile(String filename) {
     return TestDataHelper.loadFile(RdeTestData.class, filename);
   }

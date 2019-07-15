@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServlet;
 public abstract class Route {
 
   abstract String path();
+
   abstract Class<? extends HttpServlet> servletClass();
 
   /** Creates a new route mapping between a path (may have wildcards) and a servlet. */

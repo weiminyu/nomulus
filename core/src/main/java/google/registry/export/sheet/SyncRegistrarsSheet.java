@@ -53,7 +53,9 @@ class SyncRegistrarsSheet {
 
   @Inject Clock clock;
   @Inject SheetSynchronizer sheetSynchronizer;
-  @Inject SyncRegistrarsSheet() {}
+
+  @Inject
+  SyncRegistrarsSheet() {}
 
   /**
    * Returns true if any {@link Registrar} entity was modified since the last time this task
@@ -80,8 +82,7 @@ class SyncRegistrarsSheet {
           public int compare(Registrar left, Registrar right) {
             return left.getClientId().compareTo(right.getClientId());
           }
-        }.immutableSortedCopy(Registrar.loadAllCached())
-            .stream()
+        }.immutableSortedCopy(Registrar.loadAllCached()).stream()
             .filter(
                 registrar ->
                     registrar.getType() == Registrar.Type.REAL

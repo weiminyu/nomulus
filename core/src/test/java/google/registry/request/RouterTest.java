@@ -117,6 +117,7 @@ public final class RouterTest {
 
   public interface LongPathComponent {
     PrefixTask prefixTask();
+
     LongTask longTask();
   }
 
@@ -145,6 +146,7 @@ public final class RouterTest {
 
   public interface WeirdMethodsComponent {
     SlothTask hasAnArgumentWhichIsIgnored(boolean lol);
+
     Callable<?> notARunnableWhichIsIgnored();
   }
 
@@ -181,6 +183,7 @@ public final class RouterTest {
 
   public interface DuplicateComponent {
     DuplicateTask1 duplicateTask1();
+
     DuplicateTask2 duplicateTask2();
   }
 

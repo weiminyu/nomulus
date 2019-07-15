@@ -299,9 +299,7 @@ public class CloudDnsWriter extends BaseDnsWriter {
 
     // Get the glue record host names from the given records
     ImmutableSet<String> hostsToRead =
-        domainRecords
-            .entrySet()
-            .stream()
+        domainRecords.entrySet().stream()
             .flatMap(entry -> filterGlueRecords(entry.getKey(), entry.getValue().stream()))
             .collect(toImmutableSet());
 

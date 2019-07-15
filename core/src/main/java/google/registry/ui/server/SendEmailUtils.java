@@ -28,9 +28,7 @@ import javax.inject.Inject;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-/**
- * Utility class for sending emails from the app.
- */
+/** Utility class for sending emails from the app. */
 public class SendEmailUtils {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
@@ -105,7 +103,8 @@ public class SendEmailUtils {
     }
   }
 
-  /** Sends an email from Nomulus to the registrarChangesNotificationEmailAddresses.
+  /**
+   * Sends an email from Nomulus to the registrarChangesNotificationEmailAddresses.
    *
    * <p>See {@link #sendEmail(String, String, ImmutableList<String>)}.
    */

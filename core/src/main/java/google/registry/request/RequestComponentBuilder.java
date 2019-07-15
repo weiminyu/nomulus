@@ -21,5 +21,6 @@ package google.registry.request;
  */
 public interface RequestComponentBuilder<C> {
   RequestComponentBuilder<C> requestModule(RequestModule requestModule);
+
   C build();
 }

@@ -41,7 +41,8 @@ import javax.inject.Inject;
     auth = Auth.AUTH_PUBLIC_ANONYMOUS)
 public class RdapNameserverAction extends RdapActionBase {
 
-  @Inject public RdapNameserverAction() {
+  @Inject
+  public RdapNameserverAction() {
     super("nameserver", EndpointType.NAMESERVER);
   }
 

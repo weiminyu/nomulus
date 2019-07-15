@@ -25,20 +25,16 @@ import google.registry.model.ImmutableObject;
 import google.registry.model.annotations.VirtualEntity;
 import google.registry.model.common.EntityGroupRoot;
 
-/**
- * A test model object that can be persisted in any entity group.
- */
+/** A test model object that can be persisted in any entity group. */
 @Entity
 public class TestObject extends ImmutableObject {
   static {
-    ObjectifyService.register(TestObject.class);  // Register this kind on first reference.
+    ObjectifyService.register(TestObject.class); // Register this kind on first reference.
   }
 
-  @Parent
-  Key<EntityGroupRoot> parent;
+  @Parent Key<EntityGroupRoot> parent;
 
-  @Id
-  String id;
+  @Id String id;
 
   String field;
 
@@ -71,11 +67,10 @@ public class TestObject extends ImmutableObject {
   @VirtualEntity
   public static class TestVirtualObject extends ImmutableObject {
     static {
-      ObjectifyService.register(TestVirtualObject.class);  // Register this kind on first reference.
+      ObjectifyService.register(TestVirtualObject.class); // Register this kind on first reference.
     }
 
-    @Id
-    String id;
+    @Id String id;
 
     /**
      * Expose a factory method for testing saves of virtual entities; in real life this would never

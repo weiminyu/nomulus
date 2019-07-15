@@ -98,32 +98,36 @@ public class BigqueryUtils {
    * printing because in some cases BigQuery does not allow any time zone specification (instead it
    * assumes UTC for whatever input you provide) for input timestamp strings (see b/16380363).
    *
-   * @see <a href="https://cloud.google.com/bigquery/data-types#timestamp-type">
-   *     BigQuery Data Types - TIMESTAMP</a>
+   * @see <a href="https://cloud.google.com/bigquery/data-types#timestamp-type">BigQuery Data Types
+   *     - TIMESTAMP</a>
    */
-  public static final DateTimeFormatter BIGQUERY_TIMESTAMP_FORMAT = new DateTimeFormatterBuilder()
-      .append(ISODateTimeFormat.date())
-      .appendLiteral(' ')
-      .append(
-          // For printing, always print out the milliseconds.
-          ISODateTimeFormat.hourMinuteSecondMillis().getPrinter(),
-          // For parsing, we need a series of parsers to correctly handle the milliseconds.
-          new DateTimeParser[] {
-              // Try to parse the time with milliseconds first, which requires at least one
-              // fractional second digit, and if that fails try to parse without milliseconds.
-              ISODateTimeFormat.hourMinuteSecondMillis().getParser(),
-              ISODateTimeFormat.hourMinuteSecond().getParser()})
-      // Print UTC as the empty string since BigQuery's TIMESTAMP() function does not accept any
-      // time zone specification, but require "UTC" on parsing.  Since we force this formatter to
-      // always use UTC below, the other arguments do not matter.  If b/16380363 ever gets resolved
-      // this could be simplified to appendLiteral(" UTC").
-      .appendTimeZoneOffset("", " UTC", false, 1, 1)
-      .toFormatter()
-      .withZoneUTC();
+  public static final DateTimeFormatter BIGQUERY_TIMESTAMP_FORMAT =
+      new DateTimeFormatterBuilder()
+          .append(ISODateTimeFormat.date())
+          .appendLiteral(' ')
+          .append(
+              // For printing, always print out the milliseconds.
+              ISODateTimeFormat.hourMinuteSecondMillis().getPrinter(),
+              // For parsing, we need a series of parsers to correctly handle the milliseconds.
+              new DateTimeParser[] {
+                // Try to parse the time with milliseconds first, which requires at least one
+                // fractional second digit, and if that fails try to parse without milliseconds.
+                ISODateTimeFormat.hourMinuteSecondMillis().getParser(),
+                ISODateTimeFormat.hourMinuteSecond().getParser()
+              })
+          // Print UTC as the empty string since BigQuery's TIMESTAMP() function does not accept any
+          // time zone specification, but require "UTC" on parsing.  Since we force this formatter
+          // to
+          // always use UTC below, the other arguments do not matter.  If b/16380363 ever gets
+          // resolved
+          // this could be simplified to appendLiteral(" UTC").
+          .appendTimeZoneOffset("", " UTC", false, 1, 1)
+          .toFormatter()
+          .withZoneUTC();
 
   /**
-   * Returns the human-readable string version of the given DateTime, suitable for conversion
-   * within BigQuery from a string literal into a BigQuery timestamp type.
+   * Returns the human-readable string version of the given DateTime, suitable for conversion within
+   * BigQuery from a string literal into a BigQuery timestamp type.
    */
   public static String toBigqueryTimestampString(DateTime dateTime) {
     return BIGQUERY_TIMESTAMP_FORMAT.print(dateTime);
@@ -147,8 +151,8 @@ public class BigqueryUtils {
   }
 
   /**
-   * Converts a {@link DateTime} into a numeric string that BigQuery understands as a timestamp:
-   * the decimal number of seconds since the epoch, precise up to microseconds.
+   * Converts a {@link DateTime} into a numeric string that BigQuery understands as a timestamp: the
+   * decimal number of seconds since the epoch, precise up to microseconds.
    *
    * <p>Note that since {@code DateTime} only stores milliseconds, the last 3 digits will be zero.
    *

@@ -80,8 +80,11 @@ public class XjcObjectTest {
 
   @Test
   public void testUnmarshalUTF16() throws Exception {
-    XjcRdeDeposit deposit = unmarshal(XjcRdeDeposit.class, new ByteArrayInputStream(
-        RDE_DEPOSIT_FULL.replaceFirst("UTF-8", "UTF-16").getBytes(UTF_16)));
+    XjcRdeDeposit deposit =
+        unmarshal(
+            XjcRdeDeposit.class,
+            new ByteArrayInputStream(
+                RDE_DEPOSIT_FULL.replaceFirst("UTF-8", "UTF-16").getBytes(UTF_16)));
     assertThat(deposit).isNotNull();
     assertThat(deposit.getType()).isEqualTo(XjcRdeDepositTypeType.FULL);
     assertThat(deposit.getRdeMenu().getVersion()).isEqualTo("1.0");

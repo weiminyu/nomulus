@@ -30,22 +30,24 @@ import org.joda.time.DateTime;
 
 /** The {@link ResponseData} returned for an EPP info flow on a domain. */
 @XmlRootElement(name = "infData")
-@XmlType(propOrder = {
-    "fullyQualifiedDomainName",
-    "repoId",
-    "statusValues",
-    "registrant",
-    "contacts",
-    "nameservers",
-    "subordinateHosts",
-    "currentSponsorClientId",
-    "creationClientId",
-    "creationTime",
-    "lastEppUpdateClientId",
-    "lastEppUpdateTime",
-    "registrationExpirationTime",
-    "lastTransferTime",
-    "authInfo"})
+@XmlType(
+    propOrder = {
+      "fullyQualifiedDomainName",
+      "repoId",
+      "statusValues",
+      "registrant",
+      "contacts",
+      "nameservers",
+      "subordinateHosts",
+      "currentSponsorClientId",
+      "creationClientId",
+      "creationTime",
+      "lastEppUpdateClientId",
+      "lastEppUpdateTime",
+      "registrationExpirationTime",
+      "lastTransferTime",
+      "authInfo"
+    })
 @AutoValue
 @CopyAnnotations
 public abstract class DomainInfoData implements ResponseData {
@@ -111,21 +113,35 @@ public abstract class DomainInfoData implements ResponseData {
   @AutoValue.Builder
   public abstract static class Builder {
     public abstract Builder setFullyQualifiedDomainName(String fullyQualifiedDomainName);
+
     public abstract Builder setRepoId(String repoId);
+
     public abstract Builder setStatusValues(@Nullable ImmutableSet<StatusValue> statusValues);
+
     public abstract Builder setRegistrant(String registrant);
+
     public abstract Builder setContacts(
         @Nullable ImmutableSet<ForeignKeyedDesignatedContact> contacts);
+
     public abstract Builder setNameservers(@Nullable ImmutableSet<String> nameservers);
+
     public abstract Builder setSubordinateHosts(@Nullable ImmutableSet<String> subordinateHosts);
+
     public abstract Builder setCurrentSponsorClientId(String currentSponsorClientId);
+
     public abstract Builder setCreationClientId(@Nullable String creationClientId);
+
     public abstract Builder setCreationTime(@Nullable DateTime creationTime);
+
     public abstract Builder setLastEppUpdateClientId(@Nullable String lastEppUpdateClientId);
+
     public abstract Builder setLastEppUpdateTime(@Nullable DateTime lastEppUpdateTime);
+
     public abstract Builder setRegistrationExpirationTime(
         @Nullable DateTime registrationExpirationTime);
+
     public abstract Builder setLastTransferTime(@Nullable DateTime lastTransferTime);
+
     public abstract Builder setAuthInfo(@Nullable DomainAuthInfo authInfo);
 
     /** Internal accessor for use in {@link #build}. */

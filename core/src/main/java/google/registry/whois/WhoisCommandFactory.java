@@ -21,8 +21,8 @@ import java.net.InetAddress;
 /**
  * A class used to configure WHOIS commands.
  *
- * <p>To add custom commands, extend this class, then configure it in
- * {@link ConfigModule#provideWhoisCommandFactoryClass}.
+ * <p>To add custom commands, extend this class, then configure it in {@link
+ * ConfigModule#provideWhoisCommandFactoryClass}.
  */
 public class WhoisCommandFactory {
 

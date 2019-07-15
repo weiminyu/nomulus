@@ -48,8 +48,9 @@ import java.util.Objects;
 final class VerifyOteCommand implements CommandWithConnection, CommandWithRemoteApi {
 
   @Parameter(
-      description = "List of registrar names to check; must be the same names as the ones used "
-          + "when creating the OT&E accounts")
+      description =
+          "List of registrar names to check; must be the same names as the ones used "
+              + "when creating the OT&E accounts")
   private List<String> mainParameters = new ArrayList<>();
 
   @Parameter(
@@ -57,9 +58,7 @@ final class VerifyOteCommand implements CommandWithConnection, CommandWithRemote
       description = "Check the OT&E pass status of all active registrars")
   private boolean checkAll;
 
-  @Parameter(
-      names = "--summarize",
-      description = "Only show a summary of information")
+  @Parameter(names = "--summarize", description = "Only show a summary of information")
   private boolean summarize;
 
   private AppEngineConnection connection;
@@ -89,11 +88,14 @@ final class VerifyOteCommand implements CommandWithConnection, CommandWithRemote
     }
     Collection<String> registrars =
         mainParameters.isEmpty() ? getAllRegistrarNames() : mainParameters;
-    Map<String, Object> response = connection.sendJson(
-        VerifyOteAction.PATH,
-        ImmutableMap.of(
-            "summarize", Boolean.toString(summarize),
-            "registrars", new ArrayList<>(registrars)));
+    Map<String, Object> response =
+        connection.sendJson(
+            VerifyOteAction.PATH,
+            ImmutableMap.of(
+                "summarize",
+                Boolean.toString(summarize),
+                "registrars",
+                new ArrayList<>(registrars)));
     System.out.println(Strings.repeat("-", 80));
     for (Entry<String, Object> registrar : response.entrySet()) {
       System.out.printf(
@@ -105,7 +107,7 @@ final class VerifyOteCommand implements CommandWithConnection, CommandWithRemote
   }
 
   /**
-   * Returns the names of all active registrars.  Finds registrar accounts with clientIds matching
+   * Returns the names of all active registrars. Finds registrar accounts with clientIds matching
    * the format used for OT&E accounts (regname-1, regname-2, etc.) and returns just the common
    * prefixes of those accounts (in this case, regname).
    */

@@ -56,9 +56,7 @@ public class KmsUpdaterTest {
         .update();
 
     verifySecretAndSecretRevisionWritten(
-        "marksdb-dnl-login-string",
-        "marksdb-dnl-login-string/foo",
-        getCiphertext("value1"));
+        "marksdb-dnl-login-string", "marksdb-dnl-login-string/foo", getCiphertext("value1"));
     verifySecretAndSecretRevisionWritten(
         "icann-reporting-password-string",
         "icann-reporting-password-string/foo",
@@ -142,8 +140,7 @@ public class KmsUpdaterTest {
     verifySecretAndSecretRevisionWritten(
         "rde-receiver-public",
         "rde-receiver-public/foo",
-        getCiphertext(
-            KeySerializer.serializePublicKey(KmsTestHelper.getPublicKey())));
+        getCiphertext(KeySerializer.serializePublicKey(KmsTestHelper.getPublicKey())));
   }
 
   @Test
@@ -193,7 +190,6 @@ public class KmsUpdaterTest {
         "rde-staging-public/foo",
         getCiphertext(KmsTestHelper.getPublicKey()));
   }
-
 
   private static void verifySecretAndSecretRevisionWritten(
       String secretName, String expectedCryptoKeyVersionName, String expectedEncryptedValue) {

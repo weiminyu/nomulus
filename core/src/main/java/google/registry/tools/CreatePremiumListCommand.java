@@ -43,5 +43,4 @@ public class CreatePremiumListCommand extends CreateOrUpdatePremiumListCommand {
       return ImmutableMap.of();
     }
   }
-
 }

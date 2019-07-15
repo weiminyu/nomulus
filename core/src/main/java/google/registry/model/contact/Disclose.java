@@ -42,8 +42,7 @@ public class Disclose extends ImmutableObject {
 
   PresenceMarker email;
 
-  @XmlAttribute
-  Boolean flag;
+  @XmlAttribute Boolean flag;
 
   public ImmutableList<PostalInfoChoice> getNames() {
     return nullToEmptyImmutableCopy(name);
@@ -76,8 +75,7 @@ public class Disclose extends ImmutableObject {
   /** The "intLocType" from {@link "http://tools.ietf.org/html/rfc5733"}. */
   @Embed
   public static class PostalInfoChoice extends ImmutableObject {
-    @XmlAttribute
-    PostalInfo.Type type;
+    @XmlAttribute PostalInfo.Type type;
 
     public PostalInfo.Type getType() {
       return type;

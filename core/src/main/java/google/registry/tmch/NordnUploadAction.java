@@ -95,17 +95,30 @@ public final class NordnUploadAction implements Runnable {
   @Inject SecureRandom random;
   @Inject LordnRequestInitializer lordnRequestInitializer;
   @Inject URLFetchService fetchService;
-  @Inject @Config("tmchMarksdbUrl") String tmchMarksdbUrl;
-  @Inject @Parameter(LORDN_PHASE_PARAM) String phase;
-  @Inject @Parameter(RequestParameters.PARAM_TLD) String tld;
+
+  @Inject
+  @Config("tmchMarksdbUrl")
+  String tmchMarksdbUrl;
+
+  @Inject
+  @Parameter(LORDN_PHASE_PARAM)
+  String phase;
+
+  @Inject
+  @Parameter(RequestParameters.PARAM_TLD)
+  String tld;
+
   @Inject TaskQueueUtils taskQueueUtils;
-  @Inject NordnUploadAction() {}
+
+  @Inject
+  NordnUploadAction() {}
 
   /**
    * These LORDN parameter names correspond to the relative paths in LORDN URLs and cannot be
    * changed on our end.
    */
   private static final String PARAM_LORDN_PHASE_SUNRISE = "sunrise";
+
   private static final String PARAM_LORDN_PHASE_CLAIMS = "claims";
 
   /** How long to wait before attempting to verify an upload by fetching the log. */
@@ -157,9 +170,10 @@ public final class NordnUploadAction implements Runnable {
   }
 
   private void processLordnTasks() throws IOException {
-    checkArgument(phase.equals(PARAM_LORDN_PHASE_SUNRISE)
-        || phase.equals(PARAM_LORDN_PHASE_CLAIMS),
-        "Invalid phase specified to Nordn servlet: %s.", phase);
+    checkArgument(
+        phase.equals(PARAM_LORDN_PHASE_SUNRISE) || phase.equals(PARAM_LORDN_PHASE_CLAIMS),
+        "Invalid phase specified to Nordn servlet: %s.",
+        phase);
     DateTime now = clock.nowUtc();
     Queue queue =
         getQueue(
@@ -181,8 +195,8 @@ public final class NordnUploadAction implements Runnable {
    * <p>Idempotency: If the exact same LORDN report is uploaded twice, the MarksDB server will
    * return the same confirmation number.
    *
-   * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.3">
-   *     TMCH functional specifications - LORDN File</a>
+   * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.3">TMCH
+   *     functional specifications - LORDN File</a>
    */
   private void uploadCsvToLordn(String urlPath, String csvData) throws IOException {
     String url = tmchMarksdbUrl + urlPath;
@@ -195,8 +209,7 @@ public final class NordnUploadAction implements Runnable {
     try {
       rsp = fetchService.fetch(req);
     } catch (IOException e) {
-      throw new IOException(
-          String.format("Error connecting to MarksDB at URL %s", url), e);
+      throw new IOException(String.format("Error connecting to MarksDB at URL %s", url), e);
     }
     if (logger.atInfo().isEnabled()) {
       String response =

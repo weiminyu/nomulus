@@ -52,10 +52,7 @@ import org.mockito.InOrder;
 @RunWith(JUnit4.class)
 public class UpdateSnapshotViewActionTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withTaskQueue()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withTaskQueue().build();
   private final CheckedBigquery checkedBigquery = mock(CheckedBigquery.class);
   private final Bigquery bigquery = mock(Bigquery.class);
   private final Bigquery.Datasets bigqueryDatasets = mock(Bigquery.Datasets.class);

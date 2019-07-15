@@ -61,11 +61,7 @@ final class DeleteTldCommand extends ConfirmingCommand implements CommandWithRem
           registrar.getClientId());
     }
 
-    int count = ofy().load()
-        .type(DomainBase.class)
-        .filter("tld", tld)
-        .limit(1)
-        .count();
+    int count = ofy().load().type(DomainBase.class).filter("tld", tld).limit(1).count();
     checkState(count == 0, "Cannot delete TLD because a domain is defined on it");
   }
 

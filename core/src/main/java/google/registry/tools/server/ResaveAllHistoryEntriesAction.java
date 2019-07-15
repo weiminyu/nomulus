@@ -45,7 +45,9 @@ public class ResaveAllHistoryEntriesAction implements Runnable {
 
   @Inject MapreduceRunner mrRunner;
   @Inject Response response;
-  @Inject ResaveAllHistoryEntriesAction() {}
+
+  @Inject
+  ResaveAllHistoryEntriesAction() {}
 
   @Override
   public void run() {
@@ -61,18 +63,17 @@ public class ResaveAllHistoryEntriesAction implements Runnable {
   }
 
   /** Mapper to re-save all HistoryEntry entities. */
-  public static class ResaveAllHistoryEntriesActionMapper
-      extends Mapper<HistoryEntry, Void, Void> {
+  public static class ResaveAllHistoryEntriesActionMapper extends Mapper<HistoryEntry, Void, Void> {
 
     private static final long serialVersionUID = 123064872315192L;
 
     @Override
     public final void map(final HistoryEntry historyEntry) {
       ofy().transact(() -> ofy().save().entity(ofy().load().entity(historyEntry).now()).now());
-      getContext().incrementCounter(
-          String.format(
-              "HistoryEntries parented under %s re-saved", historyEntry.getParent().getKind()));
+      getContext()
+          .incrementCounter(
+              String.format(
+                  "HistoryEntries parented under %s re-saved", historyEntry.getParent().getKind()));
     }
   }
 }
-

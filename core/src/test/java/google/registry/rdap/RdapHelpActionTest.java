@@ -44,29 +44,26 @@ public class RdapHelpActionTest extends RdapActionBaseTestCase<RdapHelpAction> {
 
   @Test
   public void testHelpActionUnknownPath_notFound() {
-    assertThat(generateActualJson("hlarg")).isEqualTo(
-        generateExpectedJsonError("no help found for hlarg", 404));
+    assertThat(generateActualJson("hlarg"))
+        .isEqualTo(generateExpectedJsonError("no help found for hlarg", 404));
     assertThat(response.getStatus()).isEqualTo(404);
   }
 
   @Test
   public void testHelpActionDefault_getsIndex() {
-    assertThat(generateActualJson(""))
-        .isEqualTo(loadJsonFile("rdap_help_index.json"));
+    assertThat(generateActualJson("")).isEqualTo(loadJsonFile("rdap_help_index.json"));
     assertThat(response.getStatus()).isEqualTo(200);
   }
 
   @Test
   public void testHelpActionSlash_getsIndex() {
-    assertThat(generateActualJson("/"))
-        .isEqualTo(loadJsonFile("rdap_help_index.json"));
+    assertThat(generateActualJson("/")).isEqualTo(loadJsonFile("rdap_help_index.json"));
     assertThat(response.getStatus()).isEqualTo(200);
   }
 
   @Test
   public void testHelpActionTos_works() {
-    assertThat(generateActualJson("/tos"))
-        .isEqualTo(loadJsonFile("rdap_help_tos.json"));
+    assertThat(generateActualJson("/tos")).isEqualTo(loadJsonFile("rdap_help_tos.json"));
     assertThat(response.getStatus()).isEqualTo(200);
   }
 

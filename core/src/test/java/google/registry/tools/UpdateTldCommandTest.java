@@ -107,9 +107,7 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
     runCommandForced(
         String.format(
             "--renew_billing_cost_transitions=\"%s=USD 1,%s=USD 2.00,%s=USD 100\"",
-            START_OF_TIME,
-            now,
-            later),
+            START_OF_TIME, now, later),
         "xn--q9jyb4c");
 
     Registry registry = Registry.get("xn--q9jyb4c");
@@ -259,9 +257,11 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
 
   @Test
   public void testSuccess_setReservedListsOverwrites() throws Exception {
-    persistResource(Registry.get("xn--q9jyb4c").asBuilder()
-        .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
-        .build());
+    persistResource(
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
+            .build());
     runCommandForced("--reserved_lists=xn--q9jyb4c_r2", "xn--q9jyb4c");
     assertThat(Registry.get("xn--q9jyb4c").getReservedLists().stream().map(Key::getName))
         .containsExactly("xn--q9jyb4c_r2");
@@ -269,9 +269,11 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
 
   @Test
   public void testSuccess_addReservedLists() throws Exception {
-    persistResource(Registry.get("xn--q9jyb4c").asBuilder()
-        .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1"))
-        .build());
+    persistResource(
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1"))
+            .build());
     runCommandForced("--add_reserved_lists=xn--q9jyb4c_r2", "xn--q9jyb4c");
     assertThat(Registry.get("xn--q9jyb4c").getReservedLists().stream().map(Key::getName))
         .containsExactly("xn--q9jyb4c_r1", "xn--q9jyb4c_r2");
@@ -279,18 +281,22 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
 
   @Test
   public void testSuccess_removeAllReservedLists() throws Exception {
-    persistResource(Registry.get("xn--q9jyb4c").asBuilder()
-        .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
-        .build());
+    persistResource(
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
+            .build());
     runCommandForced("--remove_reserved_lists=xn--q9jyb4c_r1,xn--q9jyb4c_r2", "xn--q9jyb4c");
     assertThat(Registry.get("xn--q9jyb4c").getReservedLists()).isEmpty();
   }
 
   @Test
   public void testSuccess_removeSomeReservedLists() throws Exception {
-    persistResource(Registry.get("xn--q9jyb4c").asBuilder()
-        .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
-        .build());
+    persistResource(
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
+            .build());
     runCommandForced("--remove_reserved_lists=xn--q9jyb4c_r1", "xn--q9jyb4c");
     assertThat(Registry.get("xn--q9jyb4c").getReservedLists().stream().map(Key::getName))
         .containsExactly("xn--q9jyb4c_r2");
@@ -306,7 +312,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testSuccess_setAllowedRegistrantsOverwrites() throws Exception {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedRegistrantContactIds(ImmutableSet.of("jane", "john"))
             .build());
     runCommandForced("--allowed_registrants=alice,bob", "xn--q9jyb4c");
@@ -317,7 +324,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testSuccess_addAllowedRegistrants() throws Exception {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedRegistrantContactIds(ImmutableSet.of("alice"))
             .build());
     runCommandForced("--add_allowed_registrants=bob", "xn--q9jyb4c");
@@ -328,7 +336,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testSuccess_removeAllAllowedRegistrants() throws Exception {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedRegistrantContactIds(ImmutableSet.of("alice", "bob"))
             .build());
     runCommandForced("--remove_allowed_registrants=alice,bob", "xn--q9jyb4c");
@@ -338,7 +347,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testSuccess_removeSomeAllowedRegistrants() throws Exception {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedRegistrantContactIds(ImmutableSet.of("alice", "bob"))
             .build());
     runCommandForced("--remove_allowed_registrants=alice", "xn--q9jyb4c");
@@ -355,7 +365,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testSuccess_setAllowedNameserversOverwrites() throws Exception {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedFullyQualifiedHostNames(
                 ImmutableSet.of("ns1.example.tld", "ns2.example.tld"))
             .build());
@@ -367,7 +378,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testSuccess_addAllowedNameservers() throws Exception {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedFullyQualifiedHostNames(ImmutableSet.of("ns1.example.com"))
             .build());
     runCommandForced("--add_allowed_nameservers=ns2.example.com", "xn--q9jyb4c");
@@ -378,7 +390,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testSuccess_removeAllAllowedNameservers() throws Exception {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedFullyQualifiedHostNames(
                 ImmutableSet.of("ns1.example.com", "ns2.example.com"))
             .build());
@@ -389,7 +402,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testSuccess_removeSomeAllowedNameservers() throws Exception {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedFullyQualifiedHostNames(
                 ImmutableSet.of("ns1.example.com", "ns2.example.com"))
             .build());
@@ -524,16 +538,16 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
     assertThat(thrown)
         .hasMessageThat()
         .contains("Don't pass both --set_current_tld_state and --tld_state_transitions");
-    }
+  }
 
   @Test
   public void testFailure_setCurrentTldState_outOfOrder() {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setTldStateTransitions(
                 ImmutableSortedMap.of(
-                    START_OF_TIME, PREDELEGATION,
-                    now.minusMonths(1), GENERAL_AVAILABILITY))
+                    START_OF_TIME, PREDELEGATION, now.minusMonths(1), GENERAL_AVAILABILITY))
             .build());
     IllegalArgumentException thrown =
         assertThrows(
@@ -545,11 +559,11 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testFailure_setCurrentTldState_laterTransitionScheduled() {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setTldStateTransitions(
                 ImmutableSortedMap.of(
-                    START_OF_TIME, PREDELEGATION,
-                    now.plusMonths(1), GENERAL_AVAILABILITY))
+                    START_OF_TIME, PREDELEGATION, now.plusMonths(1), GENERAL_AVAILABILITY))
             .build());
     IllegalArgumentException thrown =
         assertThrows(
@@ -563,11 +577,11 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testFailure_setCurrentTldState_inProduction() {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setTldStateTransitions(
                 ImmutableSortedMap.of(
-                    START_OF_TIME, PREDELEGATION,
-                    now.minusMonths(1), GENERAL_AVAILABILITY))
+                    START_OF_TIME, PREDELEGATION, now.minusMonths(1), GENERAL_AVAILABILITY))
             .build());
     IllegalArgumentException thrown =
         assertThrows(
@@ -706,9 +720,11 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
 
   @Test
   public void testFailure_cantAddDuplicateReservedList() {
-    persistResource(Registry.get("xn--q9jyb4c").asBuilder()
-        .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
-        .build());
+    persistResource(
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
+            .build());
     IllegalArgumentException thrown =
         assertThrows(
             IllegalArgumentException.class,
@@ -718,9 +734,11 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
 
   @Test
   public void testFailure_cantRemoveReservedListThatIsntPresent() {
-    persistResource(Registry.get("xn--q9jyb4c").asBuilder()
-        .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
-        .build());
+    persistResource(
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setReservedListsByName(ImmutableSet.of("xn--q9jyb4c_r1", "xn--q9jyb4c_r2"))
+            .build());
     IllegalArgumentException thrown =
         assertThrows(
             IllegalArgumentException.class,
@@ -744,9 +762,10 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testFailure_cantAddDuplicateAllowedRegistrants() {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
-        .setAllowedRegistrantContactIds(ImmutableSet.of("alice", "bob"))
-        .build());
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setAllowedRegistrantContactIds(ImmutableSet.of("alice", "bob"))
+            .build());
     IllegalArgumentException thrown =
         assertThrows(
             IllegalArgumentException.class,
@@ -757,9 +776,10 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testFailure_cantRemoveAllowedRegistrantThatIsntPresent() {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
-        .setAllowedRegistrantContactIds(ImmutableSet.of("alice"))
-        .build());
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setAllowedRegistrantContactIds(ImmutableSet.of("alice"))
+            .build());
     IllegalArgumentException thrown =
         assertThrows(
             IllegalArgumentException.class,
@@ -783,7 +803,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testFailure_cantAddDuplicateAllowedNameservers() {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
             .setAllowedFullyQualifiedHostNames(
                 ImmutableSet.of("ns1.example.com", "ns2.example.com"))
             .build());
@@ -797,9 +818,9 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   @Test
   public void testFailure_cantRemoveAllowedNameserverThatIsntPresent() {
     persistResource(
-        Registry.get("xn--q9jyb4c").asBuilder()
-            .setAllowedFullyQualifiedHostNames(
-                ImmutableSet.of("ns1.example.com"))
+        Registry.get("xn--q9jyb4c")
+            .asBuilder()
+            .setAllowedFullyQualifiedHostNames(ImmutableSet.of("ns1.example.com"))
             .build());
     IllegalArgumentException thrown =
         assertThrows(
@@ -879,7 +900,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
 
   @Test
   public void testFailure_setReservedListFromOtherTld() {
-    runFailureReservedListsTest("tld_banned",
+    runFailureReservedListsTest(
+        "tld_banned",
         IllegalArgumentException.class,
         "The reserved list(s) tld_banned cannot be applied to the tld xn--q9jyb4c");
   }
@@ -891,7 +913,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
 
   @Test
   public void testFailure_setCommonAndReservedListFromOtherTld() {
-    runFailureReservedListsTest("common_abuse,tld_banned",
+    runFailureReservedListsTest(
+        "common_abuse,tld_banned",
         IllegalArgumentException.class,
         "The reserved list(s) tld_banned cannot be applied to the tld xn--q9jyb4c");
   }
@@ -910,7 +933,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
 
   @Test
   public void testFailure_setMultipleReservedListsFromOtherTld() {
-    runFailureReservedListsTest("tld_banned,soy_expurgated",
+    runFailureReservedListsTest(
+        "tld_banned,soy_expurgated",
         IllegalArgumentException.class,
         "The reserved list(s) tld_banned, soy_expurgated cannot be applied to the tld xn--q9jyb4c");
   }
@@ -952,10 +976,8 @@ public class UpdateTldCommandTest extends CommandTestCase<UpdateTldCommand> {
   }
 
   private void runReservedListsTestOverride(String reservedLists) throws Exception {
-    runCommandForced("--override_reserved_list_rules",
-        "--reserved_lists",
-        reservedLists,
-        "xn--q9jyb4c");
+    runCommandForced(
+        "--override_reserved_list_rules", "--reserved_lists", reservedLists, "xn--q9jyb4c");
   }
 
   private void runFailureReservedListsTest(

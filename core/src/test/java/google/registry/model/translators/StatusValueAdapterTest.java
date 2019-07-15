@@ -40,30 +40,31 @@ import org.junit.runners.JUnit4;
 public class StatusValueAdapterTest {
 
   // Needed to create HostResources.
-  @Rule
-  public AppEngineRule appEngine = new AppEngineRule.Builder()
-      .withDatastore()
-      .build();
+  @Rule public AppEngineRule appEngine = new AppEngineRule.Builder().withDatastore().build();
 
   @Test
   public void testMarshalling() throws Exception {
     // Mangle the status value through marshalling by stuffing it in a host info response and then
     // ripping it out of the marshalled xml. Use lenient marshalling so we can omit other fields.
-    String marshalled = new String(
-        EppXmlTransformer.marshal(
-            EppOutput.create(new EppResponse.Builder()
-                .setResData(HostInfoData.newBuilder()
-                    .setCreationClientId("")
-                    .setCreationTime(START_OF_TIME)
-                    .setCurrentSponsorClientId("")
-                    .setFullyQualifiedHostName("")
-                    .setInetAddresses(ImmutableSet.of())
-                    .setRepoId("")
-                    .setStatusValues(ImmutableSet.of(StatusValue.CLIENT_UPDATE_PROHIBITED))
-                    .build())
-                .build()),
-            ValidationMode.LENIENT),
-        UTF_8);
+    String marshalled =
+        new String(
+            EppXmlTransformer.marshal(
+                EppOutput.create(
+                    new EppResponse.Builder()
+                        .setResData(
+                            HostInfoData.newBuilder()
+                                .setCreationClientId("")
+                                .setCreationTime(START_OF_TIME)
+                                .setCurrentSponsorClientId("")
+                                .setFullyQualifiedHostName("")
+                                .setInetAddresses(ImmutableSet.of())
+                                .setRepoId("")
+                                .setStatusValues(
+                                    ImmutableSet.of(StatusValue.CLIENT_UPDATE_PROHIBITED))
+                                .build())
+                        .build()),
+                ValidationMode.LENIENT),
+            UTF_8);
     assertThat(marshalled).contains("<host:status s=\"clientUpdateProhibited\"/>");
   }
 

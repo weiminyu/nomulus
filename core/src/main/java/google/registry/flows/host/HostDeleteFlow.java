@@ -65,10 +65,11 @@ import org.joda.time.DateTime;
 @ReportingSpec(ActivityReportField.HOST_DELETE)
 public final class HostDeleteFlow implements TransactionalFlow {
 
-  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES = ImmutableSet.of(
-      StatusValue.CLIENT_DELETE_PROHIBITED,
-      StatusValue.PENDING_DELETE,
-      StatusValue.SERVER_DELETE_PROHIBITED);
+  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES =
+      ImmutableSet.of(
+          StatusValue.CLIENT_DELETE_PROHIBITED,
+          StatusValue.PENDING_DELETE,
+          StatusValue.SERVER_DELETE_PROHIBITED);
 
   @Inject ExtensionManager extensionManager;
   @Inject @ClientId String clientId;
@@ -78,7 +79,9 @@ public final class HostDeleteFlow implements TransactionalFlow {
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject AsyncTaskEnqueuer asyncTaskEnqueuer;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject HostDeleteFlow() {}
+
+  @Inject
+  HostDeleteFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -95,7 +98,10 @@ public final class HostDeleteFlow implements TransactionalFlow {
       // the client id, needs to be read off of it.
       EppResource owningResource =
           existingHost.isSubordinate()
-              ? ofy().load().key(existingHost.getSuperordinateDomain()).now()
+              ? ofy()
+                  .load()
+                  .key(existingHost.getSuperordinateDomain())
+                  .now()
                   .cloneProjectedAtTime(now)
               : existingHost;
       verifyResourceOwnership(clientId, owningResource);

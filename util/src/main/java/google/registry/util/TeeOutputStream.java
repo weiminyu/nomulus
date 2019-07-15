@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.annotation.WillNotClose;
 
-/**
- * {@link OutputStream} delegate that writes simultaneously to multiple other output streams.
-  */
+/** {@link OutputStream} delegate that writes simultaneously to multiple other output streams. */
 public final class TeeOutputStream extends OutputStream {
 
   private final ImmutableList<? extends OutputStream> outputs;
@@ -59,7 +57,7 @@ public final class TeeOutputStream extends OutputStream {
     }
   }
 
-  /** Closes the stream.  Any calls to a {@code write()} method after this will throw. */
+  /** Closes the stream. Any calls to a {@code write()} method after this will throw. */
   @Override
   public void close() {
     isClosed = true;

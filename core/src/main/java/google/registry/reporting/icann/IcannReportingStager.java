@@ -59,7 +59,9 @@ public class IcannReportingStager {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  @Inject @Config("reportingBucket") String reportingBucket;
+  @Inject
+  @Config("reportingBucket")
+  String reportingBucket;
 
   @Inject ActivityReportingQueryBuilder activityQueryBuilder;
   @Inject TransactionsReportingQueryBuilder transactionsQueryBuilder;
@@ -106,19 +108,21 @@ public class IcannReportingStager {
       throws ExecutionException, InterruptedException {
     // Later views depend on the results of earlier ones, so query everything synchronously
     logger.atInfo().log("Generating intermediary view %s", queryName);
-    bigquery.query(
-        query,
-        bigquery.buildDestinationTable(queryName)
-            .description(String.format(
-                "An intermediary view to generate %s reports for this month.", reportType))
-            .type(TableType.VIEW)
-            .build()
-    ).get();
+    bigquery
+        .query(
+            query,
+            bigquery
+                .buildDestinationTable(queryName)
+                .description(
+                    String.format(
+                        "An intermediary view to generate %s reports for this month.", reportType))
+                .type(TableType.VIEW)
+                .build())
+        .get();
   }
 
   private Iterable<String> getHeaders(ImmutableSet<TableFieldSchema> fields) {
-    return fields
-        .stream()
+    return fields.stream()
         .map((schema) -> schema.getName().replace('_', '-'))
         .collect(toImmutableList());
   }
@@ -190,8 +194,7 @@ public class IcannReportingStager {
   /** Adds a row's values to an existing list of integers (totals). */
   private void addToTotal(List<Integer> totals, Map<TableFieldSchema, Object> row) {
     List<Integer> rowVals =
-        row.values()
-            .stream()
+        row.values().stream()
             // Ignore TLD, Registrar name and IANA id
             .skip(3)
             .map((Object o) -> Integer.parseInt(o.toString()))
@@ -214,7 +217,7 @@ public class IcannReportingStager {
    * with commas separating individual fields.
    *
    * <p>This discards the first object, which is assumed to be the TLD field.
-   * */
+   */
   private String constructRow(Iterable<?> iterable) {
     Iterator<?> rowIter = iterable.iterator();
     StringBuilder rowString = new StringBuilder();

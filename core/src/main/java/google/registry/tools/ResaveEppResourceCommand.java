@@ -31,26 +31,23 @@ import org.joda.time.DateTime;
  * <p>This triggers @OnSave changes. If the entity was directly edited in the Datastore viewer, this
  * can be used to make sure that the commit logs reflect the new state.
  */
-@Parameters(
-    separators = " =",
-    commandDescription = "Load and resave EPP resources by foreign key")
+@Parameters(separators = " =", commandDescription = "Load and resave EPP resources by foreign key")
 public final class ResaveEppResourceCommand extends MutatingCommand {
 
-  @Parameter(
-    names = "--type",
-    description = "Resource type.")
+  @Parameter(names = "--type", description = "Resource type.")
   protected ResourceType type;
 
-  @Parameter(
-    names = "--id",
-    description = "Foreign key of the resource.")
+  @Parameter(names = "--id", description = "Foreign key of the resource.")
   protected String uniqueId;
 
   @Override
   protected void init() {
-    Key<? extends EppResource> resourceKey = checkArgumentNotNull(
-        type.getKey(uniqueId, DateTime.now(UTC)),
-        "Could not find active resource of type %s: %s", type, uniqueId);
+    Key<? extends EppResource> resourceKey =
+        checkArgumentNotNull(
+            type.getKey(uniqueId, DateTime.now(UTC)),
+            "Could not find active resource of type %s: %s",
+            type,
+            uniqueId);
     // Load the resource directly to bypass running cloneProjectedAtTime() automatically, which can
     // cause stageEntityChange() to fail due to implicit projection changes.
     EppResource resource = ofy().load().key(resourceKey).now();

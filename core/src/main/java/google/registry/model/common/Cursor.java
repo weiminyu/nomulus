@@ -30,9 +30,9 @@ import google.registry.model.registry.Registry;
 import org.joda.time.DateTime;
 
 /**
- * Shared entity for date cursors. This type supports both "scoped" cursors (i.e. per resource
- * of a given type, such as a TLD) and global (i.e. one per environment) cursors, defined internally
- * as scoped on {@link EntityGroupRoot}.
+ * Shared entity for date cursors. This type supports both "scoped" cursors (i.e. per resource of a
+ * given type, such as a TLD) and global (i.e. one per environment) cursors, defined internally as
+ * scoped on {@link EntityGroupRoot}.
  */
 @Entity
 public class Cursor extends ImmutableObject {
@@ -67,10 +67,10 @@ public class Cursor extends ImmutableObject {
     RDE_UPLOAD_SFTP(Registry.class),
 
     /**
-     * Cursor for ensuring rolling transactional isolation of recurring billing expansion. The
-     * value of this cursor represents the exclusive upper bound on the range of billing times
-     * for which Recurring billing events have been expanded (i.e. the inclusive first billing time
-     * for the next expansion job).
+     * Cursor for ensuring rolling transactional isolation of recurring billing expansion. The value
+     * of this cursor represents the exclusive upper bound on the range of billing times for which
+     * Recurring billing events have been expanded (i.e. the inclusive first billing time for the
+     * next expansion job).
      */
     RECURRING_BILLING(EntityGroupRoot.class),
 
@@ -90,9 +90,9 @@ public class Cursor extends ImmutableObject {
 
     /**
      * If there are multiple cursors for a given cursor type, a cursor must also have a scope
-     * defined (distinct from a parent, which is always the EntityGroupRoot key). For instance,
-     * for a cursor that is defined at the registry level, the scope type will be Registry.class.
-     * For a cursor (theoretically) defined for each EPP resource, the scope type will be
+     * defined (distinct from a parent, which is always the EntityGroupRoot key). For instance, for
+     * a cursor that is defined at the registry level, the scope type will be Registry.class. For a
+     * cursor (theoretically) defined for each EPP resource, the scope type will be
      * EppResource.class. For a global cursor, i.e. one that applies per environment, this will be
      * {@link EntityGroupRoot}.
      */
@@ -101,11 +101,9 @@ public class Cursor extends ImmutableObject {
     }
   }
 
-  @Parent
-  Key<EntityGroupRoot> parent = getCrossTldKey();
+  @Parent Key<EntityGroupRoot> parent = getCrossTldKey();
 
-  @Id
-  String id;
+  @Id String id;
 
   DateTime cursorTime = START_OF_TIME;
 
@@ -123,10 +121,12 @@ public class Cursor extends ImmutableObject {
   private static void checkValidCursorTypeForScope(
       CursorType cursorType, Key<? extends ImmutableObject> scope) {
     checkArgument(
-        cursorType.getScopeClass().equals(
-            scope.equals(EntityGroupRoot.getCrossTldKey())
-                ? EntityGroupRoot.class
-                : ofy().factory().getMetadata(scope).getEntityClass()),
+        cursorType
+            .getScopeClass()
+            .equals(
+                scope.equals(EntityGroupRoot.getCrossTldKey())
+                    ? EntityGroupRoot.class
+                    : ofy().factory().getMetadata(scope).getEntityClass()),
         "Class required for cursor does not match scope class");
   }
 
@@ -166,7 +166,7 @@ public class Cursor extends ImmutableObject {
     checkValidCursorTypeForScope(cursorType, scope);
     instance.id = generateId(cursorType, scope);
     return instance;
-   }
+  }
 
   /** Creates a new cursor instance with a given {@link ImmutableObject} scope. */
   public static Cursor create(CursorType cursorType, DateTime cursorTime, ImmutableObject scope) {

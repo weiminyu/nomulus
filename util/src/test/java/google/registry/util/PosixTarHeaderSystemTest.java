@@ -42,8 +42,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class PosixTarHeaderSystemTest {
 
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  @Rule public final TemporaryFolder folder = new TemporaryFolder();
 
   @Test
   @Ignore
@@ -58,14 +57,15 @@ public class PosixTarHeaderSystemTest {
     String tarName = "hello.tar";
     File tarFile = folder.newFile(tarName);
     try (FileOutputStream output = new FileOutputStream(tarFile)) {
-      output.write(new PosixTarHeader.Builder()
-          .setName(fileName)
-          .setSize(fileData.length)
-          .build()
-          .getBytes());
+      output.write(
+          new PosixTarHeader.Builder()
+              .setName(fileName)
+              .setSize(fileData.length)
+              .build()
+              .getBytes());
       output.write(fileData);
-      output.write(new byte[512 - fileData.length % 512]);  // Align with 512-byte block size.
-      output.write(new byte[1024]);  // Bunch of null bytes to indicate end of archive.
+      output.write(new byte[512 - fileData.length % 512]); // Align with 512-byte block size.
+      output.write(new byte[1024]); // Bunch of null bytes to indicate end of archive.
     }
     assertThat(tarFile.length() % 512).isEqualTo(0);
     assertThat(tarFile.length() / 512).isEqualTo(2 + 2);
@@ -73,9 +73,9 @@ public class PosixTarHeaderSystemTest {
     // Now we run the system's tar command to extract our file.
     String[] cmd = {"tar", "-xf", tarName};
     String[] env = {"PATH=" + System.getenv("PATH")};
-    File     cwd = folder.getRoot();
-    Process  pid = Runtime.getRuntime().exec(cmd, env, cwd);
-    String   err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
+    File cwd = folder.getRoot();
+    Process pid = Runtime.getRuntime().exec(cmd, env, cwd);
+    String err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
     assertThat(pid.waitFor()).isEqualTo(0);
     assertThat(err.trim()).isEmpty();
 
@@ -95,29 +95,24 @@ public class PosixTarHeaderSystemTest {
   public void testCreateMultiFileArchive() throws Exception {
     assumeTrue(hasCommand("tar"));
 
-    Map<String, String> files = ImmutableMap.of(
-        "one.txt", ""
-            + "There is data on line one\n"
-            + "and on line two\n"
-            + "and on line three\n",
-        "two.txt", ""
-            + "There is even more data\n"
-            + "in this second file\n"
-            + "with its own three lines\n",
-        "subdir/three.txt", ""
-            + "More data\n"
-            + "but only two lines\n");
+    Map<String, String> files =
+        ImmutableMap.of(
+            "one.txt",
+                "" + "There is data on line one\n" + "and on line two\n" + "and on line three\n",
+            "two.txt",
+                ""
+                    + "There is even more data\n"
+                    + "in this second file\n"
+                    + "with its own three lines\n",
+            "subdir/three.txt", "" + "More data\n" + "but only two lines\n");
 
     String tarName = "hello.tar";
     File tarFile = folder.newFile(tarName);
     try (FileOutputStream output = new FileOutputStream(tarFile)) {
       for (String name : files.keySet()) {
         byte[] data = files.get(name).getBytes(UTF_8);
-        output.write(new PosixTarHeader.Builder()
-            .setName(name)
-            .setSize(data.length)
-            .build()
-            .getBytes());
+        output.write(
+            new PosixTarHeader.Builder().setName(name).setSize(data.length).build().getBytes());
         output.write(data);
         output.write(new byte[512 - data.length % 512]);
       }
@@ -128,9 +123,9 @@ public class PosixTarHeaderSystemTest {
 
     String[] cmd = {"tar", "-xf", tarName};
     String[] env = {"PATH=" + System.getenv("PATH")};
-    File     cwd = folder.getRoot();
-    Process  pid = Runtime.getRuntime().exec(cmd, env, cwd);
-    String   err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
+    File cwd = folder.getRoot();
+    Process pid = Runtime.getRuntime().exec(cmd, env, cwd);
+    String err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
     assertThat(pid.waitFor()).isEqualTo(0);
     assertThat(err.trim()).isEmpty();
 
@@ -156,8 +151,8 @@ public class PosixTarHeaderSystemTest {
 
     String[] cmd = {"tar", "--format=ustar", "-cf", "lines.tar", "one", "two"};
     String[] env = {"PATH=" + System.getenv("PATH")};
-    Process  pid = Runtime.getRuntime().exec(cmd, env, cwd);
-    String   err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
+    Process pid = Runtime.getRuntime().exec(cmd, env, cwd);
+    String err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
     assertThat(pid.waitFor()).isEqualTo(0);
     assertThat(err.trim()).isEmpty();
 
@@ -197,9 +192,9 @@ public class PosixTarHeaderSystemTest {
 
     String[] cmd = {"tar", "-cf", "steam.tar", "truth.txt"};
     String[] env = {"PATH=" + System.getenv("PATH")};
-    File     cwd = folder.getRoot();
-    Process  pid = Runtime.getRuntime().exec(cmd, env, cwd);
-    String   err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
+    File cwd = folder.getRoot();
+    Process pid = Runtime.getRuntime().exec(cmd, env, cwd);
+    String err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
     assertThat(pid.waitFor()).isEqualTo(0);
     assertThat(err.trim()).isEmpty();
 
@@ -234,11 +229,8 @@ public class PosixTarHeaderSystemTest {
     String tarName = "occupy.tar";
     File tarFile = folder.newFile(tarName);
     try (FileOutputStream output = new FileOutputStream(tarFile)) {
-      output.write(new PosixTarHeader.Builder()
-          .setName(name)
-          .setSize(data.length)
-          .build()
-          .getBytes());
+      output.write(
+          new PosixTarHeader.Builder().setName(name).setSize(data.length).build().getBytes());
       output.write(data);
       output.write(new byte[1024]);
     }
@@ -246,9 +238,9 @@ public class PosixTarHeaderSystemTest {
 
     String[] cmd = {"tar", "-xf", tarName};
     String[] env = {"PATH=" + System.getenv("PATH")};
-    File     cwd = folder.getRoot();
-    Process  pid = Runtime.getRuntime().exec(cmd, env, cwd);
-    String   err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
+    File cwd = folder.getRoot();
+    Process pid = Runtime.getRuntime().exec(cmd, env, cwd);
+    String err = CharStreams.toString(new InputStreamReader(pid.getErrorStream(), UTF_8));
     assertThat(pid.waitFor()).isEqualTo(0);
     assertThat(err.trim()).isEmpty();
 

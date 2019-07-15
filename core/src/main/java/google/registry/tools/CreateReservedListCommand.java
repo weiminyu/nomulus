@@ -37,7 +37,7 @@ final class CreateReservedListCommand extends CreateOrUpdateReservedListCommand 
   @VisibleForTesting
   static final String INVALID_FORMAT_ERROR_MESSAGE =
       "The name must be in the format {tld|common}_list-name "
-      + "and contain only letters, numbers, and hyphens, plus a single underscore delimiter";
+          + "and contain only letters, numbers, and hyphens, plus a single underscore delimiter";
 
   @Parameter(
       names = {"-o", "--override"},
@@ -48,8 +48,7 @@ final class CreateReservedListCommand extends CreateOrUpdateReservedListCommand 
   protected void init() throws Exception {
     name = Strings.isNullOrEmpty(name) ? convertFilePathToName(input) : name;
     checkArgument(
-        !ReservedList.get(name).isPresent(),
-        "A reserved list already exists by this name");
+        !ReservedList.get(name).isPresent(), "A reserved list already exists by this name");
     if (!override) {
       validateListName(name);
     }

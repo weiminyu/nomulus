@@ -35,9 +35,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class SmdrlCsvParserTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().build();
   private final FakeClock clock = new FakeClock();
 
   private static final CharSource SMDRL_LATEST_CSV =
@@ -83,10 +81,12 @@ public class SmdrlCsvParserTest {
 
   @Test
   public void testOneRow() {
-    SignedMarkRevocationList smdrl = SmdrlCsvParser.parse(ImmutableList.of(
-        "1,2013-11-24T23:30:04.3Z",
-        "smd-id,insertion-datetime",
-        "0000001681375789102250-65535,2013-08-09T12:00:00.0Z"));
+    SignedMarkRevocationList smdrl =
+        SmdrlCsvParser.parse(
+            ImmutableList.of(
+                "1,2013-11-24T23:30:04.3Z",
+                "smd-id,insertion-datetime",
+                "0000001681375789102250-65535,2013-08-09T12:00:00.0Z"));
     assertThat(smdrl.size()).isEqualTo(1);
     assertThat(smdrl.getCreationTime()).isEqualTo(DateTime.parse("2013-11-24T23:30:04.3Z"));
     clock.setTo(DateTime.parse("2020-08-09T12:00:00.0Z"));
@@ -95,9 +95,9 @@ public class SmdrlCsvParserTest {
 
   @Test
   public void testEmpty() {
-    SignedMarkRevocationList smdrl = SmdrlCsvParser.parse(ImmutableList.of(
-        "1,2014-11-24T23:30:04.3Z",
-        "smd-id,insertion-datetime"));
+    SignedMarkRevocationList smdrl =
+        SmdrlCsvParser.parse(
+            ImmutableList.of("1,2014-11-24T23:30:04.3Z", "smd-id,insertion-datetime"));
     assertThat(smdrl.size()).isEqualTo(0);
     assertThat(smdrl.getCreationTime()).isEqualTo(DateTime.parse("2014-11-24T23:30:04.3Z"));
     clock.setTo(DateTime.parse("2020-08-09T12:00:00.0Z"));

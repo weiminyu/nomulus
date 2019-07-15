@@ -48,22 +48,14 @@ public class CheckDomainClaimsCommandTest extends EppToolCommandTestCase<CheckDo
 
   @Test
   public void testSuccess_multipleDomains() throws Exception {
-    runCommand(
-        "--client=NewRegistrar",
-        "example.tld",
-        "example2.tld",
-        "example3.tld");
+    runCommand("--client=NewRegistrar", "example.tld", "example2.tld", "example3.tld");
     eppVerifier.expectDryRun().verifySent("domain_check_claims_multiple.xml");
   }
 
   @Test
   public void testSuccess_multipleDomainsAndTlds() throws Exception {
     runCommand(
-        "--client=NewRegistrar",
-        "example.tld",
-        "example2.tld",
-        "example3.tld",
-        "example.tld2");
+        "--client=NewRegistrar", "example.tld", "example2.tld", "example3.tld", "example.tld2");
     eppVerifier
         .expectDryRun()
         .verifySent("domain_check_claims_multiple.xml")

@@ -46,8 +46,8 @@ import javax.inject.Inject;
 /**
  * Base RDAP (new WHOIS) action for domain, nameserver and entity search requests.
  *
- * @see <a href="https://tools.ietf.org/html/rfc7482">
- *        RFC 7482: Registration Data Access Protocol (RDAP) Query Format</a>
+ * @see <a href="https://tools.ietf.org/html/rfc7482">RFC 7482: Registration Data Access Protocol
+ *     (RDAP) Query Format</a>
  */
 public abstract class RdapSearchActionBase extends RdapActionBase {
 
@@ -55,8 +55,14 @@ public abstract class RdapSearchActionBase extends RdapActionBase {
 
   @Inject @RequestUrl String requestUrl;
   @Inject @ParameterMap ImmutableListMultimap<String, String> parameterMap;
-  @Inject @Parameter("cursor") Optional<String> cursorTokenParam;
-  @Inject @Parameter("registrar") Optional<String> registrarParam;
+
+  @Inject
+  @Parameter("cursor")
+  Optional<String> cursorTokenParam;
+
+  @Inject
+  @Parameter("registrar")
+  Optional<String> registrarParam;
 
   protected Optional<String> cursorString;
 
@@ -113,10 +119,9 @@ public abstract class RdapSearchActionBase extends RdapActionBase {
   /**
    * Returns true if the EPP resource should be visible.
    *
-   * <p>This is true iff:
-   * 1. The resource is not deleted, or the request wants to see deleted items, and is authorized to
-   *    do so, and:
-   * 2. The request did not specify a registrar to filter on, or the registrar matches.
+   * <p>This is true iff: 1. The resource is not deleted, or the request wants to see deleted items,
+   * and is authorized to do so, and: 2. The request did not specify a registrar to filter on, or
+   * the registrar matches.
    */
   protected boolean shouldBeVisible(EppResource eppResource) {
     return isAuthorized(eppResource)
@@ -127,10 +132,9 @@ public abstract class RdapSearchActionBase extends RdapActionBase {
   /**
    * Returns true if the EPP resource should be visible.
    *
-   * <p>This is true iff:
-   * 1. The resource is not deleted, or the request wants to see deleted items, and is authorized to
-   *    do so, and:
-   * 2. The request did not specify a registrar to filter on, or the registrar matches.
+   * <p>This is true iff: 1. The resource is not deleted, or the request wants to see deleted items,
+   * and is authorized to do so, and: 2. The request did not specify a registrar to filter on, or
+   * the registrar matches.
    */
   protected boolean shouldBeVisible(Registrar registrar) {
     return isAuthorized(registrar)
@@ -224,7 +228,6 @@ public abstract class RdapSearchActionBase extends RdapActionBase {
    * <p>Example: If the original parameters were "a=w&a=x&b=y&c=z", and this method is called with
    * parameterName = "b" and parameterValues of "p" and "q", the result will be
    * "a=w&a=x&c=z&b=p&b=q". The new values of parameter "b" replace the old ones.
-   *
    */
   protected String getRequestUrlWithExtraParameter(
       String parameterName, List<String> parameterValues) {
@@ -269,26 +272,26 @@ public abstract class RdapSearchActionBase extends RdapActionBase {
   // to be (more) sure we got everything.
   int getStandardQuerySizeLimit() {
     return shouldIncludeDeleted()
-            ? (RESULT_SET_SIZE_SCALING_FACTOR * (rdapResultSetMaxSize + 1))
-            : (rdapResultSetMaxSize + 1);
+        ? (RESULT_SET_SIZE_SCALING_FACTOR * (rdapResultSetMaxSize + 1))
+        : (rdapResultSetMaxSize + 1);
   }
 
   /**
    * Handles prefix searches in cases where, if we need to filter out deleted items, there are no
    * pending deletes.
    *
-   * <p>In such cases, it is sufficient to check whether {@code deletionTime} is equal to
-   * {@code END_OF_TIME}, because any other value means it has already been deleted. This allows us
-   * to use an equality query for the deletion time.
+   * <p>In such cases, it is sufficient to check whether {@code deletionTime} is equal to {@code
+   * END_OF_TIME}, because any other value means it has already been deleted. This allows us to use
+   * an equality query for the deletion time.
    *
    * @param clazz the type of resource to be queried
    * @param filterField the database field of interest
    * @param partialStringQuery the details of the search string; if there is no wildcard, an
-   *        equality query is used; if there is a wildcard, a range query is used instead; the
-   *        initial string should not be empty, and any search suffix will be ignored, so the caller
-   *        must filter the results if a suffix is specified
+   *     equality query is used; if there is a wildcard, a range query is used instead; the initial
+   *     string should not be empty, and any search suffix will be ignored, so the caller must
+   *     filter the results if a suffix is specified
    * @param cursorString if a cursor is present, this parameter should specify the cursor string, to
-   *        skip any results up to and including the string; empty() if there is no cursor
+   *     skip any results up to and including the string; empty() if there is no cursor
    * @param deletedItemHandling whether to include or exclude deleted items
    * @param resultSetMaxSize the maximum number of results to return
    * @return the query object
@@ -312,9 +315,10 @@ public abstract class RdapSearchActionBase extends RdapActionBase {
       query = query.filter(filterField, partialStringQuery.getInitialString());
     } else {
       // Ignore the suffix; the caller will need to filter on the suffix, if any.
-      query = query
-          .filter(filterField + " >=", partialStringQuery.getInitialString())
-          .filter(filterField + " <", partialStringQuery.getNextInitialString());
+      query =
+          query
+              .filter(filterField + " >=", partialStringQuery.getInitialString())
+              .filter(filterField + " <", partialStringQuery.getNextInitialString());
     }
     if (cursorString.isPresent()) {
       query = query.filter(filterField + " >", cursorString.get());
@@ -332,9 +336,9 @@ public abstract class RdapSearchActionBase extends RdapActionBase {
    * @param filterField the database field of interest
    * @param queryString the search string
    * @param cursorField the field which should be compared to the cursor string, or empty() if the
-   *        key should be compared to a key created from the cursor string
+   *     key should be compared to a key created from the cursor string
    * @param cursorString if a cursor is present, this parameter should specify the cursor string, to
-   *        skip any results up to and including the string; empty() if there is no cursor
+   *     skip any results up to and including the string; empty() if there is no cursor
    * @param deletedItemHandling whether to include or exclude deleted items
    * @param resultSetMaxSize the maximum number of results to return
    * @return the query object
@@ -383,9 +387,10 @@ public abstract class RdapSearchActionBase extends RdapActionBase {
       query = query.filterKey("=", Key.create(clazz, partialStringQuery.getInitialString()));
     } else {
       // Ignore the suffix; the caller will need to filter on the suffix, if any.
-      query = query
-          .filterKey(">=", Key.create(clazz, partialStringQuery.getInitialString()))
-          .filterKey("<", Key.create(clazz, partialStringQuery.getNextInitialString()));
+      query =
+          query
+              .filterKey(">=", Key.create(clazz, partialStringQuery.getInitialString()))
+              .filterKey("<", Key.create(clazz, partialStringQuery.getNextInitialString()));
     }
     if (cursorString.isPresent()) {
       query = query.filterKey(">", Key.create(clazz, cursorString.get()));

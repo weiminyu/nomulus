@@ -47,6 +47,7 @@ public class DnsMessageTransport {
    * @see <a href="https://tools.ietf.org/html/rfc1035">RFC 1035</a>
    */
   static final int MESSAGE_LENGTH_FIELD_BYTES = 2;
+
   private static final int MESSAGE_MAXIMUM_LENGTH = (1 << (MESSAGE_LENGTH_FIELD_BYTES * 8)) - 1;
 
   /**

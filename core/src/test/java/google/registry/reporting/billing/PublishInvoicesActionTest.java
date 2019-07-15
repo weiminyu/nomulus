@@ -52,8 +52,7 @@ public class PublishInvoicesActionTest {
   private FakeResponse response;
   private PublishInvoicesAction uploadAction;
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder().withTaskQueue().build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withTaskQueue().build();
 
   @Before
   public void setUp() throws IOException {

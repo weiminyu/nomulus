@@ -60,8 +60,7 @@ public class EppTestCase extends ShardableTestCase {
   private static final MediaType APPLICATION_EPP_XML_UTF8 =
       MediaType.create("application", "epp+xml").withCharset(UTF_8);
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   protected final FakeClock clock = new FakeClock();
 
@@ -182,16 +181,17 @@ public class EppTestCase extends ShardableTestCase {
     FakeResponse response = new FakeResponse();
     handler.response = response;
     eppMetricBuilder = EppMetric.builderForRequest(clock);
-    handler.eppController = DaggerEppTestComponent.builder()
-        .fakesAndMocksModule(FakesAndMocksModule.create(clock, eppMetricBuilder))
-        .build()
-        .startRequest()
-        .eppController();
+    handler.eppController =
+        DaggerEppTestComponent.builder()
+            .fakesAndMocksModule(FakesAndMocksModule.create(clock, eppMetricBuilder))
+            .build()
+            .startRequest()
+            .eppController();
     handler.executeEpp(
         sessionMetadata,
         credentials,
         EppRequestSource.UNIT_TEST,
-        false,  // Not dryRun.
+        false, // Not dryRun.
         isSuperuser,
         inputXml.getBytes(UTF_8));
     assertThat(response.getStatus()).isEqualTo(SC_OK);
@@ -215,15 +215,19 @@ public class EppTestCase extends ShardableTestCase {
         .hasResponse(
             "host_create_response.xml",
             ImmutableMap.of(
-                "HOSTNAME", "ns1.example.external",
-                "CRDATE", createTime.plusMinutes(2).toString()));
+                "HOSTNAME",
+                "ns1.example.external",
+                "CRDATE",
+                createTime.plusMinutes(2).toString()));
     assertThatCommand("host_create.xml", ImmutableMap.of("HOSTNAME", "ns2.example.external"))
         .atTime(createTime.plusMinutes(3))
         .hasResponse(
             "host_create_response.xml",
             ImmutableMap.of(
-                "HOSTNAME", "ns2.example.external",
-                "CRDATE", createTime.plusMinutes(3).toString()));
+                "HOSTNAME",
+                "ns2.example.external",
+                "CRDATE",
+                createTime.plusMinutes(3).toString()));
   }
 
   protected void createContacts(DateTime createTime) throws Exception {
@@ -312,10 +316,7 @@ public class EppTestCase extends ShardableTestCase {
 
   /** Makes a cancellation billing event cancelling out the given domain create billing event. */
   protected static BillingEvent.Cancellation makeCancellationBillingEventFor(
-      DomainBase domain,
-      OneTime billingEventToCancel,
-      DateTime createTime,
-      DateTime deleteTime) {
+      DomainBase domain, OneTime billingEventToCancel, DateTime createTime, DateTime deleteTime) {
     return new BillingEvent.Cancellation.Builder()
         .setTargetId(domain.getFullyQualifiedDomainName())
         .setClientId(domain.getCurrentSponsorClientId())
@@ -338,11 +339,7 @@ public class EppTestCase extends ShardableTestCase {
    */
   protected static Key<OneTime> findKeyToActualOneTimeBillingEvent(OneTime expectedBillingEvent) {
     Optional<OneTime> actualCreateBillingEvent =
-        ofy()
-            .load()
-            .type(BillingEvent.OneTime.class)
-            .list()
-            .stream()
+        ofy().load().type(BillingEvent.OneTime.class).list().stream()
             .filter(
                 b ->
                     Objects.equals(

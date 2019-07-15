@@ -46,8 +46,7 @@ class EncryptEscrowDepositCommand implements CommandWithRemoteApi {
       validateWith = PathParameter.OutputDirectory.class)
   private Path outdir = Paths.get(".");
 
-  @Inject
-  EscrowDepositEncryptor encryptor;
+  @Inject EscrowDepositEncryptor encryptor;
 
   @Override
   public final void run() throws Exception {

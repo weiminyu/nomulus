@@ -46,9 +46,15 @@ public class ExportReservedTermsAction implements Runnable {
 
   @Inject DriveConnection driveConnection;
   @Inject ExportUtils exportUtils;
-  @Inject @Parameter(RequestParameters.PARAM_TLD) String tld;
+
+  @Inject
+  @Parameter(RequestParameters.PARAM_TLD)
+  String tld;
+
   @Inject Response response;
-  @Inject ExportReservedTermsAction() {}
+
+  @Inject
+  ExportReservedTermsAction() {}
 
   /**
    * Exports the reserved terms for the TLD specified via the "tld" param to a newline-delimited
@@ -71,11 +77,12 @@ public class ExportReservedTermsAction implements Runnable {
         logger.atInfo().log(
             "Skipping reserved terms export for TLD %s because Drive folder isn't specified", tld);
       } else {
-        resultMsg = driveConnection.createOrUpdateFile(
-            RESERVED_TERMS_FILENAME,
-            EXPORT_MIME_TYPE,
-            registry.getDriveFolderId(),
-            exportUtils.exportReservedTerms(registry).getBytes(UTF_8));
+        resultMsg =
+            driveConnection.createOrUpdateFile(
+                RESERVED_TERMS_FILENAME,
+                EXPORT_MIME_TYPE,
+                registry.getDriveFolderId(),
+                exportUtils.exportReservedTerms(registry).getBytes(UTF_8));
         logger.atInfo().log(
             "Exporting reserved terms succeeded for TLD %s, response was: %s", tld, resultMsg);
       }

@@ -18,4 +18,4 @@ import javax.xml.bind.annotation.XmlTransient;
 
 /** A fee extension that may be present on domain transfer commands. */
 @XmlTransient
-public abstract class FeeTransferCommandExtension  extends FeeTransformCommandExtension {}
+public abstract class FeeTransferCommandExtension extends FeeTransformCommandExtension {}

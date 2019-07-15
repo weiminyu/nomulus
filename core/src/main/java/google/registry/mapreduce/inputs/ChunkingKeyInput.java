@@ -36,8 +36,8 @@ public class ChunkingKeyInput extends Input<List<Key>> {
   }
 
   /**
-   * An input reader that wraps around another input reader and returns its contents in chunks of
-   * a given size.
+   * An input reader that wraps around another input reader and returns its contents in chunks of a
+   * given size.
    */
   private static class ChunkingKeyInputReader extends InputReader<List<Key>> {
 
@@ -63,7 +63,7 @@ public class ChunkingKeyInput extends Input<List<Key>> {
       }
       ImmutableList<Key> builtChunk = chunk.build();
       if (builtChunk.isEmpty()) {
-        throw new NoSuchElementException();  // Maintain the contract.
+        throw new NoSuchElementException(); // Maintain the contract.
       }
       return builtChunk;
     }

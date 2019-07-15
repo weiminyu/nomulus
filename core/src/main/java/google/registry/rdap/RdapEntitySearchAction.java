@@ -72,9 +72,8 @@ import javax.inject.Inject;
  *     (RDAP) Query Format</a>
  * @see <a href="http://tools.ietf.org/html/rfc7483">RFC 7483: JSON Responses for the Registration
  *     Data Access Protocol (RDAP)</a>
- *
- * TODO(guyben):This isn't required by the RDAP Technical Implementation Guide, and hence should be
- * deleted, at least until it's actually required.
+ *     <p>TODO(guyben):This isn't required by the RDAP Technical Implementation Guide, and hence
+ *     should be deleted, at least until it's actually required.
  */
 @Action(
     service = Action.Service.PUBAPI,
@@ -83,10 +82,20 @@ import javax.inject.Inject;
     auth = Auth.AUTH_PUBLIC)
 public class RdapEntitySearchAction extends RdapSearchActionBase {
 
-  @Inject @Parameter("fn") Optional<String> fnParam;
-  @Inject @Parameter("handle") Optional<String> handleParam;
-  @Inject @Parameter("subtype") Optional<String> subtypeParam;
-  @Inject public RdapEntitySearchAction() {
+  @Inject
+  @Parameter("fn")
+  Optional<String> fnParam;
+
+  @Inject
+  @Parameter("handle")
+  Optional<String> handleParam;
+
+  @Inject
+  @Parameter("subtype")
+  Optional<String> subtypeParam;
+
+  @Inject
+  public RdapEntitySearchAction() {
     super("entity search", EndpointType.ENTITIES);
   }
 
@@ -163,7 +172,7 @@ public class RdapEntitySearchAction extends RdapSearchActionBase {
               cursorQueryString,
               subtype);
 
-    // Search by handle.
+      // Search by handle.
     } else {
       metricInformationBuilder.setSearchType(SearchType.BY_HANDLE);
       // syntax: /rdap/entities?handle=12345-*
@@ -327,11 +336,11 @@ public class RdapEntitySearchAction extends RdapSearchActionBase {
           contactResourceList.size(),
           registrarList,
           QueryType.HANDLE);
-    // Handle queries with a wildcard (or including deleted), but no suffix. Because the handle
-    // for registrars is the IANA identifier number, don't allow wildcard searches for registrars,
-    // by simply not searching for registrars if a wildcard is present (unless the request is for
-    // all registrars, in which case we know what to do). Fetch an extra contact to detect result
-    // set truncation.
+      // Handle queries with a wildcard (or including deleted), but no suffix. Because the handle
+      // for registrars is the IANA identifier number, don't allow wildcard searches for registrars,
+      // by simply not searching for registrars if a wildcard is present (unless the request is for
+      // all registrars, in which case we know what to do). Fetch an extra contact to detect result
+      // set truncation.
     } else {
       ImmutableList<Registrar> registrars;
       if ((subtype == Subtype.REGISTRARS)
@@ -446,8 +455,7 @@ public class RdapEntitySearchAction extends RdapSearchActionBase {
     // cursor would be if it were the last item returned. When we stop adding items, the last cursor
     // value we remembered will be the right one to pass back.
     EntitySearchResponse.Builder builder =
-        EntitySearchResponse.builder()
-            .setIncompletenessWarningType(incompletenessWarningType);
+        EntitySearchResponse.builder().setIncompletenessWarningType(incompletenessWarningType);
     Optional<String> newCursor = Optional.empty();
     for (ContactResource contact : Iterables.limit(contacts, rdapResultSetMaxSize)) {
       // As per Andy Newton on the regext mailing list, contacts by themselves have no role, since

@@ -27,10 +27,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import junit.framework.TestCase;
 
-/**
- * Tests for {@link CidrAddressBlock}.
- *
- */
+/** Tests for {@link CidrAddressBlock}. */
 public class CidrAddressBlockTest extends TestCase {
 
   public void testNulls() {
@@ -121,26 +118,24 @@ public class CidrAddressBlockTest extends TestCase {
   }
 
   public void testTruncation() {
-    ImmutableMap<String, String> netblocks = new ImmutableMap.Builder<String, String>()
-        // IPv4
-        .put("1.2.3.4/0", "0.0.0.0/0")
-        .put("1.2.3.4/24", "1.2.3.0/24")
-        .put("1.2.3.255/27", "1.2.3.224/27")
-        .put("1.2.3.255/28", "1.2.3.240/28")
-        // IPv6
-        .put("2001:db8::1/0", "::/0")
-        .put("2001:db8::1/16", "2001::/16")
-        .put("2001:db8::1/21", "2001:800::/21")
-        .put("2001:db8::1/22", "2001:c00::/22")
-        .build();
+    ImmutableMap<String, String> netblocks =
+        new ImmutableMap.Builder<String, String>()
+            // IPv4
+            .put("1.2.3.4/0", "0.0.0.0/0")
+            .put("1.2.3.4/24", "1.2.3.0/24")
+            .put("1.2.3.255/27", "1.2.3.224/27")
+            .put("1.2.3.255/28", "1.2.3.240/28")
+            // IPv6
+            .put("2001:db8::1/0", "::/0")
+            .put("2001:db8::1/16", "2001::/16")
+            .put("2001:db8::1/21", "2001:800::/21")
+            .put("2001:db8::1/22", "2001:c00::/22")
+            .build();
     for (Map.Entry<String, String> pair : netblocks.entrySet()) {
       assertConstructionFails(pair.getKey());
+      assertEquals(new CidrAddressBlock(pair.getValue()), CidrAddressBlock.create(pair.getKey()));
       assertEquals(
-          new CidrAddressBlock(pair.getValue()),
-          CidrAddressBlock.create(pair.getKey()));
-      assertEquals(
-          CidrAddressBlock.create(pair.getKey()),
-          CidrAddressBlock.create(pair.getValue()));
+          CidrAddressBlock.create(pair.getKey()), CidrAddressBlock.create(pair.getValue()));
     }
   }
 
@@ -228,17 +223,18 @@ public class CidrAddressBlockTest extends TestCase {
 
   public void testGetAllOnesAddress() {
     // <CIDR block> -> <expected getAllOnesAddress()>
-    ImmutableMap<String, String> testCases = new ImmutableMap.Builder<String, String>()
-        .put("172.24.255.0/24", "172.24.255.255")
-        .put("172.24.0.0/15", "172.25.255.255")
-        .put("172.24.254.0/23", "172.24.255.255")
-        .put("172.24.255.0/32", "172.24.255.0")
-        .put("0.0.0.0/0", "255.255.255.255")
-        .put("2001:db8::/48", "2001:db8::ffff:ffff:ffff:ffff:ffff")
-        .put("2001:db8::/32", "2001:db8:ffff:ffff:ffff:ffff:ffff:ffff")
-        .put("2001:db8::/128", "2001:db8::")
-        .put("::/0", "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
-        .build();
+    ImmutableMap<String, String> testCases =
+        new ImmutableMap.Builder<String, String>()
+            .put("172.24.255.0/24", "172.24.255.255")
+            .put("172.24.0.0/15", "172.25.255.255")
+            .put("172.24.254.0/23", "172.24.255.255")
+            .put("172.24.255.0/32", "172.24.255.0")
+            .put("0.0.0.0/0", "255.255.255.255")
+            .put("2001:db8::/48", "2001:db8::ffff:ffff:ffff:ffff:ffff")
+            .put("2001:db8::/32", "2001:db8:ffff:ffff:ffff:ffff:ffff:ffff")
+            .put("2001:db8::/128", "2001:db8::")
+            .put("::/0", "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
+            .build();
 
     for (Map.Entry<String, String> testCase : testCases.entrySet()) {
       assertEquals(

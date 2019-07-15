@@ -31,8 +31,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /** Unit tests for {@link CreateReservedListCommand}. */
-public class CreateReservedListCommandTest extends
-    CreateOrUpdateReservedListCommandTestCase<CreateReservedListCommand> {
+public class CreateReservedListCommandTest
+    extends CreateOrUpdateReservedListCommandTestCase<CreateReservedListCommand> {
 
   @Before
   public void initTest() {

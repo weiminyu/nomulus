@@ -99,35 +99,36 @@ public class SyncRegistrarsSheetTest {
   @Test
   public void testRun() throws Exception {
     DateTime beforeExecution = clock.nowUtc();
-    persistResource(new Registrar.Builder()
-        .setClientId("anotherregistrar")
-        .setRegistrarName("Another Registrar LLC")
-        .setType(Registrar.Type.REAL)
-        .setIanaIdentifier(1L)
-        .setState(Registrar.State.ACTIVE)
-        .setInternationalizedAddress(new RegistrarAddress.Builder()
-            .setStreet(ImmutableList.of("I will get ignored :'("))
-            .setCity("Williamsburg")
-            .setState("NY")
-            .setZip("11211")
-            .setCountryCode("US")
-            .build())
-        .setLocalizedAddress(new RegistrarAddress.Builder()
-            .setStreet(ImmutableList.of(
-                "123 Main St",
-                "Suite 100"))
-            .setCity("Smalltown")
-            .setState("NY")
-            .setZip("11211")
-            .setCountryCode("US")
-            .build())
-        .setPhoneNumber("+1.2125551212")
-        .setFaxNumber("+1.2125551213")
-        .setEmailAddress("contact-us@example.com")
-        .setWhoisServer("whois.example.com")
-        .setUrl("http://www.example.org/another_registrar")
-        .setIcannReferralEmail("jim@example.net")
-        .build());
+    persistResource(
+        new Registrar.Builder()
+            .setClientId("anotherregistrar")
+            .setRegistrarName("Another Registrar LLC")
+            .setType(Registrar.Type.REAL)
+            .setIanaIdentifier(1L)
+            .setState(Registrar.State.ACTIVE)
+            .setInternationalizedAddress(
+                new RegistrarAddress.Builder()
+                    .setStreet(ImmutableList.of("I will get ignored :'("))
+                    .setCity("Williamsburg")
+                    .setState("NY")
+                    .setZip("11211")
+                    .setCountryCode("US")
+                    .build())
+            .setLocalizedAddress(
+                new RegistrarAddress.Builder()
+                    .setStreet(ImmutableList.of("123 Main St", "Suite 100"))
+                    .setCity("Smalltown")
+                    .setState("NY")
+                    .setZip("11211")
+                    .setCountryCode("US")
+                    .build())
+            .setPhoneNumber("+1.2125551212")
+            .setFaxNumber("+1.2125551213")
+            .setEmailAddress("contact-us@example.com")
+            .setWhoisServer("whois.example.com")
+            .setUrl("http://www.example.org/another_registrar")
+            .setIcannReferralEmail("jim@example.net")
+            .build());
 
     Registrar registrar =
         new Registrar.Builder()
@@ -152,33 +153,35 @@ public class SyncRegistrarsSheetTest {
             .setUrl("http://www.example.org/aaa_registrar")
             .setBillingAccountMap(ImmutableMap.of(USD, "USD1234", JPY, "JPY7890"))
             .build();
-    ImmutableList<RegistrarContact> contacts = ImmutableList.of(
-        new RegistrarContact.Builder()
-            .setParent(registrar)
-            .setName("Jane Doe")
-            .setEmailAddress("contact@example.com")
-            .setPhoneNumber("+1.1234567890")
-            .setTypes(ImmutableSet.of(RegistrarContact.Type.ADMIN, RegistrarContact.Type.BILLING))
-            .build(),
-        new RegistrarContact.Builder()
-            .setParent(registrar)
-            .setName("John Doe")
-            .setEmailAddress("john.doe@example.tld")
-            .setPhoneNumber("+1.1234567890")
-            .setFaxNumber("+1.1234567891")
-            .setTypes(ImmutableSet.of(RegistrarContact.Type.ADMIN))
-            // Purposely flip the internal/external admin/tech
-            // distinction to make sure we're not relying on it.  Sigh.
-            .setVisibleInWhoisAsAdmin(false)
-            .setVisibleInWhoisAsTech(true)
-            .setGaeUserId("light")
-            .build(),
-        new RegistrarContact.Builder()
-            .setParent(registrar)
-            .setName("Jane Smith")
-            .setEmailAddress("pride@example.net")
-            .setTypes(ImmutableSet.of(RegistrarContact.Type.TECH))
-        .build());
+    ImmutableList<RegistrarContact> contacts =
+        ImmutableList.of(
+            new RegistrarContact.Builder()
+                .setParent(registrar)
+                .setName("Jane Doe")
+                .setEmailAddress("contact@example.com")
+                .setPhoneNumber("+1.1234567890")
+                .setTypes(
+                    ImmutableSet.of(RegistrarContact.Type.ADMIN, RegistrarContact.Type.BILLING))
+                .build(),
+            new RegistrarContact.Builder()
+                .setParent(registrar)
+                .setName("John Doe")
+                .setEmailAddress("john.doe@example.tld")
+                .setPhoneNumber("+1.1234567890")
+                .setFaxNumber("+1.1234567891")
+                .setTypes(ImmutableSet.of(RegistrarContact.Type.ADMIN))
+                // Purposely flip the internal/external admin/tech
+                // distinction to make sure we're not relying on it.  Sigh.
+                .setVisibleInWhoisAsAdmin(false)
+                .setVisibleInWhoisAsTech(true)
+                .setGaeUserId("light")
+                .build(),
+            new RegistrarContact.Builder()
+                .setParent(registrar)
+                .setName("Jane Smith")
+                .setEmailAddress("pride@example.net")
+                .setTypes(ImmutableSet.of(RegistrarContact.Type.TECH))
+                .build());
     // Use registrar key for contacts' parent.
     persistSimpleResources(contacts);
     persistResource(registrar);
@@ -267,8 +270,8 @@ public class SyncRegistrarsSheetTest {
                 + "Registrar-Console access: Yes\n"
                 + "GAE-UserID: light\n");
     assertThat(row).containsEntry("emailAddress", "nowhere@example.org");
-    assertThat(row).containsEntry(
-        "address.street", "I get fallen back upon since there's no l10n addr");
+    assertThat(row)
+        .containsEntry("address.street", "I get fallen back upon since there's no l10n addr");
     assertThat(row).containsEntry("address.city", "Williamsburg");
     assertThat(row).containsEntry("address.state", "NY");
     assertThat(row).containsEntry("address.zip", "11211");

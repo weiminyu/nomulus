@@ -41,7 +41,6 @@ public class EnumParameterTest {
         assertThrows(IllegalArgumentException.class, () -> instance.convert("FREE_DOMAINS"));
     assertThat(thrown)
         .hasMessageThat()
-        .contains(
-            "No enum constant google.registry.model.registry.Registry.TldState.FREE_DOMAINS");
+        .contains("No enum constant google.registry.model.registry.Registry.TldState.FREE_DOMAINS");
   }
 }

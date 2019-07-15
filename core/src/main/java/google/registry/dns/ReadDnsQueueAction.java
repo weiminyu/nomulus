@@ -101,15 +101,29 @@ public final class ReadDnsQueueAction implements Runnable {
    */
   private static final Duration LEASE_PADDING = Duration.standardMinutes(1);
 
-  @Inject @Config("dnsTldUpdateBatchSize") int tldUpdateBatchSize;
-  @Inject @Config("readDnsQueueActionRuntime") Duration requestedMaximumDuration;
-  @Inject @Named(DNS_PUBLISH_PUSH_QUEUE_NAME) Queue dnsPublishPushQueue;
-  @Inject @Parameter(PARAM_JITTER_SECONDS) Optional<Integer> jitterSeconds;
+  @Inject
+  @Config("dnsTldUpdateBatchSize")
+  int tldUpdateBatchSize;
+
+  @Inject
+  @Config("readDnsQueueActionRuntime")
+  Duration requestedMaximumDuration;
+
+  @Inject
+  @Named(DNS_PUBLISH_PUSH_QUEUE_NAME)
+  Queue dnsPublishPushQueue;
+
+  @Inject
+  @Parameter(PARAM_JITTER_SECONDS)
+  Optional<Integer> jitterSeconds;
+
   @Inject Clock clock;
   @Inject DnsQueue dnsQueue;
   @Inject HashFunction hashFunction;
   @Inject TaskQueueUtils taskQueueUtils;
-  @Inject ReadDnsQueueAction() {}
+
+  @Inject
+  ReadDnsQueueAction() {}
 
   /** Container for items we pull out of the DNS pull queue and process for fanout. */
   @AutoValue
@@ -210,8 +224,11 @@ public final class ReadDnsQueueAction implements Runnable {
     @AutoValue.Builder
     abstract static class Builder {
       abstract ImmutableSet.Builder<TaskHandle> tasksToKeepBuilder();
+
       abstract ImmutableSet.Builder<String> pausedTldsBuilder();
+
       abstract ImmutableSet.Builder<String> unknownTldsBuilder();
+
       abstract ImmutableSetMultimap.Builder<String, RefreshItem> refreshItemsByTldBuilder();
 
       abstract ClassifiedTasks build();
@@ -314,17 +331,15 @@ public final class ReadDnsQueueAction implements Runnable {
   private void bucketRefreshItems(ImmutableSetMultimap<String, RefreshItem> refreshItemsByTld) {
     // Loop through the multimap by TLD and generate refresh tasks for the hosts and domains for
     // each configured DNS writer.
-    for (Map.Entry<String, Collection<RefreshItem>> tldRefreshItemsEntry
-        : refreshItemsByTld.asMap().entrySet()) {
+    for (Map.Entry<String, Collection<RefreshItem>> tldRefreshItemsEntry :
+        refreshItemsByTld.asMap().entrySet()) {
       String tld = tldRefreshItemsEntry.getKey();
       int numPublishLocks = Registry.get(tld).getNumDnsPublishLocks();
       // 1 lock or less implies no TLD-wide locks, simply enqueue everything under lock 1 of 1
       if (numPublishLocks <= 1) {
         enqueueUpdates(tld, 1, 1, tldRefreshItemsEntry.getValue());
       } else {
-        tldRefreshItemsEntry
-            .getValue()
-            .stream()
+        tldRefreshItemsEntry.getValue().stream()
             .collect(
                 toImmutableSetMultimap(
                     refreshItem -> getLockIndex(tld, numPublishLocks, refreshItem),
@@ -375,15 +390,13 @@ public final class ReadDnsQueueAction implements Runnable {
                 .param(PARAM_REFRESH_REQUEST_CREATED, earliestCreateTime.toString())
                 .param(
                     PARAM_DOMAINS,
-                    chunk
-                        .stream()
+                    chunk.stream()
                         .filter(item -> item.type() == TargetType.DOMAIN)
                         .map(RefreshItem::name)
                         .collect(Collectors.joining(",")))
                 .param(
                     PARAM_HOSTS,
-                    chunk
-                        .stream()
+                    chunk.stream()
                         .filter(item -> item.type() == TargetType.HOST)
                         .map(RefreshItem::name)
                         .collect(Collectors.joining(","))));

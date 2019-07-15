@@ -32,8 +32,7 @@ public final class ExportConstants {
   public static ImmutableSet<String> getBackupKinds() {
     // Back up all entity classes that aren't annotated with @VirtualEntity (never even persisted
     // to Datastore, so they can't be backed up) or @NotBackedUp (intentionally omitted).
-    return EntityClasses.ALL_CLASSES
-        .stream()
+    return EntityClasses.ALL_CLASSES.stream()
         .filter(hasAnnotation(VirtualEntity.class).negate())
         .filter(hasAnnotation(NotBackedUp.class).negate())
         .map(Key::getKind)
@@ -42,8 +41,7 @@ public final class ExportConstants {
 
   /** Returns the names of kinds to import into reporting tools (e.g. BigQuery). */
   public static ImmutableSet<String> getReportingKinds() {
-    return EntityClasses.ALL_CLASSES
-        .stream()
+    return EntityClasses.ALL_CLASSES.stream()
         .filter(hasAnnotation(ReportedOn.class))
         .filter(hasAnnotation(VirtualEntity.class).negate())
         .map(Key::getKind)

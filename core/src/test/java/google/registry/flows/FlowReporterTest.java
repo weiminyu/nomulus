@@ -81,16 +81,16 @@ public class FlowReporterTest extends ShardableTestCase {
     flowReporter.recordToLogs();
     assertThat(parseJsonMap(findFirstLogMessageByPrefix(handler, "FLOW-LOG-SIGNATURE-METADATA: ")))
         .containsExactly(
-              "serverTrid", "server-456",
-              "clientId", "TheRegistrar",
-              "commandType", "info",
-              "resourceType", "domain",
-              "flowClassName", "TestCommandFlow",
-              "targetId", "target.foo",
-              "targetIds", ImmutableList.of("target.foo"),
-              "tld", "foo",
-              "tlds", ImmutableList.of("foo"),
-              "icannActivityReportField", "");
+            "serverTrid", "server-456",
+            "clientId", "TheRegistrar",
+            "commandType", "info",
+            "resourceType", "domain",
+            "flowClassName", "TestCommandFlow",
+            "targetId", "target.foo",
+            "targetIds", ImmutableList.of("target.foo"),
+            "tld", "foo",
+            "tlds", ImmutableList.of("foo"),
+            "icannActivityReportField", "");
   }
 
   @Test
@@ -123,7 +123,6 @@ public class FlowReporterTest extends ShardableTestCase {
     assertThat(json).containsEntry("tld", "");
     assertThat(json).containsEntry("tlds", ImmutableList.of());
   }
-
 
   @Test
   public void testRecordToLogs_metadata_notDomainFlow_noTld() throws Exception {
@@ -162,8 +161,9 @@ public class FlowReporterTest extends ShardableTestCase {
     Map<String, Object> json =
         parseJsonMap(findFirstLogMessageByPrefix(handler, "FLOW-LOG-SIGNATURE-METADATA: "));
     assertThat(json).containsEntry("targetId", "");
-    assertThat(json).containsEntry(
-        "targetIds", ImmutableList.of("target.co.uk", "foo.uk", "bar.uk", "baz.com"));
+    assertThat(json)
+        .containsEntry(
+            "targetIds", ImmutableList.of("target.co.uk", "foo.uk", "bar.uk", "baz.com"));
     assertThat(json).containsEntry("tld", "");
     assertThat(json).containsEntry("tlds", ImmutableList.of("co.uk", "uk", "com"));
   }

@@ -241,8 +241,9 @@ final class DomainBaseToXjcConverter {
           // empty transfer records to get generated for deleted domains.
           // TODO(b/33289763): remove the hasGainingAndLosingRegistrars check in February 2017
           if (hasGainingAndLosingRegistrars(model)) {
-            bean.setTrnData(convertTransferData(model.getTransferData(),
-                model.getRegistrationExpirationTime()));
+            bean.setTrnData(
+                convertTransferData(
+                    model.getTransferData(), model.getRegistrationExpirationTime()));
           }
         }
 
@@ -255,8 +256,7 @@ final class DomainBaseToXjcConverter {
   }
 
   private static boolean hasGainingAndLosingRegistrars(DomainBase model) {
-    return
-        !Strings.isNullOrEmpty(model.getTransferData().getGainingClientId())
+    return !Strings.isNullOrEmpty(model.getTransferData().getGainingClientId())
         && !Strings.isNullOrEmpty(model.getTransferData().getLosingClientId());
   }
 
@@ -264,8 +264,7 @@ final class DomainBaseToXjcConverter {
   private static XjcRdeDomainTransferDataType convertTransferData(
       TransferData model, DateTime domainExpires) {
     XjcRdeDomainTransferDataType bean = new XjcRdeDomainTransferDataType();
-    bean.setTrStatus(
-        XjcEppcomTrStatusType.fromValue(model.getTransferStatus().getXmlName()));
+    bean.setTrStatus(XjcEppcomTrStatusType.fromValue(model.getTransferStatus().getXmlName()));
     bean.setReRr(RdeUtil.makeXjcRdeRrType(model.getGainingClientId()));
     bean.setAcRr(RdeUtil.makeXjcRdeRrType(model.getLosingClientId()));
     bean.setReDate(model.getTransferRequestTime());

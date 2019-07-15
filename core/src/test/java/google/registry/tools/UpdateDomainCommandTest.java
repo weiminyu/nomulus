@@ -123,8 +123,7 @@ public class UpdateDomainCommandTest extends EppToolCommandTestCase<UpdateDomain
             .asBuilder()
             .setNameservers(ImmutableSet.of(Key.create(host2)))
             .build());
-    runCommandForced(
-        "--client=NewRegistrar", nsParam, "example.abc", "example.tld");
+    runCommandForced("--client=NewRegistrar", nsParam, "example.abc", "example.tld");
     eppVerifier
         .verifySent(
             "domain_update_add_two_hosts_remove_one.xml",
@@ -173,8 +172,7 @@ public class UpdateDomainCommandTest extends EppToolCommandTestCase<UpdateDomain
     HostResource host2 = persistActiveHost("ns2.zdns.google");
     ImmutableSet<Key<HostResource>> nameservers =
         ImmutableSet.of(Key.create(host1), Key.create(host2));
-    persistResource(
-        newDomainBase("example.tld").asBuilder().setNameservers(nameservers).build());
+    persistResource(newDomainBase("example.tld").asBuilder().setNameservers(nameservers).build());
     runCommandForced(
         "--client=NewRegistrar", "--nameservers=ns2.zdns.google,ns3.zdns.google", "example.tld");
     eppVerifier.verifySent("domain_update_set_nameservers.xml");
@@ -230,8 +228,7 @@ public class UpdateDomainCommandTest extends EppToolCommandTestCase<UpdateDomain
 
   @Test
   public void testSuccess_setDsRecords() throws Exception {
-    runCommandForced(
-        "--client=NewRegistrar", "--ds_records=1 2 3 abcd,4 5 6 EF01", "example.tld");
+    runCommandForced("--client=NewRegistrar", "--ds_records=1 2 3 abcd,4 5 6 EF01", "example.tld");
     eppVerifier.verifySent("domain_update_set_ds_records.xml");
   }
 
@@ -247,10 +244,7 @@ public class UpdateDomainCommandTest extends EppToolCommandTestCase<UpdateDomain
 
   @Test
   public void testSuccess_clearDsRecords() throws Exception {
-    runCommandForced(
-        "--client=NewRegistrar",
-        "--clear_ds_records",
-        "example.tld");
+    runCommandForced("--client=NewRegistrar", "--clear_ds_records", "example.tld");
     eppVerifier.verifySent("domain_update_clear_ds_records.xml");
   }
 

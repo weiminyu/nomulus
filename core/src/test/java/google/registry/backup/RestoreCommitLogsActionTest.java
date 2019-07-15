@@ -70,10 +70,7 @@ public class RestoreCommitLogsActionTest {
   final RestoreCommitLogsAction action = new RestoreCommitLogsAction();
   final GcsService gcsService = createGcsService();
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Before
   public void init() {
@@ -90,9 +87,10 @@ public class RestoreCommitLogsActionTest {
 
   @Test
   public void testRestore_multipleDiffFiles() throws Exception {
-    ofy().saveWithoutBackup().entities(
-        TestObject.create("previous to keep"),
-        TestObject.create("previous to delete")).now();
+    ofy()
+        .saveWithoutBackup()
+        .entities(TestObject.create("previous to keep"), TestObject.create("previous to delete"))
+        .now();
     // Create 3 transactions, across two diff files.
     // Before: {"previous to keep", "previous to delete"}
     // 1a: Add {"a", "b"}, Delete {"previous to delete"}
@@ -106,28 +104,30 @@ public class RestoreCommitLogsActionTest {
     Key<CommitLogManifest> manifest2Key =
         CommitLogManifest.createKey(getBucketKey(1), now.minusMinutes(1));
     saveDiffFileNotToRestore(now.minusMinutes(2));
-    Iterable<ImmutableObject> file1CommitLogs = saveDiffFile(
-        createCheckpoint(now.minusMinutes(1)),
-        CommitLogManifest.create(
-            getBucketKey(1),
-            now.minusMinutes(3),
-            ImmutableSet.of(Key.create(TestObject.create("previous to delete")))),
-        CommitLogMutation.create(manifest1aKey, TestObject.create("a")),
-        CommitLogMutation.create(manifest1aKey, TestObject.create("b")),
-        CommitLogManifest.create(
-            getBucketKey(2),
-            now.minusMinutes(2),
-            ImmutableSet.of(Key.create(TestObject.create("a")))),
-        CommitLogMutation.create(manifest1bKey, TestObject.create("c")),
-        CommitLogMutation.create(manifest1bKey, TestObject.create("d")));
-    Iterable<ImmutableObject> file2CommitLogs = saveDiffFile(
-        createCheckpoint(now),
-        CommitLogManifest.create(
-            getBucketKey(1),
-            now.minusMinutes(1),
-            ImmutableSet.of(Key.create(TestObject.create("c")))),
-        CommitLogMutation.create(manifest2Key, TestObject.create("e")),
-        CommitLogMutation.create(manifest2Key, TestObject.create("f")));
+    Iterable<ImmutableObject> file1CommitLogs =
+        saveDiffFile(
+            createCheckpoint(now.minusMinutes(1)),
+            CommitLogManifest.create(
+                getBucketKey(1),
+                now.minusMinutes(3),
+                ImmutableSet.of(Key.create(TestObject.create("previous to delete")))),
+            CommitLogMutation.create(manifest1aKey, TestObject.create("a")),
+            CommitLogMutation.create(manifest1aKey, TestObject.create("b")),
+            CommitLogManifest.create(
+                getBucketKey(2),
+                now.minusMinutes(2),
+                ImmutableSet.of(Key.create(TestObject.create("a")))),
+            CommitLogMutation.create(manifest1bKey, TestObject.create("c")),
+            CommitLogMutation.create(manifest1bKey, TestObject.create("d")));
+    Iterable<ImmutableObject> file2CommitLogs =
+        saveDiffFile(
+            createCheckpoint(now),
+            CommitLogManifest.create(
+                getBucketKey(1),
+                now.minusMinutes(1),
+                ImmutableSet.of(Key.create(TestObject.create("c")))),
+            CommitLogMutation.create(manifest2Key, TestObject.create("e")),
+            CommitLogMutation.create(manifest2Key, TestObject.create("f")));
     action.fromTime = now.minusMinutes(1).minusMillis(1);
     action.run();
     ofy().clearSessionCache();
@@ -140,8 +140,7 @@ public class RestoreCommitLogsActionTest {
 
   @Test
   public void testRestore_noManifests() throws Exception {
-    ofy().saveWithoutBackup().entity(
-        TestObject.create("previous to keep")).now();
+    ofy().saveWithoutBackup().entity(TestObject.create("previous to keep")).now();
     saveDiffFileNotToRestore(now.minusMinutes(1));
     Iterable<ImmutableObject> commitLogs = saveDiffFile(createCheckpoint(now));
     action.run();
@@ -158,31 +157,34 @@ public class RestoreCommitLogsActionTest {
     Key<CommitLogBucket> bucketKey = getBucketKey(1);
     Key<CommitLogManifest> manifestKey = CommitLogManifest.createKey(bucketKey, now);
     saveDiffFileNotToRestore(now.minusMinutes(1));
-    Iterable<ImmutableObject> commitLogs = saveDiffFile(
-        createCheckpoint(now),
-        CommitLogManifest.create(bucketKey, now, null),
-        CommitLogMutation.create(manifestKey, TestObject.create("a")),
-        CommitLogMutation.create(manifestKey, TestObject.create("b")));
+    Iterable<ImmutableObject> commitLogs =
+        saveDiffFile(
+            createCheckpoint(now),
+            CommitLogManifest.create(bucketKey, now, null),
+            CommitLogMutation.create(manifestKey, TestObject.create("a")),
+            CommitLogMutation.create(manifestKey, TestObject.create("b")));
     action.run();
     ofy().clearSessionCache();
     assertExpectedIds("previous to keep", "a", "b");
     assertInDatastore(commitLogs);
     assertInDatastore(CommitLogCheckpointRoot.create(now));
     assertCommitLogBuckets(ImmutableMap.of(1, now));
-}
+  }
 
   @Test
   public void testRestore_manifestWithNoMutations() throws Exception {
-    ofy().saveWithoutBackup().entities(
-        TestObject.create("previous to keep"),
-        TestObject.create("previous to delete")).now();
+    ofy()
+        .saveWithoutBackup()
+        .entities(TestObject.create("previous to keep"), TestObject.create("previous to delete"))
+        .now();
     saveDiffFileNotToRestore(now.minusMinutes(1));
-    Iterable<ImmutableObject> commitLogs = saveDiffFile(
-        createCheckpoint(now),
-        CommitLogManifest.create(
-            getBucketKey(1),
-            now,
-            ImmutableSet.of(Key.create(TestObject.create("previous to delete")))));
+    Iterable<ImmutableObject> commitLogs =
+        saveDiffFile(
+            createCheckpoint(now),
+            CommitLogManifest.create(
+                getBucketKey(1),
+                now,
+                ImmutableSet.of(Key.create(TestObject.create("previous to delete")))));
     action.run();
     ofy().clearSessionCache();
     assertExpectedIds("previous to keep");
@@ -194,12 +196,10 @@ public class RestoreCommitLogsActionTest {
   // This is a pathological case that shouldn't be possible, but we should be robust to it.
   @Test
   public void testRestore_manifestWithNoMutationsOrDeletions() throws Exception {
-    ofy().saveWithoutBackup().entities(
-        TestObject.create("previous to keep")).now();
+    ofy().saveWithoutBackup().entities(TestObject.create("previous to keep")).now();
     saveDiffFileNotToRestore(now.minusMinutes(1));
-    Iterable<ImmutableObject> commitLogs = saveDiffFile(
-        createCheckpoint(now),
-        CommitLogManifest.create(getBucketKey(1), now, null));
+    Iterable<ImmutableObject> commitLogs =
+        saveDiffFile(createCheckpoint(now), CommitLogManifest.create(getBucketKey(1), now, null));
     action.run();
     ofy().clearSessionCache();
     assertExpectedIds("previous to keep");
@@ -213,10 +213,11 @@ public class RestoreCommitLogsActionTest {
     ofy().saveWithoutBackup().entity(TestObject.create("existing", "a")).now();
     Key<CommitLogManifest> manifestKey = CommitLogManifest.createKey(getBucketKey(1), now);
     saveDiffFileNotToRestore(now.minusMinutes(1));
-    Iterable<ImmutableObject> commitLogs = saveDiffFile(
-        createCheckpoint(now),
-        CommitLogManifest.create(getBucketKey(1), now, null),
-        CommitLogMutation.create(manifestKey, TestObject.create("existing", "b")));
+    Iterable<ImmutableObject> commitLogs =
+        saveDiffFile(
+            createCheckpoint(now),
+            CommitLogManifest.create(getBucketKey(1), now, null),
+            CommitLogMutation.create(manifestKey, TestObject.create("existing", "b")));
     action.run();
     ofy().clearSessionCache();
     assertThat(ofy().load().entity(TestObject.create("existing")).now().getField()).isEqualTo("b");
@@ -230,12 +231,13 @@ public class RestoreCommitLogsActionTest {
   public void testRestore_deleteMissingEntity() throws Exception {
     ofy().saveWithoutBackup().entity(TestObject.create("previous to keep", "a")).now();
     saveDiffFileNotToRestore(now.minusMinutes(1));
-    Iterable<ImmutableObject> commitLogs = saveDiffFile(
-        createCheckpoint(now),
-        CommitLogManifest.create(
-            getBucketKey(1),
-            now,
-            ImmutableSet.of(Key.create(TestObject.create("previous to delete")))));
+    Iterable<ImmutableObject> commitLogs =
+        saveDiffFile(
+            createCheckpoint(now),
+            CommitLogManifest.create(
+                getBucketKey(1),
+                now,
+                ImmutableSet.of(Key.create(TestObject.create("previous to delete")))));
     action.run();
     ofy().clearSessionCache();
     assertExpectedIds("previous to keep");
@@ -288,9 +290,11 @@ public class RestoreCommitLogsActionTest {
   }
 
   private void assertCommitLogBuckets(Map<Integer, DateTime> bucketIdsAndTimestamps) {
-    Map<Long, CommitLogBucket> buckets = ofy().load()
-        .type(CommitLogBucket.class)
-        .ids(Longs.asList(Longs.toArray(CommitLogBucket.getBucketIds())));
+    Map<Long, CommitLogBucket> buckets =
+        ofy()
+            .load()
+            .type(CommitLogBucket.class)
+            .ids(Longs.asList(Longs.toArray(CommitLogBucket.getBucketIds())));
     assertThat(buckets).hasSize(bucketIdsAndTimestamps.size());
     for (Entry<Integer, DateTime> bucketIdAndTimestamp : bucketIdsAndTimestamps.entrySet()) {
       assertThat(buckets.get((long) bucketIdAndTimestamp.getKey()).getLastWrittenTime())

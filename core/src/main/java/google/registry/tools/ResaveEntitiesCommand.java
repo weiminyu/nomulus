@@ -29,9 +29,7 @@ import java.util.List;
  * <p>This triggers @OnSave changes. If the entity was directly edited in the Datastore viewer, this
  * can be used to make sure that the commit logs reflect the new state.
  */
-@Parameters(
-    separators = " =",
-    commandDescription = "Load and resave entities by websafe key")
+@Parameters(separators = " =", commandDescription = "Load and resave entities by websafe key")
 public final class ResaveEntitiesCommand extends MutatingCommand {
 
   /** The number of resaves to do in a single transaction. */

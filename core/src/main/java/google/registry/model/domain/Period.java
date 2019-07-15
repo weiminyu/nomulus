@@ -24,11 +24,9 @@ import javax.xml.bind.annotation.XmlValue;
 @Embed
 public class Period extends ImmutableObject {
 
-  @XmlAttribute
-  Unit unit;
+  @XmlAttribute Unit unit;
 
-  @XmlValue
-  Integer value;
+  @XmlValue Integer value;
 
   public Unit getUnit() {
     return unit;

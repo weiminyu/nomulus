@@ -21,8 +21,8 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 /**
- * Results of authentication for a given HTTP request, as emitted by an
- * {@link AuthenticationMechanism}.
+ * Results of authentication for a given HTTP request, as emitted by an {@link
+ * AuthenticationMechanism}.
  */
 @AutoValue
 public abstract class AuthResult {
@@ -66,6 +66,5 @@ public abstract class AuthResult {
    * returns NOT_AUTHENTICATED in this case, as opposed to absent() if authentication failed and was
    * required. So as a return from an authorization check, this can be treated as a success.
    */
-  public static final AuthResult NOT_AUTHENTICATED =
-      AuthResult.create(AuthLevel.NONE);
+  public static final AuthResult NOT_AUTHENTICATED = AuthResult.create(AuthLevel.NONE);
 }

@@ -39,9 +39,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/**
- * Unit tests for {@link IcannHttpReporter}.
- */
+/** Unit tests for {@link IcannHttpReporter}. */
 @RunWith(JUnit4.class)
 public class IcannHttpReporterTest {
 
@@ -52,20 +50,21 @@ public class IcannHttpReporterTest {
   private MockLowLevelHttpRequest mockRequest;
   @Rule public AppEngineRule appEngineRule = new AppEngineRule.Builder().withDatastore().build();
 
-  private MockHttpTransport createMockTransport (final ByteSource iirdeaResponse) {
+  private MockHttpTransport createMockTransport(final ByteSource iirdeaResponse) {
     return new MockHttpTransport() {
       @Override
       public LowLevelHttpRequest buildRequest(String method, String url) {
-        mockRequest = new MockLowLevelHttpRequest() {
-          @Override
-          public LowLevelHttpResponse execute() throws IOException {
-            MockLowLevelHttpResponse response = new MockLowLevelHttpResponse();
-            response.setStatusCode(200);
-            response.setContentType(PLAIN_TEXT_UTF_8.toString());
-            response.setContent(iirdeaResponse.read());
-            return response;
-          }
-        };
+        mockRequest =
+            new MockLowLevelHttpRequest() {
+              @Override
+              public LowLevelHttpResponse execute() throws IOException {
+                MockLowLevelHttpResponse response = new MockLowLevelHttpResponse();
+                response.setStatusCode(200);
+                response.setContentType(PLAIN_TEXT_UTF_8.toString());
+                response.setContent(iirdeaResponse.read());
+                return response;
+              }
+            };
         mockRequest.setUrl(url);
         return mockRequest;
       }

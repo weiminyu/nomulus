@@ -77,19 +77,22 @@ import org.junit.runners.JUnit4;
 public abstract class FlowTestCase<F extends Flow> extends ShardableTestCase {
 
   /** Whether to actually write to Datastore or just simulate. */
-  public enum CommitMode { LIVE, DRY_RUN }
+  public enum CommitMode {
+    LIVE,
+    DRY_RUN
+  }
 
   /** Whether to run in normal or superuser mode. */
-  public enum UserPrivileges { NORMAL, SUPERUSER }
+  public enum UserPrivileges {
+    NORMAL,
+    SUPERUSER
+  }
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withTaskQueue().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   protected EppLoader eppLoader;
   protected SessionMetadata sessionMetadata;
@@ -108,7 +111,7 @@ public abstract class FlowTestCase<F extends Flow> extends ShardableTestCase {
     ofy().saveWithoutBackup().entity(new ClaimsListSingleton()).now();
     // For transactional flows
     inject.setStaticField(Ofy.class, "clock", clock);
- }
+  }
 
   protected void removeServiceExtensionUri(String uri) {
     sessionMetadata.setServiceExtensionUris(
@@ -173,13 +176,13 @@ public abstract class FlowTestCase<F extends Flow> extends ShardableTestCase {
   }
 
   /**
-   * Helper to facilitate comparison of maps of GracePeriods to BillingEvents.  This takes a map of
-   * GracePeriods to BillingEvents and returns a map of the same entries that ignores the keys
-   * on the grace periods and the IDs on the billing events (by setting them all to the same dummy
+   * Helper to facilitate comparison of maps of GracePeriods to BillingEvents. This takes a map of
+   * GracePeriods to BillingEvents and returns a map of the same entries that ignores the keys on
+   * the grace periods and the IDs on the billing events (by setting them all to the same dummy
    * values), since they will vary between instantiations even when the other data is the same.
    */
-  private ImmutableMap<GracePeriod, BillingEvent>
-      canonicalizeGracePeriods(ImmutableMap<GracePeriod, ? extends BillingEvent> gracePeriods) {
+  private ImmutableMap<GracePeriod, BillingEvent> canonicalizeGracePeriods(
+      ImmutableMap<GracePeriod, ? extends BillingEvent> gracePeriods) {
     ImmutableMap.Builder<GracePeriod, BillingEvent> builder = new ImmutableMap.Builder<>();
     for (Map.Entry<GracePeriod, ? extends BillingEvent> entry : gracePeriods.entrySet()) {
       builder.put(
@@ -206,20 +209,17 @@ public abstract class FlowTestCase<F extends Flow> extends ShardableTestCase {
   }
 
   /**
-   * Assert that the actual grace periods and the corresponding billing events referenced from
-   * their keys match the expected map of grace periods to billing events.  For the expected map,
-   * the keys on the grace periods and IDs on the billing events are ignored.
+   * Assert that the actual grace periods and the corresponding billing events referenced from their
+   * keys match the expected map of grace periods to billing events. For the expected map, the keys
+   * on the grace periods and IDs on the billing events are ignored.
    */
   public void assertGracePeriods(
-      Iterable<GracePeriod> actual,
-      ImmutableMap<GracePeriod, ? extends BillingEvent> expected) {
+      Iterable<GracePeriod> actual, ImmutableMap<GracePeriod, ? extends BillingEvent> expected) {
     assertThat(canonicalizeGracePeriods(Maps.toMap(actual, FlowTestCase::expandGracePeriod)))
         .isEqualTo(canonicalizeGracePeriods(expected));
   }
 
-  public void assertPollMessages(
-      String clientId,
-      PollMessage... expected) {
+  public void assertPollMessages(String clientId, PollMessage... expected) {
     assertPollMessagesHelper(getPollMessages(clientId), expected);
   }
 
@@ -242,7 +242,7 @@ public abstract class FlowTestCase<F extends Flow> extends ShardableTestCase {
     eppMetricBuilder = EppMetric.builderForRequest(clock);
     // Assert that the xml triggers the flow we expect.
     assertThat(FlowPicker.getFlowClass(eppLoader.getEpp()))
-        .isEqualTo(new TypeInstantiator<F>(getClass()){}.getExactType());
+        .isEqualTo(new TypeInstantiator<F>(getClass()) {}.getExactType());
     // Run the flow.
     TmchXmlSignature tmchXmlSignature =
         testTmchXmlSignature != null
@@ -305,8 +305,7 @@ public abstract class FlowTestCase<F extends Flow> extends ShardableTestCase {
       throw new Exception(
           String.format(
               "Invalid xml.\nExpected:\n%s\n\nActual:\n%s\n",
-              xml,
-              Arrays.toString(marshal(output, ValidationMode.LENIENT))),
+              xml, Arrays.toString(marshal(output, ValidationMode.LENIENT))),
           e);
     }
     // Clear the cache so that we don't see stale results in tests.

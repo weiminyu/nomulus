@@ -198,8 +198,6 @@ public final class ComparatorKeyring extends ComparingInvocationHandler<Keyring>
 
     // We need to be careful what information we output here. The private key should be private, and
     // I'm not sure what is safe to put in the logs.
-    return MoreObjects.toStringHelper(PGPPrivateKey.class)
-        .add("keyId", a.getKeyID())
-        .toString();
+    return MoreObjects.toStringHelper(PGPPrivateKey.class).add("keyId", a.getKeyID()).toString();
   }
 }

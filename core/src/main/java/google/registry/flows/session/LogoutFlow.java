@@ -36,11 +36,13 @@ public class LogoutFlow implements Flow {
   @Inject @ClientId String clientId;
   @Inject SessionMetadata sessionMetadata;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject LogoutFlow() {}
+
+  @Inject
+  LogoutFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
-    extensionManager.validate();  // There are no legal extensions for this flow.
+    extensionManager.validate(); // There are no legal extensions for this flow.
     validateClientIsLoggedIn(clientId);
     sessionMetadata.invalidate();
     return responseBuilder.setResultFromCode(SUCCESS_AND_CLOSE).build();

@@ -23,19 +23,14 @@ import org.joda.time.Duration;
 @Module
 public class DnsUpdateConfigModule {
 
-  /**
-   * Host that receives DNS updates from the registry.
-   * Usually a "hidden master" for the TLDs.
-   */
+  /** Host that receives DNS updates from the registry. Usually a "hidden master" for the TLDs. */
   @Provides
   @Config("dnsUpdateHost")
   public static String provideDnsUpdateHost() {
     return "localhost";
   }
 
-  /**
-   * Timeout on the socket for DNS update requests.
-   */
+  /** Timeout on the socket for DNS update requests. */
   @Provides
   @Config("dnsUpdateTimeout")
   public static Duration provideDnsUpdateTimeout() {

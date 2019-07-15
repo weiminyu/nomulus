@@ -71,9 +71,7 @@ public abstract class BillingEvent extends ImmutableObject
     ALLOCATION,
     ANCHOR_TENANT,
     AUTO_RENEW,
-    /**
-     * Landrush billing events are historical only and are no longer created.
-     */
+    /** Landrush billing events are historical only and are no longer created. */
     LANDRUSH,
     /**
      * This flag is used on create {@link OneTime} billing events for domains that were reserved.
@@ -92,20 +90,15 @@ public abstract class BillingEvent extends ImmutableObject
   }
 
   /** Entity id. */
-  @Id
-  long id;
+  @Id long id;
 
-  @Parent
-  @DoNotHydrate
-  Key<HistoryEntry> parent;
+  @Parent @DoNotHydrate Key<HistoryEntry> parent;
 
   /** The registrar to bill. */
-  @Index
-  String clientId;
+  @Index String clientId;
 
   /** When this event was created. For recurring events, this is also the recurrence start time. */
-  @Index
-  DateTime eventTime;
+  @Index DateTime eventTime;
 
   /** The reason for the bill. */
   Reason reason;
@@ -113,8 +106,7 @@ public abstract class BillingEvent extends ImmutableObject
   /** The fully qualified domain name of the domain that the bill is for. */
   String targetId;
 
-  @Nullable
-  Set<Flag> flags;
+  @Nullable Set<Flag> flags;
 
   public String getClientId() {
     return clientId;
@@ -219,12 +211,11 @@ public abstract class BillingEvent extends ImmutableObject
     Money cost;
 
     /** When the cost should be billed. */
-    @Index
-    DateTime billingTime;
+    @Index DateTime billingTime;
 
     /**
-     * The period in years of the action being billed for, if applicable, otherwise null.
-     * Used for financial reporting.
+     * The period in years of the action being billed for, if applicable, otherwise null. Used for
+     * financial reporting.
      */
     @IgnoreSave(IfNull.class)
     Integer periodYears = null;
@@ -235,13 +226,12 @@ public abstract class BillingEvent extends ImmutableObject
      * needs to be undone, a query on this field will return the complete set of potentially bad
      * events.
      */
-    @Index
-    DateTime syntheticCreationTime;
+    @Index DateTime syntheticCreationTime;
 
     /**
      * For {@link Flag#SYNTHETIC} events, a {@link Key} to the {@link BillingEvent} from which this
-     * OneTime was created. This is needed in order to properly match billing events against
-     * {@link Cancellation}s.
+     * OneTime was created. This is needed in order to properly match billing events against {@link
+     * Cancellation}s.
      */
     Key<? extends BillingEvent> cancellationMatchingBillingEvent;
 
@@ -364,11 +354,10 @@ public abstract class BillingEvent extends ImmutableObject
   public static class Recurring extends BillingEvent {
 
     /**
-     * The billing event recurs every year between {@link #eventTime} and this time on the
-     * [month, day, time] specified in {@link #recurrenceTimeOfYear}.
+     * The billing event recurs every year between {@link #eventTime} and this time on the [month,
+     * day, time] specified in {@link #recurrenceTimeOfYear}.
      */
-    @Index
-    DateTime recurrenceEndTime;
+    @Index DateTime recurrenceEndTime;
 
     /**
      * The eventTime recurs every year on this [month, day, time] between {@link #eventTime} and
@@ -383,8 +372,7 @@ public abstract class BillingEvent extends ImmutableObject
      * (same day of year, which can be 365 or 366 days later) which is what {@link TimeOfYear} can
      * model, whereas the billing time is a fixed {@link org.joda.time.Duration} later.
      */
-    @Index
-    TimeOfYear recurrenceTimeOfYear;
+    @Index TimeOfYear recurrenceTimeOfYear;
 
     public DateTime getRecurrenceEndTime() {
       return recurrenceEndTime;
@@ -437,8 +425,7 @@ public abstract class BillingEvent extends ImmutableObject
   public static class Cancellation extends BillingEvent {
 
     /** The billing time of the charge that is being cancelled. */
-    @Index
-    DateTime billingTime;
+    @Index DateTime billingTime;
 
     /**
      * The one-time billing event to cancel, or null for autorenew cancellations.
@@ -480,16 +467,18 @@ public abstract class BillingEvent extends ImmutableObject
      */
     public static BillingEvent.Cancellation forGracePeriod(
         GracePeriod gracePeriod, HistoryEntry historyEntry, String targetId) {
-      checkArgument(gracePeriod.hasBillingEvent(),
+      checkArgument(
+          gracePeriod.hasBillingEvent(),
           "Cannot create cancellation for grace period without billing event");
-      BillingEvent.Cancellation.Builder builder = new BillingEvent.Cancellation.Builder()
-          .setReason(checkNotNull(GRACE_PERIOD_TO_REASON.get(gracePeriod.getType())))
-          .setTargetId(targetId)
-          .setClientId(gracePeriod.getClientId())
-          .setEventTime(historyEntry.getModificationTime())
-          // The charge being cancelled will take place at the grace period's expiration time.
-          .setBillingTime(gracePeriod.getExpirationTime())
-          .setParent(historyEntry);
+      BillingEvent.Cancellation.Builder builder =
+          new BillingEvent.Cancellation.Builder()
+              .setReason(checkNotNull(GRACE_PERIOD_TO_REASON.get(gracePeriod.getType())))
+              .setTargetId(targetId)
+              .setClientId(gracePeriod.getClientId())
+              .setEventTime(historyEntry.getModificationTime())
+              // The charge being cancelled will take place at the grace period's expiration time.
+              .setBillingTime(gracePeriod.getExpirationTime())
+              .setParent(historyEntry);
       // Set the grace period's billing event using the appropriate Cancellation builder method.
       if (gracePeriod.getOneTimeBillingEvent() != null) {
         builder.setOneTimeEventKey(gracePeriod.getOneTimeBillingEvent());
@@ -533,16 +522,15 @@ public abstract class BillingEvent extends ImmutableObject
         Cancellation instance = getInstance();
         checkNotNull(instance.billingTime, "Must set billing time");
         checkNotNull(instance.reason, "Must set reason");
-        checkState((instance.refOneTime == null) != (instance.refRecurring == null),
+        checkState(
+            (instance.refOneTime == null) != (instance.refRecurring == null),
             "Cancellations must have exactly one billing event key set");
         return super.build();
       }
     }
   }
 
-  /**
-   * An event representing a modification of an existing one-time billing event.
-   */
+  /** An event representing a modification of an existing one-time billing event. */
   @ReportedOn
   @Entity
   public static class Modification extends BillingEvent {
@@ -628,9 +616,8 @@ public abstract class BillingEvent extends ImmutableObject
         checkNotNull(instance.reason);
         checkNotNull(instance.eventRef);
         BillingEvent.OneTime billingEvent = ofy().load().key(instance.eventRef).now();
-        checkArgument(Objects.equals(
-            instance.cost.getCurrencyUnit(),
-            billingEvent.cost.getCurrencyUnit()),
+        checkArgument(
+            Objects.equals(instance.cost.getCurrencyUnit(), billingEvent.cost.getCurrencyUnit()),
             "Referenced billing event is in a different currency");
         return super.build();
       }

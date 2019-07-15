@@ -170,8 +170,7 @@ public class KmsKeyring implements Keyring {
     try {
       return KeySerializer.deserializeKeyPair(getDecryptedData(keyLabel.getLabel()));
     } catch (IOException | PGPException e) {
-      throw new KeyringException(
-          String.format("Could not parse private keyLabel %s", keyLabel), e);
+      throw new KeyringException(String.format("Could not parse private keyLabel %s", keyLabel), e);
     }
   }
 

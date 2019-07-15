@@ -62,14 +62,12 @@ final class AckPollMessagesCommand implements CommandWithRemoteApi {
   @Parameter(
       names = {"-c", "--client"},
       description = "Client identifier of the registrar whose poll messages should be ACKed",
-      required = true
-  )
+      required = true)
   private String clientId;
 
   @Parameter(
       names = {"-m", "--message"},
-      description = "A string that poll messages to be ACKed must contain (else all will be ACKed)"
-  )
+      description = "A string that poll messages to be ACKed must contain (else all will be ACKed)")
   private String message;
 
   @Parameter(

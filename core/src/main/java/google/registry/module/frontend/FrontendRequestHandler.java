@@ -22,7 +22,8 @@ import javax.inject.Provider;
 /** Request handler for the frontend module. */
 public class FrontendRequestHandler extends RequestHandler<FrontendRequestComponent> {
 
-  @Inject FrontendRequestHandler(
+  @Inject
+  FrontendRequestHandler(
       Provider<FrontendRequestComponent.Builder> componentBuilderProvider,
       RequestAuthenticator requestAuthenticator) {
     super(componentBuilderProvider, requestAuthenticator);

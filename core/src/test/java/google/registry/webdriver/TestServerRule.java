@@ -73,13 +73,14 @@ public final class TestServerRule extends ExternalResource {
     this.fixtures = fixtures;
     // We create an GAE-Admin user, and then use AuthenticatedRegistrarAccessor.bypassAdminCheck to
     // choose whether the user is an admin or not.
-    this.appEngineRule = AppEngineRule.builder()
-        .withDatastore()
-        .withLocalModules()
-        .withUrlFetch()
-        .withTaskQueue()
-        .withUserService(UserInfo.createAdmin(email, THE_REGISTRAR_GAE_USER_ID))
-        .build();
+    this.appEngineRule =
+        AppEngineRule.builder()
+            .withDatastore()
+            .withLocalModules()
+            .withUrlFetch()
+            .withTaskQueue()
+            .withUserService(UserInfo.createAdmin(email, THE_REGISTRAR_GAE_USER_ID))
+            .build();
   }
 
   @Override
@@ -148,8 +149,8 @@ public final class TestServerRule extends ExternalResource {
   /**
    * Runs arbitrary code inside server event loop thread.
    *
-   * <p>You should use this method when you want to do things like change Datastore, because the
-   * App Engine testing environment is thread-local.
+   * <p>You should use this method when you want to do things like change Datastore, because the App
+   * Engine testing environment is thread-local.
    */
   public <T> T runInAppEngineEnvironment(Callable<T> callback) throws Throwable {
     FutureTask<T> job = new FutureTask<>(callback);
@@ -164,9 +165,7 @@ public final class TestServerRule extends ExternalResource {
     @Override
     public void run() {
       try {
-        appEngineRule
-            .apply(this, Description.EMPTY)
-            .evaluate();
+        appEngineRule.apply(this, Description.EMPTY).evaluate();
       } catch (InterruptedException e) {
         // This is what we expect to happen.
       } catch (Throwable e) {
@@ -212,7 +211,6 @@ public final class TestServerRule extends ExternalResource {
    *
    * <p>This builder has three required fields: {@link #setRunfiles}, {@link #setRoutes}, and {@link
    * #setFilters}.
-   *
    */
   public static final class Builder {
     private ImmutableMap<String, Path> runfiles;

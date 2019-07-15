@@ -42,8 +42,10 @@ public final class WhoisException extends Exception implements WhoisResponse {
    */
   WhoisException(DateTime timestamp, int status, String message, @Nullable Throwable cause) {
     super(message, cause);
-    checkArgument(300 <= status && status < 700,
-        "WhoisException status must be a non-2xx HTTP status code: %s", status);
+    checkArgument(
+        300 <= status && status < 700,
+        "WhoisException status must be a non-2xx HTTP status code: %s",
+        status);
     this.timestamp = checkNotNull(timestamp, "timestamp");
     this.status = status;
   }
@@ -61,11 +63,12 @@ public final class WhoisException extends Exception implements WhoisResponse {
 
   @Override
   public WhoisResponseResults getResponse(boolean preferUnicode, String disclaimer) {
-    String plaintext = new WhoisResponseImpl.BasicEmitter()
-        .emitRawLine(getMessage())
-        .emitLastUpdated(getTimestamp())
-        .emitFooter(disclaimer)
-        .toString();
+    String plaintext =
+        new WhoisResponseImpl.BasicEmitter()
+            .emitRawLine(getMessage())
+            .emitLastUpdated(getTimestamp())
+            .emitFooter(disclaimer)
+            .toString();
     return WhoisResponseResults.create(plaintext, 0);
   }
 

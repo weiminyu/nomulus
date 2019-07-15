@@ -29,10 +29,7 @@ final class DeleteHostCommand extends MutatingEppToolCommand {
       required = true)
   String clientId;
 
-  @Parameter(
-      names = "--host",
-      description = "Host name to delete.",
-      required = true)
+  @Parameter(names = "--host", description = "Host name to delete.", required = true)
   private String hostName;
 
   @Parameter(
@@ -50,9 +47,11 @@ final class DeleteHostCommand extends MutatingEppToolCommand {
   @Override
   protected void initMutatingEppToolCommand() {
     setSoyTemplate(DeleteHostSoyInfo.getInstance(), DeleteHostSoyInfo.DELETEHOST);
-    addSoyRecord(clientId, new SoyMapData(
-        "hostName", hostName,
-        "reason", reason,
-        "requestedByRegistrar", requestedByRegistrar));
+    addSoyRecord(
+        clientId,
+        new SoyMapData(
+            "hostName", hostName,
+            "reason", reason,
+            "requestedByRegistrar", requestedByRegistrar));
   }
 }

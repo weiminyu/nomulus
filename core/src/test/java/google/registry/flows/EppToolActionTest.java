@@ -39,13 +39,14 @@ public class EppToolActionTest {
     action.xml = "<xml>";
     action.run();
     ArgumentCaptor<SessionMetadata> captor = ArgumentCaptor.forClass(SessionMetadata.class);
-    verify(action.eppRequestHandler).executeEpp(
-        captor.capture(),
-        isA(PasswordOnlyTransportCredentials.class),
-        eq(EppRequestSource.TOOL),
-        eq(isDryRun),
-        eq(isSuperuser),
-        eq(action.xml.getBytes(UTF_8)));
+    verify(action.eppRequestHandler)
+        .executeEpp(
+            captor.capture(),
+            isA(PasswordOnlyTransportCredentials.class),
+            eq(EppRequestSource.TOOL),
+            eq(isDryRun),
+            eq(isSuperuser),
+            eq(action.xml.getBytes(UTF_8)));
     assertThat(captor.getValue().getClientId()).isEqualTo("ClientIdentifier");
   }
 

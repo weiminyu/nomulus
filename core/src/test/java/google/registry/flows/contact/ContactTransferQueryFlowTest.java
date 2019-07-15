@@ -55,7 +55,8 @@ public class ContactTransferQueryFlowTest
     // Setup done; run the test.
     assertTransactionalFlow(false);
     runFlowAssertResponse(loadFile(expectedXmlFilename));
-    assertAboutContacts().that(reloadResourceByForeignKey(clock.nowUtc().minusDays(1)))
+    assertAboutContacts()
+        .that(reloadResourceByForeignKey(clock.nowUtc().minusDays(1)))
         .hasOneHistoryEntryEachOfTypes(HistoryEntry.Type.CONTACT_TRANSFER_REQUEST);
     assertNoBillingEvents();
   }
@@ -87,52 +88,52 @@ public class ContactTransferQueryFlowTest
   @Test
   public void testSuccess_withAuthinfo() throws Exception {
     setClientIdForFlow("ClientZ");
-    doSuccessfulTest("contact_transfer_query_with_authinfo.xml",
-        "contact_transfer_query_response.xml");
+    doSuccessfulTest(
+        "contact_transfer_query_with_authinfo.xml", "contact_transfer_query_response.xml");
   }
 
   @Test
   public void testSuccess_clientApproved() throws Exception {
     changeTransferStatus(TransferStatus.CLIENT_APPROVED);
-    doSuccessfulTest("contact_transfer_query.xml",
-        "contact_transfer_query_response_client_approved.xml");
+    doSuccessfulTest(
+        "contact_transfer_query.xml", "contact_transfer_query_response_client_approved.xml");
   }
 
- @Test
+  @Test
   public void testSuccess_clientRejected() throws Exception {
     changeTransferStatus(TransferStatus.CLIENT_REJECTED);
-    doSuccessfulTest("contact_transfer_query.xml",
-        "contact_transfer_query_response_client_rejected.xml");
+    doSuccessfulTest(
+        "contact_transfer_query.xml", "contact_transfer_query_response_client_rejected.xml");
   }
 
- @Test
+  @Test
   public void testSuccess_clientCancelled() throws Exception {
     changeTransferStatus(TransferStatus.CLIENT_CANCELLED);
-    doSuccessfulTest("contact_transfer_query.xml",
-        "contact_transfer_query_response_client_cancelled.xml");
+    doSuccessfulTest(
+        "contact_transfer_query.xml", "contact_transfer_query_response_client_cancelled.xml");
   }
 
   @Test
   public void testSuccess_serverApproved() throws Exception {
     changeTransferStatus(TransferStatus.SERVER_APPROVED);
-    doSuccessfulTest("contact_transfer_query.xml",
-        "contact_transfer_query_response_server_approved.xml");
+    doSuccessfulTest(
+        "contact_transfer_query.xml", "contact_transfer_query_response_server_approved.xml");
   }
 
   @Test
   public void testSuccess_serverCancelled() throws Exception {
     changeTransferStatus(TransferStatus.SERVER_CANCELLED);
-    doSuccessfulTest("contact_transfer_query.xml",
-        "contact_transfer_query_response_server_cancelled.xml");
+    doSuccessfulTest(
+        "contact_transfer_query.xml", "contact_transfer_query_response_server_cancelled.xml");
   }
 
   @Test
   public void testFailure_pendingDeleteContact() throws Exception {
     changeTransferStatus(TransferStatus.SERVER_CANCELLED);
-    contact = persistResource(
-        contact.asBuilder().setDeletionTime(clock.nowUtc().plusDays(1)).build());
-    doSuccessfulTest("contact_transfer_query.xml",
-        "contact_transfer_query_response_server_cancelled.xml");
+    contact =
+        persistResource(contact.asBuilder().setDeletionTime(clock.nowUtc().plusDays(1)).build());
+    doSuccessfulTest(
+        "contact_transfer_query.xml", "contact_transfer_query_response_server_cancelled.xml");
   }
 
   @Test

@@ -90,56 +90,66 @@ public class FlowPicker {
     /** Get the flow associated with this {@link EppInput} or return null to signal no match. */
     Class<? extends Flow> get(EppInput eppInput) {
       InnerCommand innerCommand = eppInput.getCommandWrapper().getCommand();
-      return get(eppInput, innerCommand, (innerCommand instanceof ResourceCommandWrapper)
-          ? ((ResourceCommandWrapper) innerCommand).getResourceCommand() : null);
+      return get(
+          eppInput,
+          innerCommand,
+          (innerCommand instanceof ResourceCommandWrapper)
+              ? ((ResourceCommandWrapper) innerCommand).getResourceCommand()
+              : null);
     }
 
     /**
-     * Subclasses need to implement this to examine the parameters and choose a flow (or null if
-     * the subclass doesn't know of an appropriate flow.
+     * Subclasses need to implement this to examine the parameters and choose a flow (or null if the
+     * subclass doesn't know of an appropriate flow.
      */
     abstract Class<? extends Flow> get(
         EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand);
   }
 
   /** The hello flow is keyed on a special {@code CommandWrapper} type. */
-  private static final FlowProvider HELLO_FLOW_PROVIDER = new FlowProvider() {
-    @Override
-    Class<? extends Flow> get(
-        EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
-      return eppInput.getCommandWrapper() instanceof Hello ? HelloFlow.class : null;
-    }};
+  private static final FlowProvider HELLO_FLOW_PROVIDER =
+      new FlowProvider() {
+        @Override
+        Class<? extends Flow> get(
+            EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
+          return eppInput.getCommandWrapper() instanceof Hello ? HelloFlow.class : null;
+        }
+      };
 
   /** Session flows like login and logout are keyed only on the {@link InnerCommand} type. */
-  private static final FlowProvider SESSION_FLOW_PROVIDER = new FlowProvider() {
-    private final Map<Class<?>, Class<? extends Flow>> commandFlows =
-      ImmutableMap.of(
-          Login.class, LoginFlow.class,
-          Logout.class, LogoutFlow.class);
+  private static final FlowProvider SESSION_FLOW_PROVIDER =
+      new FlowProvider() {
+        private final Map<Class<?>, Class<? extends Flow>> commandFlows =
+            ImmutableMap.of(
+                Login.class, LoginFlow.class,
+                Logout.class, LogoutFlow.class);
 
-    @Override
-    Class<? extends Flow> get(
-        EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
-      return innerCommand == null ? null : commandFlows.get(innerCommand.getClass());
-    }};
+        @Override
+        Class<? extends Flow> get(
+            EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
+          return innerCommand == null ? null : commandFlows.get(innerCommand.getClass());
+        }
+      };
 
   /** Poll flows have an {@link InnerCommand} of type {@link Poll}. */
-  private static final FlowProvider POLL_FLOW_PROVIDER = new FlowProvider() {
-    @Override
-    Class<? extends Flow> get(
-        EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
-      if (!(innerCommand instanceof Poll)) {
-        return null;
-      }
-      switch (((Poll) innerCommand).getPollOp()) {
-        case ACK:
-          return PollAckFlow.class;
-        case REQUEST:
-          return PollRequestFlow.class;
-        default:
-          return UnimplementedFlow.class;
-      }
-    }};
+  private static final FlowProvider POLL_FLOW_PROVIDER =
+      new FlowProvider() {
+        @Override
+        Class<? extends Flow> get(
+            EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
+          if (!(innerCommand instanceof Poll)) {
+            return null;
+          }
+          switch (((Poll) innerCommand).getPollOp()) {
+            case ACK:
+              return PollAckFlow.class;
+            case REQUEST:
+              return PollRequestFlow.class;
+            default:
+              return UnimplementedFlow.class;
+          }
+        }
+      };
 
   /**
    * The domain restore command is technically a domain {@literal <update>}, but logically a totally
@@ -148,23 +158,25 @@ public class FlowPicker {
    * <p>This provider must be tried before {@link #RESOURCE_CRUD_FLOW_PROVIDER}. Otherwise, the
    * regular domain update flow will match first.
    */
-  private static final FlowProvider DOMAIN_RESTORE_FLOW_PROVIDER = new FlowProvider() {
-    @Override
-    Class<? extends Flow> get(
-        EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
-      if (!(resourceCommand instanceof DomainCommand.Update)) {
-        return null;
-      }
-      Optional<RgpUpdateExtension> rgpUpdateExtension =
-          eppInput.getSingleExtension(RgpUpdateExtension.class);
-      if (!rgpUpdateExtension.isPresent()) {
-        return null;
-      }
-      // Restore command with an op of "report" is not currently supported.
-      return (rgpUpdateExtension.get().getRestoreCommand().getRestoreOp() == RestoreOp.REQUEST)
-          ? DomainRestoreRequestFlow.class
-          : UnimplementedRestoreFlow.class;
-    }};
+  private static final FlowProvider DOMAIN_RESTORE_FLOW_PROVIDER =
+      new FlowProvider() {
+        @Override
+        Class<? extends Flow> get(
+            EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
+          if (!(resourceCommand instanceof DomainCommand.Update)) {
+            return null;
+          }
+          Optional<RgpUpdateExtension> rgpUpdateExtension =
+              eppInput.getSingleExtension(RgpUpdateExtension.class);
+          if (!rgpUpdateExtension.isPresent()) {
+            return null;
+          }
+          // Restore command with an op of "report" is not currently supported.
+          return (rgpUpdateExtension.get().getRestoreCommand().getRestoreOp() == RestoreOp.REQUEST)
+              ? DomainRestoreRequestFlow.class
+              : UnimplementedRestoreFlow.class;
+        }
+      };
 
   /**
    * The claims check flow is keyed on the type of the {@link ResourceCommand} and on having the
@@ -195,55 +207,81 @@ public class FlowPicker {
       };
 
   /** General resource CRUD flows are keyed on the type of their {@link ResourceCommand}. */
-  private static final FlowProvider RESOURCE_CRUD_FLOW_PROVIDER = new FlowProvider() {
-    private final Map<Class<?>, Class<? extends Flow>> resourceCrudFlows =
-        new ImmutableMap.Builder<Class<?>, Class<? extends Flow>>()
-            .put(ContactCommand.Check.class, ContactCheckFlow.class)
-            .put(ContactCommand.Create.class, ContactCreateFlow.class)
-            .put(ContactCommand.Delete.class, ContactDeleteFlow.class)
-            .put(ContactCommand.Info.class, ContactInfoFlow.class)
-            .put(ContactCommand.Update.class, ContactUpdateFlow.class)
-            .put(DomainCommand.Create.class, DomainCreateFlow.class)
-            .put(DomainCommand.Delete.class, DomainDeleteFlow.class)
-            .put(DomainCommand.Info.class, DomainInfoFlow.class)
-            .put(DomainCommand.Renew.class, DomainRenewFlow.class)
-            .put(DomainCommand.Update.class, DomainUpdateFlow.class)
-            .put(HostCommand.Check.class, HostCheckFlow.class)
-            .put(HostCommand.Create.class, HostCreateFlow.class)
-            .put(HostCommand.Delete.class, HostDeleteFlow.class)
-            .put(HostCommand.Info.class, HostInfoFlow.class)
-            .put(HostCommand.Update.class, HostUpdateFlow.class)
-            .build();
+  private static final FlowProvider RESOURCE_CRUD_FLOW_PROVIDER =
+      new FlowProvider() {
+        private final Map<Class<?>, Class<? extends Flow>> resourceCrudFlows =
+            new ImmutableMap.Builder<Class<?>, Class<? extends Flow>>()
+                .put(ContactCommand.Check.class, ContactCheckFlow.class)
+                .put(ContactCommand.Create.class, ContactCreateFlow.class)
+                .put(ContactCommand.Delete.class, ContactDeleteFlow.class)
+                .put(ContactCommand.Info.class, ContactInfoFlow.class)
+                .put(ContactCommand.Update.class, ContactUpdateFlow.class)
+                .put(DomainCommand.Create.class, DomainCreateFlow.class)
+                .put(DomainCommand.Delete.class, DomainDeleteFlow.class)
+                .put(DomainCommand.Info.class, DomainInfoFlow.class)
+                .put(DomainCommand.Renew.class, DomainRenewFlow.class)
+                .put(DomainCommand.Update.class, DomainUpdateFlow.class)
+                .put(HostCommand.Check.class, HostCheckFlow.class)
+                .put(HostCommand.Create.class, HostCreateFlow.class)
+                .put(HostCommand.Delete.class, HostDeleteFlow.class)
+                .put(HostCommand.Info.class, HostInfoFlow.class)
+                .put(HostCommand.Update.class, HostUpdateFlow.class)
+                .build();
 
-    @Override
-    Class<? extends Flow> get(
-        EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
-      return resourceCommand == null ? null : resourceCrudFlows.get(resourceCommand.getClass());
-    }};
+        @Override
+        Class<? extends Flow> get(
+            EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
+          return resourceCommand == null ? null : resourceCrudFlows.get(resourceCommand.getClass());
+        }
+      };
 
   /** Transfer flows have an {@link InnerCommand} of type {@link Transfer}. */
-  private static final FlowProvider TRANSFER_FLOW_PROVIDER = new FlowProvider() {
-    private final Table<Class<?>, TransferOp, Class<? extends Flow>> transferFlows = ImmutableTable
-        .<Class<?>, TransferOp, Class<? extends Flow>>builder()
-        .put(ContactCommand.Transfer.class, TransferOp.APPROVE, ContactTransferApproveFlow.class)
-        .put(ContactCommand.Transfer.class, TransferOp.CANCEL, ContactTransferCancelFlow.class)
-        .put(ContactCommand.Transfer.class, TransferOp.QUERY, ContactTransferQueryFlow.class)
-        .put(ContactCommand.Transfer.class, TransferOp.REJECT, ContactTransferRejectFlow.class)
-        .put(ContactCommand.Transfer.class, TransferOp.REQUEST, ContactTransferRequestFlow.class)
-        .put(DomainCommand.Transfer.class, TransferOp.APPROVE, DomainTransferApproveFlow.class)
-        .put(DomainCommand.Transfer.class, TransferOp.CANCEL, DomainTransferCancelFlow.class)
-        .put(DomainCommand.Transfer.class, TransferOp.QUERY, DomainTransferQueryFlow.class)
-        .put(DomainCommand.Transfer.class, TransferOp.REJECT, DomainTransferRejectFlow.class)
-        .put(DomainCommand.Transfer.class, TransferOp.REQUEST, DomainTransferRequestFlow.class)
-        .build();
+  private static final FlowProvider TRANSFER_FLOW_PROVIDER =
+      new FlowProvider() {
+        private final Table<Class<?>, TransferOp, Class<? extends Flow>> transferFlows =
+            ImmutableTable.<Class<?>, TransferOp, Class<? extends Flow>>builder()
+                .put(
+                    ContactCommand.Transfer.class,
+                    TransferOp.APPROVE,
+                    ContactTransferApproveFlow.class)
+                .put(
+                    ContactCommand.Transfer.class,
+                    TransferOp.CANCEL,
+                    ContactTransferCancelFlow.class)
+                .put(
+                    ContactCommand.Transfer.class, TransferOp.QUERY, ContactTransferQueryFlow.class)
+                .put(
+                    ContactCommand.Transfer.class,
+                    TransferOp.REJECT,
+                    ContactTransferRejectFlow.class)
+                .put(
+                    ContactCommand.Transfer.class,
+                    TransferOp.REQUEST,
+                    ContactTransferRequestFlow.class)
+                .put(
+                    DomainCommand.Transfer.class,
+                    TransferOp.APPROVE,
+                    DomainTransferApproveFlow.class)
+                .put(
+                    DomainCommand.Transfer.class, TransferOp.CANCEL, DomainTransferCancelFlow.class)
+                .put(DomainCommand.Transfer.class, TransferOp.QUERY, DomainTransferQueryFlow.class)
+                .put(
+                    DomainCommand.Transfer.class, TransferOp.REJECT, DomainTransferRejectFlow.class)
+                .put(
+                    DomainCommand.Transfer.class,
+                    TransferOp.REQUEST,
+                    DomainTransferRequestFlow.class)
+                .build();
 
-    @Override
-    Class<? extends Flow> get(
-        EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
-      return resourceCommand != null && innerCommand instanceof Transfer
-          ? transferFlows.get(resourceCommand.getClass(), ((Transfer) innerCommand).getTransferOp())
-          : null;
-    }};
+        @Override
+        Class<? extends Flow> get(
+            EppInput eppInput, InnerCommand innerCommand, ResourceCommand resourceCommand) {
+          return resourceCommand != null && innerCommand instanceof Transfer
+              ? transferFlows.get(
+                  resourceCommand.getClass(), ((Transfer) innerCommand).getTransferOp())
+              : null;
+        }
+      };
 
   private static final ImmutableList<FlowProvider> FLOW_PROVIDERS =
       ImmutableList.of(
@@ -267,13 +305,13 @@ public class FlowPicker {
     for (FlowProvider flowProvider : FLOW_PROVIDERS) {
       Class<? extends Flow> flowClass = flowProvider.get(eppInput);
       if (flowClass == UnimplementedFlow.class) {
-        break;  // We found it, but it's marked as not implemented.
+        break; // We found it, but it's marked as not implemented.
       } else if (flowClass == UnimplementedRestoreFlow.class) {
         throw new UnimplementedCommandException(
             "Domain restores are approved and enacted instantly, "
                 + "therefore domain restore reports are not supported");
       } else if (flowClass != null) {
-        return flowClass;  // We found it!
+        return flowClass; // We found it!
       }
     }
     // Nothing usable was found, so throw an exception.

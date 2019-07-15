@@ -29,11 +29,12 @@ import org.joda.time.DateTime;
  * Objectify translator for {@code ImmutableSortedMap<DateTime, Key<CommitLogManifest>>} fields.
  *
  * <p>This translator is responsible for doing three things:
+ *
  * <ol>
- * <li>Translating the data into two lists of {@code Date} and {@code Key} objects, in a manner
- *   similar to {@code @Mapify}.
- * <li>Inserting a key to the transaction's {@link CommitLogManifest} on save.
- * <li>Truncating the map to include only the last key per day for the last 30 days.
+ *   <li>Translating the data into two lists of {@code Date} and {@code Key} objects, in a manner
+ *       similar to {@code @Mapify}.
+ *   <li>Inserting a key to the transaction's {@link CommitLogManifest} on save.
+ *   <li>Truncating the map to include only the last key per day for the last 30 days.
  * </ol>
  *
  * <p>This allows you to have a field on your model object that tracks historical revisions of

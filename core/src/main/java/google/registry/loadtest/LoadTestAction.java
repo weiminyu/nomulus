@@ -232,22 +232,19 @@ public class LoadTestAction implements Runnable {
       // Do successful creates on random names
       tasks.addAll(
           createTasks(
-              createNumCopies(xmlContactCreateTmpl, successfulContactCreatesPerSecond)
-                  .stream()
+              createNumCopies(xmlContactCreateTmpl, successfulContactCreatesPerSecond).stream()
                   .map(randomNameReplacer("%contact%", MAX_CONTACT_LENGTH))
                   .collect(toImmutableList()),
               startSecond));
       tasks.addAll(
           createTasks(
-              createNumCopies(xmlHostCreateTmpl, successfulHostCreatesPerSecond)
-                  .stream()
+              createNumCopies(xmlHostCreateTmpl, successfulHostCreatesPerSecond).stream()
                   .map(randomNameReplacer("%host%", ARBITRARY_VALID_HOST_LENGTH))
                   .collect(toImmutableList()),
               startSecond));
       tasks.addAll(
           createTasks(
-              createNumCopies(xmlDomainCreateTmpl, successfulDomainCreatesPerSecond)
-                  .stream()
+              createNumCopies(xmlDomainCreateTmpl, successfulDomainCreatesPerSecond).stream()
                   .map(randomNameReplacer("%domain%", MAX_DOMAIN_LABEL_LENGTH))
                   .map(listNameReplacer("%contact%", contactNames))
                   .map(listNameReplacer("%host%", hostPrefixes))
@@ -327,13 +324,14 @@ public class LoadTestAction implements Runnable {
     for (int i = 0; i < xmls.size(); i++) {
       // Space tasks evenly within across a second.
       int offsetMillis = (int) (1000.0 / xmls.size() * i);
-      tasks.add(TaskOptions.Builder.withUrl("/_dr/epptool")
-          .etaMillis(start.getMillis() + offsetMillis)
-          .header(X_CSRF_TOKEN, xsrfToken)
-          .param("clientId", clientId)
-          .param("superuser", Boolean.FALSE.toString())
-          .param("dryRun", Boolean.FALSE.toString())
-          .param("xml", xmls.get(i)));
+      tasks.add(
+          TaskOptions.Builder.withUrl("/_dr/epptool")
+              .etaMillis(start.getMillis() + offsetMillis)
+              .header(X_CSRF_TOKEN, xsrfToken)
+              .param("clientId", clientId)
+              .param("superuser", Boolean.FALSE.toString())
+              .param("dryRun", Boolean.FALSE.toString())
+              .param("xml", xmls.get(i)));
     }
     return tasks.build();
   }

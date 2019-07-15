@@ -36,6 +36,7 @@ public class InetAddressTranslatorFactory
       @Override
       public String saveValue(InetAddress pojoValue) {
         return pojoValue.getHostAddress();
-      }};
+      }
+    };
   }
 }

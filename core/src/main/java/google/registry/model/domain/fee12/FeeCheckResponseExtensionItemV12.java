@@ -25,9 +25,7 @@ import google.registry.model.domain.fee.FeeQueryCommandExtensionItem.CommandName
 import javax.xml.bind.annotation.XmlType;
 import org.joda.time.DateTime;
 
-/**
- * The version 0.12 response for a domain check on a single resource.
- */
+/** The version 0.12 response for a domain check on a single resource. */
 @XmlType(propOrder = {"object", "command"})
 public class FeeCheckResponseExtensionItemV12 extends FeeCheckResponseExtensionItem {
 

@@ -33,19 +33,17 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class RdeRevisionTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
+
   @Test
   public void testGetNextRevision_objectDoesntExist_returnsZero() {
-    assertThat(getNextRevision("torment", DateTime.parse("1984-12-18TZ"), FULL))
-        .isEqualTo(0);
+    assertThat(getNextRevision("torment", DateTime.parse("1984-12-18TZ"), FULL)).isEqualTo(0);
   }
 
   @Test
   public void testGetNextRevision_objectExistsAtZero_returnsOne() {
     save("sorrow", DateTime.parse("1984-12-18TZ"), FULL, 0);
-    assertThat(getNextRevision("sorrow", DateTime.parse("1984-12-18TZ"), FULL))
-        .isEqualTo(1);
+    assertThat(getNextRevision("sorrow", DateTime.parse("1984-12-18TZ"), FULL)).isEqualTo(1);
   }
 
   @Test

@@ -53,9 +53,8 @@ public final class UriParameters {
         }
         int paramNameEndIndex = (equalsIndex == -1) ? ampersandIndex : equalsIndex;
         String name = decodeString(query, start, paramNameEndIndex);
-        String value = (equalsIndex == -1)
-            ? ""
-            : decodeString(query, equalsIndex + 1, ampersandIndex);
+        String value =
+            (equalsIndex == -1) ? "" : decodeString(query, equalsIndex + 1, ampersandIndex);
         map.put(name, value);
         start = ampersandIndex + 1;
       }

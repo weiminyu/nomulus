@@ -111,7 +111,7 @@ public class RequestParametersTest {
 
   @Test
   public void testExtractSetOfParameters_multipleParameters_error() {
-    when(req.getParameterValues("spin")).thenReturn(new String[]{"bog", "gob"});
+    when(req.getParameterValues("spin")).thenReturn(new String[] {"bog", "gob"});
     BadRequestException thrown =
         assertThrows(BadRequestException.class, () -> extractSetOfParameters(req, "spin"));
     assertThat(thrown).hasMessageThat().contains("spin");
@@ -157,7 +157,7 @@ public class RequestParametersTest {
 
   @Test
   public void testExtractSetOfEnumParameters_multipleParameters_error() {
-    when(req.getParameterValues("spin")).thenReturn(new String[]{"DANCE", "FLOOR"});
+    when(req.getParameterValues("spin")).thenReturn(new String[] {"DANCE", "FLOOR"});
     BadRequestException thrown =
         assertThrows(
             BadRequestException.class, () -> extractSetOfEnumParameters(req, Club.class, "spin"));
@@ -210,7 +210,10 @@ public class RequestParametersTest {
     assertThat(extractBooleanParameter(req, "love")).isFalse();
   }
 
-  enum Club { DANCE, FLOOR }
+  enum Club {
+    DANCE,
+    FLOOR
+  }
 
   @Test
   public void testExtractEnumValue_correctValue_works() {

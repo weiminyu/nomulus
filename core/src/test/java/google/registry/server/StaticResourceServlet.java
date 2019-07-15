@@ -77,8 +77,11 @@ public final class StaticResourceServlet extends HttpServlet {
     ServletHolder holder = new ServletHolder(StaticResourceServlet.class);
     holder.setInitParameter("root", root.toString());
     if (Files.isDirectory(root)) {
-      checkArgument(prefix.endsWith("/*"),
-          "Prefix (%s) must end with /* since root (%s) is a directory", prefix, root);
+      checkArgument(
+          prefix.endsWith("/*"),
+          "Prefix (%s) must end with /* since root (%s) is a directory",
+          prefix,
+          root);
       holder.setInitParameter("prefix", prefix.substring(0, prefix.length() - 1));
     } else {
       holder.setInitParameter("prefix", prefix);

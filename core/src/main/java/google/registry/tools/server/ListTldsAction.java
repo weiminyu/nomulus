@@ -40,7 +40,9 @@ public final class ListTldsAction extends ListObjectsAction<Registry> {
   public static final String PATH = "/_dr/admin/list/tlds";
 
   @Inject Clock clock;
-  @Inject ListTldsAction() {}
+
+  @Inject
+  ListTldsAction() {}
 
   @Override
   public ImmutableSet<String> getPrimaryKeyFields() {

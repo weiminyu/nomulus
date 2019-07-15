@@ -22,8 +22,8 @@ import org.joda.time.Duration;
 /**
  * Code execution locked on some shared resource.
  *
- * <p>Locks are either specific to a tld or global to the entire system, in which case a tld of
- * null is used.
+ * <p>Locks are either specific to a tld or global to the entire system, in which case a tld of null
+ * is used.
  */
 public interface LockHandler extends Serializable {
 

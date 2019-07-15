@@ -48,9 +48,9 @@ public final class SqlTemplate {
   /**
    * Adds a key/value that should be substituted an individual variable in the template.
    *
-   * <p>Your template variables should appear as follows: {@code WHERE foo = '%BAR%'} and you
-   * would call {@code .put("BAR", "some value"} to safely substitute it with a value. Only
-   * whitelisted characters (as defined by {@link #LEGAL_SUBSTITUTIONS}) are allowed in values.
+   * <p>Your template variables should appear as follows: {@code WHERE foo = '%BAR%'} and you would
+   * call {@code .put("BAR", "some value"} to safely substitute it with a value. Only whitelisted
+   * characters (as defined by {@link #LEGAL_SUBSTITUTIONS}) are allowed in values.
    *
    * @param key uppercase string that can have digits and underscores
    * @param value substitution value, comprised of whitelisted characters
@@ -59,17 +59,16 @@ public final class SqlTemplate {
   public SqlTemplate put(String key, String value) {
     checkArgument(KEY_PATTERN.matcher(key).matches(), "Bad substitution key: %s", key);
     checkArgument(LEGAL_SUBSTITUTIONS.matchesAllOf(value), "Illegal characters in %s", value);
-    return new SqlTemplate(template, new ImmutableMap.Builder<String, String>()
-        .putAll(substitutions)
-        .put(key, value)
-        .build());
+    return new SqlTemplate(
+        template,
+        new ImmutableMap.Builder<String, String>().putAll(substitutions).put(key, value).build());
   }
 
   /**
    * Returns the freshly substituted SQL code.
    *
-   * @throws IllegalArgumentException if any substitution variable is not found in the template,
-   *         or if there are any variable-like strings (%something%) left after substitution.
+   * @throws IllegalArgumentException if any substitution variable is not found in the template, or
+   *     if there are any variable-like strings (%something%) left after substitution.
    */
   public String build() {
     StringBuffer result = new StringBuffer(template.length());
@@ -88,8 +87,8 @@ public final class SqlTemplate {
     }
     matcher.appendTail(result);
     Set<String> remaining = difference(substitutions.keySet(), found);
-    checkArgument(remaining.isEmpty(),
-        "Not found in template: %s", Joiner.on(", ").join(remaining));
+    checkArgument(
+        remaining.isEmpty(), "Not found in template: %s", Joiner.on(", ").join(remaining));
     return result.toString();
   }
 

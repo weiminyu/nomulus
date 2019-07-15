@@ -55,13 +55,10 @@ import org.junit.runners.JUnit4;
 public class PublishDnsUpdatesActionTest {
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withTaskQueue().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
   private final FakeClock clock = new FakeClock(DateTime.parse("1971-01-01TZ"));
   private final FakeLockHandler lockHandler = new FakeLockHandler(true);
   private final DnsWriter dnsWriter = mock(DnsWriter.class);
@@ -212,8 +209,9 @@ public class PublishDnsUpdatesActionTest {
   public void testHostAndDomain_published() {
     action = createAction("xn--q9jyb4c");
     action.domains = ImmutableSet.of("example.xn--q9jyb4c", "example2.xn--q9jyb4c");
-    action.hosts = ImmutableSet.of(
-        "ns1.example.xn--q9jyb4c", "ns2.example.xn--q9jyb4c", "ns1.example2.xn--q9jyb4c");
+    action.hosts =
+        ImmutableSet.of(
+            "ns1.example.xn--q9jyb4c", "ns2.example.xn--q9jyb4c", "ns1.example2.xn--q9jyb4c");
 
     action.run();
 

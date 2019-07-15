@@ -39,11 +39,9 @@ public class DeletePremiumListCommandTest extends CommandTestCase<DeletePremiumL
     assertThat(PremiumList.getUncached("xn--q9jyb4c")).isEmpty();
 
     // Ensure that the Datastore premium list entry entities were deleted correctly.
-    assertThat(ofy().load()
-        .type(PremiumListEntry.class)
-        .ancestor(premiumList.getRevisionKey())
-        .keys())
-            .isEmpty();
+    assertThat(
+            ofy().load().type(PremiumListEntry.class).ancestor(premiumList.getRevisionKey()).keys())
+        .isEmpty();
   }
 
   @Test

@@ -36,14 +36,10 @@ import org.joda.time.DateTime;
 final class CreateDomainCommand extends CreateOrUpdateDomainCommand
     implements CommandWithRemoteApi {
 
-  @Parameter(
-      names = "--period",
-      description = "Initial registration period, in years.")
+  @Parameter(names = "--period", description = "Initial registration period, in years.")
   private int period = 1;
 
-  @Parameter(
-      names = "--force_premiums",
-      description = "Force the creation of premium domains.")
+  @Parameter(names = "--force_premiums", description = "Force the creation of premium domains.")
   private boolean forcePremiums;
 
   @Inject

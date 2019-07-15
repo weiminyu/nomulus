@@ -45,7 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/** Tests for {@link KillAllCommitLogsAction}.*/
+/** Tests for {@link KillAllCommitLogsAction}. */
 @RunWith(JUnit4.class)
 public class KillAllCommitLogsActionTest extends MapreduceTestCase<KillAllCommitLogsAction> {
 
@@ -70,8 +70,7 @@ public class KillAllCommitLogsActionTest extends MapreduceTestCase<KillAllCommit
     int nextContactId = 5432;
     for (String tld : asList("tld1", "tld2")) {
       createTld(tld);
-      persistResourceWithCommitLog(
-          newContactResource(String.format("abc%d", nextContactId++)));
+      persistResourceWithCommitLog(newContactResource(String.format("abc%d", nextContactId++)));
     }
     persistResource(CommitLogCheckpointRoot.create(START_OF_TIME.plusDays(1)));
     DateTime bucketTime = START_OF_TIME.plusDays(2);

@@ -61,9 +61,16 @@ public class RdapNameserverSearchAction extends RdapSearchActionBase {
 
   public static final String PATH = "/rdap/nameservers";
 
-  @Inject @Parameter("name") Optional<String> nameParam;
-  @Inject @Parameter("ip") Optional<String> ipParam;
-  @Inject public RdapNameserverSearchAction() {
+  @Inject
+  @Parameter("name")
+  Optional<String> nameParam;
+
+  @Inject
+  @Parameter("ip")
+  Optional<String> ipParam;
+
+  @Inject
+  public RdapNameserverSearchAction() {
     super("nameserver search", EndpointType.NAMESERVERS);
   }
 

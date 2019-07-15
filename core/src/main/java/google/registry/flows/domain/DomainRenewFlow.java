@@ -110,12 +110,14 @@ import org.joda.time.Duration;
 @ReportingSpec(ActivityReportField.DOMAIN_RENEW)
 public final class DomainRenewFlow implements TransactionalFlow {
 
-  private static final ImmutableSet<StatusValue> RENEW_DISALLOWED_STATUSES = ImmutableSet.of(
-      StatusValue.CLIENT_RENEW_PROHIBITED,
-      StatusValue.PENDING_DELETE,
-      // Disallow renews during pendingTransfer; it needlessly complicates server-approve transfers.
-      StatusValue.PENDING_TRANSFER,
-      StatusValue.SERVER_RENEW_PROHIBITED);
+  private static final ImmutableSet<StatusValue> RENEW_DISALLOWED_STATUSES =
+      ImmutableSet.of(
+          StatusValue.CLIENT_RENEW_PROHIBITED,
+          StatusValue.PENDING_DELETE,
+          // Disallow renews during pendingTransfer; it needlessly complicates server-approve
+          // transfers.
+          StatusValue.PENDING_TRANSFER,
+          StatusValue.SERVER_RENEW_PROHIBITED);
 
   @Inject ResourceCommand resourceCommand;
   @Inject ExtensionManager extensionManager;
@@ -128,7 +130,9 @@ public final class DomainRenewFlow implements TransactionalFlow {
   @Inject EppResponse.Builder responseBuilder;
   @Inject DomainRenewFlowCustomLogic flowCustomLogic;
   @Inject DomainPricingLogic pricingLogic;
-  @Inject DomainRenewFlow() {}
+
+  @Inject
+  DomainRenewFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -144,7 +148,7 @@ public final class DomainRenewFlow implements TransactionalFlow {
     verifyRenewAllowed(authInfo, existingDomain, command);
     int years = command.getPeriod().getValue();
     DateTime newExpirationTime =
-        leapSafeAddYears(existingDomain.getRegistrationExpirationTime(), years);  // Uncapped
+        leapSafeAddYears(existingDomain.getRegistrationExpirationTime(), years); // Uncapped
     validateRegistrationPeriod(now, newExpirationTime);
     Optional<FeeRenewCommandExtension> feeRenew =
         eppInput.getSingleExtension(FeeRenewCommandExtension.class);
@@ -158,21 +162,24 @@ public final class DomainRenewFlow implements TransactionalFlow {
             .setYears(years)
             .build());
     Registry registry = Registry.get(existingDomain.getTld());
-    HistoryEntry historyEntry = buildHistoryEntry(
-        existingDomain, now, command.getPeriod(), registry.getRenewGracePeriodLength());
+    HistoryEntry historyEntry =
+        buildHistoryEntry(
+            existingDomain, now, command.getPeriod(), registry.getRenewGracePeriodLength());
     String tld = existingDomain.getTld();
     // Bill for this explicit renew itself.
     BillingEvent.OneTime explicitRenewEvent =
         createRenewBillingEvent(tld, feesAndCredits.getTotalCost(), years, historyEntry, now);
     // Create a new autorenew billing event and poll message starting at the new expiration time.
-    BillingEvent.Recurring newAutorenewEvent = newAutorenewBillingEvent(existingDomain)
-        .setEventTime(newExpirationTime)
-        .setParent(historyEntry)
-        .build();
-    PollMessage.Autorenew newAutorenewPollMessage = newAutorenewPollMessage(existingDomain)
-        .setEventTime(newExpirationTime)
-        .setParent(historyEntry)
-        .build();
+    BillingEvent.Recurring newAutorenewEvent =
+        newAutorenewBillingEvent(existingDomain)
+            .setEventTime(newExpirationTime)
+            .setParent(historyEntry)
+            .build();
+    PollMessage.Autorenew newAutorenewPollMessage =
+        newAutorenewPollMessage(existingDomain)
+            .setEventTime(newExpirationTime)
+            .setParent(historyEntry)
+            .build();
     // End the old autorenew billing event and poll message now. This may delete the poll message.
     updateAutorenewRecurrenceEndTime(existingDomain, now);
     DomainBase newDomain =
@@ -238,9 +245,7 @@ public final class DomainRenewFlow implements TransactionalFlow {
   }
 
   private void verifyRenewAllowed(
-      Optional<AuthInfo> authInfo,
-      DomainBase existingDomain,
-      Renew command) throws EppException {
+      Optional<AuthInfo> authInfo, DomainBase existingDomain, Renew command) throws EppException {
     verifyOptionalAuthInfo(authInfo, existingDomain);
     verifyNoDisallowedStatuses(existingDomain, RENEW_DISALLOWED_STATUSES);
     if (!isSuperuser) {
@@ -249,8 +254,9 @@ public final class DomainRenewFlow implements TransactionalFlow {
     }
     verifyUnitIsYears(command.getPeriod());
     // If the date they specify doesn't match the expiration, fail. (This is an idempotence check).
-    if (!command.getCurrentExpirationDate().equals(
-        existingDomain.getRegistrationExpirationTime().toLocalDate())) {
+    if (!command
+        .getCurrentExpirationDate()
+        .equals(existingDomain.getRegistrationExpirationTime().toLocalDate())) {
       throw new IncorrectCurrentExpirationDateException();
     }
   }

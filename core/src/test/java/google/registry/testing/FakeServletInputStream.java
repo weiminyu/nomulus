@@ -23,9 +23,9 @@ import javax.servlet.ServletInputStream;
 /**
  * Used to mock the return value of {@link javax.servlet.ServletRequest#getInputStream}.
  *
- * <p>Most servlets will call {@link javax.servlet.ServletRequest#getReader}, in which case you
- * can simply return a {@link java.io.StringReader} instance. But the getInputStream method is
- * not as simple to mock and requires an implementing class.
+ * <p>Most servlets will call {@link javax.servlet.ServletRequest#getReader}, in which case you can
+ * simply return a {@link java.io.StringReader} instance. But the getInputStream method is not as
+ * simple to mock and requires an implementing class.
  */
 public final class FakeServletInputStream extends ServletInputStream {
 
@@ -36,8 +36,9 @@ public final class FakeServletInputStream extends ServletInputStream {
   }
 
   /**
-   * Use a {@link ByteSource} as input for the servlet. Be sure to call {@link #close} after
-   * your servlet runs so the resource opened via {@code bytes} gets closed.
+   * Use a {@link ByteSource} as input for the servlet. Be sure to call {@link #close} after your
+   * servlet runs so the resource opened via {@code bytes} gets closed.
+   *
    * @throws IOException
    */
   public FakeServletInputStream(ByteSource bytes) throws IOException {

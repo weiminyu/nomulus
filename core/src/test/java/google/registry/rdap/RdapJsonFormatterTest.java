@@ -61,10 +61,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class RdapJsonFormatterTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
   @Rule public final InjectRule inject = new InjectRule();
 
   private final FakeClock clock = new FakeClock(DateTime.parse("1999-01-01T00:00:00Z"));
@@ -85,7 +82,6 @@ public class RdapJsonFormatterTest {
   private ContactResource contactResourceTech;
   private ContactResource contactResourceNotLinked;
 
-
   @Before
   public void setUp() {
     inject.setStaticField(Ofy.class, "clock", clock);
@@ -103,34 +99,33 @@ public class RdapJsonFormatterTest {
 
     persistSimpleResources(makeMoreRegistrarContacts(registrar));
 
-    contactResourceRegistrant = makeAndPersistContactResource(
-        "8372808-ERL",
-        "(◕‿◕)",
-        "lol@cat.みんな",
-        null,
-        clock.nowUtc().minusYears(1),
-        registrar);
-    contactResourceAdmin = makeAndPersistContactResource(
-        "8372808-IRL",
-        "Santa Claus",
-        null,
-        ImmutableList.of("Santa Claus Tower", "41st floor", "Suite みんな"),
-        clock.nowUtc().minusYears(2),
-        registrar);
-    contactResourceTech = makeAndPersistContactResource(
-        "8372808-TRL",
-        "The Raven",
-        "bog@cat.みんな",
-        ImmutableList.of("Chamber Door", "upper level"),
-        clock.nowUtc().minusYears(3),
-        registrar);
-    contactResourceNotLinked = makeAndPersistContactResource(
-        "8372808-QRL",
-        "The Wizard",
-        "dog@cat.みんな",
-        ImmutableList.of("Somewhere", "Over the Rainbow"),
-        clock.nowUtc().minusYears(4),
-        registrar);
+    contactResourceRegistrant =
+        makeAndPersistContactResource(
+            "8372808-ERL", "(◕‿◕)", "lol@cat.みんな", null, clock.nowUtc().minusYears(1), registrar);
+    contactResourceAdmin =
+        makeAndPersistContactResource(
+            "8372808-IRL",
+            "Santa Claus",
+            null,
+            ImmutableList.of("Santa Claus Tower", "41st floor", "Suite みんな"),
+            clock.nowUtc().minusYears(2),
+            registrar);
+    contactResourceTech =
+        makeAndPersistContactResource(
+            "8372808-TRL",
+            "The Raven",
+            "bog@cat.みんな",
+            ImmutableList.of("Chamber Door", "upper level"),
+            clock.nowUtc().minusYears(3),
+            registrar);
+    contactResourceNotLinked =
+        makeAndPersistContactResource(
+            "8372808-QRL",
+            "The Wizard",
+            "dog@cat.みんな",
+            ImmutableList.of("Somewhere", "Over the Rainbow"),
+            clock.nowUtc().minusYears(4),
+            registrar);
     hostResourceIpv4 =
         makeAndPersistHostResource(
             "ns1.cat.みんな", "1.2.3.4", null, clock.nowUtc().minusYears(1), "unicoderegistrar");

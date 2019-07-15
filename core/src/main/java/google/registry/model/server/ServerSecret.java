@@ -44,28 +44,35 @@ public class ServerSecret extends CrossTldSingleton {
    * Supplier that can be reset for testing purposes.
    */
   private static final LoadingCache<Class<ServerSecret>, ServerSecret> CACHE =
-      CacheBuilder.newBuilder().build(
-          new CacheLoader<Class<ServerSecret>, ServerSecret>() {
-            @Override
-            public ServerSecret load(Class<ServerSecret> unused) {
-              // Fast path - non-transactional load to hit memcache.
-              ServerSecret secret = ofy().load().entity(new ServerSecret()).now();
-              if (secret != null) {
-                return secret;
-              }
-              // Slow path - transactionally create a new ServerSecret (once per app setup).
-              return ofy().transact(() -> {
-                // Check again for an existing secret within the transaction to avoid races.
-                ServerSecret secret1 = ofy().load().entity(new ServerSecret()).now();
-                if (secret1 == null) {
-                  UUID uuid = UUID.randomUUID();
-                  secret1 = create(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits());
-                  ofy().saveWithoutBackup().entity(secret1).now();
+      CacheBuilder.newBuilder()
+          .build(
+              new CacheLoader<Class<ServerSecret>, ServerSecret>() {
+                @Override
+                public ServerSecret load(Class<ServerSecret> unused) {
+                  // Fast path - non-transactional load to hit memcache.
+                  ServerSecret secret = ofy().load().entity(new ServerSecret()).now();
+                  if (secret != null) {
+                    return secret;
+                  }
+                  // Slow path - transactionally create a new ServerSecret (once per app setup).
+                  return ofy()
+                      .transact(
+                          () -> {
+                            // Check again for an existing secret within the transaction to avoid
+                            // races.
+                            ServerSecret secret1 = ofy().load().entity(new ServerSecret()).now();
+                            if (secret1 == null) {
+                              UUID uuid = UUID.randomUUID();
+                              secret1 =
+                                  create(
+                                      uuid.getMostSignificantBits(),
+                                      uuid.getLeastSignificantBits());
+                              ofy().saveWithoutBackup().entity(secret1).now();
+                            }
+                            return secret1;
+                          });
                 }
-                return secret1;
               });
-            }
-          });
 
   /** Returns the global ServerSecret instance, creating it if one isn't already in Datastore. */
   public static ServerSecret get() {

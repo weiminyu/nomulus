@@ -13,6 +13,7 @@
 // limitations under the License.
 
 package google.registry.rdap;
+
 import static com.google.common.truth.Truth.assertThat;
 import static google.registry.rdap.RdapTestHelper.createJson;
 
@@ -45,12 +46,13 @@ public final class RdapDataStructuresTest {
   @Test
   public void testRdapConformance() {
     assertThat(RdapConformance.INSTANCE.toJson())
-        .isEqualTo(createJson(
-            "[",
-            "  'rdap_level_0',",
-            "  'icann_rdap_response_profile_0',",
-            "  'icann_rdap_technical_implementation_guide_0'",
-            "]"));
+        .isEqualTo(
+            createJson(
+                "[",
+                "  'rdap_level_0',",
+                "  'icann_rdap_response_profile_0',",
+                "  'icann_rdap_technical_implementation_guide_0'",
+                "]"));
   }
 
   @Test
@@ -69,12 +71,13 @@ public final class RdapDataStructuresTest {
 
   @Test
   public void testNotice() {
-    Notice notice = Notice.builder()
-        .setDescription("AAA", "BBB")
-        .setTitle("myTitle")
-        .addLink(Link.builder().setHref("myHref").setTitle("myLink").build())
-        .setType(Notice.Type.RESULT_TRUNCATED_AUTHORIZATION)
-        .build();
+    Notice notice =
+        Notice.builder()
+            .setDescription("AAA", "BBB")
+            .setTitle("myTitle")
+            .addLink(Link.builder().setHref("myHref").setTitle("myLink").build())
+            .setType(Notice.Type.RESULT_TRUNCATED_AUTHORIZATION)
+            .build();
     assertThat(notice.toJson())
         .isEqualTo(
             createJson(
@@ -89,12 +92,13 @@ public final class RdapDataStructuresTest {
 
   @Test
   public void testRemark() {
-    Remark remark = Remark.builder()
-        .setDescription("AAA", "BBB")
-        .setTitle("myTitle")
-        .addLink(Link.builder().setHref("myHref").setTitle("myLink").build())
-        .setType(Remark.Type.OBJECT_TRUNCATED_AUTHORIZATION)
-        .build();
+    Remark remark =
+        Remark.builder()
+            .setDescription("AAA", "BBB")
+            .setTitle("myTitle")
+            .addLink(Link.builder().setHref("myHref").setTitle("myLink").build())
+            .setType(Remark.Type.OBJECT_TRUNCATED_AUTHORIZATION)
+            .build();
     assertThat(remark.toJson())
         .isEqualTo(
             createJson(

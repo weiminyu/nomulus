@@ -34,9 +34,7 @@ final class CheckDomainCommand extends NonMutatingEppToolCommand {
           "Client ID of the registrar to execute the command as, otherwise the registry registrar")
   String clientId;
 
-  @Parameter(
-      description = "List of domains to check.",
-      required = true)
+  @Parameter(description = "List of domains to check.", required = true)
   private List<String> mainParameters;
 
   @Inject

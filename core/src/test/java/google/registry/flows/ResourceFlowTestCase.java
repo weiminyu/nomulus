@@ -100,19 +100,18 @@ public abstract class ResourceFlowTestCase<F extends Flow, R extends EppResource
   }
 
   protected Class<R> getResourceClass() {
-    return new TypeInstantiator<R>(getClass()){}.getExactType();
+    return new TypeInstantiator<R>(getClass()) {}.getExactType();
   }
 
-  /**
-   * Persists a testing claims list to Datastore that contains a single shard.
-   */
+  /** Persists a testing claims list to Datastore that contains a single shard. */
   protected void persistClaimsList(ImmutableMap<String, String> labelsToKeys) {
     ClaimsListSingleton singleton = new ClaimsListSingleton();
     Key<ClaimsListRevision> revision = ClaimsListRevision.createKey(singleton);
     singleton.setActiveRevision(revision);
     ofy().saveWithoutBackup().entity(singleton).now();
     if (!labelsToKeys.isEmpty()) {
-      ofy().saveWithoutBackup()
+      ofy()
+          .saveWithoutBackup()
           .entity(createTestClaimsListShard(clock.nowUtc(), labelsToKeys, revision))
           .now();
     }
@@ -125,9 +124,7 @@ public abstract class ResourceFlowTestCase<F extends Flow, R extends EppResource
     assertAboutEppExceptions().that(thrown).marshalsToXml();
   }
 
-  /**
-   * Confirms that an EppResourceIndex entity exists in Datastore for a given resource.
-   */
+  /** Confirms that an EppResourceIndex entity exists in Datastore for a given resource. */
   protected static <T extends EppResource> void assertEppResourceIndexEntityFor(final T resource) {
     ImmutableList<EppResourceIndex> indices =
         Streams.stream(
@@ -148,35 +145,38 @@ public abstract class ResourceFlowTestCase<F extends Flow, R extends EppResource
   /** Asserts the presence of a single enqueued async contact or host deletion */
   protected <T extends EppResource> void assertAsyncDeletionTaskEnqueued(
       T resource, String requestingClientId, Trid trid, boolean isSuperuser) {
-    TaskMatcher expected = new TaskMatcher()
-        .etaDelta(Duration.standardSeconds(75), Duration.standardSeconds(105)) // expected: 90
-        .param("resourceKey", Key.create(resource).getString())
-        .param("requestingClientId", requestingClientId)
-        .param("serverTransactionId", trid.getServerTransactionId())
-        .param("isSuperuser", Boolean.toString(isSuperuser))
-        .param("requestedTime", clock.nowUtc().toString());
+    TaskMatcher expected =
+        new TaskMatcher()
+            .etaDelta(Duration.standardSeconds(75), Duration.standardSeconds(105)) // expected: 90
+            .param("resourceKey", Key.create(resource).getString())
+            .param("requestingClientId", requestingClientId)
+            .param("serverTransactionId", trid.getServerTransactionId())
+            .param("isSuperuser", Boolean.toString(isSuperuser))
+            .param("requestedTime", clock.nowUtc().toString());
     trid.getClientTransactionId()
         .ifPresent(clTrid -> expected.param("clientTransactionId", clTrid));
     assertTasksEnqueued("async-delete-pull", expected);
   }
 
-
   protected void assertClientIdFieldLogged(String clientId) {
-    assertAboutLogs().that(logHandler)
+    assertAboutLogs()
+        .that(logHandler)
         .hasLogAtLevelWithMessage(Level.INFO, "FLOW-LOG-SIGNATURE-METADATA")
         .which()
         .contains("\"clientId\":" + JSONValue.toJSONString(clientId));
   }
 
   protected void assertTldsFieldLogged(String... tlds) {
-    assertAboutLogs().that(logHandler)
+    assertAboutLogs()
+        .that(logHandler)
         .hasLogAtLevelWithMessage(Level.INFO, "FLOW-LOG-SIGNATURE-METADATA")
         .which()
         .contains("\"tlds\":" + JSONValue.toJSONString(ImmutableList.copyOf(tlds)));
   }
 
   protected void assertIcannReportingActivityFieldLogged(String fieldName) {
-    assertAboutLogs().that(logHandler)
+    assertAboutLogs()
+        .that(logHandler)
         .hasLogAtLevelWithMessage(Level.INFO, "FLOW-LOG-SIGNATURE-METADATA")
         .which()
         .contains("\"icannActivityReportField\":" + JSONValue.toJSONString(fieldName));

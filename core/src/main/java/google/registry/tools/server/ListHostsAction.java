@@ -41,7 +41,9 @@ public final class ListHostsAction extends ListObjectsAction<HostResource> {
   public static final String PATH = "/_dr/admin/list/hosts";
 
   @Inject Clock clock;
-  @Inject ListHostsAction() {}
+
+  @Inject
+  ListHostsAction() {}
 
   @Override
   public ImmutableSet<String> getPrimaryKeyFields() {

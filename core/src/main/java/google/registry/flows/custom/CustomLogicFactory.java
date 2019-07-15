@@ -22,13 +22,13 @@ import google.registry.model.eppinput.EppInput;
 /**
  * A no-op base custom logic factory.
  *
- * <p>To add custom logic, extend this class, then configure it in
- * {@link ConfigModule#provideCustomLogicFactoryClass}. The eppInput and sessionMetadata parameters
- * are unused in the base implementation, but are provided so that custom implementations can
- * optionally determine how to construct/choose which custom logic class to return. A common use
- * case might be parsing TLD for domain-specific flows from the EppInput and then using that to
- * choose a different custom logic implementation, or switching based on the registrar
- * {@code clientId} in sessionMetadata.
+ * <p>To add custom logic, extend this class, then configure it in {@link
+ * ConfigModule#provideCustomLogicFactoryClass}. The eppInput and sessionMetadata parameters are
+ * unused in the base implementation, but are provided so that custom implementations can optionally
+ * determine how to construct/choose which custom logic class to return. A common use case might be
+ * parsing TLD for domain-specific flows from the EppInput and then using that to choose a different
+ * custom logic implementation, or switching based on the registrar {@code clientId} in
+ * sessionMetadata.
  */
 public class CustomLogicFactory {
 

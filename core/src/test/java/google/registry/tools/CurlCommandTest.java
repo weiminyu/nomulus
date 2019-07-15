@@ -126,8 +126,7 @@ public class CurlCommandTest extends CommandTestCase<CurlCommand> {
 
   @Test
   public void testDataDoesntSplit() throws Exception {
-    runCommand(
-        "--path=/foo/bar?a=1&b=2", "--data=one,two", "--service=PUBAPI");
+    runCommand("--path=/foo/bar?a=1&b=2", "--data=one,two", "--service=PUBAPI");
     verify(connection).withService(PUBAPI);
     verifyNoMoreInteractions(connection);
     verify(connectionForService)

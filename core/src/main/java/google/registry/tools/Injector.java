@@ -17,9 +17,7 @@ package google.registry.tools;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-/**
- * Utilities for dependency injection using Dagger2.
- */
+/** Utilities for dependency injection using Dagger2. */
 final class Injector {
 
   /**

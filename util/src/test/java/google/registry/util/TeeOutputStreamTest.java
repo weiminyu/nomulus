@@ -37,8 +37,7 @@ public class TeeOutputStreamTest {
   @Test
   public void testWrite_writesToMultipleStreams() throws Exception {
     // Write shared data using the tee output stream.
-    try (OutputStream tee =
-        new TeeOutputStream(asList(outputA, outputB, outputC))) {
+    try (OutputStream tee = new TeeOutputStream(asList(outputA, outputB, outputC))) {
       tee.write("hello ".getBytes(UTF_8));
       tee.write("hello world!".getBytes(UTF_8), 6, 5);
       tee.write('!');

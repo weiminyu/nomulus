@@ -29,10 +29,7 @@ import org.junit.runners.JUnit4;
 /** Unit tests for {@link ServerSecret}. */
 @RunWith(JUnit4.class)
 public class ServerSecretTest {
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Before
   public void before() {
@@ -74,7 +71,6 @@ public class ServerSecretTest {
   @Test
   public void testAsBytes() {
     byte[] bytes = ServerSecret.create(123, 0x456).asBytes();
-    assertThat(bytes)
-        .isEqualTo(new byte[] {0, 0, 0, 0, 0, 0, 0, 123, 0, 0, 0, 0, 0, 0, 0x4, 0x56});
+    assertThat(bytes).isEqualTo(new byte[] {0, 0, 0, 0, 0, 0, 0, 123, 0, 0, 0, 0, 0, 0, 0x4, 0x56});
   }
 }

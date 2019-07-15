@@ -50,11 +50,7 @@ public final class NameserversParameter extends ParameterConverterValidator<Set<
     if (Strings.isNullOrEmpty(value)) {
       return ImmutableSet.of();
     }
-    return Splitter.on(',')
-        .trimResults()
-        .omitEmptyStrings()
-        .splitToList(value)
-        .stream()
+    return Splitter.on(',').trimResults().omitEmptyStrings().splitToList(value).stream()
         .flatMap(NameserversParameter::splitNameservers)
         .collect(toImmutableSet());
   }

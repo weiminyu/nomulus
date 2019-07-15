@@ -78,16 +78,31 @@ public final class IcannReportingStagingAction implements Runnable {
   private static final String DEFAULT_SUBDIR = "icann/monthly";
 
   @Inject YearMonth yearMonth;
-  @Inject @Parameter(PARAM_SUBDIR) Optional<String> overrideSubdir;
-  @Inject @Parameter(PARAM_REPORT_TYPES) ImmutableSet<ReportType> reportTypes;
+
+  @Inject
+  @Parameter(PARAM_SUBDIR)
+  Optional<String> overrideSubdir;
+
+  @Inject
+  @Parameter(PARAM_REPORT_TYPES)
+  ImmutableSet<ReportType> reportTypes;
+
   @Inject IcannReportingStager stager;
   @Inject Retrier retrier;
   @Inject Response response;
-  @Inject @Config("gSuiteOutgoingEmailAddress") InternetAddress sender;
-  @Inject @Config("alertRecipientEmailAddress") InternetAddress recipient;
+
+  @Inject
+  @Config("gSuiteOutgoingEmailAddress")
+  InternetAddress sender;
+
+  @Inject
+  @Config("alertRecipientEmailAddress")
+  InternetAddress recipient;
+
   @Inject SendEmailService emailService;
 
-  @Inject IcannReportingStagingAction() {}
+  @Inject
+  IcannReportingStagingAction() {}
 
   @Override
   public void run() {
@@ -138,10 +153,7 @@ public final class IcannReportingStagingAction implements Runnable {
               sender));
       response.setStatus(SC_INTERNAL_SERVER_ERROR);
       response.setContentType(MediaType.PLAIN_TEXT_UTF_8);
-      response.setPayload(
-          String.format(
-              "Staging failed due to %s",
-              getRootCause(e).toString()));
+      response.setPayload(String.format("Staging failed due to %s", getRootCause(e).toString()));
       throw new RuntimeException("Staging action failed.", e);
     }
   }

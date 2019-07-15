@@ -46,10 +46,8 @@ import org.junit.runners.JUnit4;
 public class EscrowTaskRunnerTest {
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withTaskQueue().build();
 
   private final EscrowTask task = mock(EscrowTask.class);
   private final FakeClock clock = new FakeClock(DateTime.parse("2000-01-01TZ"));
@@ -64,7 +62,7 @@ public class EscrowTaskRunnerTest {
     runner = new EscrowTaskRunner();
     runner.clock = clock;
     runner.lockHandler = new FakeLockHandler(true);
-    DateTimeZone.setDefault(DateTimeZone.forID("America/New_York"));  // Make sure UTC stuff works.
+    DateTimeZone.setDefault(DateTimeZone.forID("America/New_York")); // Make sure UTC stuff works.
   }
 
   @Test

@@ -101,7 +101,8 @@ import org.joda.time.DateTime;
  * @error {@link google.registry.flows.exceptions.ResourceStatusProhibitsOperationException}
  * @error {@link google.registry.flows.exceptions.TransferPeriodMustBeOneYearException}
  * @error {@link InvalidTransferPeriodValueException}
- * @error {@link google.registry.flows.exceptions.TransferPeriodZeroAndFeeTransferExtensionException}
+ * @error {@link
+ *     google.registry.flows.exceptions.TransferPeriodZeroAndFeeTransferExtensionException}
  * @error {@link DomainFlowUtils.BadPeriodUnitException}
  * @error {@link DomainFlowUtils.CurrencyUnitMismatchException}
  * @error {@link DomainFlowUtils.CurrencyValueScaleException}
@@ -115,10 +116,11 @@ import org.joda.time.DateTime;
 @ReportingSpec(ActivityReportField.DOMAIN_TRANSFER_REQUEST)
 public final class DomainTransferRequestFlow implements TransactionalFlow {
 
-  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES = ImmutableSet.of(
-      StatusValue.CLIENT_TRANSFER_PROHIBITED,
-      StatusValue.PENDING_DELETE,
-      StatusValue.SERVER_TRANSFER_PROHIBITED);
+  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES =
+      ImmutableSet.of(
+          StatusValue.CLIENT_TRANSFER_PROHIBITED,
+          StatusValue.PENDING_DELETE,
+          StatusValue.SERVER_TRANSFER_PROHIBITED);
 
   @Inject ResourceCommand resourceCommand;
   @Inject ExtensionManager extensionManager;
@@ -132,7 +134,9 @@ public final class DomainTransferRequestFlow implements TransactionalFlow {
   @Inject AsyncTaskEnqueuer asyncTaskEnqueuer;
   @Inject EppResponse.Builder responseBuilder;
   @Inject DomainPricingLogic pricingLogic;
-  @Inject DomainTransferRequestFlow() {}
+
+  @Inject
+  DomainTransferRequestFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -183,8 +187,7 @@ public final class DomainTransferRequestFlow implements TransactionalFlow {
     // See b/19430703#comment17 and https://www.icann.org/news/advisory-2002-06-06-en for the
     // policy documentation for transfers subsuming autorenews within the autorenew grace period.
     int extraYears = period.getValue();
-    DomainBase domainAtTransferTime =
-        existingDomain.cloneProjectedAtTime(automaticTransferTime);
+    DomainBase domainAtTransferTime = existingDomain.cloneProjectedAtTime(automaticTransferTime);
     if (!domainAtTransferTime.getGracePeriodsOfType(GracePeriodStatus.AUTO_RENEW).isEmpty()) {
       extraYears = 0;
     }
@@ -218,9 +221,12 @@ public final class DomainTransferRequestFlow implements TransactionalFlow {
             serverApproveEntities,
             period);
     // Create a poll message to notify the losing registrar that a transfer was requested.
-    PollMessage requestPollMessage = createLosingTransferPollMessage(
-        targetId, pendingTransferData, serverApproveNewExpirationTime, historyEntry)
-            .asBuilder().setEventTime(now).build();
+    PollMessage requestPollMessage =
+        createLosingTransferPollMessage(
+                targetId, pendingTransferData, serverApproveNewExpirationTime, historyEntry)
+            .asBuilder()
+            .setEventTime(now)
+            .build();
     // End the old autorenew event and poll message at the implicit transfer time. This may delete
     // the poll message if it has no events left. Note that if the automatic transfer succeeds, then
     // cloneProjectedAtTime() will replace these old autorenew entities with the server approve ones
@@ -235,11 +241,13 @@ public final class DomainTransferRequestFlow implements TransactionalFlow {
             .setLastEppUpdateClientId(gainingClientId)
             .build();
     asyncTaskEnqueuer.enqueueAsyncResave(newDomain, now, automaticTransferTime);
-    ofy().save()
-        .entities(new ImmutableSet.Builder<>()
-            .add(newDomain, historyEntry, requestPollMessage)
-            .addAll(serverApproveEntities)
-            .build())
+    ofy()
+        .save()
+        .entities(
+            new ImmutableSet.Builder<>()
+                .add(newDomain, historyEntry, requestPollMessage)
+                .addAll(serverApproveEntities)
+                .build())
         .now();
     return responseBuilder
         .setResultFromCode(SUCCESS_WITH_ACTION_PENDING)
@@ -336,10 +344,9 @@ public final class DomainTransferRequestFlow implements TransactionalFlow {
     // If the registration were approved this instant, this is what the new expiration would be,
     // because we cap at 10 years from the moment of approval. This is different than the server
     // approval new expiration time, which is capped at 10 years from the server approve time.
-    DateTime approveNowExtendedRegistrationTime = extendRegistrationWithCap(
-        now,
-        existingDomain.getRegistrationExpirationTime(),
-        period.getValue());
+    DateTime approveNowExtendedRegistrationTime =
+        extendRegistrationWithCap(
+            now, existingDomain.getRegistrationExpirationTime(), period.getValue());
     return createTransferResponse(
         targetId, newDomain.getTransferData(), approveNowExtendedRegistrationTime);
   }

@@ -37,24 +37,18 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class CommitLogBucketTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
   CommitLogBucket bucket;
 
   @Before
   public void before() {
     // Save the bucket with some non-default properties set so that we can distinguish a correct
     // load from one that returns a newly created bucket instance.
-    bucket = persistResource(
-        new CommitLogBucket.Builder()
-            .setLastWrittenTime(END_OF_TIME)
-            .setBucketNum(1)
-            .build());
+    bucket =
+        persistResource(
+            new CommitLogBucket.Builder().setLastWrittenTime(END_OF_TIME).setBucketNum(1).build());
   }
 
   @Test
@@ -80,7 +74,7 @@ public class CommitLogBucketTest {
   @Test
   public void test_getArbitraryBucketId_withSupplierOverridden() {
     inject.setStaticField(
-        CommitLogBucket.class, "bucketIdSupplier", Suppliers.ofInstance(4));  // xkcd.com/221
+        CommitLogBucket.class, "bucketIdSupplier", Suppliers.ofInstance(4)); // xkcd.com/221
     // Try multiple times just in case it's actually still random.  If it is, the probability of
     // this test passing is googol^-1, so I think we're pretty safe.
     for (int i = 0; i < 100; i++) {
@@ -95,8 +89,8 @@ public class CommitLogBucketTest {
 
   @Test
   public void test_loadBucket_forNonexistentBucket_returnsNewBucket() {
-    assertThat(loadBucket(getBucketKey(3))).isEqualTo(
-        new CommitLogBucket.Builder().setBucketNum(3).build());
+    assertThat(loadBucket(getBucketKey(3)))
+        .isEqualTo(new CommitLogBucket.Builder().setBucketNum(3).build());
   }
 
   @Test

@@ -34,17 +34,15 @@ final class CreateCdnsTld extends ConfirmingCommand {
   String description;
 
   @Parameter(
-    names = "--dns_name",
-    description = "DNS name of the new tld, including trailing period, e.g.: search.",
-    required = true
-  )
+      names = "--dns_name",
+      description = "DNS name of the new tld, including trailing period, e.g.: search.",
+      required = true)
   String dnsName;
 
   @Nullable
   @Parameter(
-    names = "--name",
-    description = "Managed zone name.  If not specified, dns_name is used."
-  )
+      names = "--name",
+      description = "Managed zone name.  If not specified, dns_name is used.")
   String name;
 
   @Inject
@@ -72,8 +70,8 @@ final class CreateCdnsTld extends ConfirmingCommand {
             .setDescription(description)
             .setNameServerSet(
                 RegistryToolEnvironment.get() == RegistryToolEnvironment.PRODUCTION
-                ? "cloud-dns-registry"
-                : "cloud-dns-registry-test")
+                    ? "cloud-dns-registry"
+                    : "cloud-dns-registry-test")
             .setDnsName(dnsName)
             .setName((name != null) ? name : dnsName)
             .setDnssecConfig(new ManagedZoneDnsSecConfig().setNonExistence("NSEC").setState("ON"));
@@ -84,9 +82,7 @@ final class CreateCdnsTld extends ConfirmingCommand {
     return String.format(
         "Creating TLD with:\n%s\n%s",
         String.format(KEY_VALUE_FORMAT, "projectId", projectId),
-        managedZone
-            .entrySet()
-            .stream()
+        managedZone.entrySet().stream()
             .map(entry -> String.format(KEY_VALUE_FORMAT, entry.getKey(), entry.getValue()))
             .collect(Collectors.joining("\n")));
   }

@@ -34,8 +34,8 @@ import javax.annotation.Nullable;
 import org.joda.time.DateTime;
 
 /**
- * Common transfer data for {@link EppResource} types. Only applies to domains and contacts;
- * hosts are implicitly transferred with their superordinate domain.
+ * Common transfer data for {@link EppResource} types. Only applies to domains and contacts; hosts
+ * are implicitly transferred with their superordinate domain.
  */
 @Embed
 @Unindex
@@ -59,12 +59,12 @@ public class TransferData extends BaseTransferObject implements Buildable {
    * most recent transfer request, applicable for domains only.
    *
    * <p>For pending transfers, this is the expiration time that will take effect under a projected
-   * server approval. For approved transfers, this is the actual expiration time of the domain as
-   * of the moment of transfer completion. For rejected or cancelled transfers, this field will be
+   * server approval. For approved transfers, this is the actual expiration time of the domain as of
+   * the moment of transfer completion. For rejected or cancelled transfers, this field will be
    * reset to null.
    *
    * <p>Note that even when this field is set, it does not necessarily mean that the post-transfer
-   * domain has a new expiration time.  Superuser transfers may not include a bundled 1 year renewal
+   * domain has a new expiration time. Superuser transfers may not include a bundled 1 year renewal
    * at all, or even when a renewal is bundled, for a transfer during the autorenew grace period the
    * bundled renewal simply subsumes the recent autorenewal, resulting in the same expiration time.
    */
@@ -153,6 +153,7 @@ public class TransferData extends BaseTransferObject implements Buildable {
    * those that are fixed and unchanging throughout the transfer process.
    *
    * <p>These fields are:
+   *
    * <ul>
    *   <li>transferRequestTrid
    *   <li>transferRequestTime

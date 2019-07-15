@@ -31,8 +31,9 @@ import google.registry.xml.XmlTransformer;
 import org.joda.time.DateTime;
 
 /** Command to show history entries. */
-@Parameters(separators = " =",
-  commandDescription = "Show history entries that occurred in a given time range")
+@Parameters(
+    separators = " =",
+    commandDescription = "Show history entries that occurred in a given time range")
 final class GetHistoryEntriesCommand implements CommandWithRemoteApi {
 
   @Parameter(
@@ -45,14 +46,10 @@ final class GetHistoryEntriesCommand implements CommandWithRemoteApi {
       description = "Only show history entries that occurred at or before this time")
   private DateTime before = END_OF_TIME;
 
-  @Parameter(
-    names = "--type",
-    description = "Resource type.")
+  @Parameter(names = "--type", description = "Resource type.")
   private ResourceType type;
 
-  @Parameter(
-    names = "--id",
-    description = "Foreign key of the resource.")
+  @Parameter(names = "--id", description = "Foreign key of the resource.")
   private String uniqueId;
 
   @Override
@@ -66,12 +63,12 @@ final class GetHistoryEntriesCommand implements CommandWithRemoteApi {
       checkArgumentNotNull(parentKey, "Invalid resource ID");
     }
     for (HistoryEntry entry :
-            (parentKey == null
+        (parentKey == null
                 ? ofy().load().type(HistoryEntry.class)
                 : ofy().load().type(HistoryEntry.class).ancestor(parentKey))
-        .order("modificationTime")
-        .filter("modificationTime >=", after)
-        .filter("modificationTime <=", before)) {
+            .order("modificationTime")
+            .filter("modificationTime >=", after)
+            .filter("modificationTime <=", before)) {
       System.out.printf(
           "Client: %s\nTime: %s\nClient TRID: %s\nServer TRID: %s\n%s\n",
           entry.getClientId(),

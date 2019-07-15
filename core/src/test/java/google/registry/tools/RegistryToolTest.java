@@ -40,8 +40,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class RegistryToolTest {
 
-  @Rule
-  public final Expect expect = Expect.create();
+  @Rule public final Expect expect = Expect.create();
 
   @Rule public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
 
@@ -73,7 +72,8 @@ public class RegistryToolTest {
     for (Map.Entry<String, ? extends Class<? extends Command>> commandEntry :
         RegistryTool.COMMAND_MAP.entrySet()) {
       String className = commandEntry.getValue().getSimpleName();
-      expect.that(commandEntry.getKey())
+      expect
+          .that(commandEntry.getKey())
           // JCommander names should match the class name, up to "Command" and case formatting.
           .isEqualTo(UPPER_CAMEL.to(LOWER_UNDERSCORE, className.replaceFirst("Command$", "")));
     }
@@ -100,9 +100,9 @@ public class RegistryToolTest {
   @SuppressWarnings("unchecked")
   private ImmutableSet<Class<? extends Command>> getAllCommandClasses() throws IOException {
     ImmutableSet.Builder<Class<? extends Command>> builder = new ImmutableSet.Builder<>();
-    for (ClassInfo classInfo : ClassPath
-        .from(getClass().getClassLoader())
-        .getTopLevelClassesRecursive(getPackageName(getClass()))) {
+    for (ClassInfo classInfo :
+        ClassPath.from(getClass().getClassLoader())
+            .getTopLevelClassesRecursive(getPackageName(getClass()))) {
       Class<?> clazz = classInfo.load();
       if (Command.class.isAssignableFrom(clazz)
           && !Modifier.isAbstract(clazz.getModifiers())

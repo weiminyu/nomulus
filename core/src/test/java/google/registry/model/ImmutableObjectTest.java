@@ -49,10 +49,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class ImmutableObjectTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Before
   public void register() {
@@ -73,11 +70,15 @@ public class ImmutableObjectTest {
   @Test
   public void testToString_simpleClass() {
     SimpleObject object = new SimpleObject("foo", null);
-    assertThat(object.toString()).isEqualTo(""
-        + "SimpleObject (@" + System.identityHashCode(object) + "): {\n"
-        + "    a=foo\n"
-        + "    b=null\n"
-        + "}");
+    assertThat(object.toString())
+        .isEqualTo(
+            ""
+                + "SimpleObject (@"
+                + System.identityHashCode(object)
+                + "): {\n"
+                + "    a=foo\n"
+                + "    b=null\n"
+                + "}");
   }
 
   @Test
@@ -148,7 +149,7 @@ public class ImmutableObjectTest {
     NestedCollectionsObject object = new NestedCollectionsObject();
     object.set = ImmutableSet.of(obj1, obj2);
     object.list = ImmutableList.of(obj1, obj2);
-    object.deque = new ArrayDeque<>(Arrays.asList(obj1,  obj2));
+    object.deque = new ArrayDeque<>(Arrays.asList(obj1, obj2));
     object.map = ImmutableMap.of("one", obj1, "two", obj2);
 
     Map<?, ?> objectMap = object.toDiffableFieldMap();
@@ -189,8 +190,8 @@ public class ImmutableObjectTest {
     SimpleObject emptySimpleObject = new SimpleObject("", "");
     SimpleObject fullSimpleObject = new SimpleObject("a", "b");
     Object[] nullArray = null;
-    Object[] emptyArray = new Object[]{};
-    Object[] fullArray = new Object[]{"a"};
+    Object[] emptyArray = new Object[] {};
+    Object[] fullArray = new Object[] {"a"};
     List<?> nullList = null;
     List<?> emptyList = newArrayList();
     List<?> stringList = newArrayList("", null);
@@ -277,8 +278,7 @@ public class ImmutableObjectTest {
 
     Key<ValueObject> hydrateMe;
 
-    @DoNotHydrate
-    Key<ValueObject> skipMe;
+    @DoNotHydrate Key<ValueObject> skipMe;
 
     Map<String, Key<ValueObject>> map;
 
@@ -288,8 +288,7 @@ public class ImmutableObjectTest {
   /** Simple subclass of ImmutableObject. */
   @Entity
   public static class ValueObject extends ImmutableObject {
-    @Id
-    long id;
+    @Id long id;
 
     String value;
 

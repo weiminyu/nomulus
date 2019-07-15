@@ -26,9 +26,9 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
- * Main entry point class for documentation generation.  An instance of this class reads data
- * via the javadoc system upon creation and stores it for answering future queries for
- * documentation information.
+ * Main entry point class for documentation generation. An instance of this class reads data via the
+ * javadoc system upon creation and stores it for answering future queries for documentation
+ * information.
  */
 public final class DocumentationGenerator {
 
@@ -39,7 +39,7 @@ public final class DocumentationGenerator {
     sourceRoot = JavadocWrapper.getRootDoc();
   }
 
-  /** Returns generated Markdown output for the flows.  Convenience method for clients. */
+  /** Returns generated Markdown output for the flows. Convenience method for clients. */
   public String generateMarkdown() {
     return MarkdownDocumentationFormatter.generateMarkdownOutput(getFlowDocs());
   }

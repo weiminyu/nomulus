@@ -34,10 +34,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class SignedMarkRevocationListTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
   private final FakeClock clock = new FakeClock(DateTime.parse("2013-01-01T00:00:00Z"));
 
   @Test
@@ -74,9 +71,8 @@ public class SignedMarkRevocationListTest {
       revokes.put(Integer.toString(i), clock.nowUtc());
     }
     // Save it with sharding, and make sure that reloading it works.
-    SignedMarkRevocationList unsharded = SignedMarkRevocationList
-        .create(clock.nowUtc(), revokes.build())
-        .save();
+    SignedMarkRevocationList unsharded =
+        SignedMarkRevocationList.create(clock.nowUtc(), revokes.build()).save();
     assertThat(SignedMarkRevocationList.get()).isEqualTo(unsharded);
     assertThat(ofy().load().type(SignedMarkRevocationList.class).count()).isEqualTo(2);
   }
@@ -90,9 +86,8 @@ public class SignedMarkRevocationListTest {
       revokes.put(Integer.toString(i), clock.nowUtc());
     }
     // Save it with sharding, and make sure that reloading it works.
-    SignedMarkRevocationList unsharded = SignedMarkRevocationList
-        .create(clock.nowUtc(), revokes.build())
-        .save();
+    SignedMarkRevocationList unsharded =
+        SignedMarkRevocationList.create(clock.nowUtc(), revokes.build()).save();
     assertThat(SignedMarkRevocationList.get()).isEqualTo(unsharded);
     assertThat(ofy().load().type(SignedMarkRevocationList.class).count()).isEqualTo(4);
   }

@@ -78,8 +78,8 @@ public class DatastoreAdminTest {
   @Before
   public void setup() {
     Date oneHourLater = new Date(System.currentTimeMillis() + 3_600_000);
-    GoogleCredentials googleCredentials = GoogleCredentials
-        .create(new AccessToken(ACCESS_TOKEN, oneHourLater));
+    GoogleCredentials googleCredentials =
+        GoogleCredentials.create(new AccessToken(ACCESS_TOKEN, oneHourLater));
     GoogleCredentialsBundle credentialsBundle = GoogleCredentialsBundle.create(googleCredentials);
     datastoreAdmin =
         new DatastoreAdmin.Builder(

@@ -26,7 +26,7 @@ public class CurrencyUnitTranslatorFactory
 
   @Override
   SimpleTranslator<CurrencyUnit, String> createTranslator() {
-    return new SimpleTranslator<CurrencyUnit, String>(){
+    return new SimpleTranslator<CurrencyUnit, String>() {
       @Override
       public CurrencyUnit loadValue(String datastoreValue) {
         return CurrencyUnit.of(datastoreValue);
@@ -35,6 +35,7 @@ public class CurrencyUnitTranslatorFactory
       @Override
       public String saveValue(CurrencyUnit pojoValue) {
         return pojoValue.toString();
-      }};
+      }
+    };
   }
 }

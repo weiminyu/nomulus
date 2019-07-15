@@ -59,14 +59,13 @@ public abstract class EppResource extends BackupGroupRoot implements Buildable {
    * Unique identifier in the registry for this resource.
    *
    * <p>This is in the (\w|_){1,80}-\w{1,8} format specified by RFC 5730 for roidType.
+   *
    * @see <a href="https://tools.ietf.org/html/rfc5730">RFC 5730</a>
    */
-  @Id
-  String repoId;
+  @Id String repoId;
 
   /** The ID of the registrar that is currently sponsoring this resource. */
-  @Index
-  String currentSponsorClientId;
+  @Index String currentSponsorClientId;
 
   /** The ID of the registrar that created this resource. */
   String creationClientId;
@@ -84,8 +83,7 @@ public abstract class EppResource extends BackupGroupRoot implements Buildable {
   // Map the method to XML, not the field, because if we map the field (with an adaptor class) it
   // will never be omitted from the xml even if the timestamp inside creationTime is null and we
   // return null from the adaptor. (Instead it gets written as an empty tag.)
-  @Index
-  CreateAutoTimestamp creationTime = CreateAutoTimestamp.create(null);
+  @Index CreateAutoTimestamp creationTime = CreateAutoTimestamp.create(null);
 
   /**
    * The time when this resource was or will be deleted.
@@ -100,9 +98,7 @@ public abstract class EppResource extends BackupGroupRoot implements Buildable {
    * out of the index at that time, as long as we query for resources whose deletion time is before
    * now.
    */
-  @Index
-  DateTime deletionTime;
-
+  @Index DateTime deletionTime;
 
   /**
    * The time that this resource was last updated.
@@ -290,14 +286,14 @@ public abstract class EppResource extends BackupGroupRoot implements Buildable {
 
     /** Add to this resource's status values. */
     public B addStatusValues(ImmutableSet<StatusValue> statusValues) {
-      return setStatusValues(ImmutableSet.copyOf(
-          union(getInstance().getStatusValues(), statusValues)));
+      return setStatusValues(
+          ImmutableSet.copyOf(union(getInstance().getStatusValues(), statusValues)));
     }
 
     /** Remove from this resource's status values. */
     public B removeStatusValues(ImmutableSet<StatusValue> statusValues) {
-      return setStatusValues(ImmutableSet.copyOf(
-          difference(getInstance().getStatusValues(), statusValues)));
+      return setStatusValues(
+          ImmutableSet.copyOf(difference(getInstance().getStatusValues(), statusValues)));
     }
 
     /** Set this resource's repoId. */

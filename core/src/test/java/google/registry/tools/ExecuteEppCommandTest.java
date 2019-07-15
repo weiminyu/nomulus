@@ -65,9 +65,7 @@ public class ExecuteEppCommandTest extends EppToolCommandTestCase<ExecuteEppComm
     String xmlInput2 = ToolsTestData.loadFile("domain_check.xml");
     String eppFile2 = writeToNamedTmpFile("eppFile2", xmlInput2);
     runCommand("--client=NewRegistrar", "--force", eppFile, eppFile2);
-    eppVerifier
-        .verifySent("contact_create.xml")
-        .verifySent("domain_check.xml");
+    eppVerifier.verifySent("contact_create.xml").verifySent("domain_check.xml");
   }
 
   @Test

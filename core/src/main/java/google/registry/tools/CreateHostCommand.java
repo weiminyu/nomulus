@@ -37,10 +37,7 @@ final class CreateHostCommand extends MutatingEppToolCommand {
       required = true)
   String clientId;
 
-  @Parameter(
-      names = "--host",
-      description = "Host name.",
-      required = true)
+  @Parameter(names = "--host", description = "Host name.", required = true)
   private String hostName;
 
   @Parameter(

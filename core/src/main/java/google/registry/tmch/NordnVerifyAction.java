@@ -69,10 +69,21 @@ public final class NordnVerifyAction implements Runnable {
   @Inject LordnRequestInitializer lordnRequestInitializer;
   @Inject Response response;
   @Inject URLFetchService fetchService;
-  @Inject @Header(URL_HEADER) URL url;
-  @Inject @Header(HEADER_ACTION_LOG_ID) String actionLogId;
-  @Inject @Parameter(RequestParameters.PARAM_TLD) String tld;
-  @Inject NordnVerifyAction() {}
+
+  @Inject
+  @Header(URL_HEADER)
+  URL url;
+
+  @Inject
+  @Header(HEADER_ACTION_LOG_ID)
+  String actionLogId;
+
+  @Inject
+  @Parameter(RequestParameters.PARAM_TLD)
+  String tld;
+
+  @Inject
+  NordnVerifyAction() {}
 
   @Override
   public void run() {
@@ -90,8 +101,8 @@ public final class NordnVerifyAction implements Runnable {
    * available.
    *
    * @throws ConflictException if MarksDB has not yet finished processing the LORDN upload
-   * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.3.1">
-   *     TMCH functional specifications LORDN Log File</a>
+   * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.3.1">TMCH
+   *     functional specifications LORDN Log File</a>
    */
   @VisibleForTesting
   LordnLog verify() throws IOException {
@@ -102,8 +113,7 @@ public final class NordnVerifyAction implements Runnable {
     try {
       rsp = fetchService.fetch(req);
     } catch (IOException e) {
-      throw new IOException(
-          String.format("Error connecting to MarksDB at URL %s", url), e);
+      throw new IOException(String.format("Error connecting to MarksDB at URL %s", url), e);
     }
     logger.atInfo().log(
         "LORDN verify task %s response: HTTP response code %d, response data: %s",
@@ -114,9 +124,10 @@ public final class NordnVerifyAction implements Runnable {
     }
     if (rsp.getResponseCode() != SC_OK) {
       throw new UrlFetchException(
-          String.format("LORDN verify task %s: Failed to verify LORDN upload to MarksDB.",
-              actionLogId),
-          req, rsp);
+          String.format(
+              "LORDN verify task %s: Failed to verify LORDN upload to MarksDB.", actionLogId),
+          req,
+          rsp);
     }
     LordnLog log =
         LordnLog.parse(ByteSource.wrap(rsp.getContent()).asCharSource(UTF_8).readLines());

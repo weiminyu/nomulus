@@ -39,6 +39,7 @@ public interface WhoisResponse {
   @AutoValue
   abstract class WhoisResponseResults {
     public abstract String plainTextOutput();
+
     public abstract int numResults();
 
     static WhoisResponseResults create(String plainTextOutput, int numResults) {

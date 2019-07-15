@@ -293,7 +293,6 @@ public class DeleteContactsAndHostsActionTest
     verify(action.asyncTaskMetrics)
         .recordAsyncFlowResult(OperationType.CONTACT_DELETE, OperationResult.SUCCESS, timeEnqueued);
     verifyNoMoreInteractions(action.asyncTaskMetrics);
-
   }
 
   @Test
@@ -339,7 +338,8 @@ public class DeleteContactsAndHostsActionTest
     TransferData oldTransferData = contact.getTransferData();
     assertThat(softDeletedContact.getTransferData())
         .isEqualTo(
-            oldTransferData.copyConstantFieldsToBuilder()
+            oldTransferData
+                .copyConstantFieldsToBuilder()
                 .setTransferStatus(TransferStatus.SERVER_CANCELLED)
                 .setPendingTransferExpirationTime(softDeletedContact.getDeletionTime())
                 .build());
@@ -353,18 +353,14 @@ public class DeleteContactsAndHostsActionTest
         Iterables.getOnlyElement(getPollMessages("NewRegistrar", clock.nowUtc()));
     assertThat(gainingPollMessage.getEventTime()).isLessThan(clock.nowUtc());
     assertThat(
-            gainingPollMessage
-                .getResponseData()
-                .stream()
+            gainingPollMessage.getResponseData().stream()
                 .filter(TransferResponse.class::isInstance)
                 .map(TransferResponse.class::cast)
                 .collect(onlyElement())
                 .getTransferStatus())
         .isEqualTo(TransferStatus.SERVER_CANCELLED);
     PendingActionNotificationResponse panData =
-        gainingPollMessage
-            .getResponseData()
-            .stream()
+        gainingPollMessage.getResponseData().stream()
             .filter(PendingActionNotificationResponse.class::isInstance)
             .map(PendingActionNotificationResponse.class::cast)
             .collect(onlyElement());
@@ -550,11 +546,7 @@ public class DeleteContactsAndHostsActionTest
         Trid.create("fakeClientTrid", "fakeServerTrid"),
         false);
     enqueuer.enqueueAsyncDelete(
-        host,
-        timeEnqueued,
-        "TheRegistrar",
-        Trid.create("fakeClientTrid", "fakeServerTrid"),
-        false);
+        host, timeEnqueued, "TheRegistrar", Trid.create("fakeClientTrid", "fakeServerTrid"), false);
     enqueueMapreduceOnly();
     assertThat(loadByForeignKey(ContactResource.class, "blah2222", clock.nowUtc()))
         .hasValue(contact);
@@ -599,11 +591,7 @@ public class DeleteContactsAndHostsActionTest
     persistUsedDomain("example.tld", persistActiveContact("abc456"), host);
     DateTime timeEnqueued = clock.nowUtc();
     enqueuer.enqueueAsyncDelete(
-        host,
-        timeEnqueued,
-        "TheRegistrar",
-        Trid.create("fakeClientTrid", "fakeServerTrid"),
-        false);
+        host, timeEnqueued, "TheRegistrar", Trid.create("fakeClientTrid", "fakeServerTrid"), false);
     runMapreduce();
     HostResource hostAfter =
         loadByForeignKey(HostResource.class, "ns1.example.tld", clock.nowUtc()).get();
@@ -612,8 +600,7 @@ public class DeleteContactsAndHostsActionTest
         .doesNotHaveStatusValue(PENDING_DELETE)
         .and()
         .hasDeletionTime(END_OF_TIME);
-    DomainBase domain =
-        loadByForeignKey(DomainBase.class, "example.tld", clock.nowUtc()).get();
+    DomainBase domain = loadByForeignKey(DomainBase.class, "example.tld", clock.nowUtc()).get();
     assertThat(domain.getNameservers()).contains(Key.create(hostAfter));
     HistoryEntry historyEntry = getOnlyHistoryEntryOfType(hostAfter, HOST_DELETE_FAILURE);
     assertPollMessageFor(
@@ -665,12 +652,7 @@ public class DeleteContactsAndHostsActionTest
         .hasType(HOST_DELETE);
     HistoryEntry historyEntry = getOnlyHistoryEntryOfType(hostBeforeDeletion, HOST_DELETE);
     assertPollMessageFor(
-        historyEntry,
-        "TheRegistrar",
-        "Deleted host ns2.example.tld.",
-        true,
-        host,
-        clientTrid);
+        historyEntry, "TheRegistrar", "Deleted host ns2.example.tld.", true, host, clientTrid);
     assertNoTasksEnqueued(QUEUE_ASYNC_DELETE);
     verify(action.asyncTaskMetrics).recordContactHostDeletionBatchSize(1L);
     verify(action.asyncTaskMetrics)

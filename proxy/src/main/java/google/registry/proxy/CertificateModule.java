@@ -94,8 +94,7 @@ public class CertificateModule {
    */
   private static <T, E> ImmutableList<E> filterAndConvert(
       ImmutableList<Object> objects, Class<T> clazz, Function<T, E> converter) {
-    return objects
-        .stream()
+    return objects.stream()
         .filter(clazz::isInstance)
         .map(clazz::cast)
         .map(converter)

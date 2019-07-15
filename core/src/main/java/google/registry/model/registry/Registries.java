@@ -55,8 +55,7 @@ public final class Registries {
             ofy()
                 .doTransactionless(
                     () -> {
-                      ImmutableMap.Builder<String, TldType> builder =
-                          new ImmutableMap.Builder<>();
+                      ImmutableMap.Builder<String, TldType> builder = new ImmutableMap.Builder<>();
                       for (Registry registry :
                           ofy().load().type(Registry.class).ancestor(getCrossTldKey())) {
                         builder.put(registry.getTldStr(), registry.getTldType());
@@ -129,6 +128,7 @@ public final class Registries {
   public static InternetDomainName findTldForNameOrThrow(InternetDomainName domainName) {
     return checkArgumentNotNull(
         findTldForName(domainName).orElse(null),
-        "Domain name is not under a recognized TLD: %s", domainName.toString());
+        "Domain name is not under a recognized TLD: %s",
+        domainName.toString());
   }
 }

@@ -35,7 +35,8 @@ public final class ListRegistrarsAction extends ListObjectsAction<Registrar> {
 
   public static final String PATH = "/_dr/admin/list/registrars";
 
-  @Inject ListRegistrarsAction() {}
+  @Inject
+  ListRegistrarsAction() {}
 
   @Override
   public ImmutableSet<String> getPrimaryKeyFields() {
@@ -57,7 +58,6 @@ public final class ListRegistrarsAction extends ListObjectsAction<Registrar> {
 
   @Override
   public ImmutableMap<String, String> getFieldOverrides(Registrar registrar) {
-    return ImmutableMap.of(
-        "blockPremiumNames", registrar.getBlockPremiumNames() ? "blocked" : "-");
+    return ImmutableMap.of("blockPremiumNames", registrar.getBlockPremiumNames() ? "blocked" : "-");
   }
 }

@@ -47,12 +47,10 @@ public class LordnTaskUtilsTest {
   private static final Clock clock = new FakeClock(DateTime.parse("2010-05-01T10:11:12Z"));
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withTaskQueue()
-      .build();
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withTaskQueue().build();
+
+  @Rule public final InjectRule inject = new InjectRule();
 
   @Before
   public void before() {
@@ -71,10 +69,8 @@ public class LordnTaskUtilsTest {
   @Test
   public void test_enqueueDomainBaseTask_sunrise() {
     persistDomainAndEnqueueLordn(newDomainBuilder().setRepoId("A-EXAMPLE").build());
-    String expectedPayload =
-        "A-EXAMPLE,fleece.example,smdzzzz,1,2010-05-01T10:11:12.000Z";
-    assertTasksEnqueued(
-        "lordn-sunrise", new TaskMatcher().payload(expectedPayload).tag("example"));
+    String expectedPayload = "A-EXAMPLE,fleece.example,smdzzzz,1,2010-05-01T10:11:12.000Z";
+    assertTasksEnqueued("lordn-sunrise", new TaskMatcher().payload(expectedPayload).tag("example"));
   }
 
   @Test
@@ -87,10 +83,10 @@ public class LordnTaskUtilsTest {
                     "landrush1tcn", null, null, DateTime.parse("2010-05-01T09:11:12Z")))
             .build();
     persistDomainAndEnqueueLordn(domain);
-    String expectedPayload = "11-EXAMPLE,fleece.example,landrush1tcn,1,2010-05-01T10:11:12.000Z,"
-        + "2010-05-01T09:11:12.000Z";
-    assertTasksEnqueued(
-        "lordn-claims", new TaskMatcher().payload(expectedPayload).tag("example"));
+    String expectedPayload =
+        "11-EXAMPLE,fleece.example,landrush1tcn,1,2010-05-01T10:11:12.000Z,"
+            + "2010-05-01T09:11:12.000Z";
+    assertTasksEnqueued("lordn-claims", new TaskMatcher().payload(expectedPayload).tag("example"));
   }
 
   @Test
@@ -108,8 +104,7 @@ public class LordnTaskUtilsTest {
                             .build()));
     persistDomainAndEnqueueLordn(newDomainBuilder().setRepoId("3-EXAMPLE").build());
     String expectedPayload = "3-EXAMPLE,fleece.example,smdzzzz,null,2010-05-01T10:11:12.000Z";
-    assertTasksEnqueued(
-        "lordn-sunrise", new TaskMatcher().payload(expectedPayload).tag("example"));
+    assertTasksEnqueued("lordn-sunrise", new TaskMatcher().payload(expectedPayload).tag("example"));
   }
 
   @Test

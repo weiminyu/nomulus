@@ -191,8 +191,9 @@ public class InvoicingPipelineTest {
     for (Entry<String, ImmutableList<String>> entry : getExpectedDetailReportMap().entrySet()) {
       ImmutableList<String> detailReport = resultFileContents(entry.getKey());
       assertThat(detailReport.get(0))
-          .isEqualTo("id,billingTime,eventTime,registrarId,billingId,poNumber,tld,action,"
-              + "domain,repositoryId,years,currency,amount,flags");
+          .isEqualTo(
+              "id,billingTime,eventTime,registrarId,billingId,poNumber,tld,action,"
+                  + "domain,repositoryId,years,currency,amount,flags");
       assertThat(detailReport.subList(1, detailReport.size()))
           .containsExactlyElementsIn(entry.getValue());
     }

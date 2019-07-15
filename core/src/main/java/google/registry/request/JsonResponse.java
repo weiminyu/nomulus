@@ -42,7 +42,7 @@ public class JsonResponse {
     response.setStatus(status);
   }
 
-  /** Writes the JSON map to the HTTP payload; call this exactly once.   */
+  /** Writes the JSON map to the HTTP payload; call this exactly once. */
   public void setPayload(Map<String, ?> responseMap) {
     response.setContentType(JSON_UTF_8);
     // This prevents IE from MIME-sniffing a response away from the declared Content-Type.

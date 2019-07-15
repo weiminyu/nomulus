@@ -61,10 +61,7 @@ public class GcsDiffFileListerTest {
   final GcsService gcsService = GcsServiceFactory.createGcsService();
   private final TestLogHandler logHandler = new TestLogHandler();
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Before
   public void before() throws Exception {
@@ -77,7 +74,7 @@ public class GcsDiffFileListerTest {
           new GcsFileOptions.Builder()
               .addUserMetadata(LOWER_BOUND_CHECKPOINT, now.minusMinutes(i + 1).toString())
               .build(),
-          ByteBuffer.wrap(new byte[]{1, 2, 3}));
+          ByteBuffer.wrap(new byte[] {1, 2, 3}));
     }
     LoggerConfig.getConfig(GcsDiffFileLister.class).addHandler(logHandler);
   }
@@ -100,7 +97,7 @@ public class GcsDiffFileListerTest {
         new GcsFileOptions.Builder()
             .addUserMetadata(LOWER_BOUND_CHECKPOINT, now.minusMinutes(prevAge).toString())
             .build(),
-        ByteBuffer.wrap(new byte[]{1, 2, 3}));
+        ByteBuffer.wrap(new byte[] {1, 2, 3}));
   }
 
   private void assertLogContains(String message) {
@@ -122,44 +119,49 @@ public class GcsDiffFileListerTest {
   public void testList_patchesHoles() {
     // Fake out the GCS list() method to return only the first and last file.
     // We can't use Mockito.spy() because GcsService's impl is final.
-    diffLister.gcsService = (GcsService) newProxyInstance(
-        GcsService.class.getClassLoader(),
-        new Class<?>[] {GcsService.class},
-        new InvocationHandler() {
-          @Override
-          public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getName().equals("list")) {
-              // ListResult is an incredibly annoying thing to construct. It needs to be fed from a
-              // Callable that returns Iterators, each representing a batch of results.
-              return new ListResult(new Callable<Iterator<ListItem>>() {
-                boolean called = false;
+    diffLister.gcsService =
+        (GcsService)
+            newProxyInstance(
+                GcsService.class.getClassLoader(),
+                new Class<?>[] {GcsService.class},
+                new InvocationHandler() {
+                  @Override
+                  public Object invoke(Object proxy, Method method, Object[] args)
+                      throws Throwable {
+                    if (method.getName().equals("list")) {
+                      // ListResult is an incredibly annoying thing to construct. It needs to be fed
+                      // from a
+                      // Callable that returns Iterators, each representing a batch of results.
+                      return new ListResult(
+                          new Callable<Iterator<ListItem>>() {
+                            boolean called = false;
 
-                @Override
-                public Iterator<ListItem> call() {
-                  try {
-                    return called ? null : Iterators.forArray(
-                        new ListItem.Builder()
-                            .setName(DIFF_FILE_PREFIX + now)
-                            .build(),
-                        new ListItem.Builder()
-                            .setName(DIFF_FILE_PREFIX + now.minusMinutes(4))
-                            .build());
-                  } finally {
-                    called = true;
+                            @Override
+                            public Iterator<ListItem> call() {
+                              try {
+                                return called
+                                    ? null
+                                    : Iterators.forArray(
+                                        new ListItem.Builder()
+                                            .setName(DIFF_FILE_PREFIX + now)
+                                            .build(),
+                                        new ListItem.Builder()
+                                            .setName(DIFF_FILE_PREFIX + now.minusMinutes(4))
+                                            .build());
+                              } finally {
+                                called = true;
+                              }
+                            }
+                          });
+                    }
+                    return method.invoke(gcsService, args);
                   }
-                }});
-            }
-            return method.invoke(gcsService, args);
-          }});
+                });
     DateTime fromTime = now.minusMinutes(4).minusSeconds(1);
     // Request all files with checkpoint > fromTime.
     assertThat(listDiffFiles(fromTime, null))
         .containsExactly(
-            now.minusMinutes(4),
-            now.minusMinutes(3),
-            now.minusMinutes(2),
-            now.minusMinutes(1),
-            now)
+            now.minusMinutes(4), now.minusMinutes(3), now.minusMinutes(2), now.minusMinutes(1), now)
         .inOrder();
   }
 
@@ -174,23 +176,17 @@ public class GcsDiffFileListerTest {
     }
 
     assertThrows(IllegalStateException.class, () -> listDiffFiles(now.minusMinutes(9), null));
-    assertLogContains(String.format(
-        "Found sequence from %s to %s", now.minusMinutes(9), now));
-    assertLogContains(String.format(
-        "Found sequence from %s to %s", now.minusMinutes(9), now.minusMinutes(6)));
+    assertLogContains(String.format("Found sequence from %s to %s", now.minusMinutes(9), now));
+    assertLogContains(
+        String.format("Found sequence from %s to %s", now.minusMinutes(9), now.minusMinutes(6)));
   }
 
   @Test
   public void testList_boundaries() {
     assertThat(listDiffFiles(now.minusMinutes(4), now))
         .containsExactly(
-            now.minusMinutes(4),
-            now.minusMinutes(3),
-            now.minusMinutes(2),
-            now.minusMinutes(1),
-            now)
+            now.minusMinutes(4), now.minusMinutes(3), now.minusMinutes(2), now.minusMinutes(1), now)
         .inOrder();
-
   }
 
   @Test
@@ -202,41 +198,31 @@ public class GcsDiffFileListerTest {
     }
 
     assertThrows(IllegalStateException.class, () -> listDiffFiles(now.minusMinutes(9), null));
-    assertLogContains(String.format(
-        "Gap discovered in sequence terminating at %s, missing file: commit_diff_until_%s",
-        now, now.minusMinutes(5)));
-    assertLogContains(String.format(
-        "Found sequence from %s to %s", now.minusMinutes(9), now.minusMinutes(6)));
-    assertLogContains(String.format(
-        "Found sequence from %s to %s", now.minusMinutes(5), now));
+    assertLogContains(
+        String.format(
+            "Gap discovered in sequence terminating at %s, missing file: commit_diff_until_%s",
+            now, now.minusMinutes(5)));
+    assertLogContains(
+        String.format("Found sequence from %s to %s", now.minusMinutes(9), now.minusMinutes(6)));
+    assertLogContains(String.format("Found sequence from %s to %s", now.minusMinutes(5), now));
 
     // Verify that we can work around the gap.
     DateTime fromTime = now.minusMinutes(4).minusSeconds(1);
     assertThat(listDiffFiles(fromTime, null))
         .containsExactly(
-            now.minusMinutes(4),
-            now.minusMinutes(3),
-            now.minusMinutes(2),
-            now.minusMinutes(1),
-            now)
+            now.minusMinutes(4), now.minusMinutes(3), now.minusMinutes(2), now.minusMinutes(1), now)
         .inOrder();
-    assertThat(listDiffFiles(
-            now.minusMinutes(8).minusSeconds(1), now.minusMinutes(6).plusSeconds(1)))
-        .containsExactly(
-            now.minusMinutes(8),
-            now.minusMinutes(7),
-            now.minusMinutes(6))
+    assertThat(
+            listDiffFiles(now.minusMinutes(8).minusSeconds(1), now.minusMinutes(6).plusSeconds(1)))
+        .containsExactly(now.minusMinutes(8), now.minusMinutes(7), now.minusMinutes(6))
         .inOrder();
   }
 
   @Test
   public void testList_toTimeSpecified() {
-    assertThat(listDiffFiles(
-            now.minusMinutes(4).minusSeconds(1), now.minusMinutes(2).plusSeconds(1)))
-        .containsExactly(
-            now.minusMinutes(4),
-            now.minusMinutes(3),
-            now.minusMinutes(2))
+    assertThat(
+            listDiffFiles(now.minusMinutes(4).minusSeconds(1), now.minusMinutes(2).plusSeconds(1)))
+        .containsExactly(now.minusMinutes(4), now.minusMinutes(3), now.minusMinutes(2))
         .inOrder();
   }
 }

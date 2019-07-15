@@ -34,18 +34,16 @@ import org.junit.runners.JUnit4;
 /**
  * Unit tests for contact_settings.js use of {@link RegistrarSettingsAction}.
  *
- * <p>The default read and session validation tests are handled by the
- * superclass.
+ * <p>The default read and session validation tests are handled by the superclass.
  */
 @RunWith(JUnit4.class)
 public class ContactSettingsTest extends RegistrarSettingsActionTestCase {
 
   @Test
   public void testPost_readContacts_success() {
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "read",
-        "id", CLIENT_ID,
-        "args", ImmutableMap.of()));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of("op", "read", "id", CLIENT_ID, "args", ImmutableMap.of()));
     @SuppressWarnings("unchecked")
     List<Map<String, ?>> results = (List<Map<String, ?>>) response.get("results");
     assertThat(results.get(0).get("contacts"))
@@ -55,10 +53,10 @@ public class ContactSettingsTest extends RegistrarSettingsActionTestCase {
 
   @Test
   public void testPost_loadSaveRegistrar_success() {
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", loadRegistrar(CLIENT_ID).toJsonMap()));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of(
+                "op", "update", "id", CLIENT_ID, "args", loadRegistrar(CLIENT_ID).toJsonMap()));
     assertThat(response).containsEntry("status", "SUCCESS");
     assertMetric(CLIENT_ID, "update", "[OWNER]", "SUCCESS");
   }

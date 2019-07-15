@@ -28,10 +28,7 @@ import java.nio.file.Path;
 import javax.inject.Inject;
 
 /** Command to set and update {@code KmsKeyring} values. */
-@Parameters(
-  separators = " =",
-  commandDescription = "Update values of secrets in KmsKeyring."
-)
+@Parameters(separators = " =", commandDescription = "Update values of secrets in KmsKeyring.")
 final class UpdateKmsKeyringCommand implements CommandWithRemoteApi {
 
   @Inject KmsUpdater kmsUpdater;
@@ -39,15 +36,13 @@ final class UpdateKmsKeyringCommand implements CommandWithRemoteApi {
   @Inject
   UpdateKmsKeyringCommand() {}
 
-  @Parameter(names  = "--keyname", description = "The secret to update", required = true)
+  @Parameter(names = "--keyname", description = "The secret to update", required = true)
   private KeyringKeyName keyringKeyName;
 
   @Parameter(
-    names = {"--input"},
-    description =
-        "Name of input file for key data.",
-    validateWith = PathParameter.InputFile.class
-  )
+      names = {"--input"},
+      description = "Name of input file for key data.",
+      validateWith = PathParameter.InputFile.class)
   private Path inputPath = null;
 
   @Override
@@ -64,7 +59,7 @@ final class UpdateKmsKeyringCommand implements CommandWithRemoteApi {
       case BRDA_SIGNING_PUBLIC_KEY:
         throw new IllegalArgumentException(
             "Can't update BRDA_SIGNING_PUBLIC_KEY directly."
-            + " Must update public and private keys together using BRDA_SIGNING_KEY_PAIR.");
+                + " Must update public and private keys together using BRDA_SIGNING_KEY_PAIR.");
       case ICANN_REPORTING_PASSWORD:
         kmsUpdater.setIcannReportingPassword(deserializeString(input));
         break;
@@ -89,12 +84,13 @@ final class UpdateKmsKeyringCommand implements CommandWithRemoteApi {
       case RDE_SIGNING_PUBLIC_KEY:
         throw new IllegalArgumentException(
             "Can't update RDE_SIGNING_PUBLIC_KEY directly."
-            + " Must update public and private keys together using RDE_SIGNING_KEY_PAIR.");
-      // Note that RDE_SSH_CLIENT public / private keys are slightly different than other key pairs,
-      // since they are just regular strings rather than {@link PGPKeyPair}s (because OpenSSH
-      // doesn't use PGP-style keys)
-      //
-      // Hence we can and need to update the private and public keys individually.
+                + " Must update public and private keys together using RDE_SIGNING_KEY_PAIR.");
+        // Note that RDE_SSH_CLIENT public / private keys are slightly different than other key
+        // pairs,
+        // since they are just regular strings rather than {@link PGPKeyPair}s (because OpenSSH
+        // doesn't use PGP-style keys)
+        //
+        // Hence we can and need to update the private and public keys individually.
       case RDE_SSH_CLIENT_PRIVATE_KEY:
         kmsUpdater.setRdeSshClientPrivateKey(deserializeString(input));
         break;
@@ -110,10 +106,9 @@ final class UpdateKmsKeyringCommand implements CommandWithRemoteApi {
       case RDE_STAGING_PUBLIC_KEY:
         throw new IllegalArgumentException(
             "Can't update RDE_STAGING_PUBLIC_KEY directly."
-            + " Must update public and private keys together using RDE_STAGING_KEY_PAIR.");
+                + " Must update public and private keys together using RDE_STAGING_KEY_PAIR.");
     }
 
     kmsUpdater.update();
   }
 }
-

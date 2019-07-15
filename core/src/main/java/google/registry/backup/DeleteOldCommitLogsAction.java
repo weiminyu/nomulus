@@ -74,9 +74,17 @@ public final class DeleteOldCommitLogsAction implements Runnable {
   @Inject MapreduceRunner mrRunner;
   @Inject Response response;
   @Inject Clock clock;
-  @Inject @Config("commitLogDatastoreRetention") Duration maxAge;
-  @Inject @Parameter(PARAM_DRY_RUN) boolean isDryRun;
-  @Inject DeleteOldCommitLogsAction() {}
+
+  @Inject
+  @Config("commitLogDatastoreRetention")
+  Duration maxAge;
+
+  @Inject
+  @Parameter(PARAM_DRY_RUN)
+  boolean isDryRun;
+
+  @Inject
+  DeleteOldCommitLogsAction() {}
 
   @Override
   public void run() {
@@ -142,7 +150,7 @@ public final class DeleteOldCommitLogsAction implements Runnable {
       checkState(
           object instanceof EppResource,
           "Received a key to an object that isn't EppResource nor CommitLogManifest."
-          + " Key: %s object type: %s",
+              + " Key: %s object type: %s",
           key,
           object.getClass().getName());
 
@@ -223,8 +231,7 @@ public final class DeleteOldCommitLogsAction implements Runnable {
    * OK to delete this manifestKey. If even one source returns "false" (meaning "it's not OK to
    * delete this manifest") then it won't be deleted.
    */
-  static class DeleteOldCommitLogsReducer
-      extends Reducer<Key<CommitLogManifest>, Boolean, Void> {
+  static class DeleteOldCommitLogsReducer extends Reducer<Key<CommitLogManifest>, Boolean, Void> {
 
     private static final long serialVersionUID = -4918760187627937268L;
 
@@ -240,12 +247,12 @@ public final class DeleteOldCommitLogsAction implements Runnable {
       }
 
       public abstract Status status();
+
       public abstract int numDeleted();
 
       static DeletionResult create(Status status, int numDeleted) {
-        return
-            new AutoValue_DeleteOldCommitLogsAction_DeleteOldCommitLogsReducer_DeletionResult(
-                status, numDeleted);
+        return new AutoValue_DeleteOldCommitLogsAction_DeleteOldCommitLogsReducer_DeletionResult(
+            status, numDeleted);
       }
     }
 
@@ -256,8 +263,7 @@ public final class DeleteOldCommitLogsAction implements Runnable {
 
     @Override
     public void reduce(
-        final Key<CommitLogManifest> manifestKey,
-        ReducerInput<Boolean> canDeleteVerdicts) {
+        final Key<CommitLogManifest> manifestKey, ReducerInput<Boolean> canDeleteVerdicts) {
       ImmutableMultiset<Boolean> canDeleteMultiset = ImmutableMultiset.copyOf(canDeleteVerdicts);
       if (canDeleteMultiset.count(TRUE) > 1) {
         getContext().incrementCounter("commit log manifests incorrectly mapped multiple times");
@@ -266,47 +272,60 @@ public final class DeleteOldCommitLogsAction implements Runnable {
         getContext().incrementCounter("commit log manifests referenced multiple times");
       }
       if (canDeleteMultiset.contains(FALSE)) {
-        getContext().incrementCounter(
-            canDeleteMultiset.contains(TRUE)
-            ? "old commit log manifests still referenced"
-            : "new (or nonexistent) commit log manifests referenced");
-        getContext().incrementCounter(
-            "EPP resource revisions handled",
-            canDeleteMultiset.count(FALSE));
+        getContext()
+            .incrementCounter(
+                canDeleteMultiset.contains(TRUE)
+                    ? "old commit log manifests still referenced"
+                    : "new (or nonexistent) commit log manifests referenced");
+        getContext()
+            .incrementCounter("EPP resource revisions handled", canDeleteMultiset.count(FALSE));
         return;
       }
 
-      DeletionResult deletionResult = ofy().transactNew(() -> {
-        CommitLogManifest manifest = ofy().load().key(manifestKey).now();
-        // It is possible that the same manifestKey was run twice, if a shard had to be restarted
-        // or some weird failure. If this happens, we want to exit immediately.
-        // Note that this can never happen in dryRun.
-        if (manifest == null) {
-          return DeletionResult.create(DeletionResult.Status.ALREADY_DELETED, 0);
-        }
-        // Doing a sanity check on the date. This is the only place we use the CommitLogManifest,
-        // so maybe removing this test will improve performance. However, unless it's proven that
-        // the performance boost is significant (and we've tested this enough to be sure it never
-        // happens)- the safty of "let's not delete stuff we need from prod" is more important.
-        if (manifest.getCommitTime().isAfter(deletionThreshold)) {
-          return DeletionResult.create(DeletionResult.Status.AFTER_THRESHOLD, 0);
-        }
-        Iterable<Key<CommitLogMutation>> commitLogMutationKeys = ofy().load()
-            .type(CommitLogMutation.class)
-            .ancestor(manifestKey)
-            .keys()
-            .iterable();
-        ImmutableList<Key<?>> keysToDelete = ImmutableList.<Key<?>>builder()
-            .addAll(commitLogMutationKeys)
-            .add(manifestKey)
-            .build();
-        // Normally in a dry run we would log the entities that would be deleted, but those can
-        // number in the millions so we skip the logging.
-        if (!isDryRun) {
-          ofy().deleteWithoutBackup().keys(keysToDelete);
-        }
-        return DeletionResult.create(DeletionResult.Status.SUCCESS, keysToDelete.size());
-      });
+      DeletionResult deletionResult =
+          ofy()
+              .transactNew(
+                  () -> {
+                    CommitLogManifest manifest = ofy().load().key(manifestKey).now();
+                    // It is possible that the same manifestKey was run twice, if a shard had to be
+                    // restarted
+                    // or some weird failure. If this happens, we want to exit immediately.
+                    // Note that this can never happen in dryRun.
+                    if (manifest == null) {
+                      return DeletionResult.create(DeletionResult.Status.ALREADY_DELETED, 0);
+                    }
+                    // Doing a sanity check on the date. This is the only place we use the
+                    // CommitLogManifest,
+                    // so maybe removing this test will improve performance. However, unless it's
+                    // proven that
+                    // the performance boost is significant (and we've tested this enough to be sure
+                    // it never
+                    // happens)- the safty of "let's not delete stuff we need from prod" is more
+                    // important.
+                    if (manifest.getCommitTime().isAfter(deletionThreshold)) {
+                      return DeletionResult.create(DeletionResult.Status.AFTER_THRESHOLD, 0);
+                    }
+                    Iterable<Key<CommitLogMutation>> commitLogMutationKeys =
+                        ofy()
+                            .load()
+                            .type(CommitLogMutation.class)
+                            .ancestor(manifestKey)
+                            .keys()
+                            .iterable();
+                    ImmutableList<Key<?>> keysToDelete =
+                        ImmutableList.<Key<?>>builder()
+                            .addAll(commitLogMutationKeys)
+                            .add(manifestKey)
+                            .build();
+                    // Normally in a dry run we would log the entities that would be deleted, but
+                    // those can
+                    // number in the millions so we skip the logging.
+                    if (!isDryRun) {
+                      ofy().deleteWithoutBackup().keys(keysToDelete);
+                    }
+                    return DeletionResult.create(
+                        DeletionResult.Status.SUCCESS, keysToDelete.size());
+                  });
 
       switch (deletionResult.status()) {
         case SUCCESS:

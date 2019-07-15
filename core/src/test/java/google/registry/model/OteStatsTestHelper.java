@@ -52,11 +52,9 @@ public final class OteStatsTestHelper {
   /**
    * Sets up an incomplete OT&E registrar. It is missing the following entries:
    *
-   * - DOMAIN_CREATES_IDN
-   * - DOMAIN_RESTORES
-   * - HOST_DELETES
+   * <p>- DOMAIN_CREATES_IDN - DOMAIN_RESTORES - HOST_DELETES
    *
-   * TODO(b/122830156): Have this replicate the exact OT&E workflow with the correct client IDs
+   * <p>TODO(b/122830156): Have this replicate the exact OT&E workflow with the correct client IDs
    */
   public static void setupIncompleteOte(String baseClientId) throws IOException {
     persistPremiumList("default_sandbox_list", "sandbox,USD 1000");

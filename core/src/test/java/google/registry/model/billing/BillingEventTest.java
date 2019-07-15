@@ -61,16 +61,15 @@ public class BillingEventTest extends EntityTestCase {
   public void setUp() {
     createTld("tld");
     domain = persistActiveDomain("foo.tld");
-    historyEntry = persistResource(
-        new HistoryEntry.Builder()
-            .setParent(domain)
-            .setModificationTime(now)
-            .build());
-    historyEntry2 = persistResource(
-        new HistoryEntry.Builder()
-        .setParent(domain)
-        .setModificationTime(now.plusDays(1))
-        .build());
+    historyEntry =
+        persistResource(
+            new HistoryEntry.Builder().setParent(domain).setModificationTime(now).build());
+    historyEntry2 =
+        persistResource(
+            new HistoryEntry.Builder()
+                .setParent(domain)
+                .setModificationTime(now.plusDays(1))
+                .build());
 
     AllocationToken allocationToken =
         persistResource(
@@ -107,46 +106,53 @@ public class BillingEventTest extends EntityTestCase {
                     .setReason(Reason.RENEW)
                     .setEventTime(now.plusYears(1))
                     .setRecurrenceEndTime(END_OF_TIME)));
-    oneTimeSynthetic = persistResource(commonInit(
-        new BillingEvent.OneTime.Builder()
-            .setParent(historyEntry)
-            .setReason(Reason.CREATE)
-            .setFlags(ImmutableSet.of(BillingEvent.Flag.ANCHOR_TENANT, BillingEvent.Flag.SYNTHETIC))
-            .setSyntheticCreationTime(now.plusDays(10))
-            .setCancellationMatchingBillingEvent(Key.create(recurring))
-            .setPeriodYears(2)
-            .setCost(Money.of(USD, 1))
-            .setEventTime(now)
-            .setBillingTime(now.plusDays(5))));
-    cancellationOneTime = persistResource(commonInit(
-        new BillingEvent.Cancellation.Builder()
-            .setParent(historyEntry2)
-            .setReason(Reason.CREATE)
-            .setEventTime(now.plusDays(1))
-            .setBillingTime(now.plusDays(5))
-            .setOneTimeEventKey(Key.create(oneTime))));
-    cancellationRecurring = persistResource(commonInit(
-        new BillingEvent.Cancellation.Builder()
-            .setParent(historyEntry2)
-            .setReason(Reason.RENEW)
-            .setEventTime(now.plusDays(1))
-            .setBillingTime(now.plusYears(1).plusDays(45))
-            .setRecurringEventKey(Key.create(recurring))));
-    modification = persistResource(commonInit(
-        new BillingEvent.Modification.Builder()
-            .setParent(historyEntry2)
-            .setReason(Reason.CREATE)
-            .setCost(Money.of(USD, 1))
-            .setDescription("Something happened")
-            .setEventTime(now.plusDays(1))
-            .setEventKey(Key.create(oneTime))));
+    oneTimeSynthetic =
+        persistResource(
+            commonInit(
+                new BillingEvent.OneTime.Builder()
+                    .setParent(historyEntry)
+                    .setReason(Reason.CREATE)
+                    .setFlags(
+                        ImmutableSet.of(
+                            BillingEvent.Flag.ANCHOR_TENANT, BillingEvent.Flag.SYNTHETIC))
+                    .setSyntheticCreationTime(now.plusDays(10))
+                    .setCancellationMatchingBillingEvent(Key.create(recurring))
+                    .setPeriodYears(2)
+                    .setCost(Money.of(USD, 1))
+                    .setEventTime(now)
+                    .setBillingTime(now.plusDays(5))));
+    cancellationOneTime =
+        persistResource(
+            commonInit(
+                new BillingEvent.Cancellation.Builder()
+                    .setParent(historyEntry2)
+                    .setReason(Reason.CREATE)
+                    .setEventTime(now.plusDays(1))
+                    .setBillingTime(now.plusDays(5))
+                    .setOneTimeEventKey(Key.create(oneTime))));
+    cancellationRecurring =
+        persistResource(
+            commonInit(
+                new BillingEvent.Cancellation.Builder()
+                    .setParent(historyEntry2)
+                    .setReason(Reason.RENEW)
+                    .setEventTime(now.plusDays(1))
+                    .setBillingTime(now.plusYears(1).plusDays(45))
+                    .setRecurringEventKey(Key.create(recurring))));
+    modification =
+        persistResource(
+            commonInit(
+                new BillingEvent.Modification.Builder()
+                    .setParent(historyEntry2)
+                    .setReason(Reason.CREATE)
+                    .setCost(Money.of(USD, 1))
+                    .setDescription("Something happened")
+                    .setEventTime(now.plusDays(1))
+                    .setEventKey(Key.create(oneTime))));
   }
 
   private <E extends BillingEvent, B extends BillingEvent.Builder<E, B>> E commonInit(B builder) {
-    return builder
-        .setClientId("a registrar")
-        .setTargetId("foo.tld")
-        .build();
+    return builder.setClientId("a registrar").setTargetId("foo.tld").build();
   }
 
   @Test
@@ -183,8 +189,8 @@ public class BillingEventTest extends EntityTestCase {
 
   @Test
   public void testCancellationMatching() {
-    Key<?> recurringKey = ofy().load().entity(oneTimeSynthetic).now()
-        .getCancellationMatchingBillingEvent();
+    Key<?> recurringKey =
+        ofy().load().entity(oneTimeSynthetic).now().getCancellationMatchingBillingEvent();
     assertThat(ofy().load().key(recurringKey).now()).isEqualTo(recurring);
   }
 
@@ -274,10 +280,9 @@ public class BillingEventTest extends EntityTestCase {
 
   @Test
   public void testSuccess_cancellation_forGracePeriod_withOneTime() {
-    BillingEvent.Cancellation newCancellation = BillingEvent.Cancellation.forGracePeriod(
-        GracePeriod.forBillingEvent(GracePeriodStatus.ADD, oneTime),
-        historyEntry2,
-        "foo.tld");
+    BillingEvent.Cancellation newCancellation =
+        BillingEvent.Cancellation.forGracePeriod(
+            GracePeriod.forBillingEvent(GracePeriodStatus.ADD, oneTime), historyEntry2, "foo.tld");
     // Set ID to be the same to ignore for the purposes of comparison.
     newCancellation = newCancellation.asBuilder().setId(cancellationOneTime.getId()).build();
     assertThat(newCancellation).isEqualTo(cancellationOneTime);
@@ -285,14 +290,15 @@ public class BillingEventTest extends EntityTestCase {
 
   @Test
   public void testSuccess_cancellation_forGracePeriod_withRecurring() {
-    BillingEvent.Cancellation newCancellation = BillingEvent.Cancellation.forGracePeriod(
-        GracePeriod.createForRecurring(
-            GracePeriodStatus.AUTO_RENEW,
-            now.plusYears(1).plusDays(45),
-            "a registrar",
-            Key.create(recurring)),
-        historyEntry2,
-        "foo.tld");
+    BillingEvent.Cancellation newCancellation =
+        BillingEvent.Cancellation.forGracePeriod(
+            GracePeriod.createForRecurring(
+                GracePeriodStatus.AUTO_RENEW,
+                now.plusYears(1).plusDays(45),
+                "a registrar",
+                Key.create(recurring)),
+            historyEntry2,
+            "foo.tld");
     // Set ID to be the same to ignore for the purposes of comparison.
     newCancellation = newCancellation.asBuilder().setId(cancellationRecurring.getId()).build();
     assertThat(newCancellation).isEqualTo(cancellationRecurring);

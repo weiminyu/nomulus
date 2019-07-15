@@ -32,21 +32,28 @@ import org.joda.time.DateTime;
 /**
  * Parser of LORDN log responses from the MarksDB server during the NORDN process.
  *
- * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.3.1">
- *     TMCH functional specifications - LORDN Log File</a>
+ * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.3.1">TMCH
+ *     functional specifications - LORDN Log File</a>
  */
 @Immutable
 public final class LordnLog implements Iterable<Entry<String, LordnLog.Result>> {
 
   /** Indicates whether or not the LORDN upload succeeded. */
-  public enum Status { ACCEPTED, REJECTED }
+  public enum Status {
+    ACCEPTED,
+    REJECTED
+  }
 
   /** Result code for individual DN lines. */
   @Immutable
   public static final class Result {
 
     /** Outcome categories for individual DN lines. */
-    public enum Outcome { OK, WARNING, ERROR }
+    public enum Outcome {
+      OK,
+      WARNING,
+      ERROR
+    }
 
     private final int code;
     private final String description;
@@ -194,13 +201,13 @@ public final class LordnLog implements Iterable<Entry<String, LordnLog.Result>> 
     // First line: <version>,<LORDN Log creation datetime>,<LORDN file creation datetime>,
     //             <LORDN Log Identifier>,<Status flag>,<Warning flag>,<Number of DN Lines>
     List<String> firstLine = Splitter.on(',').splitToList(lines.get(0));
-    checkArgument(firstLine.size() == 7, String.format(
-        "Line 1: Expected 7 elements, found %d", firstLine.size()));
+    checkArgument(
+        firstLine.size() == 7,
+        String.format("Line 1: Expected 7 elements, found %d", firstLine.size()));
 
     // +  <version>, version of the file, this field MUST be 1.
     int version = Integer.parseInt(firstLine.get(0));
-    checkArgument(version == 1, String.format(
-        "Line 1: Expected version 1, found %d", version));
+    checkArgument(version == 1, String.format("Line 1: Expected version 1, found %d", version));
 
     // +  <LORDN Log creation datetime>, date and time in UTC that the
     //    LORDN Log was created.
@@ -217,8 +224,10 @@ public final class LordnLog implements Iterable<Entry<String, LordnLog.Result>> 
     //    The identified will be a string of a maximum LENGTH of 60
     //    characters from the Base 64 alphabet.
     String logId = firstLine.get(3);
-    checkArgument(LOG_ID_PATTERN.matcher(logId).matches(),
-        "Line 1: Log ID does not match base64 pattern: %s", logId);
+    checkArgument(
+        LOG_ID_PATTERN.matcher(logId).matches(),
+        "Line 1: Log ID does not match base64 pattern: %s",
+        logId);
 
     // +  <Status flag>, whether the LORDN file has been accepted for
     //    processing by the TMDB.  Possible values are "accepted" or
@@ -241,15 +250,18 @@ public final class LordnLog implements Iterable<Entry<String, LordnLog.Result>> 
         String.valueOf(dnLines));
 
     // Second line contains headers: roid,result-code
-    checkArgument(lines.get(1).equals("roid,result-code"),
-        "Line 2: Unexpected header list: %s", lines.get(1));
+    checkArgument(
+        lines.get(1).equals("roid,result-code"),
+        "Line 2: Unexpected header list: %s",
+        lines.get(1));
 
     // Subsequent lines: <roid>,<result code>
     ImmutableMap.Builder<String, Result> builder = new ImmutableMap.Builder<>();
     for (int i = 2; i < lines.size(); i++) {
       List<String> currentLine = Splitter.on(',').splitToList(lines.get(i));
-      checkArgument(currentLine.size() == 2, String.format(
-          "Line %d: Expected 2 elements, found %d", i + 1, currentLine.size()));
+      checkArgument(
+          currentLine.size() == 2,
+          String.format("Line %d: Expected 2 elements, found %d", i + 1, currentLine.size()));
       String roid = currentLine.get(0);
       int code = Integer.parseInt(currentLine.get(1));
       Result result = checkNotNull(RESULTS.get(code), "Line %s: Unknown result code: %s", i, code);

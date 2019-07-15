@@ -74,14 +74,14 @@ public final class ResourceFlowUtils {
       final String targetId,
       final DateTime now,
       final Class<R> resourceClass,
-      final Function<DomainBase, ImmutableSet<?>> getPotentialReferences) throws EppException {
+      final Function<DomainBase, ImmutableSet<?>> getPotentialReferences)
+      throws EppException {
     // Enter a transactionless context briefly.
     EppException failfastException =
         ofy()
             .doTransactionless(
                 () -> {
-                  final ForeignKeyIndex<R> fki =
-                      ForeignKeyIndex.load(resourceClass, targetId, now);
+                  final ForeignKeyIndex<R> fki = ForeignKeyIndex.load(resourceClass, targetId, now);
                   if (fki == null) {
                     return new ResourceDoesNotExistException(resourceClass, targetId);
                   }
@@ -96,8 +96,7 @@ public final class ResourceFlowUtils {
                           .limit(FAILFAST_CHECK_COUNT)
                           .keys();
                   Predicate<DomainBase> predicate =
-                      domain ->
-                          getPotentialReferences.apply(domain).contains(fki.getResourceKey());
+                      domain -> getPotentialReferences.apply(domain).contains(fki.getResourceKey());
                   return ofy().load().keys(keys).values().stream().anyMatch(predicate)
                       ? new ResourceToDeleteIsReferencedException()
                       : null;
@@ -122,8 +121,7 @@ public final class ResourceFlowUtils {
   }
 
   public static <R extends EppResource & ForeignKeyedEppResource> R loadAndVerifyExistence(
-      Class<R> clazz, String targetId, DateTime now)
-          throws ResourceDoesNotExistException {
+      Class<R> clazz, String targetId, DateTime now) throws ResourceDoesNotExistException {
     return verifyExistence(clazz, targetId, loadByForeignKey(clazz, targetId, now));
   }
 
@@ -155,16 +153,16 @@ public final class ResourceFlowUtils {
   }
 
   /** Check that the given AuthInfo is either missing or else is valid for the given resource. */
-  public static void verifyOptionalAuthInfo(
-      Optional<AuthInfo> authInfo, ContactResource contact) throws EppException {
+  public static void verifyOptionalAuthInfo(Optional<AuthInfo> authInfo, ContactResource contact)
+      throws EppException {
     if (authInfo.isPresent()) {
       verifyAuthInfo(authInfo.get(), contact);
     }
   }
 
   /** Check that the given AuthInfo is either missing or else is valid for the given resource. */
-  public static void verifyOptionalAuthInfo(
-      Optional<AuthInfo> authInfo, DomainBase domain) throws EppException {
+  public static void verifyOptionalAuthInfo(Optional<AuthInfo> authInfo, DomainBase domain)
+      throws EppException {
     if (authInfo.isPresent()) {
       verifyAuthInfo(authInfo.get(), domain);
     }
@@ -184,9 +182,7 @@ public final class ResourceFlowUtils {
     }
     // The roid should match one of the contacts.
     Optional<Key<ContactResource>> foundContact =
-        domain
-            .getReferencedContacts()
-            .stream()
+        domain.getReferencedContacts().stream()
             .filter(key -> key.getName().equals(authRepoId))
             .findFirst();
     if (!foundContact.isPresent()) {
@@ -230,7 +226,7 @@ public final class ResourceFlowUtils {
   /** Check that the same values aren't being added and removed in an update command. */
   public static void checkSameValuesNotAddedAndRemoved(
       ImmutableSet<?> fieldsToAdd, ImmutableSet<?> fieldsToRemove)
-          throws AddRemoveSameValueException {
+      throws AddRemoveSameValueException {
     if (!intersection(fieldsToAdd, fieldsToRemove).isEmpty()) {
       throw new AddRemoveSameValueException();
     }

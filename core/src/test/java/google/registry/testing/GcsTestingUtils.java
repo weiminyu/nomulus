@@ -27,8 +27,7 @@ import java.nio.channels.Channels;
 public final class GcsTestingUtils {
 
   /** Slurps a Cloud Storage file into memory. */
-  public static byte[] readGcsFile(GcsService gcsService, GcsFilename file)
-      throws IOException {
+  public static byte[] readGcsFile(GcsService gcsService, GcsFilename file) throws IOException {
     try (InputStream input = Channels.newInputStream(gcsService.openReadChannel(file, 0))) {
       return ByteStreams.toByteArray(input);
     }

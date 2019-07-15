@@ -30,7 +30,9 @@ public abstract class CreateData implements ResponseData {
 
   /** An acknowledgment message indicating that a contact was created. */
   @XmlRootElement(name = "creData", namespace = "urn:ietf:params:xml:ns:contact-1.0")
-  @XmlType(propOrder = {"id", "creationDate"}, namespace = "urn:ietf:params:xml:ns:contact-1.0")
+  @XmlType(
+      propOrder = {"id", "creationDate"},
+      namespace = "urn:ietf:params:xml:ns:contact-1.0")
   public static class ContactCreateData extends CreateData {
 
     String id;
@@ -79,7 +81,9 @@ public abstract class CreateData implements ResponseData {
 
   /** An acknowledgment message indicating that a host was created. */
   @XmlRootElement(name = "creData", namespace = "urn:ietf:params:xml:ns:host-1.0")
-  @XmlType(propOrder = {"name", "creationDate"}, namespace = "urn:ietf:params:xml:ns:host-1.0")
+  @XmlType(
+      propOrder = {"name", "creationDate"},
+      namespace = "urn:ietf:params:xml:ns:host-1.0")
   public static class HostCreateData extends CreateData {
 
     String name;

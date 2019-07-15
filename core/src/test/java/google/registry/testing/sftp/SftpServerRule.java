@@ -30,8 +30,7 @@ import org.junit.rules.ExternalResource;
  */
 public final class SftpServerRule extends ExternalResource {
 
-  @Nullable
-  private FtpServer server;
+  @Nullable private FtpServer server;
 
   /**
    * Starts an SFTP server on a randomly selected port.

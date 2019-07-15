@@ -44,15 +44,17 @@ import javax.annotation.Nullable;
 public abstract class MutatingCommand extends ConfirmingCommand implements CommandWithRemoteApi {
 
   /**
-   * A mutation of a specific entity, represented by an old and a new version of the entity.
-   * Storing the old version is necessary to enable checking that the existing entity has not been
-   * modified when applying a mutation that was created outside the same transaction.
+   * A mutation of a specific entity, represented by an old and a new version of the entity. Storing
+   * the old version is necessary to enable checking that the existing entity has not been modified
+   * when applying a mutation that was created outside the same transaction.
    */
   private static class EntityChange {
 
     /** The possible types of mutation that can be performed on an entity. */
     public enum ChangeType {
-      CREATE, DELETE, UPDATE;
+      CREATE,
+      DELETE,
+      UPDATE;
 
       /** Return the ChangeType corresponding to the given combination of version existences. */
       public static ChangeType get(boolean hasOldVersion, boolean hasNewVersion) {
@@ -99,8 +101,9 @@ public abstract class MutatingCommand extends ConfirmingCommand implements Comma
     public String toString() {
       String changeText;
       if (type == ChangeType.UPDATE) {
-        String diffText = prettyPrintEntityDeepDiff(
-            oldEntity.toDiffableFieldMap(), newEntity.toDiffableFieldMap());
+        String diffText =
+            prettyPrintEntityDeepDiff(
+                oldEntity.toDiffableFieldMap(), newEntity.toDiffableFieldMap());
         changeText = Optional.ofNullable(emptyToNull(diffText)).orElse("[no changes]\n");
       } else {
         changeText = MoreObjects.firstNonNull(oldEntity, newEntity) + "\n";
@@ -118,8 +121,7 @@ public abstract class MutatingCommand extends ConfirmingCommand implements Comma
   /** A set of resource keys for which new transactions should be created after. */
   private final Set<Key<ImmutableObject>> transactionBoundaries = new HashSet<>();
 
-  @Nullable
-  private Key<ImmutableObject> lastAddedKey;
+  @Nullable private Key<ImmutableObject> lastAddedKey;
 
   /**
    * Initializes the command.
@@ -168,8 +170,8 @@ public abstract class MutatingCommand extends ConfirmingCommand implements Comma
   }
 
   /**
-   * Returns a set of lists of EntityChange actions to commit.  Each list should be executed in
-   * order inside a single transaction.
+   * Returns a set of lists of EntityChange actions to commit. Each list should be executed in order
+   * inside a single transaction.
    */
   private ImmutableSet<ImmutableList<EntityChange>> getCollatedEntityChangeBatches() {
     ImmutableSet.Builder<ImmutableList<EntityChange>> batches = new ImmutableSet.Builder<>();

@@ -53,7 +53,9 @@ public class KillAllCommitLogsAction implements Runnable {
 
   @Inject MapreduceRunner mrRunner;
   @Inject Response response;
-  @Inject KillAllCommitLogsAction() {}
+
+  @Inject
+  KillAllCommitLogsAction() {}
 
   @Override
   public void run() {
@@ -84,6 +86,7 @@ public class KillAllCommitLogsAction implements Runnable {
    * logs or checkpoints that descend from it.
    *
    * <p>This will delete:
+   *
    * <ul>
    *   <li>{@link CommitLogBucket}
    *   <li>{@code CommitLogCheckpoint}
@@ -102,8 +105,7 @@ public class KillAllCommitLogsAction implements Runnable {
         emit(bucketOrRoot, key);
         getContext().incrementCounter("entities emitted");
         getContext().incrementCounter(String.format("%s emitted", key.getKind()));
-     }
+      }
     }
   }
 }
-

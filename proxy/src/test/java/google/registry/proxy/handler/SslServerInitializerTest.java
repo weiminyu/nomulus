@@ -79,8 +79,7 @@ public class SslServerInitializerTest {
           .handlerProviders(ImmutableList.of())
           .build();
 
-  @Rule
-  public NettyRule nettyRule = new NettyRule();
+  @Rule public NettyRule nettyRule = new NettyRule();
 
   @Parameter(0)
   public SslProvider sslProvider;
@@ -107,26 +106,25 @@ public class SslServerInitializerTest {
   }
 
   private ChannelHandler getClientHandler(
-      X509Certificate trustedCertificate,
-      PrivateKey privateKey,
-      X509Certificate certificate) {
+      X509Certificate trustedCertificate, PrivateKey privateKey, X509Certificate certificate) {
     return new ChannelInitializer<LocalChannel>() {
       @Override
       protected void initChannel(LocalChannel ch) throws Exception {
-      SslContextBuilder sslContextBuilder =
-          SslContextBuilder.forClient().trustManager(trustedCertificate).sslProvider(sslProvider);
-      if (privateKey != null && certificate != null) {
-        sslContextBuilder.keyManager(privateKey, certificate);
-      }
-      SslHandler sslHandler = sslContextBuilder.build().newHandler(ch.alloc(), SSL_HOST, SSL_PORT);
+        SslContextBuilder sslContextBuilder =
+            SslContextBuilder.forClient().trustManager(trustedCertificate).sslProvider(sslProvider);
+        if (privateKey != null && certificate != null) {
+          sslContextBuilder.keyManager(privateKey, certificate);
+        }
+        SslHandler sslHandler =
+            sslContextBuilder.build().newHandler(ch.alloc(), SSL_HOST, SSL_PORT);
 
-      // Enable hostname verification.
-      SSLEngine sslEngine = sslHandler.engine();
-      SSLParameters sslParameters = sslEngine.getSSLParameters();
-      sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
-      sslEngine.setSSLParameters(sslParameters);
+        // Enable hostname verification.
+        SSLEngine sslEngine = sslHandler.engine();
+        SSLParameters sslParameters = sslEngine.getSSLParameters();
+        sslParameters.setEndpointIdentificationAlgorithm("HTTPS");
+        sslEngine.setSSLParameters(sslParameters);
 
-      ch.pipeline().addLast(sslHandler);
+        ch.pipeline().addLast(sslHandler);
       }
     };
   }
@@ -177,11 +175,8 @@ public class SslServerInitializerTest {
     SelfSignedCertificate serverSsc = new SelfSignedCertificate(SSL_HOST);
     LocalAddress localAddress = new LocalAddress("DOES_NOT_REQUIRE_CLIENT_CERT_" + sslProvider);
 
-    nettyRule.setUpServer(
-        localAddress,
-        getServerHandler(false, serverSsc.key(), serverSsc.cert()));
-    nettyRule.setUpClient(
-        localAddress, PROTOCOL, getClientHandler(serverSsc.cert(), null, null));
+    nettyRule.setUpServer(localAddress, getServerHandler(false, serverSsc.key(), serverSsc.cert()));
+    nettyRule.setUpClient(localAddress, PROTOCOL, getClientHandler(serverSsc.cert(), null, null));
 
     SSLSession sslSession = setUpSslChannel(nettyRule.getChannel(), serverSsc.cert());
     nettyRule.assertThatMessagesWork();
@@ -212,9 +207,9 @@ public class SslServerInitializerTest {
     nettyRule.setUpClient(
         localAddress,
         PROTOCOL,
-            getClientHandler(
-                // Client trusts the CA cert
-                caSsc.cert(), clientSsc.key(), clientSsc.cert()));
+        getClientHandler(
+            // Client trusts the CA cert
+            caSsc.cert(), clientSsc.key(), clientSsc.cert()));
 
     SSLSession sslSession = setUpSslChannel(nettyRule.getChannel(), serverCert, caSsc.cert());
     nettyRule.assertThatMessagesWork();

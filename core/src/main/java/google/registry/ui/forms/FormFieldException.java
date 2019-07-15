@@ -51,14 +51,13 @@ public final class FormFieldException extends FormException {
 
   private final List<Object> names = new ArrayList<>();
 
-  @Nullable
-  private String lazyFieldName;
+  @Nullable private String lazyFieldName;
 
   /**
    * Creates a new {@link FormFieldException}
    *
-   * <p>This exception should only be thrown from within a {@link FormField} converter function.
-   * The field name will automatically be propagated into the exception object for you.
+   * <p>This exception should only be thrown from within a {@link FormField} converter function. The
+   * field name will automatically be propagated into the exception object for you.
    *
    * @param userMessage should be a friendly message that's safe to show to the user.
    */
@@ -69,8 +68,8 @@ public final class FormFieldException extends FormException {
   /**
    * Creates a new {@link FormFieldException}
    *
-   * <p>This exception should only be thrown from within a {@link FormField} converter function.
-   * The field name will automatically be propagated into the exception object for you.
+   * <p>This exception should only be thrown from within a {@link FormField} converter function. The
+   * field name will automatically be propagated into the exception object for you.
    *
    * @param userMessage should be a friendly message that's safe to show to the user.
    * @param cause the original cause of this exception (non-null).
@@ -112,8 +111,7 @@ public final class FormFieldException extends FormException {
   }
 
   private String getFieldNameImpl() {
-    checkState(!names.isEmpty(),
-        "FormFieldException was thrown outside FormField infrastructure!");
+    checkState(!names.isEmpty(), "FormFieldException was thrown outside FormField infrastructure!");
     Iterator<Object> namesIterator = Lists.reverse(names).iterator();
     StringBuilder result = new StringBuilder((String) namesIterator.next());
     while (namesIterator.hasNext()) {

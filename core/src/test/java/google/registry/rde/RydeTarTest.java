@@ -49,6 +49,5 @@ public final class RydeTarTest extends ShardableTestCase {
       assertThat(reader.getModified()).isEqualTo(expectedModified);
       assertThat(ByteStreams.toByteArray(reader)).isEqualTo(expectedContent);
     }
-
   }
 }

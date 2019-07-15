@@ -49,13 +49,9 @@ public class CommitLogRevisionsTranslatorFactoryTest {
     ImmutableSortedMap<DateTime, Key<CommitLogManifest>> revisions = ImmutableSortedMap.of();
   }
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   private final FakeClock clock = new FakeClock(START_TIME);
 
@@ -76,11 +72,11 @@ public class CommitLogRevisionsTranslatorFactoryTest {
 
   @Test
   public void testSave_doesNotMutateOriginalResource() {
-     TestObject object = new TestObject();
-     save(object);
-     assertThat(object.revisions).isEmpty();
-     assertThat(reload().revisions).isNotEmpty();
-   }
+    TestObject object = new TestObject();
+    save(object);
+    assertThat(object.revisions).isEmpty();
+    assertThat(reload().revisions).isNotEmpty();
+  }
 
   @Test
   public void testSave_translatorAddsKeyToCommitLogToField() {
@@ -152,8 +148,10 @@ public class CommitLogRevisionsTranslatorFactoryTest {
     com.google.appengine.api.datastore.Entity entity =
         ofy().transactNewReadOnly(() -> ofy().save().toEntity(reload()));
     assertThat(entity.getProperties().keySet()).containsExactly("revisions.key", "revisions.value");
-    assertThat(entity.getProperties()).containsEntry(
-        "revisions.key", ImmutableList.of(START_TIME.toDate(), START_TIME.plusDays(1).toDate()));
+    assertThat(entity.getProperties())
+        .containsEntry(
+            "revisions.key",
+            ImmutableList.of(START_TIME.toDate(), START_TIME.plusDays(1).toDate()));
     assertThat(entity.getProperty("revisions.value")).isInstanceOf(List.class);
     assertThat(((List<Object>) entity.getProperty("revisions.value")).get(0))
         .isInstanceOf(com.google.appengine.api.datastore.Key.class);

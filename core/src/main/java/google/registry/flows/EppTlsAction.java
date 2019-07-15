@@ -36,7 +36,9 @@ public class EppTlsAction implements Runnable {
   @Inject TlsCredentials tlsCredentials;
   @Inject HttpSession session;
   @Inject EppRequestHandler eppRequestHandler;
-  @Inject EppTlsAction() {}
+
+  @Inject
+  EppTlsAction() {}
 
   @Override
   public void run() {
@@ -44,9 +46,8 @@ public class EppTlsAction implements Runnable {
         new HttpSessionMetadata(session),
         tlsCredentials,
         EppRequestSource.TLS,
-        false,  // This endpoint is never a dry run.
-        false,  // This endpoint is never a superuser.
+        false, // This endpoint is never a dry run.
+        false, // This endpoint is never a superuser.
         inputXmlBytes);
   }
 }
-

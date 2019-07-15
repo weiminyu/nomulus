@@ -232,11 +232,9 @@ public class Spec11EmailUtilsTest {
   public void testSuccess_skipsInactiveDomain() throws Exception {
     // CLIENT_HOLD and SERVER_HOLD mean no DNS so we don't need to email it out
     persistResource(
-        ofy().load().entity(aDomain).now().asBuilder().addStatusValue(SERVER_HOLD)
-            .build());
+        ofy().load().entity(aDomain).now().asBuilder().addStatusValue(SERVER_HOLD).build());
     persistResource(
-        ofy().load().entity(bDomain).now().asBuilder().addStatusValue(CLIENT_HOLD)
-            .build());
+        ofy().load().entity(bDomain).now().asBuilder().addStatusValue(CLIENT_HOLD).build());
     emailUtils.emailSpec11Reports(
         date,
         Spec11EmailSoyInfo.MONTHLY_SPEC_11_EMAIL,
@@ -396,7 +394,9 @@ public class Spec11EmailUtilsTest {
 
   private static DomainBase persistDomainWithHost(String domainName, HostResource host) {
     return persistResource(
-        newDomainBase(domainName).asBuilder().setNameservers(ImmutableSet.of(Key.create(host)))
+        newDomainBase(domainName)
+            .asBuilder()
+            .setNameservers(ImmutableSet.of(Key.create(host)))
             .build());
   }
 }

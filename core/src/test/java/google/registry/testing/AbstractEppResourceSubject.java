@@ -97,7 +97,7 @@ abstract class AbstractEppResourceSubject<
     return andChainer();
   }
 
-  public And<S> hasOneHistoryEntryEachOfTypes(HistoryEntry.Type ... types) {
+  public And<S> hasOneHistoryEntryEachOfTypes(HistoryEntry.Type... types) {
     hasNumHistoryEntries(types.length);
     for (HistoryEntry.Type type : types) {
       hasNumHistoryEntriesOfType(type, 1);
@@ -162,7 +162,6 @@ abstract class AbstractEppResourceSubject<
   public And<S> hasLastEppUpdateClientId(String clientId) {
     return hasValue(clientId, actual.getLastEppUpdateClientId(), "getLastEppUpdateClientId()");
   }
-
 
   public And<S> hasPersistedCurrentSponsorClientId(String clientId) {
     return hasValue(

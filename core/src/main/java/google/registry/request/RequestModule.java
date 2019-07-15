@@ -53,8 +53,7 @@ public final class RequestModule {
     this(req, rsp, AuthResult.NOT_AUTHENTICATED);
   }
 
-  public RequestModule(
-      HttpServletRequest req, HttpServletResponse rsp, AuthResult authResult) {
+  public RequestModule(HttpServletRequest req, HttpServletResponse rsp, AuthResult authResult) {
     this.req = req;
     this.rsp = rsp;
     this.authResult = authResult;
@@ -174,8 +173,7 @@ public final class RequestModule {
   @JsonPayload
   @SuppressWarnings("unchecked")
   static Map<String, Object> provideJsonPayload(
-      @Header("Content-Type") MediaType contentType,
-      @Payload String payload) {
+      @Header("Content-Type") MediaType contentType, @Payload String payload) {
     if (!JSON_UTF_8.is(contentType.withCharset(UTF_8))) {
       throw new UnsupportedMediaTypeException(
           String.format("Expected %s Content-Type", JSON_UTF_8.withoutParameters()));
@@ -204,7 +202,7 @@ public final class RequestModule {
   @ParameterMap
   static ImmutableListMultimap<String, String> provideParameterMap(HttpServletRequest req) {
     ImmutableListMultimap.Builder<String, String> params = new ImmutableListMultimap.Builder<>();
-    @SuppressWarnings("unchecked")  // Safe by specification.
+    @SuppressWarnings("unchecked") // Safe by specification.
     Map<String, String[]> original = req.getParameterMap();
     for (Map.Entry<String, String[]> param : original.entrySet()) {
       if (param.getValue().length == 0) {

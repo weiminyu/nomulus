@@ -27,23 +27,23 @@ import javax.xml.bind.annotation.XmlEnumValue;
  * Persisted type for storing a domain's contact associations.
  *
  * <p>A contact association on a domain consists of the contact key and the contact "type", which is
- * the designated role of this contact with respect to this domain.  When converting to and from
- * EPP XML, we use {@link ForeignKeyedDesignatedContact} to replace the contact's Datastore key
- * with its foreign key, since that is what EPP exposes.
+ * the designated role of this contact with respect to this domain. When converting to and from EPP
+ * XML, we use {@link ForeignKeyedDesignatedContact} to replace the contact's Datastore key with its
+ * foreign key, since that is what EPP exposes.
  *
  * <p>Note one could in principle store contact foreign keys here in addition to keys, unlike the
- * situation with hosts where client-side renames would make that data stale.  However, we sometimes
+ * situation with hosts where client-side renames would make that data stale. However, we sometimes
  * rename contacts internally ourselves, and it's easier to use the same model for both cases.
  *
- * @see <a href="http://tools.ietf.org/html/rfc5731#section-2.2">
- *     RFC 5731 - EPP Domain Name Mapping - Contact and Client Identifiers</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5731#section-2.2">RFC 5731 - EPP Domain Name Mapping
+ *     - Contact and Client Identifiers</a>
  */
 @Embed
 public class DesignatedContact extends ImmutableObject {
 
   /**
-   * XML type for contact types. This can be either: {@code "admin"}, {@code "billing"}, or
-   * {@code "tech"} and corresponds to {@code contactAttrType} in {@code domain-1.0.xsd}.
+   * XML type for contact types. This can be either: {@code "admin"}, {@code "billing"}, or {@code
+   * "tech"} and corresponds to {@code contactAttrType} in {@code domain-1.0.xsd}.
    */
   public enum Type {
     @XmlEnumValue("admin")
@@ -65,8 +65,7 @@ public class DesignatedContact extends ImmutableObject {
 
   Type type;
 
-  @Index
-  Key<ContactResource> contact;
+  @Index Key<ContactResource> contact;
 
   public Type getType() {
     return type;

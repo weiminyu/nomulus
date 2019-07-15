@@ -19,9 +19,7 @@ import google.registry.util.ResourceUtils;
 import google.registry.util.SqlTemplate;
 import org.joda.time.YearMonth;
 
-/**
- * DNS Count query for the basic case.
- */
+/** DNS Count query for the basic case. */
 public class BasicDnsCountQueryCoordinator implements DnsCountQueryCoordinator {
 
   BasicDnsCountQueryCoordinator(DnsCountQueryCoordinator.Params params) {}

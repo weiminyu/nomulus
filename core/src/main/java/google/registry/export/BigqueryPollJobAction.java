@@ -56,8 +56,8 @@ public class BigqueryPollJobAction implements Runnable {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  static final String QUEUE = "export-bigquery-poll";  // See queue.xml
-  static final String PATH = "/_dr/task/pollBigqueryJob";  // See web.xml
+  static final String QUEUE = "export-bigquery-poll"; // See queue.xml
+  static final String PATH = "/_dr/task/pollBigqueryJob"; // See web.xml
   static final String CHAINED_TASK_QUEUE_HEADER = "X-DomainRegistry-ChainedTaskQueue";
   static final String PROJECT_ID_HEADER = "X-DomainRegistry-ProjectId";
   static final String JOB_ID_HEADER = "X-DomainRegistry-JobId";
@@ -65,15 +65,27 @@ public class BigqueryPollJobAction implements Runnable {
 
   @Inject Bigquery bigquery;
   @Inject TaskQueueUtils taskQueueUtils;
-  @Inject @Header(CHAINED_TASK_QUEUE_HEADER) Lazy<String> chainedQueueName;
-  @Inject @Header(PROJECT_ID_HEADER) String projectId;
-  @Inject @Header(JOB_ID_HEADER) String jobId;
+
+  @Inject
+  @Header(CHAINED_TASK_QUEUE_HEADER)
+  Lazy<String> chainedQueueName;
+
+  @Inject
+  @Header(PROJECT_ID_HEADER)
+  String projectId;
+
+  @Inject
+  @Header(JOB_ID_HEADER)
+  String jobId;
+
   @Inject @Payload byte[] payload;
-  @Inject BigqueryPollJobAction() {}
+
+  @Inject
+  BigqueryPollJobAction() {}
 
   @Override
   public void run() {
-    checkJobOutcome();  // Throws a NotModifiedException if the job hasn't completed.
+    checkJobOutcome(); // Throws a NotModifiedException if the job hasn't completed.
     if (payload == null || payload.length == 0) {
       return;
     }
@@ -119,7 +131,6 @@ public class BigqueryPollJobAction implements Runnable {
     logger.atInfo().log("Bigquery job succeeded - %s", jobRefString);
     return true;
   }
-
 
   /** Helper class to enqueue a bigquery poll job. */
   public static class BigqueryPollJobEnqueuer {

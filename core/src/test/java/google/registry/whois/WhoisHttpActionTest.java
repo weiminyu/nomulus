@@ -121,16 +121,17 @@ public class WhoisHttpActionTest {
   @Test
   public void testRun_domainInTestTld_isConsideredNotFound() {
     persistResource(Registry.get("lol").asBuilder().setTldType(Registry.TldType.TEST).build());
-    Registrar registrar = persistResource(makeRegistrar(
-        "evilregistrar", "Yes Virginia", Registrar.State.ACTIVE));
-    persistResource(makeDomainBase(
-        "cat.lol",
-        persistResource(makeContactResource("5372808-ERL", "Goblin Market", "lol@cat.lol")),
-        persistResource(makeContactResource("5372808-IRL", "Santa Claus", "BOFH@cat.lol")),
-        persistResource(makeContactResource("5372808-TRL", "The Raven", "bog@cat.lol")),
-        persistResource(makeHostResource("ns1.cat.lol", "1.2.3.4")),
-        persistResource(makeHostResource("ns2.cat.lol", "bad:f00d:cafe::15:beef")),
-        registrar));
+    Registrar registrar =
+        persistResource(makeRegistrar("evilregistrar", "Yes Virginia", Registrar.State.ACTIVE));
+    persistResource(
+        makeDomainBase(
+            "cat.lol",
+            persistResource(makeContactResource("5372808-ERL", "Goblin Market", "lol@cat.lol")),
+            persistResource(makeContactResource("5372808-IRL", "Santa Claus", "BOFH@cat.lol")),
+            persistResource(makeContactResource("5372808-TRL", "The Raven", "bog@cat.lol")),
+            persistResource(makeHostResource("ns1.cat.lol", "1.2.3.4")),
+            persistResource(makeHostResource("ns2.cat.lol", "bad:f00d:cafe::15:beef")),
+            registrar));
     persistSimpleResources(makeRegistrarContacts(registrar));
     newWhoisHttpAction("/domain/cat.lol").run();
     assertThat(response.getStatus()).isEqualTo(404);
@@ -140,16 +141,17 @@ public class WhoisHttpActionTest {
 
   @Test
   public void testRun_domainQueryIdn_works() {
-    Registrar registrar = persistResource(makeRegistrar(
-        "evilregistrar", "Yes Virginia", Registrar.State.ACTIVE));
-    persistResource(makeDomainBase(
-        "cat.みんな",
-        persistResource(makeContactResource("5372808-ERL", "(◕‿◕)", "lol@cat.みんな")),
-        persistResource(makeContactResource("5372808-IRL", "Santa Claus", "BOFH@cat.みんな")),
-        persistResource(makeContactResource("5372808-TRL", "The Raven", "bog@cat.みんな")),
-        persistResource(makeHostResource("ns1.cat.みんな",  "1.2.3.4")),
-        persistResource(makeHostResource("ns2.cat.みんな",  "bad:f00d:cafe::15:beef")),
-        registrar));
+    Registrar registrar =
+        persistResource(makeRegistrar("evilregistrar", "Yes Virginia", Registrar.State.ACTIVE));
+    persistResource(
+        makeDomainBase(
+            "cat.みんな",
+            persistResource(makeContactResource("5372808-ERL", "(◕‿◕)", "lol@cat.みんな")),
+            persistResource(makeContactResource("5372808-IRL", "Santa Claus", "BOFH@cat.みんな")),
+            persistResource(makeContactResource("5372808-TRL", "The Raven", "bog@cat.みんな")),
+            persistResource(makeHostResource("ns1.cat.みんな", "1.2.3.4")),
+            persistResource(makeHostResource("ns2.cat.みんな", "bad:f00d:cafe::15:beef")),
+            registrar));
     persistSimpleResources(makeRegistrarContacts(registrar));
     newWhoisHttpAction("/domain/cat.みんな").run();
     assertThat(response.getStatus()).isEqualTo(200);
@@ -168,27 +170,32 @@ public class WhoisHttpActionTest {
                         .setOrg("Galactic\r\nEmpire")
                         .build())
                 .build());
-    persistResource(makeDomainBase(
-        "cat.みんな", trl,
-        trl,
-        trl,
-        persistResource(makeHostResource("ns1.cat.みんな", "1.2.3.4")),
-        persistResource(makeHostResource("ns2.cat.みんな", "bad:f00d:cafe::15:beef")),
-        persistResource(makeRegistrar("example", "Example Registrar", Registrar.State.ACTIVE))));
+    persistResource(
+        makeDomainBase(
+            "cat.みんな",
+            trl,
+            trl,
+            trl,
+            persistResource(makeHostResource("ns1.cat.みんな", "1.2.3.4")),
+            persistResource(makeHostResource("ns2.cat.みんな", "bad:f00d:cafe::15:beef")),
+            persistResource(
+                makeRegistrar("example", "Example Registrar", Registrar.State.ACTIVE))));
     newWhoisHttpAction("/domain/cat.みんな").run();
     assertThat(response.getPayload()).contains("Galactic  Empire");
   }
 
   @Test
   public void testRun_domainOnly_works() {
-    persistResource(makeDomainBase(
-        "cat.みんな",
-        persistResource(makeContactResource("5372808-ERL", "(◕‿◕)", "lol@cat.みんな")),
-        persistResource(makeContactResource("5372808-IRL", "Operator", "BOFH@cat.みんな")),
-        persistResource(makeContactResource("5372808-TRL", "Eric Schmidt", "bog@cat.みんな")),
-        persistResource(makeHostResource("ns1.cat.みんな", "1.2.3.4")),
-        persistResource(makeHostResource("ns2.cat.みんな", "bad:f00d:cafe::15:beef")),
-        persistResource(makeRegistrar("example", "Example Registrar", Registrar.State.ACTIVE))));
+    persistResource(
+        makeDomainBase(
+            "cat.みんな",
+            persistResource(makeContactResource("5372808-ERL", "(◕‿◕)", "lol@cat.みんな")),
+            persistResource(makeContactResource("5372808-IRL", "Operator", "BOFH@cat.みんな")),
+            persistResource(makeContactResource("5372808-TRL", "Eric Schmidt", "bog@cat.みんな")),
+            persistResource(makeHostResource("ns1.cat.みんな", "1.2.3.4")),
+            persistResource(makeHostResource("ns2.cat.みんな", "bad:f00d:cafe::15:beef")),
+            persistResource(
+                makeRegistrar("example", "Example Registrar", Registrar.State.ACTIVE))));
     newWhoisHttpAction("cat.みんな").run();
     assertThat(response.getStatus()).isEqualTo(200);
     assertThat(response.getPayload()).contains("Domain Name: cat.みんな\r\n");
@@ -203,16 +210,17 @@ public class WhoisHttpActionTest {
 
   @Test
   public void testRun_domainQueryPunycode_works() {
-    Registrar registrar = persistResource(makeRegistrar(
-        "evilregistrar", "Yes Virginia", Registrar.State.ACTIVE));
-    persistResource(makeDomainBase(
-        "cat.みんな",
-        persistResource(makeContactResource("5372808-ERL", "(◕‿◕)", "lol@cat.みんな")),
-        persistResource(makeContactResource("5372808-IRL", "Santa Claus", "BOFH@cat.みんな")),
-        persistResource(makeContactResource("5372808-TRL", "The Raven", "bog@cat.みんな")),
-        persistResource(makeHostResource("ns1.cat.みんな",  "1.2.3.4")),
-        persistResource(makeHostResource("ns2.cat.みんな",  "bad:f00d:cafe::15:beef")),
-        registrar));
+    Registrar registrar =
+        persistResource(makeRegistrar("evilregistrar", "Yes Virginia", Registrar.State.ACTIVE));
+    persistResource(
+        makeDomainBase(
+            "cat.みんな",
+            persistResource(makeContactResource("5372808-ERL", "(◕‿◕)", "lol@cat.みんな")),
+            persistResource(makeContactResource("5372808-IRL", "Santa Claus", "BOFH@cat.みんな")),
+            persistResource(makeContactResource("5372808-TRL", "The Raven", "bog@cat.みんな")),
+            persistResource(makeHostResource("ns1.cat.みんな", "1.2.3.4")),
+            persistResource(makeHostResource("ns2.cat.みんな", "bad:f00d:cafe::15:beef")),
+            registrar));
     persistSimpleResources(makeRegistrarContacts(registrar));
     newWhoisHttpAction("/domain/cat.xn--q9jyb4c").run();
     assertThat(response.getPayload()).isEqualTo(loadFile("whois_action_idn_utf8.txt"));
@@ -270,28 +278,32 @@ public class WhoisHttpActionTest {
 
   @Test
   public void testRun_uppercaseDomain_ignoresCasing() {
-    persistResource(makeDomainBase(
-        "cat.lol",
-        persistResource(makeContactResource("5372808-ERL", "Peter Murphy", "lol@cat.lol")),
-        persistResource(makeContactResource("5372808-IRL", "Operator", "BOFH@cat.lol")),
-        persistResource(makeContactResource("5372808-TRL", "Eric Schmidt", "bog@cat.lol")),
-        persistResource(makeHostResource("ns1.cat.lol", "1.2.3.4")),
-        persistResource(makeHostResource("ns2.cat.lol", "bad:f00d:cafe::15:beef")),
-        persistResource(makeRegistrar("example", "Example Registrar", Registrar.State.ACTIVE))));
+    persistResource(
+        makeDomainBase(
+            "cat.lol",
+            persistResource(makeContactResource("5372808-ERL", "Peter Murphy", "lol@cat.lol")),
+            persistResource(makeContactResource("5372808-IRL", "Operator", "BOFH@cat.lol")),
+            persistResource(makeContactResource("5372808-TRL", "Eric Schmidt", "bog@cat.lol")),
+            persistResource(makeHostResource("ns1.cat.lol", "1.2.3.4")),
+            persistResource(makeHostResource("ns2.cat.lol", "bad:f00d:cafe::15:beef")),
+            persistResource(
+                makeRegistrar("example", "Example Registrar", Registrar.State.ACTIVE))));
     newWhoisHttpAction("/domain/cat.LOL").run();
     assertThat(response.getPayload()).contains("Domain Name: cat.lol\r\n");
   }
 
   @Test
   public void testRun_hairyPath_getsDecoded() {
-    persistResource(makeDomainBase(
-        "cat.lol",
-        persistResource(makeContactResource("5372808-ERL", "Peter Murphy", "lol@cat.lol")),
-        persistResource(makeContactResource("5372808-IRL", "Operator", "BOFH@cat.lol")),
-        persistResource(makeContactResource("5372808-TRL", "Eric Schmidt", "bog@cat.lol")),
-        persistResource(makeHostResource("ns1.cat.lol", "1.2.3.4")),
-        persistResource(makeHostResource("ns2.cat.lol", "bad:f00d:cafe::15:beef")),
-        persistResource(makeRegistrar("example", "Example Registrar", Registrar.State.ACTIVE))));
+    persistResource(
+        makeDomainBase(
+            "cat.lol",
+            persistResource(makeContactResource("5372808-ERL", "Peter Murphy", "lol@cat.lol")),
+            persistResource(makeContactResource("5372808-IRL", "Operator", "BOFH@cat.lol")),
+            persistResource(makeContactResource("5372808-TRL", "Eric Schmidt", "bog@cat.lol")),
+            persistResource(makeHostResource("ns1.cat.lol", "1.2.3.4")),
+            persistResource(makeHostResource("ns2.cat.lol", "bad:f00d:cafe::15:beef")),
+            persistResource(
+                makeRegistrar("example", "Example Registrar", Registrar.State.ACTIVE))));
     // python -c "print ''.join('%' + hex(ord(c))[2:] for c in 'cat.lol')"
     newWhoisHttpAction("/domain/%63%61%74%2e%6c%6f%6c").run();
     assertThat(response.getPayload()).contains("Domain Name: cat.lol\r\n");
@@ -299,8 +311,9 @@ public class WhoisHttpActionTest {
 
   @Test
   public void testRun_registrarLookup_works() {
-    Registrar registrar = persistResource(
-        makeRegistrar("example", "Example Registrar, Inc.", Registrar.State.ACTIVE));
+    Registrar registrar =
+        persistResource(
+            makeRegistrar("example", "Example Registrar, Inc.", Registrar.State.ACTIVE));
     persistSimpleResources(makeRegistrarContacts(registrar));
     // Notice the partial search without "inc".
     newWhoisHttpAction("/registrar/Example%20Registrar").run();
@@ -310,8 +323,9 @@ public class WhoisHttpActionTest {
 
   @Test
   public void testRun_registrarLookupInPendingState_returnsNotFound() {
-    Registrar registrar = persistResource(
-        makeRegistrar("example", "Example Registrar, Inc.", Registrar.State.PENDING));
+    Registrar registrar =
+        persistResource(
+            makeRegistrar("example", "Example Registrar, Inc.", Registrar.State.PENDING));
     persistSimpleResources(makeRegistrarContacts(registrar));
     newWhoisHttpAction("/registrar/Example%20Registrar,%20Inc.").run();
     assertThat(response.getStatus()).isEqualTo(404);
@@ -320,9 +334,13 @@ public class WhoisHttpActionTest {
 
   @Test
   public void testRun_registrarLookupWithTestType_returnsNotFound() {
-    Registrar registrar = persistResource(
-        makeRegistrar("example", "Example Registrar, Inc.", Registrar.State.ACTIVE)
-            .asBuilder().setType(Registrar.Type.TEST).setIanaIdentifier(null).build());
+    Registrar registrar =
+        persistResource(
+            makeRegistrar("example", "Example Registrar, Inc.", Registrar.State.ACTIVE)
+                .asBuilder()
+                .setType(Registrar.Type.TEST)
+                .setIanaIdentifier(null)
+                .build());
     persistSimpleResources(makeRegistrarContacts(registrar));
     newWhoisHttpAction("/registrar/Example%20Registrar,%20Inc.").run();
     assertThat(response.getStatus()).isEqualTo(404);

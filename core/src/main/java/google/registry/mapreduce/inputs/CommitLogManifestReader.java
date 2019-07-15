@@ -34,7 +34,7 @@ class CommitLogManifestReader
   /**
    * Memory estimation for this reader.
    *
-   * Elements are relatively small (parent key, Id, and a set of deleted keys), so this should be
+   * <p>Elements are relatively small (parent key, Id, and a set of deleted keys), so this should be
    * more than enough.
    */
   private static final long MEMORY_ESTIMATE = 100 * 1024;
@@ -46,10 +46,9 @@ class CommitLogManifestReader
   /**
    * Cutoff date for result.
    *
-   * If present, all resulting CommitLogManifest will be dated prior to this date.
+   * <p>If present, all resulting CommitLogManifest will be dated prior to this date.
    */
-  @Nullable
-  private final DateTime olderThan;
+  @Nullable private final DateTime olderThan;
 
   CommitLogManifestReader(Key<CommitLogBucket> bucketKey, @Nullable DateTime olderThan) {
     this.bucketKey = bucketKey;
@@ -70,9 +69,9 @@ class CommitLogManifestReader
   Query<CommitLogManifest> query() {
     Query<CommitLogManifest> query = ofy().load().type(CommitLogManifest.class).ancestor(bucketKey);
     if (olderThan != null) {
-      query = query.filterKey(
-          "<",
-          Key.create(bucketKey, CommitLogManifest.class, olderThan.getMillis()));
+      query =
+          query.filterKey(
+              "<", Key.create(bucketKey, CommitLogManifest.class, olderThan.getMillis()));
     }
     return query;
   }

@@ -32,8 +32,8 @@ import org.joda.time.DateTime;
  */
 public final class PricingEngineProxy {
 
-  private static final Map<String, PremiumPricingEngine>
-      premiumPricingEngines = DaggerPricingComponent.create().premiumPricingEngines();
+  private static final Map<String, PremiumPricingEngine> premiumPricingEngines =
+      DaggerPricingComponent.create().premiumPricingEngines();
 
   /** Returns the billing cost for registering the specified domain name for this many years. */
   public static Money getDomainCreateCost(String domainName, DateTime priceTime, int years) {

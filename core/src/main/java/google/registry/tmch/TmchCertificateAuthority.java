@@ -120,7 +120,7 @@ public final class TmchCertificateAuthority {
    * <p>Support for certificate chains has not been implemented.
    *
    * @throws GeneralSecurityException for unsupported protocols, certs not signed by the TMCH,
-   *         incorrect keys, and for invalid, old, not-yet-valid or revoked certificates.
+   *     incorrect keys, and for invalid, old, not-yet-valid or revoked certificates.
    * @see X509Utils#verifyCertificate
    */
   public void verify(X509Certificate cert) throws GeneralSecurityException {

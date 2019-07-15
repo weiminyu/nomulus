@@ -41,8 +41,7 @@ import org.joda.time.DateTime;
 @XmlType(propOrder = {"command", "currency", "period", "feeClass"})
 public class FeeCheckCommandExtensionV11 extends ImmutableObject
     implements FeeCheckCommandExtension<
-        FeeCheckCommandExtensionItemV11,
-        FeeCheckResponseExtensionV11> {
+        FeeCheckCommandExtensionItemV11, FeeCheckResponseExtensionV11> {
 
   /** The default validity period (if not specified) is 1 year for all operations. */
   static final Period DEFAULT_PERIOD = Period.create(1, Period.Unit.YEARS);

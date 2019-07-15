@@ -149,9 +149,7 @@ public class DomainFlowUtils {
 
   /** Reservation types that are only allowed in sunrise by policy. */
   public static final ImmutableSet<ReservationType> TYPES_ALLOWED_FOR_CREATE_ONLY_IN_SUNRISE =
-      Sets.immutableEnumSet(
-          ReservationType.ALLOWED_IN_SUNRISE,
-          ReservationType.NAME_COLLISION);
+      Sets.immutableEnumSet(ReservationType.ALLOWED_IN_SUNRISE, ReservationType.NAME_COLLISION);
 
   /** Warning message for allocation of collision domains in sunrise. */
   public static final String COLLISION_MESSAGE =
@@ -754,11 +752,7 @@ public class DomainFlowUtils {
     for (Fee fee : fees) {
       mapBuilder.put(getOrParseType(fee), Money.of(currency, fee.getCost()));
     }
-    return mapBuilder
-        .build()
-        .asMap()
-        .entrySet()
-        .stream()
+    return mapBuilder.build().asMap().entrySet().stream()
         .collect(toImmutableMap(Entry::getKey, entry -> Money.total(entry.getValue())));
   }
 
@@ -1009,8 +1003,7 @@ public class DomainFlowUtils {
             .list();
     Optional<HistoryEntry> entryToCancel =
         Streams.findLast(
-            recentHistoryEntries
-                .stream()
+            recentHistoryEntries.stream()
                 .filter(
                     historyEntry -> {
                       // Look for add and renew transaction records that have yet to be reported
@@ -1355,8 +1348,7 @@ public class DomainFlowUtils {
       super(
           String.format(
               "The fee description \"%s\" passed in the transform matches multiple fee types: %s",
-              description,
-              types.stream().map(FeeType::toString).collect(joining(", "))));
+              description, types.stream().map(FeeType::toString).collect(joining(", "))));
     }
   }
 

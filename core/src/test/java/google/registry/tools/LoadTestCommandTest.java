@@ -43,17 +43,18 @@ public class LoadTestCommandTest extends CommandTestCase<LoadTestCommand> {
   @Test
   public void test_defaults() throws Exception {
     runCommandForced();
-    ImmutableMap<String, Object> parms = new ImmutableMap.Builder<String, Object>()
-        .put("tld", "example")
-        .put("clientId", "acme")
-        .put("successfulHostCreates", 1)
-        .put("successfulDomainCreates", 1)
-        .put("successfulContactCreates", 1)
-        .put("hostInfos", 1)
-        .put("domainInfos", 1)
-        .put("contactInfos", 1)
-        .put("runSeconds", 4600)
-        .build();
+    ImmutableMap<String, Object> parms =
+        new ImmutableMap.Builder<String, Object>()
+            .put("tld", "example")
+            .put("clientId", "acme")
+            .put("successfulHostCreates", 1)
+            .put("successfulDomainCreates", 1)
+            .put("successfulContactCreates", 1)
+            .put("hostInfos", 1)
+            .put("domainInfos", 1)
+            .put("contactInfos", 1)
+            .put("runSeconds", 4600)
+            .build();
     verify(connection)
         .sendPostRequest(
             eq("/_dr/loadtest"), eq(parms), eq(MediaType.PLAIN_TEXT_UTF_8), eq(new byte[0]));
@@ -72,17 +73,18 @@ public class LoadTestCommandTest extends CommandTestCase<LoadTestCommand> {
         "--domain_infos=14",
         "--contact_infos=15",
         "--run_seconds=16");
-    ImmutableMap<String, Object> parms = new ImmutableMap.Builder<String, Object>()
-        .put("tld", "foo")
-        .put("clientId", "NewRegistrar")
-        .put("successfulHostCreates", 10)
-        .put("successfulDomainCreates", 11)
-        .put("successfulContactCreates", 12)
-        .put("hostInfos", 13)
-        .put("domainInfos", 14)
-        .put("contactInfos", 15)
-        .put("runSeconds", 16)
-        .build();
+    ImmutableMap<String, Object> parms =
+        new ImmutableMap.Builder<String, Object>()
+            .put("tld", "foo")
+            .put("clientId", "NewRegistrar")
+            .put("successfulHostCreates", 10)
+            .put("successfulDomainCreates", 11)
+            .put("successfulContactCreates", 12)
+            .put("hostInfos", 13)
+            .put("domainInfos", 14)
+            .put("contactInfos", 15)
+            .put("runSeconds", 16)
+            .build();
     verify(connection)
         .sendPostRequest(
             eq("/_dr/loadtest"), eq(parms), eq(MediaType.PLAIN_TEXT_UTF_8), eq(new byte[0]));

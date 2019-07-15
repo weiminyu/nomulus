@@ -48,32 +48,33 @@ class CreateTldCommand extends CreateOrUpdateTldCommand {
   @Nullable
   @Parameter(
       names = "--initial_renew_billing_cost",
-      description = "Initial per-year billing cost for renewing a domain "
-          + "(cannot be combined with a transitions list)")
+      description =
+          "Initial per-year billing cost for renewing a domain "
+              + "(cannot be combined with a transitions list)")
   private Money initialRenewBillingCost;
 
   @Override
   protected void initTldCommand() {
-    checkArgument(initialTldState == null || tldStateTransitions.isEmpty(),
+    checkArgument(
+        initialTldState == null || tldStateTransitions.isEmpty(),
         "Don't pass both --initial_tld_state and --tld_state_transitions");
-    checkArgument(initialRenewBillingCost == null || renewBillingCostTransitions.isEmpty(),
+    checkArgument(
+        initialRenewBillingCost == null || renewBillingCostTransitions.isEmpty(),
         "Don't pass both --initial_renew_billing_cost and --renew_billing_cost_transitions");
     if (initialRenewBillingCost != null) {
       renewBillingCostTransitions = ImmutableSortedMap.of(START_OF_TIME, initialRenewBillingCost);
     }
     checkArgument(mainParameters.size() == 1, "Can't create more than one TLD at a time");
     checkArgument(
-        !Strings.isNullOrEmpty(roidSuffix),
-        "The roid suffix is required when creating a TLD");
+        !Strings.isNullOrEmpty(roidSuffix), "The roid suffix is required when creating a TLD");
   }
 
   @Override
   void setCommandSpecificProperties(Registry.Builder builder) {
     // Pick up the currency from the create cost. Since all costs must be in one currency, and that
     // condition is enforced by the builder, it doesn't matter which cost we choose it from.
-    CurrencyUnit currency = createBillingCost != null
-        ? createBillingCost.getCurrencyUnit()
-        : Registry.DEFAULT_CURRENCY;
+    CurrencyUnit currency =
+        createBillingCost != null ? createBillingCost.getCurrencyUnit() : Registry.DEFAULT_CURRENCY;
 
     builder.setCurrency(currency);
 

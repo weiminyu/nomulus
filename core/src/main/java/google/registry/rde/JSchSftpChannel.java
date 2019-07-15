@@ -22,8 +22,8 @@ import java.io.Closeable;
 /**
  * {@link ChannelSftp} wrapper that implements {@link Closeable}.
  *
- * <p>This class acts as syntactic sugar for JSch so we can open and close SFTP connections in a
- * way that's friendlier to Java 7 try-resource statements.
+ * <p>This class acts as syntactic sugar for JSch so we can open and close SFTP connections in a way
+ * that's friendlier to Java 7 try-resource statements.
  *
  * @see JSchSshSession#openSftpChannel()
  */

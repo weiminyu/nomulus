@@ -33,31 +33,28 @@ import org.bouncycastle.openpgp.operator.bc.BcPGPContentSignerBuilder;
 /**
  * OpenPGP detached signing service that wraps an {@link OutputStream}.
  *
- * <p>This is the outermost layer. It signs the resulting file without modifying its bytes,
- * instead generating an out-of-band {@code .asc} signature file. This is basically a SHA-256
- * checksum of the deposit file that's signed with our RSA private key. This allows the people
- * who receive a deposit to check the signature against our public key so they can know the
- * data hasn't been forged.
+ * <p>This is the outermost layer. It signs the resulting file without modifying its bytes, instead
+ * generating an out-of-band {@code .asc} signature file. This is basically a SHA-256 checksum of
+ * the deposit file that's signed with our RSA private key. This allows the people who receive a
+ * deposit to check the signature against our public key so they can know the data hasn't been
+ * forged.
  */
 public class RydePgpSigningOutputStream extends ImprovedOutputStream {
 
   private final PGPSignatureGenerator signer;
 
   /**
-   * Create a signer that wraps {@code os} and generates a detached signature using
-   * {@code signingKey}. After closing, you should call {@link #getSignature()} to get the detached
+   * Create a signer that wraps {@code os} and generates a detached signature using {@code
+   * signingKey}. After closing, you should call {@link #getSignature()} to get the detached
    * signature.
    *
    * @param os is the upstream {@link OutputStream} which is not closed by this object
    * @throws RuntimeException to rethrow {@link PGPException}
    */
-  public RydePgpSigningOutputStream(
-      @WillNotClose OutputStream os,
-      PGPKeyPair signingKey) {
+  public RydePgpSigningOutputStream(@WillNotClose OutputStream os, PGPKeyPair signingKey) {
     super("RydePgpSigningOutputStream", os, false);
     try {
-      signer = new PGPSignatureGenerator(
-          new BcPGPContentSignerBuilder(RSA_GENERAL, SHA256));
+      signer = new PGPSignatureGenerator(new BcPGPContentSignerBuilder(RSA_GENERAL, SHA256));
       signer.init(BINARY_DOCUMENT, signingKey.getPrivateKey());
     } catch (PGPException e) {
       throw new RuntimeException(e);

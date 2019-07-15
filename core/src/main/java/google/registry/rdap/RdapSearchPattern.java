@@ -14,7 +14,6 @@
 
 package google.registry.rdap;
 
-
 import com.google.common.base.Strings;
 import google.registry.request.HttpException.BadRequestException;
 import google.registry.request.HttpException.UnprocessableEntityException;
@@ -29,8 +28,8 @@ import javax.annotation.Nullable;
  * must be at the end, except for a possible suffix string on the end to restrict the search to a
  * particular TLD (for domains) or domain (for nameservers).
  *
- * @see <a href="http://www.ietf.org/rfc/rfc7482.txt">
- *        RFC 7482: Registration Data Access Protocol (RDAP) Query Format</a>
+ * @see <a href="http://www.ietf.org/rfc/rfc7482.txt">RFC 7482: Registration Data Access Protocol
+ *     (RDAP) Query Format</a>
  */
 public final class RdapSearchPattern {
 
@@ -60,8 +59,7 @@ public final class RdapSearchPattern {
    * a TLD, for nameservers, a domain. RFC 7482 requires only that it be a sequence of domain
    * labels, but this definition is stricter for efficiency purposes.
    */
-  @Nullable
-  private final String suffix;
+  @Nullable private final String suffix;
 
   private RdapSearchPattern(
       final String initialString, final boolean hasWildcard, @Nullable final String suffix) {

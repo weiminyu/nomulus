@@ -24,11 +24,9 @@ import google.registry.model.ImmutableObject;
 /** A singleton entity in Datastore. */
 public abstract class CrossTldSingleton extends ImmutableObject {
 
-  public static final long SINGLETON_ID = 1;  // There is always exactly one of these.
+  public static final long SINGLETON_ID = 1; // There is always exactly one of these.
 
-  @Id
-  long id = SINGLETON_ID;
+  @Id long id = SINGLETON_ID;
 
-  @Parent
-  Key<EntityGroupRoot> parent = getCrossTldKey();
+  @Parent Key<EntityGroupRoot> parent = getCrossTldKey();
 }

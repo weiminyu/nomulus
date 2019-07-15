@@ -57,33 +57,36 @@ public final class FullFieldsTestEntityHelper {
   public static Registrar makeRegistrar(
       String clientId, String registrarName, Registrar.State state, Long ianaIdentifier) {
     return new Registrar.Builder()
-      .setClientId(clientId)
-      .setRegistrarName(registrarName)
-      .setType(Registrar.Type.REAL)
-      .setIanaIdentifier(ianaIdentifier)
-      .setState(state)
-      .setInternationalizedAddress(new RegistrarAddress.Builder()
-          .setStreet(ImmutableList.of("123 Example Boulevard <script>"))
-          .setCity("Williamsburg <script>")
-          .setState("NY")
-          .setZip("11211")
-          .setCountryCode("US")
-          .build())
-      .setLocalizedAddress(new RegistrarAddress.Builder()
-          .setStreet(ImmutableList.of("123 Example Boulevard <script>"))
-          .setCity("Williamsburg <script>")
-          .setState("NY")
-          .setZip("11211")
-          .setCountryCode("US")
-          .build())
-      .setPhoneNumber("+1.2125551212")
-      .setFaxNumber("+1.2125551213")
-      .setEmailAddress("contact-us@example.com")
-      .setWhoisServer("whois.example.com")
-      .setRdapBaseUrls(ImmutableSet.of(
-          "https://rdap.example.com/withSlash/", "https://rdap.example.com/withoutSlash"))
-      .setUrl("http://my.fake.url")
-      .build();
+        .setClientId(clientId)
+        .setRegistrarName(registrarName)
+        .setType(Registrar.Type.REAL)
+        .setIanaIdentifier(ianaIdentifier)
+        .setState(state)
+        .setInternationalizedAddress(
+            new RegistrarAddress.Builder()
+                .setStreet(ImmutableList.of("123 Example Boulevard <script>"))
+                .setCity("Williamsburg <script>")
+                .setState("NY")
+                .setZip("11211")
+                .setCountryCode("US")
+                .build())
+        .setLocalizedAddress(
+            new RegistrarAddress.Builder()
+                .setStreet(ImmutableList.of("123 Example Boulevard <script>"))
+                .setCity("Williamsburg <script>")
+                .setState("NY")
+                .setZip("11211")
+                .setCountryCode("US")
+                .build())
+        .setPhoneNumber("+1.2125551212")
+        .setFaxNumber("+1.2125551213")
+        .setEmailAddress("contact-us@example.com")
+        .setWhoisServer("whois.example.com")
+        .setRdapBaseUrls(
+            ImmutableSet.of(
+                "https://rdap.example.com/withSlash/", "https://rdap.example.com/withoutSlash"))
+        .setUrl("http://my.fake.url")
+        .build();
   }
 
   public static ImmutableList<RegistrarContact> makeRegistrarContacts(Registrar registrar) {
@@ -171,8 +174,9 @@ public final class FullFieldsTestEntityHelper {
     HostResource hostResource =
         persistResource(makeHostResource(fqhn, ip1, ip2, registrarClientId));
     if (creationTime != null) {
-      persistResource(makeHistoryEntry(
-          hostResource, HistoryEntry.Type.HOST_CREATE, null, "created", creationTime));
+      persistResource(
+          makeHistoryEntry(
+              hostResource, HistoryEntry.Type.HOST_CREATE, null, "created", creationTime));
     }
     return hostResource;
   }
@@ -205,32 +209,30 @@ public final class FullFieldsTestEntityHelper {
       @Nullable List<String> street,
       @Nullable Registrar registrar,
       @Nullable DateTime deletionTime) {
-    PostalInfo.Builder postalBuilder = new PostalInfo.Builder()
-        .setType(PostalInfo.Type.INTERNATIONALIZED)
-        .setName(name)
-        .setOrg("GOOGLE INCORPORATED <script>");
+    PostalInfo.Builder postalBuilder =
+        new PostalInfo.Builder()
+            .setType(PostalInfo.Type.INTERNATIONALIZED)
+            .setName(name)
+            .setOrg("GOOGLE INCORPORATED <script>");
     if (street != null) {
-        postalBuilder.setAddress(new ContactAddress.Builder()
-            .setStreet(ImmutableList.copyOf(street))
-            .setCity("KOKOMO")
-            .setState("BM")
-            .setZip("31337")
-            .setCountryCode("US")
-            .build());
+      postalBuilder.setAddress(
+          new ContactAddress.Builder()
+              .setStreet(ImmutableList.copyOf(street))
+              .setCity("KOKOMO")
+              .setState("BM")
+              .setZip("31337")
+              .setCountryCode("US")
+              .build());
     }
-    ContactResource.Builder builder = new ContactResource.Builder()
-        .setContactId(id)
-        .setRepoId(generateNewContactHostRoid())
-        .setCreationTimeForTest(DateTime.parse("2000-10-08T00:45:00Z"))
-        .setInternationalizedPostalInfo(postalBuilder.build())
-        .setVoiceNumber(
-            new ContactPhoneNumber.Builder()
-            .setPhoneNumber("+1.2126660420")
-            .build())
-        .setFaxNumber(
-            new ContactPhoneNumber.Builder()
-            .setPhoneNumber("+1.2126660420")
-            .build());
+    ContactResource.Builder builder =
+        new ContactResource.Builder()
+            .setContactId(id)
+            .setRepoId(generateNewContactHostRoid())
+            .setCreationTimeForTest(DateTime.parse("2000-10-08T00:45:00Z"))
+            .setInternationalizedPostalInfo(postalBuilder.build())
+            .setVoiceNumber(
+                new ContactPhoneNumber.Builder().setPhoneNumber("+1.2126660420").build())
+            .setFaxNumber(new ContactPhoneNumber.Builder().setPhoneNumber("+1.2126660420").build());
     if (email != null) {
       builder.setEmailAddress(email);
     }
@@ -246,13 +248,12 @@ public final class FullFieldsTestEntityHelper {
   }
 
   public static ContactResource makeWipedOutContactResource(
-      String id,
-      @Nullable Registrar registrar,
-      @Nullable DateTime deletionTime) {
-    ContactResource.Builder builder = new ContactResource.Builder()
-        .setContactId(id)
-        .setRepoId(generateNewContactHostRoid())
-        .setCreationTimeForTest(DateTime.parse("2000-10-08T00:45:00Z"));
+      String id, @Nullable Registrar registrar, @Nullable DateTime deletionTime) {
+    ContactResource.Builder builder =
+        new ContactResource.Builder()
+            .setContactId(id)
+            .setRepoId(generateNewContactHostRoid())
+            .setCreationTimeForTest(DateTime.parse("2000-10-08T00:45:00Z"));
     if (registrar != null) {
       builder
           .setCreationClientId(registrar.getClientId())
@@ -310,27 +311,28 @@ public final class FullFieldsTestEntityHelper {
     ContactResource contactResource =
         persistResource(makeContactResource(id, name, email, street, registrar, deletionTime));
     if (creationTime != null) {
-      persistResource(makeHistoryEntry(
-          contactResource, HistoryEntry.Type.CONTACT_CREATE, null, "created", creationTime));
+      persistResource(
+          makeHistoryEntry(
+              contactResource, HistoryEntry.Type.CONTACT_CREATE, null, "created", creationTime));
     }
     if (deletionTime != null) {
-      persistResource(makeHistoryEntry(
-          contactResource, HistoryEntry.Type.CONTACT_DELETE, null, "deleted", deletionTime));
+      persistResource(
+          makeHistoryEntry(
+              contactResource, HistoryEntry.Type.CONTACT_DELETE, null, "deleted", deletionTime));
     }
     return contactResource;
   }
 
   public static ContactResource makeAndPersistDeletedContactResource(
-      String id,
-      DateTime creationTime,
-      Registrar registrar,
-      DateTime deletionTime) {
+      String id, DateTime creationTime, Registrar registrar, DateTime deletionTime) {
     ContactResource contactResource =
         persistResource(makeWipedOutContactResource(id, registrar, deletionTime));
-    persistResource(makeHistoryEntry(
-        contactResource, HistoryEntry.Type.CONTACT_CREATE, null, "created", creationTime));
-    persistResource(makeHistoryEntry(
-        contactResource, HistoryEntry.Type.CONTACT_DELETE, null, "deleted", deletionTime));
+    persistResource(
+        makeHistoryEntry(
+            contactResource, HistoryEntry.Type.CONTACT_CREATE, null, "created", creationTime));
+    persistResource(
+        makeHistoryEntry(
+            contactResource, HistoryEntry.Type.CONTACT_DELETE, null, "deleted", deletionTime));
     return contactResource;
   }
 
@@ -364,12 +366,12 @@ public final class FullFieldsTestEntityHelper {
     if ((admin != null) || (tech != null)) {
       ImmutableSet.Builder<DesignatedContact> contactsBuilder = new ImmutableSet.Builder<>();
       if (admin != null) {
-        contactsBuilder.add(DesignatedContact.create(
-            DesignatedContact.Type.ADMIN, Key.create(admin)));
+        contactsBuilder.add(
+            DesignatedContact.create(DesignatedContact.Type.ADMIN, Key.create(admin)));
       }
       if (tech != null) {
-        contactsBuilder.add(DesignatedContact.create(
-            DesignatedContact.Type.TECH, Key.create(tech)));
+        contactsBuilder.add(
+            DesignatedContact.create(DesignatedContact.Type.TECH, Key.create(tech)));
       }
       builder.setContacts(contactsBuilder.build());
     }
@@ -392,17 +394,18 @@ public final class FullFieldsTestEntityHelper {
       Period period,
       String reason,
       DateTime modificationTime) {
-    HistoryEntry.Builder builder = new HistoryEntry.Builder()
-        .setParent(resource)
-        .setType(type)
-        .setPeriod(period)
-        .setXmlBytes("<xml></xml>".getBytes(UTF_8))
-        .setModificationTime(modificationTime)
-        .setClientId("foo")
-        .setTrid(Trid.create("ABC-123", "server-trid"))
-        .setBySuperuser(false)
-        .setReason(reason)
-        .setRequestedByRegistrar(false);
+    HistoryEntry.Builder builder =
+        new HistoryEntry.Builder()
+            .setParent(resource)
+            .setType(type)
+            .setPeriod(period)
+            .setXmlBytes("<xml></xml>".getBytes(UTF_8))
+            .setModificationTime(modificationTime)
+            .setClientId("foo")
+            .setTrid(Trid.create("ABC-123", "server-trid"))
+            .setBySuperuser(false)
+            .setReason(reason)
+            .setRequestedByRegistrar(false);
     return builder.build();
   }
 }

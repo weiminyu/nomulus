@@ -36,14 +36,12 @@ public class KeyValueMapParameterTest {
 
   @Test
   public void testSuccess_convertStringToString_singleEntry() {
-    assertThat(stringToStringInstance.convert("key=foo"))
-        .isEqualTo(ImmutableMap.of("key", "foo"));
+    assertThat(stringToStringInstance.convert("key=foo")).isEqualTo(ImmutableMap.of("key", "foo"));
   }
 
   @Test
   public void testSuccess_convertStringToInteger_singleEntry() {
-    assertThat(stringToIntegerInstance.convert("key=1"))
-        .isEqualTo(ImmutableMap.of("key", 1));
+    assertThat(stringToIntegerInstance.convert("key=1")).isEqualTo(ImmutableMap.of("key", 1));
   }
 
   @Test
@@ -134,4 +132,3 @@ public class KeyValueMapParameterTest {
     assertThrows(IllegalArgumentException.class, () -> currencyUnitToStringMap.convert("foo"));
   }
 }
-

@@ -32,16 +32,15 @@ import org.joda.time.DateTime;
 @Parameters(separators = " =", commandDescription = "Generate zone files")
 final class GenerateZoneFilesCommand implements CommandWithConnection, CommandWithRemoteApi {
 
-  @Parameter(
-      description = "One or more TLDs to generate zone files for",
-      required = true)
+  @Parameter(description = "One or more TLDs to generate zone files for", required = true)
   private List<String> mainParameters;
 
   // Default to latest midnight that's at least 2 minutes ago.
   @Parameter(
       names = "--export_date",
-      description = "The date to generate the file for (defaults to today, or yesterday if run "
-          + "before 00:02).",
+      description =
+          "The date to generate the file for (defaults to today, or yesterday if run "
+              + "before 00:02).",
       validateWith = DateParameter.class)
   private DateTime exportDate = DateTime.now(UTC).minus(standardMinutes(2)).withTimeAtStartOfDay();
 
@@ -55,9 +54,8 @@ final class GenerateZoneFilesCommand implements CommandWithConnection, CommandWi
   @Override
   public void run() throws IOException {
     assertTldsExist(mainParameters);
-    ImmutableMap<String, Object> params = ImmutableMap.of(
-        "tlds", mainParameters,
-        "exportTime", exportDate.toString());
+    ImmutableMap<String, Object> params =
+        ImmutableMap.of("tlds", mainParameters, "exportTime", exportDate.toString());
     Map<String, Object> response = connection.sendJson(GenerateZoneFilesAction.PATH, params);
     System.out.println(response.get("mapreduceConsoleLink"));
     System.out.println("Output files:");

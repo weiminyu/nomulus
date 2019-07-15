@@ -23,7 +23,8 @@ public final class Actions {
   public static String getPathForAction(Class<?> action) {
     checkArgument(
         action.isAnnotationPresent(Action.class),
-        "Cannot get path of class without @Action annotation: %s", action);
+        "Cannot get path of class without @Action annotation: %s",
+        action);
     return action.getAnnotation(Action.class).path();
   }
 

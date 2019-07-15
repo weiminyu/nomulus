@@ -14,9 +14,7 @@
 
 package google.registry.flows;
 
-/**
- * An enum that identifies the origin of the session.
- */
+/** An enum that identifies the origin of the session. */
 public enum EppRequestSource {
   CONSOLE,
   TLS,

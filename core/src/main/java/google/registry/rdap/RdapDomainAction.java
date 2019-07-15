@@ -41,7 +41,8 @@ import javax.inject.Inject;
     auth = Auth.AUTH_PUBLIC)
 public class RdapDomainAction extends RdapActionBase {
 
-  @Inject public RdapDomainAction() {
+  @Inject
+  public RdapDomainAction() {
     super("domain name", EndpointType.DOMAIN);
   }
 

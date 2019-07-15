@@ -105,8 +105,7 @@ public class CloudDnsWriterTest {
             invocationOnMock ->
                 new ResourceRecordSetsListResponse()
                     .setRrsets(
-                        stubZone
-                            .stream()
+                        stubZone.stream()
                             .filter(
                                 rs ->
                                     rs != null && rs.getName().equals(recordNameCaptor.getValue()))

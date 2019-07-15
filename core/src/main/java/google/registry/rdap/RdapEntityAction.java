@@ -55,13 +55,13 @@ public class RdapEntityAction extends RdapActionBase {
 
   private static final Pattern ROID_PATTERN = Pattern.compile("[-_.a-zA-Z0-9]+");
 
-  @Inject public RdapEntityAction() {
+  @Inject
+  public RdapEntityAction() {
     super("entity", EndpointType.ENTITY);
   }
 
   @Override
-  public RdapEntity getJsonObjectForResource(
-      String pathSearchString, boolean isHeadRequest) {
+  public RdapEntity getJsonObjectForResource(String pathSearchString, boolean isHeadRequest) {
     // The query string is not used; the RDAP syntax is /rdap/entity/handle (the handle is the roid
     // for contacts and the client identifier/fn for registrars). Since RDAP's concept of an entity
     // includes both contacts and registrars, search for one first, then the other.

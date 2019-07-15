@@ -97,9 +97,10 @@ final class GetSchemaTreeCommand implements Command {
       hierarchy.put(entityToParentType.get(clazz), superclass == null ? clazz : superclass);
     }
     // Build up the superclass to subclass mapping.
-    superclassToSubclasses = Multimaps.invertFrom(
-        Multimaps.forMap(subclassToSuperclass),
-        TreeMultimap.create(arbitrary(), new PrintableNameOrdering()));
+    superclassToSubclasses =
+        Multimaps.invertFrom(
+            Multimaps.forMap(subclassToSuperclass),
+            TreeMultimap.create(arbitrary(), new PrintableNameOrdering()));
     printTree(Object.class, 0);
   }
 
@@ -108,11 +109,13 @@ final class GetSchemaTreeCommand implements Command {
       for (Field field : clazz.getDeclaredFields()) {
         if (field.isAnnotationPresent(Parent.class)) {
           try {
-            return getSystemClassLoader().loadClass(
-                ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0]
-                    .toString()
-                    .replace("? extends ", "")
-                    .replace("class ", ""));
+            return getSystemClassLoader()
+                .loadClass(
+                    ((ParameterizedType) field.getGenericType())
+                        .getActualTypeArguments()[0]
+                        .toString()
+                        .replace("? extends ", "")
+                        .replace("class ", ""));
           } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
           }
@@ -124,27 +127,29 @@ final class GetSchemaTreeCommand implements Command {
 
   private void printTree(Class<?> parent, int indent) {
     for (Class<?> clazz : hierarchy.get(parent)) {
-      System.out.println(new StringBuilder(Strings.repeat(" ", indent))
-          .append(indent == 0 ? "" : "↳ ")
-          .append(getPrintableName(clazz))
-          .append(isAbstract(clazz.getModifiers()) ? " (abstract)" : "")
-          .append(clazz.isAnnotationPresent(VirtualEntity.class) ? " (virtual)" : "")
-          .append(clazz.isAnnotationPresent(NotBackedUp.class) ? " (not backed up)" : "")
-          .append(BackupGroupRoot.class.isAssignableFrom(clazz) ? " (bgr)" : ""));
+      System.out.println(
+          new StringBuilder(Strings.repeat(" ", indent))
+              .append(indent == 0 ? "" : "↳ ")
+              .append(getPrintableName(clazz))
+              .append(isAbstract(clazz.getModifiers()) ? " (abstract)" : "")
+              .append(clazz.isAnnotationPresent(VirtualEntity.class) ? " (virtual)" : "")
+              .append(clazz.isAnnotationPresent(NotBackedUp.class) ? " (not backed up)" : "")
+              .append(BackupGroupRoot.class.isAssignableFrom(clazz) ? " (bgr)" : ""));
       printSubclasses(clazz, indent + 2);
       printTree(clazz, indent + 2);
       if (indent == 0) {
-        System.out.println();  // Separate the entity groups with a line.
+        System.out.println(); // Separate the entity groups with a line.
       }
     }
   }
 
   private void printSubclasses(Class<?> parent, int indent) {
     for (Class<?> clazz : superclassToSubclasses.get(parent)) {
-      System.out.println(new StringBuilder(Strings.repeat(" ", indent))
-          .append("- ")
-          .append(getPrintableName(clazz))
-          .append(clazz.isAnnotationPresent(EntitySubclass.class) ? " (subclass)" : ""));
+      System.out.println(
+          new StringBuilder(Strings.repeat(" ", indent))
+              .append("- ")
+              .append(getPrintableName(clazz))
+              .append(clazz.isAnnotationPresent(EntitySubclass.class) ? " (subclass)" : ""));
       printSubclasses(clazz, indent + 2);
       printTree(clazz, indent + 2);
     }
@@ -153,8 +158,8 @@ final class GetSchemaTreeCommand implements Command {
   /** Returns the simple name of the class prefixed with its wrapper's simple name, if any. */
   static String getPrintableName(Class<?> clazz) {
     return clazz.isMemberClass()
-       ? getPrintableName(clazz.getDeclaringClass()) + "." + clazz.getSimpleName()
-       : clazz.getSimpleName();
+        ? getPrintableName(clazz.getDeclaringClass()) + "." + clazz.getSimpleName()
+        : clazz.getSimpleName();
   }
 
   /** An ordering that sorts on {@link #getPrintableName}. */

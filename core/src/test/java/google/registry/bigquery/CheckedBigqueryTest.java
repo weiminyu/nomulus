@@ -75,10 +75,8 @@ public class CheckedBigqueryTest {
 
     ArgumentCaptor<Dataset> datasetArg = ArgumentCaptor.forClass(Dataset.class);
     verify(bigqueryDatasets).insert(eq("Project-Id"), datasetArg.capture());
-    assertThat(datasetArg.getValue().getDatasetReference().getProjectId())
-        .isEqualTo("Project-Id");
-    assertThat(datasetArg.getValue().getDatasetReference().getDatasetId())
-        .isEqualTo("Dataset-Id");
+    assertThat(datasetArg.getValue().getDatasetReference().getProjectId()).isEqualTo("Project-Id");
+    assertThat(datasetArg.getValue().getDatasetReference().getDatasetId()).isEqualTo("Dataset-Id");
     verify(bigqueryDatasetsInsert).execute();
   }
 
@@ -88,10 +86,8 @@ public class CheckedBigqueryTest {
 
     ArgumentCaptor<Dataset> datasetArg = ArgumentCaptor.forClass(Dataset.class);
     verify(bigqueryDatasets).insert(eq("Project-Id"), datasetArg.capture());
-    assertThat(datasetArg.getValue().getDatasetReference().getProjectId())
-        .isEqualTo("Project-Id");
-    assertThat(datasetArg.getValue().getDatasetReference().getDatasetId())
-        .isEqualTo("Dataset2");
+    assertThat(datasetArg.getValue().getDatasetReference().getProjectId()).isEqualTo("Project-Id");
+    assertThat(datasetArg.getValue().getDatasetReference().getDatasetId()).isEqualTo("Dataset2");
     verify(bigqueryDatasetsInsert).execute();
 
     ArgumentCaptor<Table> tableArg = ArgumentCaptor.forClass(Table.class);

@@ -152,9 +152,9 @@ public abstract class BillingEvent implements Serializable {
   /**
    * Applies a discount to sunrise creates and anchor tenant creates if applicable.
    *
-   * Currently sunrise creates are discounted 15% and anchor tenant creates are free for 2 years.
-   * All anchor tenant creates are enforced to be 2 years in
-   * {@link google.registry.flows.domain.DomainCreateFlow#verifyAnchorTenantValidPeriod}.
+   * <p>Currently sunrise creates are discounted 15% and anchor tenant creates are free for 2 years.
+   * All anchor tenant creates are enforced to be 2 years in {@link
+   * google.registry.flows.domain.DomainCreateFlow#verifyAnchorTenantValidPeriod}.
    */
   private static double getDiscountedAmount(double amount, String flags) {
     // Apply a configurable discount to sunrise creates.

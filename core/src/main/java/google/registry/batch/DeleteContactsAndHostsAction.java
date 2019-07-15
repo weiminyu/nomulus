@@ -124,11 +124,17 @@ public class DeleteContactsAndHostsAction implements Runnable {
   @Inject AsyncTaskMetrics asyncTaskMetrics;
   @Inject Clock clock;
   @Inject MapreduceRunner mrRunner;
-  @Inject @Named(QUEUE_ASYNC_DELETE) Queue queue;
+
+  @Inject
+  @Named(QUEUE_ASYNC_DELETE)
+  Queue queue;
+
   @Inject RequestStatusChecker requestStatusChecker;
   @Inject Response response;
   @Inject Retrier retrier;
-  @Inject DeleteContactsAndHostsAction() {}
+
+  @Inject
+  DeleteContactsAndHostsAction() {}
 
   @Override
   public void run() {
@@ -294,8 +300,7 @@ public class DeleteContactsAndHostsAction implements Runnable {
    * A reducer that checks if the EPP resource to be deleted is referenced anywhere, and then
    * deletes it if not and unmarks it for deletion if so.
    */
-  public static class DeleteEppResourceReducer
-      extends Reducer<DeletionRequest, Boolean, Void> {
+  public static class DeleteEppResourceReducer extends Reducer<DeletionRequest, Boolean, Void> {
 
     private static final long serialVersionUID = 6569363449285506326L;
     private static final DnsQueue dnsQueue = DnsQueue.create();
@@ -341,7 +346,10 @@ public class DeleteContactsAndHostsAction implements Runnable {
       String resourceClientId = resource.getPersistedCurrentSponsorClientId();
       if (resource instanceof HostResource && ((HostResource) resource).isSubordinate()) {
         resourceClientId =
-            ofy().load().key(((HostResource) resource).getSuperordinateDomain()).now()
+            ofy()
+                .load()
+                .key(((HostResource) resource).getSuperordinateDomain())
+                .now()
                 .cloneProjectedAtTime(now)
                 .getCurrentSponsorClientId();
       }
@@ -431,8 +439,8 @@ public class DeleteContactsAndHostsAction implements Runnable {
     }
 
     /**
-     * Determine the proper history entry type for the delete operation, as a function of
-     * whether or not the delete was successful.
+     * Determine the proper history entry type for the delete operation, as a function of whether or
+     * not the delete was successful.
      */
     private HistoryEntry.Type getHistoryEntryType(EppResource resource, boolean successfulDelete) {
       if (resource instanceof ContactResource) {
@@ -460,10 +468,16 @@ public class DeleteContactsAndHostsAction implements Runnable {
         HostResource host = (HostResource) existingResource;
         if (host.isSubordinate()) {
           dnsQueue.addHostRefreshTask(host.getFullyQualifiedHostName());
-          ofy().save().entity(
-              ofy().load().key(host.getSuperordinateDomain()).now().asBuilder()
-                  .removeSubordinateHost(host.getFullyQualifiedHostName())
-                  .build());
+          ofy()
+              .save()
+              .entity(
+                  ofy()
+                      .load()
+                      .key(host.getSuperordinateDomain())
+                      .now()
+                      .asBuilder()
+                      .removeSubordinateHost(host.getFullyQualifiedHostName())
+                      .build());
         }
       } else {
         throw new IllegalStateException(
@@ -479,6 +493,7 @@ public class DeleteContactsAndHostsAction implements Runnable {
     private static final long serialVersionUID = -4612618525760839240L;
 
     abstract Key<? extends EppResource> key();
+
     abstract DateTime lastUpdateTime();
 
     /**
@@ -495,26 +510,37 @@ public class DeleteContactsAndHostsAction implements Runnable {
     abstract String serverTransactionId();
 
     abstract boolean isSuperuser();
+
     abstract DateTime requestedTime();
+
     abstract boolean isDeletionAllowed();
+
     abstract TaskHandle task();
 
     @AutoValue.Builder
     abstract static class Builder {
       abstract Builder setKey(Key<? extends EppResource> key);
+
       abstract Builder setLastUpdateTime(DateTime lastUpdateTime);
+
       abstract Builder setRequestingClientId(String requestingClientId);
+
       abstract Builder setClientTransactionId(@Nullable String clientTransactionId);
+
       abstract Builder setServerTransactionId(String serverTransactionId);
+
       abstract Builder setIsSuperuser(boolean isSuperuser);
+
       abstract Builder setRequestedTime(DateTime requestedTime);
+
       abstract Builder setIsDeletionAllowed(boolean isDeletionAllowed);
+
       abstract Builder setTask(TaskHandle task);
+
       abstract DeletionRequest build();
     }
 
-    static DeletionRequest createFromTask(TaskHandle task, DateTime now)
-        throws Exception {
+    static DeletionRequest createFromTask(TaskHandle task, DateTime now) throws Exception {
       ImmutableMap<String, String> params = ImmutableMap.copyOf(task.extractParams());
       Key<EppResource> resourceKey =
           Key.create(
@@ -583,6 +609,7 @@ public class DeleteContactsAndHostsAction implements Runnable {
     }
 
     abstract Type type();
+
     abstract String pollMessageText();
 
     static DeletionResult create(Type type, String pollMessageText) {

@@ -46,7 +46,6 @@ import org.joda.time.DateTime;
  * of a second to load.
  */
 public enum Fixture {
-
   INJECTED_FAKE_CLOCK {
     @Override
     public void load() {
@@ -71,80 +70,99 @@ public enum Fixture {
         throw new RuntimeException(e);
       }
 
-      ContactResource google = persistResource(newContactResource("google")
-          .asBuilder()
-          .setLocalizedPostalInfo(new PostalInfo.Builder()
-              .setType(PostalInfo.Type.LOCALIZED)
-              .setName("Mr. Google")
-              .setOrg("Google Inc.")
-              .setAddress(new ContactAddress.Builder()
-                  .setStreet(ImmutableList.of("111 8th Ave", "4th Floor"))
-                  .setCity("New York")
-                  .setState("NY")
-                  .setZip("10011")
-                  .setCountryCode("US")
-                  .build())
-              .build())
-            .build());
+      ContactResource google =
+          persistResource(
+              newContactResource("google")
+                  .asBuilder()
+                  .setLocalizedPostalInfo(
+                      new PostalInfo.Builder()
+                          .setType(PostalInfo.Type.LOCALIZED)
+                          .setName("Mr. Google")
+                          .setOrg("Google Inc.")
+                          .setAddress(
+                              new ContactAddress.Builder()
+                                  .setStreet(ImmutableList.of("111 8th Ave", "4th Floor"))
+                                  .setCity("New York")
+                                  .setState("NY")
+                                  .setZip("10011")
+                                  .setCountryCode("US")
+                                  .build())
+                          .build())
+                  .build());
 
-      ContactResource justine = persistResource(newContactResource("justine")
-          .asBuilder()
-          .setLocalizedPostalInfo(new PostalInfo.Builder()
-              .setType(PostalInfo.Type.LOCALIZED)
-              .setName("Justine Bean")
-              .setOrg("(✿◕ ‿◕ )ノ Incorporated")
-              .setAddress(new ContactAddress.Builder()
-                  .setStreet(ImmutableList.of("123 Fake St."))
-                  .setCity("Stratford")
-                  .setState("CT")
-                  .setZip("06615")
-                  .setCountryCode("US")
-                  .build())
-              .build())
-            .build());
+      ContactResource justine =
+          persistResource(
+              newContactResource("justine")
+                  .asBuilder()
+                  .setLocalizedPostalInfo(
+                      new PostalInfo.Builder()
+                          .setType(PostalInfo.Type.LOCALIZED)
+                          .setName("Justine Bean")
+                          .setOrg("(✿◕ ‿◕ )ノ Incorporated")
+                          .setAddress(
+                              new ContactAddress.Builder()
+                                  .setStreet(ImmutableList.of("123 Fake St."))
+                                  .setCity("Stratford")
+                                  .setState("CT")
+                                  .setZip("06615")
+                                  .setCountryCode("US")
+                                  .build())
+                          .build())
+                  .build());
 
-      ContactResource robert = persistResource(newContactResource("robert")
-          .asBuilder()
-          .setLocalizedPostalInfo(new PostalInfo.Builder()
-              .setType(PostalInfo.Type.LOCALIZED)
-              .setName("Captain Robert")
-              .setOrg("Ancient World")
-              .setAddress(new ContactAddress.Builder()
-                  .setStreet(ImmutableList.of(
-                      "A skeleton crew is what came back",
-                      "And once in port he filled his sack",
-                      "With bribes and cash and fame and coin"))
-                  .setCity("Things to make a new crew join")
-                  .setState("NY")
-                  .setZip("10011")
-                  .setCountryCode("US")
-                  .build())
-              .build())
-            .build());
+      ContactResource robert =
+          persistResource(
+              newContactResource("robert")
+                  .asBuilder()
+                  .setLocalizedPostalInfo(
+                      new PostalInfo.Builder()
+                          .setType(PostalInfo.Type.LOCALIZED)
+                          .setName("Captain Robert")
+                          .setOrg("Ancient World")
+                          .setAddress(
+                              new ContactAddress.Builder()
+                                  .setStreet(
+                                      ImmutableList.of(
+                                          "A skeleton crew is what came back",
+                                          "And once in port he filled his sack",
+                                          "With bribes and cash and fame and coin"))
+                                  .setCity("Things to make a new crew join")
+                                  .setState("NY")
+                                  .setZip("10011")
+                                  .setCountryCode("US")
+                                  .build())
+                          .build())
+                  .build());
 
       persistResource(
-          newDomainBase("love.xn--q9jyb4c", justine).asBuilder()
-              .setContacts(ImmutableSet.of(
-                  DesignatedContact.create(ADMIN, Key.create(robert)),
-                  DesignatedContact.create(BILLING, Key.create(google)),
-                  DesignatedContact.create(TECH, Key.create(justine))))
-              .setNameservers(ImmutableSet.of(
-                  Key.create(persistActiveHost("ns1.love.xn--q9jyb4c")),
-                  Key.create(persistActiveHost("ns2.love.xn--q9jyb4c"))))
+          newDomainBase("love.xn--q9jyb4c", justine)
+              .asBuilder()
+              .setContacts(
+                  ImmutableSet.of(
+                      DesignatedContact.create(ADMIN, Key.create(robert)),
+                      DesignatedContact.create(BILLING, Key.create(google)),
+                      DesignatedContact.create(TECH, Key.create(justine))))
+              .setNameservers(
+                  ImmutableSet.of(
+                      Key.create(persistActiveHost("ns1.love.xn--q9jyb4c")),
+                      Key.create(persistActiveHost("ns2.love.xn--q9jyb4c"))))
               .build());
 
       persistResource(
-          newDomainBase("moogle.example", justine).asBuilder()
-              .setContacts(ImmutableSet.of(
-                  DesignatedContact.create(ADMIN, Key.create(robert)),
-                  DesignatedContact.create(BILLING, Key.create(google)),
-                  DesignatedContact.create(TECH, Key.create(justine))))
-              .setNameservers(ImmutableSet.of(
-                  Key.create(persistActiveHost("ns1.linode.com")),
-                  Key.create(persistActiveHost("ns2.linode.com")),
-                  Key.create(persistActiveHost("ns3.linode.com")),
-                  Key.create(persistActiveHost("ns4.linode.com")),
-                  Key.create(persistActiveHost("ns5.linode.com"))))
+          newDomainBase("moogle.example", justine)
+              .asBuilder()
+              .setContacts(
+                  ImmutableSet.of(
+                      DesignatedContact.create(ADMIN, Key.create(robert)),
+                      DesignatedContact.create(BILLING, Key.create(google)),
+                      DesignatedContact.create(TECH, Key.create(justine))))
+              .setNameservers(
+                  ImmutableSet.of(
+                      Key.create(persistActiveHost("ns1.linode.com")),
+                      Key.create(persistActiveHost("ns2.linode.com")),
+                      Key.create(persistActiveHost("ns3.linode.com")),
+                      Key.create(persistActiveHost("ns4.linode.com")),
+                      Key.create(persistActiveHost("ns5.linode.com"))))
               .build());
 
       persistResource(

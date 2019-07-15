@@ -73,16 +73,15 @@ public class DomainCommand {
 
   /** The fields on "chgType" from {@link "http://tools.ietf.org/html/rfc5731"}. */
   @XmlTransient
-  public static class DomainCreateOrChange<B extends DomainBase.Builder>
-      extends ImmutableObject implements ResourceCreateOrChange<B> {
+  public static class DomainCreateOrChange<B extends DomainBase.Builder> extends ImmutableObject
+      implements ResourceCreateOrChange<B> {
 
     /** The contactId of the registrant who registered this domain. */
     @XmlElement(name = "registrant")
     String registrantContactId;
 
     /** A resolved key to the registrant who registered this domain. */
-    @XmlTransient
-    Key<ContactResource> registrant;
+    @XmlTransient Key<ContactResource> registrant;
 
     /** Authorization info (aka transfer secret) of the domain. */
     DomainAuthInfo authInfo;
@@ -102,19 +101,20 @@ public class DomainCommand {
   }
 
   /**
-   * A create command for a {@link DomainBase}, mapping "createType" from
-   * {@link "http://tools.ietf.org/html/rfc5731"}.
+   * A create command for a {@link DomainBase}, mapping "createType" from {@link
+   * "http://tools.ietf.org/html/rfc5731"}.
    */
   @XmlRootElement
-  @XmlType(propOrder = {
-      "fullyQualifiedDomainName",
-      "period",
-      "nameserverFullyQualifiedHostNames",
-      "registrantContactId",
-      "foreignKeyedDesignatedContacts",
-      "authInfo"})
-  public static class Create
-      extends DomainCreateOrChange<DomainBase.Builder>
+  @XmlType(
+      propOrder = {
+        "fullyQualifiedDomainName",
+        "period",
+        "nameserverFullyQualifiedHostNames",
+        "registrantContactId",
+        "foreignKeyedDesignatedContacts",
+        "authInfo"
+      })
+  public static class Create extends DomainCreateOrChange<DomainBase.Builder>
       implements CreateOrUpdate<Create> {
 
     /** Fully qualified domain name, which serves as a unique identifier for this domain. */
@@ -127,16 +127,14 @@ public class DomainCommand {
     Set<String> nameserverFullyQualifiedHostNames;
 
     /** Resolved keys to hosts that are the nameservers for the domain. */
-    @XmlTransient
-    Set<Key<HostResource>> nameservers;
+    @XmlTransient Set<Key<HostResource>> nameservers;
 
     /** Foreign keyed associated contacts for the domain (other than registrant). */
     @XmlElement(name = "contact")
     Set<ForeignKeyedDesignatedContact> foreignKeyedDesignatedContacts;
 
     /** Resolved keys to associated contacts for the domain (other than registrant). */
-    @XmlTransient
-    Set<DesignatedContact> contacts;
+    @XmlTransient Set<DesignatedContact> contacts;
 
     /** The period that this domain's state was set to last for (e.g. 1-10 years). */
     Period period;
@@ -183,9 +181,10 @@ public class DomainCommand {
         ForeignKeyedDesignatedContact registrantPlaceholder = new ForeignKeyedDesignatedContact();
         registrantPlaceholder.contactId = clone.registrantContactId;
         registrantPlaceholder.type = DesignatedContact.Type.REGISTRANT;
-        Set<DesignatedContact> contacts = linkContacts(
-            union(nullToEmpty(clone.foreignKeyedDesignatedContacts), registrantPlaceholder),
-            now);
+        Set<DesignatedContact> contacts =
+            linkContacts(
+                union(nullToEmpty(clone.foreignKeyedDesignatedContacts), registrantPlaceholder),
+                now);
         for (DesignatedContact contact : contacts) {
           if (DesignatedContact.Type.REGISTRANT.equals(contact.getType())) {
             clone.registrant = contact.getContactKey();
@@ -237,11 +236,9 @@ public class DomainCommand {
 
     /** Info commands use a variant syntax where the name tag has a "hosts" attribute. */
     public static class NameWithHosts extends ImmutableObject {
-      @XmlAttribute
-      HostsRequest hosts;
+      @XmlAttribute HostsRequest hosts;
 
-      @XmlValue
-      String name;
+      @XmlValue String name;
     }
 
     /** Get the enum that specifies the requested hosts (applies only to info flows). */
@@ -341,10 +338,12 @@ public class DomainCommand {
     }
 
     /** The inner change type on a domain update command. */
-    @XmlType(propOrder = {
-        "nameserverFullyQualifiedHostNames",
-        "foreignKeyedDesignatedContacts",
-        "statusValues"})
+    @XmlType(
+        propOrder = {
+          "nameserverFullyQualifiedHostNames",
+          "foreignKeyedDesignatedContacts",
+          "statusValues"
+        })
     public static class AddRemove extends ResourceUpdate.AddRemove {
       /** Fully qualified host names of the hosts that are the nameservers for the domain. */
       @XmlElementWrapper(name = "ns")
@@ -352,16 +351,14 @@ public class DomainCommand {
       Set<String> nameserverFullyQualifiedHostNames;
 
       /** Resolved keys to hosts that are the nameservers for the domain. */
-      @XmlTransient
-      Set<Key<HostResource>> nameservers;
+      @XmlTransient Set<Key<HostResource>> nameservers;
 
       /** Foreign keyed associated contacts for the domain (other than registrant). */
       @XmlElement(name = "contact")
       Set<ForeignKeyedDesignatedContact> foreignKeyedDesignatedContacts;
 
       /** Resolved keys to associated contacts for the domain (other than registrant). */
-      @XmlTransient
-      Set<DesignatedContact> contacts;
+      @XmlTransient Set<DesignatedContact> contacts;
 
       public ImmutableSet<String> getNameserverFullyQualifiedHostNames() {
         return nullSafeImmutableCopy(nameserverFullyQualifiedHostNames);
@@ -417,8 +414,8 @@ public class DomainCommand {
     }
   }
 
-  private static Set<Key<HostResource>> linkHosts(
-      Set<String> fullyQualifiedHostNames, DateTime now) throws InvalidReferencesException {
+  private static Set<Key<HostResource>> linkHosts(Set<String> fullyQualifiedHostNames, DateTime now)
+      throws InvalidReferencesException {
     if (fullyQualifiedHostNames == null) {
       return null;
     }
@@ -439,8 +436,8 @@ public class DomainCommand {
         loadByForeignKeysCached(foreignKeys.build(), ContactResource.class, now);
     ImmutableSet.Builder<DesignatedContact> linkedContacts = new ImmutableSet.Builder<>();
     for (ForeignKeyedDesignatedContact contact : contacts) {
-      linkedContacts.add(DesignatedContact.create(
-          contact.type, loadedContacts.get(contact.contactId)));
+      linkedContacts.add(
+          DesignatedContact.create(contact.type, loadedContacts.get(contact.contactId)));
     }
     return linkedContacts.build();
   }

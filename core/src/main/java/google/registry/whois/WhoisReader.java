@@ -40,22 +40,22 @@ import org.joda.time.DateTime;
  * adopt the following rules:
  *
  * <dl>
- * <dt>domain &lt;FQDN&gt;<dd>
- *   Looks up the domain record for the fully qualified domain name.
- * <dt>nameserver &lt;FQDN&gt;<dd>
- *   Looks up the nameserver record for the fully qualified domain name.
- * <dt>nameserver &lt;IP&gt;<dd>
- *   Looks up the nameserver record at the given IP address.
- * <dt>registrar &lt;IANA ID&gt;<dd>
- *   Looks up the registrar record with the given IANA ID.
- * <dt>registrar &lt;NAME&gt;<dd>
- *   Looks up the registrar record with the given name.
- * <dt>&lt;IP&gt;<dd>
- *   Looks up the nameserver record with the given IP address.
- * <dt>&lt;FQDN&gt;<dd>
- *   Looks up the nameserver or domain record for the fully qualified domain name.
- * <dt>&lt;IANA ID&gt;<dd>
- *   Looks up the registrar record with the given IANA ID.
+ *   <dt>domain &lt;FQDN&gt;
+ *   <dd>Looks up the domain record for the fully qualified domain name.
+ *   <dt>nameserver &lt;FQDN&gt;
+ *   <dd>Looks up the nameserver record for the fully qualified domain name.
+ *   <dt>nameserver &lt;IP&gt;
+ *   <dd>Looks up the nameserver record at the given IP address.
+ *   <dt>registrar &lt;IANA ID&gt;
+ *   <dd>Looks up the registrar record with the given IANA ID.
+ *   <dt>registrar &lt;NAME&gt;
+ *   <dd>Looks up the registrar record with the given name.
+ *   <dt>&lt;IP&gt;
+ *   <dd>Looks up the nameserver record with the given IP address.
+ *   <dt>&lt;FQDN&gt;
+ *   <dd>Looks up the nameserver or domain record for the fully qualified domain name.
+ *   <dt>&lt;IANA ID&gt;
+ *   <dd>Looks up the registrar record with the given IANA ID.
  * </dl>
  *
  * @see <a href="http://tools.ietf.org/html/rfc3912">RFC 3912</a>
@@ -66,10 +66,11 @@ class WhoisReader {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   /**
-   * These are strings that will always trigger a specific query type when they are sent at
-   * the beginning of a command.
+   * These are strings that will always trigger a specific query type when they are sent at the
+   * beginning of a command.
    */
   static final String DOMAIN_LOOKUP_COMMAND = "domain";
+
   static final String NAMESERVER_LOOKUP_COMMAND = "nameserver";
   static final String REGISTRAR_LOOKUP_COMMAND = "registrar";
 
@@ -113,8 +114,10 @@ class WhoisReader {
     // Check if the first token is equal to the domain lookup command.
     if (arg1.equalsIgnoreCase(DOMAIN_LOOKUP_COMMAND)) {
       if (tokens.size() != 2) {
-        throw new WhoisException(now, SC_BAD_REQUEST, String.format(
-            "Wrong number of arguments to '%s' command.", DOMAIN_LOOKUP_COMMAND));
+        throw new WhoisException(
+            now,
+            SC_BAD_REQUEST,
+            String.format("Wrong number of arguments to '%s' command.", DOMAIN_LOOKUP_COMMAND));
       }
 
       // Try to parse the argument as a domain name.
@@ -126,16 +129,20 @@ class WhoisReader {
             whoisRedactedEmailText);
       } catch (IllegalArgumentException iae) {
         // If we can't interpret the argument as a host name, then return an error.
-        throw new WhoisException(now, SC_BAD_REQUEST, String.format(
-            "Could not parse argument to '%s' command", DOMAIN_LOOKUP_COMMAND));
+        throw new WhoisException(
+            now,
+            SC_BAD_REQUEST,
+            String.format("Could not parse argument to '%s' command", DOMAIN_LOOKUP_COMMAND));
       }
     }
 
     // Check if the first token is equal to the nameserver lookup command.
     if (arg1.equalsIgnoreCase(NAMESERVER_LOOKUP_COMMAND)) {
       if (tokens.size() != 2) {
-        throw new WhoisException(now, SC_BAD_REQUEST, String.format(
-            "Wrong number of arguments to '%s' command.", NAMESERVER_LOOKUP_COMMAND));
+        throw new WhoisException(
+            now,
+            SC_BAD_REQUEST,
+            String.format("Wrong number of arguments to '%s' command.", NAMESERVER_LOOKUP_COMMAND));
       }
 
       // Try to parse the argument as an IP address.
@@ -151,22 +158,26 @@ class WhoisReader {
       try {
         logger.atInfo().log(
             "Attempting nameserver lookup command using %s as a hostname", tokens.get(1));
-        return commandFactory.nameserverLookupByHost(InternetDomainName.from(
-            canonicalizeDomainName(tokens.get(1))));
+        return commandFactory.nameserverLookupByHost(
+            InternetDomainName.from(canonicalizeDomainName(tokens.get(1))));
       } catch (IllegalArgumentException iae) {
         // Silently ignore this exception.
       }
 
       // If we can't interpret the argument as either a host name or IP address, return an error.
-      throw new WhoisException(now, SC_BAD_REQUEST, String.format(
-          "Could not parse argument to '%s' command", NAMESERVER_LOOKUP_COMMAND));
+      throw new WhoisException(
+          now,
+          SC_BAD_REQUEST,
+          String.format("Could not parse argument to '%s' command", NAMESERVER_LOOKUP_COMMAND));
     }
 
     // Check if the first token is equal to the registrar lookup command.
     if (arg1.equalsIgnoreCase(REGISTRAR_LOOKUP_COMMAND)) {
       if (tokens.size() == 1) {
-        throw new WhoisException(now, SC_BAD_REQUEST, String.format(
-            "Too few arguments to '%s' command.", REGISTRAR_LOOKUP_COMMAND));
+        throw new WhoisException(
+            now,
+            SC_BAD_REQUEST,
+            String.format("Too few arguments to '%s' command.", REGISTRAR_LOOKUP_COMMAND));
       }
       String registrarLookupArgument = Joiner.on(' ').join(tokens.subList(1, tokens.size()));
       logger.atInfo().log(

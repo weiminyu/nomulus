@@ -157,8 +157,7 @@ public class Spec11PipelineTest {
     assertThat(noEmailThreatMatch.length()).isEqualTo(1);
     assertThat(noEmailThreatMatch.getJSONObject(0).get("fullyQualifiedDomainName"))
         .isEqualTo("no-email.com");
-    assertThat(noEmailThreatMatch.getJSONObject(0).get("threatType"))
-        .isEqualTo("MALWARE");
+    assertThat(noEmailThreatMatch.getJSONObject(0).get("threatType")).isEqualTo("MALWARE");
 
     JSONObject someRegistrarJSON = new JSONObject(sortedLines.get(1));
     assertThat(someRegistrarJSON.get("registrarEmailAddress")).isEqualTo("fake@someRegistrar.com");
@@ -168,8 +167,7 @@ public class Spec11PipelineTest {
     assertThat(someThreatMatch.length()).isEqualTo(1);
     assertThat(someThreatMatch.getJSONObject(0).get("fullyQualifiedDomainName"))
         .isEqualTo("444.com");
-    assertThat(someThreatMatch.getJSONObject(0).get("threatType"))
-        .isEqualTo("MALWARE");
+    assertThat(someThreatMatch.getJSONObject(0).get("threatType")).isEqualTo("MALWARE");
 
     // theRegistrar has two ThreatMatches, we have to parse it explicitly
     JSONObject theRegistrarJSON = new JSONObject(sortedLines.get(2));
@@ -224,10 +222,8 @@ public class Spec11PipelineTest {
     CloseableHttpResponse httpResponse =
         mock(CloseableHttpResponse.class, withSettings().serializable());
     when(httpResponse.getStatusLine())
-        .thenReturn(
-            new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "Done"));
-    when(httpResponse.getEntity())
-        .thenReturn(new FakeHttpEntity(getAPIResponse(badUrls)));
+        .thenReturn(new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 200, "Done"));
+    when(httpResponse.getEntity()).thenReturn(new FakeHttpEntity(getAPIResponse(badUrls)));
     return httpResponse;
   }
 
@@ -294,5 +290,4 @@ public class Spec11PipelineTest {
     return ImmutableList.copyOf(
         ResourceUtils.readResourceUtf8(resultFile.toURI().toURL()).split("\n"));
   }
-
 }

@@ -52,22 +52,36 @@ import google.registry.whois.WhoisModule;
     })
 interface PubApiRequestComponent {
   CheckApiAction checkApiAction();
+
   RdapAutnumAction rdapAutnumAction();
+
   RdapDomainAction rdapDomainAction();
+
   RdapDomainSearchAction rdapDomainSearchAction();
+
   RdapEntityAction rdapEntityAction();
+
   RdapEntitySearchAction rdapEntitySearchAction();
+
   RdapHelpAction rdapHelpAction();
+
   RdapIpAction rdapDefaultAction();
+
   RdapNameserverAction rdapNameserverAction();
+
   RdapNameserverSearchAction rdapNameserverSearchAction();
+
   WhoisHttpAction whoisHttpAction();
+
   WhoisAction whoisAction();
 
   @Subcomponent.Builder
   abstract class Builder implements RequestComponentBuilder<PubApiRequestComponent> {
-    @Override public abstract Builder requestModule(RequestModule requestModule);
-    @Override public abstract PubApiRequestComponent build();
+    @Override
+    public abstract Builder requestModule(RequestModule requestModule);
+
+    @Override
+    public abstract PubApiRequestComponent build();
   }
 
   @Module(subcomponents = PubApiRequestComponent.class)

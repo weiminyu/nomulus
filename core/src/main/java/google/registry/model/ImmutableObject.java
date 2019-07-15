@@ -54,9 +54,7 @@ public abstract class ImmutableObject implements Cloneable {
   @Target(FIELD)
   public @interface DoNotHydrate {}
 
-  @Ignore
-  @XmlTransient
-  Integer hashCode;
+  @Ignore @XmlTransient Integer hashCode;
 
   private boolean equalsImmutableObject(ImmutableObject other) {
     return getClass().equals(other.getClass())
@@ -85,7 +83,7 @@ public abstract class ImmutableObject implements Cloneable {
       // Clear the hashCode since we often mutate clones before handing them out.
       clone.hashCode = null;
       return clone;
-    } catch (CloneNotSupportedException e) {  // Yes it is.
+    } catch (CloneNotSupportedException e) { // Yes it is.
       throw new IllegalStateException();
     }
   }
@@ -132,11 +130,12 @@ public abstract class ImmutableObject implements Cloneable {
 
   public String toStringHelper(SortedMap<String, Object> fields) {
     return String.format(
-        "%s (@%s): {\n%s",
-        getClass().getSimpleName(),
-        System.identityHashCode(this),
-        Joiner.on('\n').join(fields.entrySet()))
-            .replaceAll("\n", "\n    ") + "\n}";
+                "%s (@%s): {\n%s",
+                getClass().getSimpleName(),
+                System.identityHashCode(this),
+                Joiner.on('\n').join(fields.entrySet()))
+            .replaceAll("\n", "\n    ")
+        + "\n}";
   }
 
   /** Helper function to recursively hydrate an ImmutableObject. */
@@ -170,20 +169,21 @@ public abstract class ImmutableObject implements Cloneable {
     } else if (o instanceof Set) {
       return ((Set<?>) o)
           .stream()
-          .map(ImmutableObject::toMapRecursive)
-          // We can't use toImmutableSet here, because values can be null (especially since the
-          // original ImmutableObject might have been the result of a cloneEmptyToNull call).
-          //
-          // We can't use toSet either, because we want to preserve order. So we use LinkedHashSet
-          // instead.
-          .collect(toCollection(LinkedHashSet::new));
+              .map(ImmutableObject::toMapRecursive)
+              // We can't use toImmutableSet here, because values can be null (especially since the
+              // original ImmutableObject might have been the result of a cloneEmptyToNull call).
+              //
+              // We can't use toSet either, because we want to preserve order. So we use
+              // LinkedHashSet
+              // instead.
+              .collect(toCollection(LinkedHashSet::new));
     } else if (o instanceof Collection) {
       return ((Collection<?>) o)
           .stream()
-          .map(ImmutableObject::toMapRecursive)
-          // We can't use toImmutableList here, because values can be null (especially since the
-          // original ImmutableObject might have been the result of a cloneEmptyToNull call).
-          .collect(toList());
+              .map(ImmutableObject::toMapRecursive)
+              // We can't use toImmutableList here, because values can be null (especially since the
+              // original ImmutableObject might have been the result of a cloneEmptyToNull call).
+              .collect(toList());
     } else if (o instanceof Number || o instanceof Boolean) {
       return o;
     } else {

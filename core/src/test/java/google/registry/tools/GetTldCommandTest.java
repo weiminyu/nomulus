@@ -36,7 +36,6 @@ public class GetTldCommandTest extends CommandTestCase<GetTldCommand> {
     runCommand("xn--q9jyb4c", "example");
   }
 
-
   @Test
   public void testFailure_tldDoesNotExist() {
     assertThrows(IllegalArgumentException.class, () -> runCommand("xn--q9jyb4c"));

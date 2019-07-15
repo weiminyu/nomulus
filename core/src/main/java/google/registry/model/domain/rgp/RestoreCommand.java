@@ -32,8 +32,7 @@ public class RestoreCommand {
   }
 
   /** The restore operation. */
-  @XmlAttribute
-  RestoreOp op;
+  @XmlAttribute RestoreOp op;
 
   /** A marker object that will be non-null if a report was passed. */
   Object report;

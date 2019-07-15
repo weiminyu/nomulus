@@ -162,8 +162,7 @@ class UnrenewDomainCommand extends ConfirmingCommand implements CommandWithRemot
   private void unrenewDomain(String domainName) {
     ofy().assertInTransaction();
     DateTime now = ofy().getTransactionTime();
-    Optional<DomainBase> domainOptional =
-        loadByForeignKey(DomainBase.class, domainName, now);
+    Optional<DomainBase> domainOptional = loadByForeignKey(DomainBase.class, domainName, now);
     // Transactional sanity checks on the off chance that something changed between init() running
     // and here.
     checkState(

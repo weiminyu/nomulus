@@ -61,16 +61,25 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
   public static final String FULL_FIELD_NAMES_PARAM = "fullFieldNames";
 
   @Inject JsonResponse response;
-  @Inject @Parameter("fields") Optional<String> fields;
-  @Inject @Parameter("printHeaderRow") Optional<Boolean> printHeaderRow;
-  @Inject @Parameter("fullFieldNames") Optional<Boolean> fullFieldNames;
+
+  @Inject
+  @Parameter("fields")
+  Optional<String> fields;
+
+  @Inject
+  @Parameter("printHeaderRow")
+  Optional<Boolean> printHeaderRow;
+
+  @Inject
+  @Parameter("fullFieldNames")
+  Optional<Boolean> fullFieldNames;
 
   /** Returns the set of objects to list, in the desired listing order. */
   abstract ImmutableSet<T> loadObjects();
 
   /**
-   * Returns a set of fields to always include in the output as the leftmost columns.  Subclasses
-   * can use this to specify the equivalent of a "primary key" for each object listed.
+   * Returns a set of fields to always include in the output as the leftmost columns. Subclasses can
+   * use this to specify the equivalent of a "primary key" for each object listed.
    */
   ImmutableSet<String> getPrimaryKeyFields() {
     return ImmutableSet.of();
@@ -79,7 +88,7 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
   /**
    * Returns an {@link ImmutableBiMap} that maps any field name aliases to the actual field names.
    *
-   * <p>Users can select aliased fields for display using either the original name or the alias.  By
+   * <p>Users can select aliased fields for display using either the original name or the alias. By
    * default, aliased fields will use the alias name as the header instead of the original name.
    */
   ImmutableBiMap<String, String> getFieldAliases() {
@@ -88,12 +97,12 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
 
   /**
    * Returns for a given {@link ImmutableObject} a mapping from field names to field values that
-   * will override, for any overlapping field names, the default behavior of getting the field
-   * value by looking up that field name in the map returned by
-   * {@link ImmutableObject#toDiffableFieldMap}.
+   * will override, for any overlapping field names, the default behavior of getting the field value
+   * by looking up that field name in the map returned by {@link
+   * ImmutableObject#toDiffableFieldMap}.
    *
    * <p>This can be used to specify customized printing of certain fields (e.g. to print out a
-   * boolean field as "active" or "-" instead of "true" or "false").  It can also be used to add
+   * boolean field as "active" or "-" instead of "true" or "false"). It can also be used to add
    * fields to the data, e.g. for computed fields that can be accessed from the object directly but
    * aren't stored as simple fields.
    */
@@ -118,23 +127,20 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
       // Finally, convert the table to an array of lines of text.
       List<String> lines = generateFormattedData(data, columnWidths);
       // Return the results.
-      response.setPayload(ImmutableMap.of(
-          "lines", lines,
-          "status", "success"));
+      response.setPayload(ImmutableMap.of("lines", lines, "status", "success"));
     } catch (IllegalArgumentException e) {
       logger.atWarning().withCause(e).log("Error while listing objects.");
       // Don't return a non-200 response, since that will cause RegistryTool to barf instead of
       // letting ListObjectsCommand parse the JSON response and return a clean error.
       response.setPayload(
           ImmutableMap.of(
-              "error", firstNonNull(e.getMessage(), e.getClass().getName()),
-              "status", "error"));
+              "error", firstNonNull(e.getMessage(), e.getClass().getName()), "status", "error"));
     }
   }
 
   /**
-   * Returns the set of fields to return, aliased or not according to --full_field_names, and
-   * with duplicates eliminated but the ordering otherwise preserved.
+   * Returns the set of fields to return, aliased or not according to --full_field_names, and with
+   * duplicates eliminated but the ordering otherwise preserved.
    */
   private ImmutableSet<String> getFieldsToUse(ImmutableSet<T> objects) {
     // Get the list of fields from the received parameter.
@@ -151,15 +157,16 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
     // Handle aliases according to the state of the fullFieldNames parameter.
     final ImmutableMap<String, String> nameMapping =
         ((fullFieldNames != null) && fullFieldNames.isPresent() && fullFieldNames.get())
-            ? getFieldAliases() : getFieldAliases().inverse();
+            ? getFieldAliases()
+            : getFieldAliases().inverse();
     return Streams.concat(getPrimaryKeyFields().stream(), fieldsToUse.stream())
         .map(field -> nameMapping.getOrDefault(field, field))
         .collect(toImmutableSet());
   }
 
   /**
-   * Constructs a list of all available fields for use by the wildcard field specification.
-   * Don't include aliases, since then we'd wind up returning the same field twice.
+   * Constructs a list of all available fields for use by the wildcard field specification. Don't
+   * include aliases, since then we'd wind up returning the same field twice.
    */
   private ImmutableList<String> getAllAvailableFields(ImmutableSet<T> objects) {
     ImmutableList.Builder<String> fields = new ImmutableList.Builder<>();
@@ -173,11 +180,11 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
   }
 
   /**
-   * Returns a table of data for the given sets of fields and objects.  The table is row-keyed by
+   * Returns a table of data for the given sets of fields and objects. The table is row-keyed by
    * object and column-keyed by field, in the same iteration order as the provided sets.
    */
-  private ImmutableTable<T, String, String>
-      extractData(ImmutableSet<String> fields, ImmutableSet<T> objects) {
+  private ImmutableTable<T, String, String> extractData(
+      ImmutableSet<String> fields, ImmutableSet<T> objects) {
     ImmutableTable.Builder<T, String, String> builder = new ImmutableTable.Builder<>();
     for (T object : objects) {
       Map<String, Object> fieldMap = new HashMap<>();
@@ -190,8 +197,11 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
       fieldMap.putAll(new HashMap<>(Maps.transformValues(getFieldAliases(), fieldMap::get)));
       Set<String> expectedFields = ImmutableSortedSet.copyOf(fieldMap.keySet());
       for (String field : fields) {
-        checkArgument(fieldMap.containsKey(field),
-            "Field '%s' not found - recognized fields are:\n%s", field, expectedFields);
+        checkArgument(
+            fieldMap.containsKey(field),
+            "Field '%s' not found - recognized fields are:\n%s",
+            field,
+            expectedFields);
         builder.put(object, field, Objects.toString(fieldMap.get(field), ""));
       }
     }
@@ -200,7 +210,7 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
 
   /**
    * Computes the column widths of the given table of strings column-keyed by strings and returns
-   * them as a map from column key name to integer width.  The column width is defined as the max
+   * them as a map from column key name to integer width. The column width is defined as the max
    * length of any string in that column, including the name of the column.
    */
   private static ImmutableMap<String, Integer> computeColumnWidths(
@@ -218,18 +228,18 @@ public abstract class ListObjectsAction<T extends ImmutableObject> implements Ru
   }
 
   /**
-   * Check whether to display headers. If the parameter is not set, print headers only if there
-   * is more than one column.
+   * Check whether to display headers. If the parameter is not set, print headers only if there is
+   * more than one column.
    */
   private boolean isHeaderRowInUse(final ImmutableTable<?, String, String> data) {
     return ((printHeaderRow != null) && printHeaderRow.isPresent())
-        ? printHeaderRow.get() : (data.columnKeySet().size() > 1);
+        ? printHeaderRow.get()
+        : (data.columnKeySet().size() > 1);
   }
 
   /** Converts the provided table of data to text, formatted using the provided column widths. */
   private List<String> generateFormattedData(
-      ImmutableTable<T, String, String> data,
-      ImmutableMap<String, Integer> columnWidths) {
+      ImmutableTable<T, String, String> data, ImmutableMap<String, Integer> columnWidths) {
     Function<Map<String, String>, String> rowFormatter = makeRowFormatter(columnWidths);
     List<String> lines = new ArrayList<>();
 

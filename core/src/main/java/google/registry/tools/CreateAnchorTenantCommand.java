@@ -52,8 +52,9 @@ final class CreateAnchorTenantCommand extends MutatingEppToolCommand {
 
   @Parameter(
       names = {"--contact"},
-      description = "Contact ID for the request. This will be used for registrant, admin contact,"
-          + "and tech contact.",
+      description =
+          "Contact ID for the request. This will be used for registrant, admin contact,"
+              + "and tech contact.",
       required = true)
   private String contact;
 
@@ -89,15 +90,17 @@ final class CreateAnchorTenantCommand extends MutatingEppToolCommand {
       cost = getDomainCreateCost(domainName, DateTime.now(UTC), DEFAULT_ANCHOR_TENANT_PERIOD_YEARS);
     }
 
-    setSoyTemplate(CreateAnchorTenantSoyInfo.getInstance(),
-        CreateAnchorTenantSoyInfo.CREATEANCHORTENANT);
-    addSoyRecord(clientId, new SoyMapData(
-        "domainName", domainName,
-        "contactId", contact,
-        "reason", reason,
-        "password", password,
-        "period", DEFAULT_ANCHOR_TENANT_PERIOD_YEARS,
-        "feeCurrency", cost != null ? cost.getCurrencyUnit().toString() : null,
-        "fee", cost != null ? cost.getAmount().toString() : null));
+    setSoyTemplate(
+        CreateAnchorTenantSoyInfo.getInstance(), CreateAnchorTenantSoyInfo.CREATEANCHORTENANT);
+    addSoyRecord(
+        clientId,
+        new SoyMapData(
+            "domainName", domainName,
+            "contactId", contact,
+            "reason", reason,
+            "password", password,
+            "period", DEFAULT_ANCHOR_TENANT_PERIOD_YEARS,
+            "feeCurrency", cost != null ? cost.getCurrencyUnit().toString() : null,
+            "fee", cost != null ? cost.getAmount().toString() : null));
   }
 }

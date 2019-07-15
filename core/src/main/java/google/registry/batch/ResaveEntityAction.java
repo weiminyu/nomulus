@@ -73,16 +73,20 @@ public class ResaveEntityAction implements Runnable {
   public void run() {
     logger.atInfo().log(
         "Re-saving entity %s which was enqueued at %s.", resourceKey, requestedTime);
-    ofy().transact(() -> {
-      ImmutableObject entity = ofy().load().key(resourceKey).now();
-      ofy().save().entity(
-          (entity instanceof EppResource)
-              ? ((EppResource) entity).cloneProjectedAtTime(ofy().getTransactionTime()) : entity
-      );
-      if (!resaveTimes.isEmpty()) {
-        asyncTaskEnqueuer.enqueueAsyncResave(entity, requestedTime, resaveTimes);
-      }
-    });
+    ofy()
+        .transact(
+            () -> {
+              ImmutableObject entity = ofy().load().key(resourceKey).now();
+              ofy()
+                  .save()
+                  .entity(
+                      (entity instanceof EppResource)
+                          ? ((EppResource) entity).cloneProjectedAtTime(ofy().getTransactionTime())
+                          : entity);
+              if (!resaveTimes.isEmpty()) {
+                asyncTaskEnqueuer.enqueueAsyncResave(entity, requestedTime, resaveTimes);
+              }
+            });
     response.setPayload("Entity re-saved.");
   }
 }

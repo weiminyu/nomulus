@@ -39,4 +39,3 @@ abstract class EppResourceBaseInput<I> extends Input<I> {
   /** Creates a reader that returns the resources under a bucket. */
   protected abstract InputReader<I> bucketToReader(Key<EppResourceIndexBucket> bucketKey);
 }
-

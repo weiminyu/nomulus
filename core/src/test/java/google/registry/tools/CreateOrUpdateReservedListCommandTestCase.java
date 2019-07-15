@@ -30,8 +30,9 @@ import org.junit.Test;
  *
  * @param <T> command type
  */
-public abstract class CreateOrUpdateReservedListCommandTestCase
-    <T extends CreateOrUpdateReservedListCommand> extends CommandTestCase<T> {
+public abstract class CreateOrUpdateReservedListCommandTestCase<
+        T extends CreateOrUpdateReservedListCommand>
+    extends CommandTestCase<T> {
 
   String reservedTermsPath;
   String invalidReservedTermsPath;

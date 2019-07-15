@@ -41,16 +41,14 @@ import org.joda.time.DateTime;
 public class CommitLogManifest extends ImmutableObject {
 
   /** Commit log manifests are parented on a random bucket. */
-  @Parent
-  Key<CommitLogBucket> parent;
+  @Parent Key<CommitLogBucket> parent;
 
   /**
    * The commit time (in millis since the epoch).
    *
    * <p>This will be unique among siblings sharing the same parent {@link CommitLogBucket}.
    */
-  @Id
-  long commitTime;
+  @Id long commitTime;
 
   /** Keys that were deleted in this commit. (Saves are recorded in child entities.) */
   Set<Key<?>> deletions = new LinkedHashSet<>();

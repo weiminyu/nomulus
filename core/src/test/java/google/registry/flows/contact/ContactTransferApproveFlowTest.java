@@ -61,10 +61,8 @@ public class ContactTransferApproveFlowTest
       throws Exception {
     setEppInput(commandFilename);
     // Look in the future and make sure the poll messages for implicit ack are there.
-    assertThat(getPollMessages("NewRegistrar", clock.nowUtc().plusMonths(1)))
-        .hasSize(1);
-    assertThat(getPollMessages("TheRegistrar", clock.nowUtc().plusMonths(1)))
-        .hasSize(1);
+    assertThat(getPollMessages("NewRegistrar", clock.nowUtc().plusMonths(1))).hasSize(1);
+    assertThat(getPollMessages("TheRegistrar", clock.nowUtc().plusMonths(1))).hasSize(1);
 
     // Setup done; run the test.
     contact = reloadResourceByForeignKey();
@@ -74,15 +72,18 @@ public class ContactTransferApproveFlowTest
 
     // Transfer should have succeeded. Verify correct fields were set.
     contact = reloadResourceByForeignKey();
-    assertAboutContacts().that(contact)
-        .hasCurrentSponsorClientId("NewRegistrar").and()
-        .hasLastTransferTime(clock.nowUtc()).and()
+    assertAboutContacts()
+        .that(contact)
+        .hasCurrentSponsorClientId("NewRegistrar")
+        .and()
+        .hasLastTransferTime(clock.nowUtc())
+        .and()
         .hasOneHistoryEntryEachOfTypes(
-            HistoryEntry.Type.CONTACT_TRANSFER_REQUEST,
-            HistoryEntry.Type.CONTACT_TRANSFER_APPROVE);
+            HistoryEntry.Type.CONTACT_TRANSFER_REQUEST, HistoryEntry.Type.CONTACT_TRANSFER_APPROVE);
     assertThat(contact.getTransferData())
         .isEqualTo(
-            originalTransferData.copyConstantFieldsToBuilder()
+            originalTransferData
+                .copyConstantFieldsToBuilder()
                 .setTransferStatus(TransferStatus.CLIENT_APPROVED)
                 .setPendingTransferExpirationTime(clock.nowUtc())
                 .build());
@@ -94,18 +95,14 @@ public class ContactTransferApproveFlowTest
     PollMessage gainingPollMessage = getOnlyPollMessage("NewRegistrar");
     assertThat(gainingPollMessage.getEventTime()).isEqualTo(clock.nowUtc());
     assertThat(
-            gainingPollMessage
-                .getResponseData()
-                .stream()
+            gainingPollMessage.getResponseData().stream()
                 .filter(TransferResponse.class::isInstance)
                 .map(TransferResponse.class::cast)
                 .collect(onlyElement())
                 .getTransferStatus())
         .isEqualTo(TransferStatus.CLIENT_APPROVED);
     PendingActionNotificationResponse panData =
-        gainingPollMessage
-            .getResponseData()
-            .stream()
+        gainingPollMessage.getResponseData().stream()
             .filter(PendingActionNotificationResponse.class::isInstance)
             .map(PendingActionNotificationResponse.class::cast)
             .collect(onlyElement());
@@ -134,17 +131,19 @@ public class ContactTransferApproveFlowTest
 
   @Test
   public void testSuccess_withAuthinfo() throws Exception {
-    doSuccessfulTest("contact_transfer_approve_with_authinfo.xml",
-        "contact_transfer_approve_response.xml");
+    doSuccessfulTest(
+        "contact_transfer_approve_with_authinfo.xml", "contact_transfer_approve_response.xml");
   }
 
   @Test
   public void testFailure_badContactPassword() {
     // Change the contact's password so it does not match the password in the file.
-    contact = persistResource(
-        contact.asBuilder()
-            .setAuthInfo(ContactAuthInfo.create(PasswordAuth.create("badpassword")))
-            .build());
+    contact =
+        persistResource(
+            contact
+                .asBuilder()
+                .setAuthInfo(ContactAuthInfo.create(PasswordAuth.create("badpassword")))
+                .build());
     EppException thrown =
         assertThrows(
             BadAuthInfoForResourceException.class,
@@ -226,8 +225,8 @@ public class ContactTransferApproveFlowTest
 
   @Test
   public void testFailure_deletedContact() throws Exception {
-    contact = persistResource(
-        contact.asBuilder().setDeletionTime(clock.nowUtc().minusDays(1)).build());
+    contact =
+        persistResource(contact.asBuilder().setDeletionTime(clock.nowUtc().minusDays(1)).build());
     ResourceDoesNotExistException thrown =
         assertThrows(
             ResourceDoesNotExistException.class,
@@ -239,8 +238,8 @@ public class ContactTransferApproveFlowTest
   @Test
   public void testFailure_nonexistentContact() throws Exception {
     deleteResource(contact);
-    contact = persistResource(
-        contact.asBuilder().setDeletionTime(clock.nowUtc().minusDays(1)).build());
+    contact =
+        persistResource(contact.asBuilder().setDeletionTime(clock.nowUtc().minusDays(1)).build());
     ResourceDoesNotExistException thrown =
         assertThrows(
             ResourceDoesNotExistException.class,

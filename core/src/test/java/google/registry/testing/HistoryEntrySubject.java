@@ -93,8 +93,7 @@ public class HistoryEntrySubject extends Subject {
     return hasValue(reason, actual.getReason(), "getReason()");
   }
 
-  public And<HistoryEntrySubject> hasMetadataRequestedByRegistrar(
-        boolean requestedByRegistrar) {
+  public And<HistoryEntrySubject> hasMetadataRequestedByRegistrar(boolean requestedByRegistrar) {
     return hasValue(
         requestedByRegistrar, actual.getRequestedByRegistrar(), "getRequestedByRegistrar()");
   }

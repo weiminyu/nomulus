@@ -49,21 +49,21 @@ class CommitLoggedWork<R> extends VoidWork {
    * Temporary place to store the result of a non-void work.
    *
    * <p>We don't want to return the result directly because we are going to try to recover from a
-   * {@link com.google.appengine.api.datastore.DatastoreTimeoutException} deep inside Objectify
-   * when it tries to commit the transaction. When an exception is thrown the return value would be
-   * lost, but sometimes we will be able to determine that we actually succeeded despite the
-   * timeout, and we'll want to get the result.
+   * {@link com.google.appengine.api.datastore.DatastoreTimeoutException} deep inside Objectify when
+   * it tries to commit the transaction. When an exception is thrown the return value would be lost,
+   * but sometimes we will be able to determine that we actually succeeded despite the timeout, and
+   * we'll want to get the result.
    */
   private R result;
 
   /**
    * Temporary place to store the key of the commit log manifest.
    *
-   * <p>We can use this to determine whether a transaction that failed with a
-   * {@link com.google.appengine.api.datastore.DatastoreTimeoutException} actually succeeded. If
-   * the manifest exists, and if the contents of the commit log are what we expected to have saved,
-   * then the transaction committed. If the manifest does not exist, then the transaction failed and
-   * is retryable.
+   * <p>We can use this to determine whether a transaction that failed with a {@link
+   * com.google.appengine.api.datastore.DatastoreTimeoutException} actually succeeded. If the
+   * manifest exists, and if the contents of the commit log are what we expected to have saved, then
+   * the transaction committed. If the manifest does not exist, then the transaction failed and is
+   * retryable.
    */
   protected CommitLogManifest manifest;
 
@@ -150,18 +150,19 @@ class CommitLoggedWork<R> extends VoidWork {
     manifest = CommitLogManifest.create(info.bucketKey, info.transactionTime, info.getDeletes());
     final Key<CommitLogManifest> manifestKey = Key.create(manifest);
     mutations =
-        union(info.getSaves(), untouchedRootsWithTouchedChildren)
-            .stream()
+        union(info.getSaves(), untouchedRootsWithTouchedChildren).stream()
             .map(entity -> (ImmutableObject) CommitLogMutation.create(manifestKey, entity))
             .collect(toImmutableSet());
-    ofy().saveWithoutBackup()
-      .entities(new ImmutableSet.Builder<>()
-          .add(manifest)
-          .add(bucket.asBuilder().setLastWrittenTime(info.transactionTime).build())
-          .addAll(mutations)
-          .addAll(untouchedRootsWithTouchedChildren)
-          .build())
-      .now();
+    ofy()
+        .saveWithoutBackup()
+        .entities(
+            new ImmutableSet.Builder<>()
+                .add(manifest)
+                .add(bucket.asBuilder().setLastWrittenTime(info.transactionTime).build())
+                .addAll(mutations)
+                .addAll(untouchedRootsWithTouchedChildren)
+                .build())
+        .now();
   }
 
   /** Check that the timestamp of each BackupGroupRoot is in the past. */
@@ -185,8 +186,8 @@ class CommitLoggedWork<R> extends VoidWork {
     Set<Key<BackupGroupRoot>> rootKeys = new HashSet<>();
     for (Key<?> key : keys) {
       while (key != null
-          && !BackupGroupRoot.class
-              .isAssignableFrom(ofy().factory().getMetadata(key).getEntityClass())) {
+          && !BackupGroupRoot.class.isAssignableFrom(
+              ofy().factory().getMetadata(key).getEntityClass())) {
         key = key.getParent();
       }
       if (key != null) {

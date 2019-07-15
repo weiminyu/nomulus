@@ -33,8 +33,7 @@ public class MutatingEppToolCommandTest extends EppToolCommandTestCase<MutatingE
     @Parameter(names = {"--client"})
     String clientId;
 
-    @Parameter
-    List<String> xmlPayloads;
+    @Parameter List<String> xmlPayloads;
 
     @Override
     protected void initMutatingEppToolCommand() {
@@ -52,10 +51,7 @@ public class MutatingEppToolCommandTest extends EppToolCommandTestCase<MutatingE
   @Test
   public void testSuccess_dryrun() throws Exception {
     // The choice of xml file is arbitrary.
-    runCommand(
-        "--client=NewRegistrar",
-        "--dry_run",
-        ToolsTestData.loadFile("contact_create.xml"));
+    runCommand("--client=NewRegistrar", "--dry_run", ToolsTestData.loadFile("contact_create.xml"));
     eppVerifier.expectDryRun().verifySent("contact_create.xml");
   }
 

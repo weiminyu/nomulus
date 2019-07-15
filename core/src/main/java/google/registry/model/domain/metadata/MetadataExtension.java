@@ -32,8 +32,8 @@ public class MetadataExtension extends ImmutableObject implements CommandExtensi
   boolean requestedByRegistrar;
 
   /**
-   * Whether a domain is being created for an anchor tenant. This field is only
-   * relevant for domain creates, and should be omitted for all other operations.
+   * Whether a domain is being created for an anchor tenant. This field is only relevant for domain
+   * creates, and should be omitted for all other operations.
    */
   @XmlElement(name = "anchorTenant")
   boolean isAnchorTenant;

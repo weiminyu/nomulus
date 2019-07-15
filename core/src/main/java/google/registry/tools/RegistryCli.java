@@ -66,8 +66,7 @@ final class RegistryCli implements AutoCloseable, CommandRunner {
   private String credentialJson = null;
 
   // Do not make this final - compile-time constant inlining may interfere with JCommander.
-  @ParametersDelegate
-  private LoggingParameters loggingParams = new LoggingParameters();
+  @ParametersDelegate private LoggingParameters loggingParams = new LoggingParameters();
 
   RegistryToolComponent component;
 
@@ -148,11 +147,11 @@ final class RegistryCli implements AutoCloseable, CommandRunner {
       return;
     }
 
-    checkState(RegistryToolEnvironment.get() == environment,
+    checkState(
+        RegistryToolEnvironment.get() == environment,
         "RegistryToolEnvironment argument pre-processing kludge failed.");
 
-    component =
-        DaggerRegistryToolComponent.builder().credentialFilename(credentialJson).build();
+    component = DaggerRegistryToolComponent.builder().credentialFilename(credentialJson).build();
 
     // JCommander stores sub-commands as nested JCommander objects containing a list of user objects
     // to be populated.  Extract the subcommand by getting the JCommander wrapper and then
@@ -161,7 +160,7 @@ final class RegistryCli implements AutoCloseable, CommandRunner {
         (Command)
             Iterables.getOnlyElement(
                 jcommander.getCommands().get(jcommander.getParsedCommand()).getObjects());
-    loggingParams.configureLogging();  // Must be called after parameters are parsed.
+    loggingParams.configureLogging(); // Must be called after parameters are parsed.
 
     try {
       runCommand(command);
@@ -215,8 +214,7 @@ final class RegistryCli implements AutoCloseable, CommandRunner {
       if (installer == null) {
         installer = new RemoteApiInstaller();
         RemoteApiOptions options = new RemoteApiOptions();
-        options.server(
-            getConnection().getServer().getHost(), getPort(getConnection().getServer()));
+        options.server(getConnection().getServer().getHost(), getPort(getConnection().getServer()));
         if (RegistryConfig.areServersLocal()) {
           // Use dev credentials for localhost.
           options.useDevelopmentServerCredential();

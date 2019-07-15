@@ -107,8 +107,8 @@ public abstract class RegistrarSettingsActionTestCase {
     action.registrarAccessor = null;
     action.appEngineServiceUtils = appEngineServiceUtils;
     when(appEngineServiceUtils.getCurrentVersionHostname("backend")).thenReturn("backend.hostname");
-    action.jsonActionRunner = new JsonActionRunner(
-        ImmutableMap.of(), new JsonResponse(new ResponseImpl(rsp)));
+    action.jsonActionRunner =
+        new JsonActionRunner(ImmutableMap.of(), new JsonResponse(new ResponseImpl(rsp)));
     action.sendEmailUtils =
         new SendEmailUtils(
             getGSuiteOutgoingEmailAddress(),
@@ -145,8 +145,7 @@ public abstract class RegistrarSettingsActionTestCase {
   /** Sets registrarAccessor.getRegistrar to succeed for CLIENT_ID only. */
   protected void setUserWithAccess() {
     action.registrarAccessor =
-        AuthenticatedRegistrarAccessor.createForTesting(
-            ImmutableSetMultimap.of(CLIENT_ID, OWNER));
+        AuthenticatedRegistrarAccessor.createForTesting(ImmutableSetMultimap.of(CLIENT_ID, OWNER));
   }
 
   /** Sets registrarAccessor.getRegistrar to always fail. */
@@ -160,8 +159,7 @@ public abstract class RegistrarSettingsActionTestCase {
    */
   protected void setUserAdmin() {
     action.registrarAccessor =
-        AuthenticatedRegistrarAccessor.createForTesting(
-            ImmutableSetMultimap.of(CLIENT_ID, ADMIN));
+        AuthenticatedRegistrarAccessor.createForTesting(ImmutableSetMultimap.of(CLIENT_ID, ADMIN));
   }
 
   /** Verifies that the original contact of TheRegistrar is among those notified of a change. */

@@ -19,9 +19,7 @@ import com.google.api.services.admin.directory.model.Group;
 import java.io.IOException;
 import java.util.Set;
 
-/**
- * Interface for common operations on Groups.
- */
+/** Interface for common operations on Groups. */
 public interface GroupsConnection {
 
   /** The role of a member in a group. */

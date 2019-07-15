@@ -41,13 +41,14 @@ public class ContactFlowUtils {
     if (internationalized != null) {
       Preconditions.checkState(INTERNATIONALIZED.equals(internationalized.getType()));
       ContactAddress address = internationalized.getAddress();
-      Set<String> fields = Sets.newHashSet(
-          internationalized.getName(),
-          internationalized.getOrg(),
-          address.getCity(),
-          address.getCountryCode(),
-          address.getState(),
-          address.getZip());
+      Set<String> fields =
+          Sets.newHashSet(
+              internationalized.getName(),
+              internationalized.getOrg(),
+              address.getCity(),
+              address.getCountryCode(),
+              address.getState(),
+              address.getZip());
       fields.addAll(address.getStreet());
       for (String field : fields) {
         if (field != null && !CharMatcher.ascii().matchesAllOf(field)) {
@@ -71,13 +72,14 @@ public class ContactFlowUtils {
         .setClientId(transferData.getGainingClientId())
         .setEventTime(transferData.getPendingTransferExpirationTime())
         .setMsg(transferData.getTransferStatus().getMessage())
-        .setResponseData(ImmutableList.of(
-            createTransferResponse(targetId, transferData),
-            ContactPendingActionNotificationResponse.create(
-                  targetId,
-                  transferData.getTransferStatus().isApproved(),
-                  transferData.getTransferRequestTrid(),
-                  historyEntry.getModificationTime())))
+        .setResponseData(
+            ImmutableList.of(
+                createTransferResponse(targetId, transferData),
+                ContactPendingActionNotificationResponse.create(
+                    targetId,
+                    transferData.getTransferStatus().isApproved(),
+                    transferData.getTransferRequestTrid(),
+                    historyEntry.getModificationTime())))
         .setParent(historyEntry)
         .build();
   }

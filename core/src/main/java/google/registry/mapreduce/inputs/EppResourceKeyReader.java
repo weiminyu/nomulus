@@ -35,15 +35,15 @@ class EppResourceKeyReader<R extends EppResource> extends EppResourceBaseReader<
       Key<EppResourceIndexBucket> bucketKey, ImmutableSet<Class<? extends R>> resourceClasses) {
     super(
         bucketKey,
-        ONE_MB,  // Estimate 1MB of memory for this reader, which is massive overkill.
+        ONE_MB, // Estimate 1MB of memory for this reader, which is massive overkill.
         varargsToKinds(resourceClasses));
   }
 
   /**
    * Called for each map invocation.
    *
-   * @throws NoSuchElementException if there are no more elements, as specified in the
-   *         {@link InputReader#next} Javadoc.
+   * @throws NoSuchElementException if there are no more elements, as specified in the {@link
+   *     InputReader#next} Javadoc.
    */
   @Override
   @SuppressWarnings("unchecked")

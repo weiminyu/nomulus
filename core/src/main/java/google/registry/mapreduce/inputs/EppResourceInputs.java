@@ -49,8 +49,7 @@ public final class EppResourceInputs {
    */
   @SafeVarargs
   public static <R extends EppResource> Input<R> createEntityInput(
-      Class<? extends R> resourceClass,
-      Class<? extends R>... moreResourceClasses) {
+      Class<? extends R> resourceClass, Class<? extends R>... moreResourceClasses) {
     return new EppResourceEntityInput<>(
         ImmutableSet.copyOf(asList(resourceClass, moreResourceClasses)));
   }

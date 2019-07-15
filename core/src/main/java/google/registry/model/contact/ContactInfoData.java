@@ -30,22 +30,24 @@ import org.joda.time.DateTime;
 
 /** The {@link ResponseData} returned for an EPP info flow on a contact. */
 @XmlRootElement(name = "infData")
-@XmlType(propOrder = {
-    "contactId",
-    "repoId",
-    "statusValues",
-    "postalInfos",
-    "voiceNumber",
-    "faxNumber",
-    "emailAddress",
-    "currentSponsorClientId",
-    "creationClientId",
-    "creationTime",
-    "lastEppUpdateClientId",
-    "lastEppUpdateTime",
-    "lastTransferTime",
-    "authInfo",
-    "disclose" })
+@XmlType(
+    propOrder = {
+      "contactId",
+      "repoId",
+      "statusValues",
+      "postalInfos",
+      "voiceNumber",
+      "faxNumber",
+      "emailAddress",
+      "currentSponsorClientId",
+      "creationClientId",
+      "creationTime",
+      "lastEppUpdateClientId",
+      "lastEppUpdateTime",
+      "lastTransferTime",
+      "authInfo",
+      "disclose"
+    })
 @AutoValue
 @CopyAnnotations
 public abstract class ContactInfoData implements ResponseData {
@@ -108,20 +110,35 @@ public abstract class ContactInfoData implements ResponseData {
   @AutoValue.Builder
   public abstract static class Builder {
     public abstract Builder setContactId(String contactId);
+
     public abstract Builder setRepoId(String repoId);
+
     public abstract Builder setStatusValues(ImmutableSet<StatusValue> statusValues);
+
     public abstract Builder setPostalInfos(ImmutableList<PostalInfo> postalInfos);
+
     public abstract Builder setVoiceNumber(@Nullable ContactPhoneNumber voiceNumber);
+
     public abstract Builder setFaxNumber(@Nullable ContactPhoneNumber faxNumber);
+
     public abstract Builder setEmailAddress(@Nullable String emailAddress);
+
     public abstract Builder setCurrentSponsorClientId(String currentSponsorClientId);
+
     public abstract Builder setCreationClientId(String creationClientId);
+
     public abstract Builder setCreationTime(DateTime creationTime);
+
     public abstract Builder setLastEppUpdateClientId(@Nullable String lastEppUpdateClientId);
+
     public abstract Builder setLastEppUpdateTime(@Nullable DateTime lastEppUpdateTime);
+
     public abstract Builder setLastTransferTime(@Nullable DateTime lastTransferTime);
+
     public abstract Builder setAuthInfo(@Nullable ContactAuthInfo authInfo);
+
     public abstract Builder setDisclose(@Nullable Disclose disclose);
+
     public abstract ContactInfoData build();
   }
 

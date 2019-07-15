@@ -31,9 +31,8 @@ import java.util.Objects;
  * <p>This sets a null registrarName to the key name, and null localizedAddress fields to fake data.
  */
 @Parameters(
-  separators = " =",
-  commandDescription = "Populate previously null required registrar fields."
-)
+    separators = " =",
+    commandDescription = "Populate previously null required registrar fields.")
 public class PopulateNullRegistrarFieldsCommand extends MutatingCommand {
 
   @Override

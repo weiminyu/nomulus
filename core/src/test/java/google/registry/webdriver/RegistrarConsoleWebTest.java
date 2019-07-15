@@ -41,11 +41,8 @@ import org.openqa.selenium.By;
 public class RegistrarConsoleWebTest extends WebDriverTestCase {
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withLocalModules()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withLocalModules().withTaskQueue().build();
 
   @Rule
   public final TestServerRule server =
@@ -58,8 +55,6 @@ public class RegistrarConsoleWebTest extends WebDriverTestCase {
           .setFixtures(BASIC)
           .setEmail("Marla.Singer@google.com")
           .build();
-
-
 
   @Rule public final Timeout deathClock = new Timeout(60000, TimeUnit.MILLISECONDS);
 
@@ -151,21 +146,22 @@ public class RegistrarConsoleWebTest extends WebDriverTestCase {
   public void testWhoisSettingsEdit() throws Throwable {
     driver.get(server.getUrl("/registrar#whois-settings"));
     driver.waitForElement(By.id("reg-app-btn-edit")).click();
-    driver.setFormFieldsById(new ImmutableMap.Builder<String, String>()
-        .put("emailAddress", "test1@example.com")
-        .put("clientIdentifier", "ignored")
-        .put("whoisServer", "foo.bar.baz")
-        .put("url", "blah.blar")
-        .put("phoneNumber", "+1.2125650000")
-        .put("faxNumber", "+1.2125650001")
-        .put("localizedAddress.street[0]", "Bőulevard őf")
-        .put("localizedAddress.street[1]", "Brőken Dreams")
-        .put("localizedAddress.street[2]", "")
-        .put("localizedAddress.city", "New York")
-        .put("localizedAddress.state", "NY")
-        .put("localizedAddress.zip", "10011")
-        .put("localizedAddress.countryCode", "US")
-        .build());
+    driver.setFormFieldsById(
+        new ImmutableMap.Builder<String, String>()
+            .put("emailAddress", "test1@example.com")
+            .put("clientIdentifier", "ignored")
+            .put("whoisServer", "foo.bar.baz")
+            .put("url", "blah.blar")
+            .put("phoneNumber", "+1.2125650000")
+            .put("faxNumber", "+1.2125650001")
+            .put("localizedAddress.street[0]", "Bőulevard őf")
+            .put("localizedAddress.street[1]", "Brőken Dreams")
+            .put("localizedAddress.street[2]", "")
+            .put("localizedAddress.city", "New York")
+            .put("localizedAddress.state", "NY")
+            .put("localizedAddress.zip", "10011")
+            .put("localizedAddress.countryCode", "US")
+            .build());
     driver.findElement(By.id("reg-app-btn-save")).click();
     Thread.sleep(1000);
     Registrar registrar = server.runInAppEngineEnvironment(() -> loadRegistrar("TheRegistrar"));
@@ -200,8 +196,7 @@ public class RegistrarConsoleWebTest extends WebDriverTestCase {
     driver.get(server.getUrl("/registrar#security-settings"));
     driver.waitForElement(By.id("reg-app-btn-edit"));
     Registrar registrar = server.runInAppEngineEnvironment(() -> loadRegistrar("TheRegistrar"));
-    assertThat(driver.findElement(By.id("phonePasscode"))
-        .getAttribute("value"))
+    assertThat(driver.findElement(By.id("phonePasscode")).getAttribute("value"))
         .isEqualTo(registrar.getPhonePasscode());
   }
 }

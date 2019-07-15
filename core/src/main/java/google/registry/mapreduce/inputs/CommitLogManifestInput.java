@@ -35,8 +35,7 @@ public class CommitLogManifestInput extends Input<Key<CommitLogManifest>> {
    * <p>If present, all resulting CommitLogManifest will be dated prior to this date. This can't be
    * of type {@code Optional<DateTime>} because Optional purposely isn't Serializable.
    */
-  @Nullable
-  private final DateTime olderThan;
+  @Nullable private final DateTime olderThan;
 
   public CommitLogManifestInput() {
     this.olderThan = null;

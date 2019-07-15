@@ -50,8 +50,8 @@ import org.joda.time.DateTime;
 /**
  * Base RDAP (new WHOIS) action for all requests.
  *
- * @see <a href="https://tools.ietf.org/html/rfc7482">
- *        RFC 7482: Registration Data Access Protocol (RDAP) Query Format</a>
+ * @see <a href="https://tools.ietf.org/html/rfc7482">RFC 7482: Registration Data Access Protocol
+ *     (RDAP) Query Format</a>
  */
 public abstract class RdapActionBase implements Runnable {
 
@@ -71,9 +71,19 @@ public abstract class RdapActionBase implements Runnable {
   @Inject @RequestPath String requestPath;
   @Inject RdapAuthorization rdapAuthorization;
   @Inject RdapJsonFormatter rdapJsonFormatter;
-  @Inject @Parameter("includeDeleted") Optional<Boolean> includeDeletedParam;
-  @Inject @Parameter("formatOutput") Optional<Boolean> formatOutputParam;
-  @Inject @Config("rdapResultSetMaxSize") int rdapResultSetMaxSize;
+
+  @Inject
+  @Parameter("includeDeleted")
+  Optional<Boolean> includeDeletedParam;
+
+  @Inject
+  @Parameter("formatOutput")
+  Optional<Boolean> formatOutputParam;
+
+  @Inject
+  @Config("rdapResultSetMaxSize")
+  int rdapResultSetMaxSize;
+
   @Inject RdapMetrics rdapMetrics;
 
   /** Builder for metric recording. */
@@ -103,14 +113,14 @@ public abstract class RdapActionBase implements Runnable {
   /**
    * Does the actual search and returns an RDAP JSON object.
    *
-   * RFC7480 4.1 - we have to support GET and HEAD.
+   * <p>RFC7480 4.1 - we have to support GET and HEAD.
    *
    * @param pathSearchString the search string in the URL path
    * @param isHeadRequest whether the returned map will actually be used. HTTP HEAD requests don't
-   *        actually return anything. However, we usually still want to go through the process of
-   *        building a map, to make sure that the request would return a 500 status if it were
-   *        invoked using GET. So this field should usually be ignored, unless there's some
-   *        expensive task required to create the map which will never result in a request failure.
+   *     actually return anything. However, we usually still want to go through the process of
+   *     building a map, to make sure that the request would return a 500 status if it were invoked
+   *     using GET. So this field should usually be ignored, unless there's some expensive task
+   *     required to create the map which will never result in a request failure.
    * @return A map (probably containing nested maps and lists) with the final JSON response data.
    */
   abstract ReplyPayloadBase getJsonObjectForResource(
@@ -137,7 +147,9 @@ public abstract class RdapActionBase implements Runnable {
       String pathProper = uri.getPath();
       checkArgument(
           pathProper.startsWith(getActionPath()),
-          "%s doesn't start with %s", pathProper, getActionPath());
+          "%s doesn't start with %s",
+          pathProper,
+          getActionPath());
       String pathSearchString = pathProper.substring(getActionPath().length());
       logger.atInfo().log("path search string: '%s'", pathSearchString);
 
@@ -201,8 +213,8 @@ public abstract class RdapActionBase implements Runnable {
    * eligible to see deleted information. Admins can see all deleted information, while
    * authenticated registrars can see only their own deleted information. Note that if this method
    * returns true, it just means that some deleted information might be viewable. If this is a
-   * registrar request, the caller must still verify that the registrar can see each particular
-   * item by calling {@link RdapAuthorization#isAuthorizedForClientId}.
+   * registrar request, the caller must still verify that the registrar can see each particular item
+   * by calling {@link RdapAuthorization#isAuthorizedForClientId}.
    */
   boolean shouldIncludeDeleted() {
     // If includeDeleted is not specified, or set to false, we don't need to go any further.
@@ -240,8 +252,8 @@ public abstract class RdapActionBase implements Runnable {
    */
   boolean isAuthorized(Registrar registrar) {
     return (registrar.isLiveAndPubliclyVisible()
-            || (shouldIncludeDeleted()
-                && rdapAuthorization.isAuthorizedForClientId(registrar.getClientId())));
+        || (shouldIncludeDeleted()
+            && rdapAuthorization.isAuthorizedForClientId(registrar.getClientId())));
   }
 
   String canonicalizeName(String name) {

@@ -52,8 +52,10 @@ final class RdeUploadUrl implements Comparable<RdeUploadUrl> {
    * @see java.net.URI#create(String)
    */
   public static RdeUploadUrl create(URI uri) {
-    checkArgument(!isNullOrEmpty(uri.getScheme()) && !isNullOrEmpty(uri.getHost()),
-        "Incomplete url: %s", uri);
+    checkArgument(
+        !isNullOrEmpty(uri.getScheme()) && !isNullOrEmpty(uri.getHost()),
+        "Incomplete url: %s",
+        uri);
     Protocol protocol = ALLOWED_PROTOCOLS.get(uri.getScheme());
     checkArgument(protocol != null, "Unsupported scheme: %s", uri);
     return new RdeUploadUrl(protocol, uri);
@@ -142,8 +144,8 @@ final class RdeUploadUrl implements Comparable<RdeUploadUrl> {
    * Simplified wrapper around Java's daft URL encoding API.
    *
    * @return an ASCII string that's escaped in a conservative manner for safe storage within any
-   *         component of a URL. Non-ASCII characters are converted to UTF-8 bytes before being
-   *         encoded. No choice of charset is provided because the W3C says we should use UTF-8.
+   *     component of a URL. Non-ASCII characters are converted to UTF-8 bytes before being encoded.
+   *     No choice of charset is provided because the W3C says we should use UTF-8.
    * @see URLEncoder#encode(String, String)
    */
   private static String urlencode(String str) {

@@ -40,10 +40,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class NameserverWhoisResponseTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private HostResource hostResource1;
   private HostResource hostResource2;
@@ -56,23 +53,27 @@ public class NameserverWhoisResponseTest {
     persistResource(loadRegistrar("example").asBuilder().setUrl("http://my.fake.url").build());
     createTld("tld");
 
-    hostResource1 = new HostResource.Builder()
-        .setFullyQualifiedHostName("ns1.example.tld")
-        .setPersistedCurrentSponsorClientId("example")
-        .setInetAddresses(ImmutableSet.of(
-            InetAddresses.forString("192.0.2.123"),
-            InetAddresses.forString("2001:0DB8::1")))
-        .setRepoId("1-EXAMPLE")
-        .build();
+    hostResource1 =
+        new HostResource.Builder()
+            .setFullyQualifiedHostName("ns1.example.tld")
+            .setPersistedCurrentSponsorClientId("example")
+            .setInetAddresses(
+                ImmutableSet.of(
+                    InetAddresses.forString("192.0.2.123"),
+                    InetAddresses.forString("2001:0DB8::1")))
+            .setRepoId("1-EXAMPLE")
+            .build();
 
-    hostResource2 = new HostResource.Builder()
-        .setFullyQualifiedHostName("ns2.example.tld")
-        .setPersistedCurrentSponsorClientId("example")
-        .setInetAddresses(ImmutableSet.of(
-            InetAddresses.forString("192.0.2.123"),
-            InetAddresses.forString("2001:0DB8::1")))
-        .setRepoId("2-EXAMPLE")
-        .build();
+    hostResource2 =
+        new HostResource.Builder()
+            .setFullyQualifiedHostName("ns2.example.tld")
+            .setPersistedCurrentSponsorClientId("example")
+            .setInetAddresses(
+                ImmutableSet.of(
+                    InetAddresses.forString("192.0.2.123"),
+                    InetAddresses.forString("2001:0DB8::1")))
+            .setRepoId("2-EXAMPLE")
+            .build();
   }
 
   @Test
@@ -94,7 +95,6 @@ public class NameserverWhoisResponseTest {
             nameserverWhoisResponse.getResponse(
                 false,
                 "Doodle Disclaimer\nI exist so that carriage return\nin disclaimer can be tested."))
-        .isEqualTo(
-            WhoisResponseResults.create(loadFile("whois_multiple_nameservers.txt"), 2));
+        .isEqualTo(WhoisResponseResults.create(loadFile("whois_multiple_nameservers.txt"), 2));
   }
 }

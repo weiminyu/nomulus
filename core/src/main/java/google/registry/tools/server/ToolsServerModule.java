@@ -29,9 +29,7 @@ import google.registry.request.RequestParameters;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- * Dagger module for the tools package.
- */
+/** Dagger module for the tools package. */
 @Module
 public class ToolsServerModule {
 
@@ -69,7 +67,7 @@ public class ToolsServerModule {
   @Provides
   @Parameter("override")
   static boolean provideOverride(HttpServletRequest req) {
-   return extractBooleanParameter(req, CreatePremiumListAction.OVERRIDE_PARAM);
+    return extractBooleanParameter(req, CreatePremiumListAction.OVERRIDE_PARAM);
   }
 
   @Provides

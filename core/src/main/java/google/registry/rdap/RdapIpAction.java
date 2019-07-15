@@ -38,7 +38,8 @@ import javax.inject.Inject;
     auth = Auth.AUTH_PUBLIC_ANONYMOUS)
 public class RdapIpAction extends RdapActionBase {
 
-  @Inject RdapIpAction() {
+  @Inject
+  RdapIpAction() {
     super("ip", EndpointType.IP);
   }
 

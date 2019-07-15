@@ -89,8 +89,8 @@ public class CollectionUtils {
   }
 
   /** Defensive copy helper for {@link Set}. */
-  public static <V extends Comparable<V>>
-      ImmutableSortedSet<V> nullToEmptyImmutableSortedCopy(Set<V> data) {
+  public static <V extends Comparable<V>> ImmutableSortedSet<V> nullToEmptyImmutableSortedCopy(
+      Set<V> data) {
     return data == null ? ImmutableSortedSet.of() : ImmutableSortedSet.copyOf(data);
   }
 
@@ -136,8 +136,8 @@ public class CollectionUtils {
   /** Returns any duplicates in an iterable. */
   public static <T> Set<T> findDuplicates(Iterable<T> iterable) {
     return Multisets.difference(
-        HashMultiset.create(iterable),
-        HashMultiset.create(ImmutableSet.copyOf(iterable))).elementSet();
+            HashMultiset.create(iterable), HashMultiset.create(ImmutableSet.copyOf(iterable)))
+        .elementSet();
   }
 
   /** Partitions a Map into a Collection of Maps, each of max size n. */

@@ -87,7 +87,7 @@ public final class TaskQueueUtilsTest {
         .thenReturn(ImmutableList.of(handle));
     assertThat(taskQueueUtils.enqueue(queue, task)).isSameInstanceAs(handle);
     verify(queue, times(3)).add(ImmutableList.of(task));
-    assertThat(clock.nowUtc()).isEqualTo(DateTime.parse("2000-01-01T00:00:00.6Z"));  // 200 + 400ms
+    assertThat(clock.nowUtc()).isEqualTo(DateTime.parse("2000-01-01T00:00:00.6Z")); // 200 + 400ms
   }
 
   @Test
@@ -121,7 +121,7 @@ public final class TaskQueueUtilsTest {
       Thread.currentThread().interrupt();
       assertThrows(TransientFailureException.class, () -> taskQueueUtils.enqueue(queue, task));
     } finally {
-      Thread.interrupted();  // Clear interrupt state so it doesn't pwn other tests.
+      Thread.interrupted(); // Clear interrupt state so it doesn't pwn other tests.
     }
   }
 

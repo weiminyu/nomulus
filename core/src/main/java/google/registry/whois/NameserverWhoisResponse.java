@@ -49,7 +49,10 @@ final class NameserverWhoisResponse extends WhoisResponseImpl {
       HostResource host = hosts.get(i);
       String clientId =
           host.isSubordinate()
-              ? ofy().load().key(host.getSuperordinateDomain()).now()
+              ? ofy()
+                  .load()
+                  .key(host.getSuperordinateDomain())
+                  .now()
                   .cloneProjectedAtTime(getTimestamp())
                   .getCurrentSponsorClientId()
               : host.getPersistedCurrentSponsorClientId();

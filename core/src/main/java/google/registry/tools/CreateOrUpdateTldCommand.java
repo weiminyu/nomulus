@@ -101,8 +101,9 @@ abstract class CreateOrUpdateTldCommand extends MutatingCommand {
   @Nullable
   @Parameter(
       names = "--roid_suffix",
-      description = "The suffix to be used for ROIDs, e.g. COM for .com domains (which then "
-          + "creates roids looking like 123ABC-COM)")
+      description =
+          "The suffix to be used for ROIDs, e.g. COM for .com domains (which then "
+              + "creates roids looking like 123ABC-COM)")
   String roidSuffix;
 
   @Nullable
@@ -112,9 +113,7 @@ abstract class CreateOrUpdateTldCommand extends MutatingCommand {
   private Money serverStatusChangeCost;
 
   @Nullable
-  @Parameter(
-      names = "--tld_type",
-      description = "Tld type (REAL or TEST)")
+  @Parameter(names = "--tld_type", description = "Tld type (REAL or TEST)")
   private TldType tldType;
 
   @Nullable
@@ -151,27 +150,29 @@ abstract class CreateOrUpdateTldCommand extends MutatingCommand {
       names = "--tld_state_transitions",
       converter = TldStateTransitions.class,
       validateWith = TldStateTransitions.class,
-      description = "Comma-delimited list of TLD state transitions, of the form "
-          + "<time>=<tld-state>[,<time>=<tld-state>]*")
+      description =
+          "Comma-delimited list of TLD state transitions, of the form "
+              + "<time>=<tld-state>[,<time>=<tld-state>]*")
   ImmutableSortedMap<DateTime, TldState> tldStateTransitions = ImmutableSortedMap.of();
 
   @Parameter(
       names = "--renew_billing_cost_transitions",
       converter = BillingCostTransitions.class,
       validateWith = BillingCostTransitions.class,
-      description = "Comma-delimited list of renew billing cost transitions, of the form "
-          + "<time>=<money-amount>[,<time>=<money-amount>]* where each amount "
-          + "represents the per-year billing cost for renewing a domain")
-  ImmutableSortedMap<DateTime, Money> renewBillingCostTransitions =
-      ImmutableSortedMap.of();
+      description =
+          "Comma-delimited list of renew billing cost transitions, of the form "
+              + "<time>=<money-amount>[,<time>=<money-amount>]* where each amount "
+              + "represents the per-year billing cost for renewing a domain")
+  ImmutableSortedMap<DateTime, Money> renewBillingCostTransitions = ImmutableSortedMap.of();
 
   @Parameter(
       names = "--eap_fee_schedule",
       converter = BillingCostTransitions.class,
       validateWith = BillingCostTransitions.class,
-      description = "Comma-delimited list of EAP fees effective on specific dates, of the form "
-          + "<time>=<money-amount>[,<time>=<money-amount>]* where each amount represents the "
-          + "EAP fee for creating a new domain under the TLD.")
+      description =
+          "Comma-delimited list of EAP fees effective on specific dates, of the form "
+              + "<time>=<money-amount>[,<time>=<money-amount>]* where each amount represents the "
+              + "EAP fee for creating a new domain under the TLD.")
   ImmutableSortedMap<DateTime, Money> eapFeeSchedule = ImmutableSortedMap.of();
 
   @Nullable
@@ -198,25 +199,22 @@ abstract class CreateOrUpdateTldCommand extends MutatingCommand {
   boolean overrideReservedListRules;
 
   @Nullable
-  @Parameter(
-      names = "--claims_period_end",
-      description = "The end of the claims period")
+  @Parameter(names = "--claims_period_end", description = "The end of the claims period")
   DateTime claimsPeriodEnd;
 
   @Nullable
   @Parameter(
-    names = "--dns_writers",
-    description = "A comma-separated list of DnsWriter implementations to use")
+      names = "--dns_writers",
+      description = "A comma-separated list of DnsWriter implementations to use")
   List<String> dnsWriters;
 
   @Nullable
   @Parameter(
-    names = {"--num_dns_publish_locks"},
-    description =
-        "The number of publish locks we allow in parallel for DNS updates under this tld "
-            + "(1 for TLD-wide locks)",
-    arity = 1
-  )
+      names = {"--num_dns_publish_locks"},
+      description =
+          "The number of publish locks we allow in parallel for DNS updates under this tld "
+              + "(1 for TLD-wide locks)",
+      arity = 1)
   Integer numDnsPublishShards;
 
   /** Returns the existing registry (for update) or null (for creates). */
@@ -246,7 +244,8 @@ abstract class CreateOrUpdateTldCommand extends MutatingCommand {
     String duplicates = Joiner.on(", ").join(findDuplicates(mainParameters));
     checkArgument(duplicates.isEmpty(), "Duplicate arguments found: '%s'", duplicates);
     Set<String> tlds = ImmutableSet.copyOf(mainParameters);
-    checkArgument(roidSuffix == null || tlds.size() == 1,
+    checkArgument(
+        roidSuffix == null || tlds.size() == 1,
         "Can't update roid suffixes on multiple TLDs simultaneously");
     for (String tld : tlds) {
       checkArgument(
@@ -255,8 +254,7 @@ abstract class CreateOrUpdateTldCommand extends MutatingCommand {
           tld,
           canonicalizeDomainName(tld));
       checkArgument(
-          !CharMatcher.javaDigit().matches(tld.charAt(0)),
-          "TLDs cannot begin with a number");
+          !CharMatcher.javaDigit().matches(tld.charAt(0)), "TLDs cannot begin with a number");
       Registry oldRegistry = getOldRegistry(tld);
       // TODO(b/26901539): Add a flag to set the pricing engine once we have more than one option.
       Registry.Builder builder =
@@ -283,8 +281,10 @@ abstract class CreateOrUpdateTldCommand extends MutatingCommand {
             ImmutableSortedMap.naturalOrder();
         if (oldRegistry != null) {
           checkArgument(
-              oldRegistry.getTldStateTransitions().lastKey().isBefore(
-                  tldStateTransitionToAdd.get().getKey()),
+              oldRegistry
+                  .getTldStateTransitions()
+                  .lastKey()
+                  .isBefore(tldStateTransitionToAdd.get().getKey()),
               "Cannot add %s at %s when there is a later transition already scheduled",
               tldStateTransitionToAdd.get().getValue(),
               tldStateTransitionToAdd.get().getKey());
@@ -383,9 +383,10 @@ abstract class CreateOrUpdateTldCommand extends MutatingCommand {
     }
     ImmutableList<String> invalidNames = builder.build();
     if (!invalidNames.isEmpty()) {
-      String errMsg = String.format("The reserved list(s) %s cannot be applied to the tld %s",
-          Joiner.on(", ").join(invalidNames),
-          tld);
+      String errMsg =
+          String.format(
+              "The reserved list(s) %s cannot be applied to the tld %s",
+              Joiner.on(", ").join(invalidNames), tld);
       if (overrideReservedListRules) {
         System.err.println("Error overridden: " + errMsg);
       } else {

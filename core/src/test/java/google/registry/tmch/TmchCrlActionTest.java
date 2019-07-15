@@ -44,8 +44,8 @@ public class TmchCrlActionTest extends TmchActionTestCase {
   @Test
   public void testSuccess() throws Exception {
     clock.setTo(DateTime.parse("2013-07-24TZ"));
-    when(httpResponse.getContent()).thenReturn(
-        readResourceBytes(TmchCertificateAuthority.class, "icann-tmch.crl").read());
+    when(httpResponse.getContent())
+        .thenReturn(readResourceBytes(TmchCertificateAuthority.class, "icann-tmch.crl").read());
     newTmchCrlAction(TmchCaMode.PRODUCTION).run();
     verify(httpResponse).getContent();
     verify(fetchService).fetch(httpRequest.capture());
@@ -79,8 +79,9 @@ public class TmchCrlActionTest extends TmchActionTestCase {
   @Test
   public void testFailure_crlNotYetValid() throws Exception {
     clock.setTo(DateTime.parse("1984-01-01TZ"));
-    when(httpResponse.getContent()).thenReturn(
-        readResourceBytes(TmchCertificateAuthority.class, "icann-tmch-pilot.crl").read());
+    when(httpResponse.getContent())
+        .thenReturn(
+            readResourceBytes(TmchCertificateAuthority.class, "icann-tmch-pilot.crl").read());
     Exception e = assertThrows(Exception.class, newTmchCrlAction(TmchCaMode.PILOT)::run);
     assertThat(e).hasCauseThat().isInstanceOf(CertificateNotYetValidException.class);
   }

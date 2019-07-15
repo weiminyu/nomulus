@@ -44,8 +44,7 @@ import org.mockito.junit.MockitoRule;
 @RunWith(JUnit4.class)
 public class SendEmailServiceTest {
 
-  @Rule
-  public final MockitoRule mocks = MockitoJUnit.rule();
+  @Rule public final MockitoRule mocks = MockitoJUnit.rule();
 
   private final Retrier retrier = new Retrier(new FakeSleeper(new FakeClock()), 2);
   private final TransportEmailSender wrapper = mock(TransportEmailSender.class);
@@ -87,8 +86,7 @@ public class SendEmailServiceTest {
     EmailMessage content = createBuilder().setContentType(MediaType.HTML_UTF_8).build();
     sendEmailService.sendEmail(content);
     Message message = getMessage();
-    assertThat(getInternalContent(message).getContentType())
-        .isEqualTo("text/html; charset=utf-8");
+    assertThat(getInternalContent(message).getContentType()).isEqualTo("text/html; charset=utf-8");
   }
 
   @Test

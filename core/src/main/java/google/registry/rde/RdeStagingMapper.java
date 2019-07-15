@@ -126,8 +126,7 @@ public final class RdeStagingMapper extends Mapper<EppResource, PendingDeposit, 
       for (PendingDeposit pending : pendings.get(tld)) {
         // Hosts and contacts don't get included in BRDA deposits.
         if (pending.mode() == RdeMode.THIN
-            && (resource instanceof ContactResource
-                || resource instanceof HostResource)) {
+            && (resource instanceof ContactResource || resource instanceof HostResource)) {
           continue;
         }
         Optional<DepositFragment> fragment =
@@ -186,13 +185,17 @@ public final class RdeStagingMapper extends Mapper<EppResource, PendingDeposit, 
         return result;
       } else if (resource instanceof HostResource) {
         HostResource host = (HostResource) resource;
-        result = Optional.of(host.isSubordinate()
-            ? marshaller.marshalSubordinateHost(
-                host,
-                // Note that loadAtPointInTime() does cloneProjectedAtTime(watermark) for us.
-                loadAtPointInTime(
-                    ofy().load().key(host.getSuperordinateDomain()).now(), watermark).now())
-            : marshaller.marshalExternalHost(host));
+        result =
+            Optional.of(
+                host.isSubordinate()
+                    ? marshaller.marshalSubordinateHost(
+                        host,
+                        // Note that loadAtPointInTime() does cloneProjectedAtTime(watermark) for
+                        // us.
+                        loadAtPointInTime(
+                                ofy().load().key(host.getSuperordinateDomain()).now(), watermark)
+                            .now())
+                    : marshaller.marshalExternalHost(host));
         cache.put(WatermarkModePair.create(watermark, RdeMode.FULL), result);
         cache.put(WatermarkModePair.create(watermark, RdeMode.THIN), result);
         return result;
@@ -206,6 +209,7 @@ public final class RdeStagingMapper extends Mapper<EppResource, PendingDeposit, 
   @AutoValue
   abstract static class WatermarkModePair {
     abstract DateTime watermark();
+
     abstract RdeMode mode();
 
     static WatermarkModePair create(DateTime watermark, RdeMode mode) {

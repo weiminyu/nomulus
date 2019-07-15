@@ -41,10 +41,21 @@ public final class CommitLogFanoutAction implements Runnable {
   private static final Random random = new Random();
 
   @Inject TaskQueueUtils taskQueueUtils;
-  @Inject @Parameter("endpoint") String endpoint;
-  @Inject @Parameter("queue") String queue;
-  @Inject @Parameter("jitterSeconds") Optional<Integer> jitterSeconds;
-  @Inject CommitLogFanoutAction() {}
+
+  @Inject
+  @Parameter("endpoint")
+  String endpoint;
+
+  @Inject
+  @Parameter("queue")
+  String queue;
+
+  @Inject
+  @Parameter("jitterSeconds")
+  Optional<Integer> jitterSeconds;
+
+  @Inject
+  CommitLogFanoutAction() {}
 
   @Override
   public void run() {

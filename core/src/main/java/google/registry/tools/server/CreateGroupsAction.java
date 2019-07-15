@@ -55,9 +55,17 @@ public class CreateGroupsAction implements Runnable {
 
   @Inject GroupsConnection groupsConnection;
   @Inject Response response;
-  @Inject @Config("gSuiteDomainName") String gSuiteDomainName;
-  @Inject @Parameter("clientId") Optional<String> clientId;
-  @Inject CreateGroupsAction() {}
+
+  @Inject
+  @Config("gSuiteDomainName")
+  String gSuiteDomainName;
+
+  @Inject
+  @Parameter("clientId")
+  Optional<String> clientId;
+
+  @Inject
+  CreateGroupsAction() {}
 
   @Override
   public void run() {
@@ -120,8 +128,9 @@ public class CreateGroupsAction implements Runnable {
     }
     Optional<Registrar> registrar = Registrar.loadByClientId(clientId.get());
     if (!registrar.isPresent()) {
-      respondToBadRequest(String.format(
-          "Error creating Google Groups; could not find registrar with id %s", clientId.get()));
+      respondToBadRequest(
+          String.format(
+              "Error creating Google Groups; could not find registrar with id %s", clientId.get()));
     }
     return registrar.get();
   }

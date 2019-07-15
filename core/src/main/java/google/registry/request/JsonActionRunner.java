@@ -38,7 +38,8 @@ public final class JsonActionRunner {
   Map<String, Object> payload;
   JsonResponse response;
 
-  @Inject public JsonActionRunner(@JsonPayload Map<String, Object> payload, JsonResponse response) {
+  @Inject
+  public JsonActionRunner(@JsonPayload Map<String, Object> payload, JsonResponse response) {
     this.payload = payload;
     this.response = response;
   }
@@ -46,8 +47,6 @@ public final class JsonActionRunner {
   /** Delegates request to {@code action}. */
   public void run(JsonAction action) {
     response.setPayload(
-        verifyNotNull(
-            action.handleJsonRequest(payload),
-            "handleJsonRequest() returned null"));
+        verifyNotNull(action.handleJsonRequest(payload), "handleJsonRequest() returned null"));
   }
 }

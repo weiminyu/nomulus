@@ -47,15 +47,17 @@ public class RequestAuthenticator {
   /**
    * Parameters used to configure the authenticator.
    *
-   * AuthSettings shouldn't be used directly, instead - use one of the predefined {@link Auth} enum
-   * values.
+   * <p>AuthSettings shouldn't be used directly, instead - use one of the predefined {@link Auth}
+   * enum values.
    */
   @Immutable
   @AutoValue
   public abstract static class AuthSettings {
 
     public abstract ImmutableList<AuthMethod> methods();
+
     public abstract AuthLevel minimumLevel();
+
     public abstract UserPolicy userPolicy();
 
     static AuthSettings create(
@@ -169,7 +171,7 @@ public class RequestAuthenticator {
             return authResult;
           }
           break;
-        // API-based user authentication mechanisms, such as OAuth
+          // API-based user authentication mechanisms, such as OAuth
         case API:
           // checkAuthConfig will have insured that the user policy is not IGNORED.
           for (AuthenticationMechanism authMechanism : apiAuthenticationMechanisms) {
@@ -181,7 +183,7 @@ public class RequestAuthenticator {
             }
           }
           break;
-        // Legacy authentication via UserService
+          // Legacy authentication via UserService
         case LEGACY:
           // checkAuthConfig will have insured that the user policy is not IGNORED.
           authResult = legacyAuthenticationMechanism.authenticate(req);
@@ -209,7 +211,7 @@ public class RequestAuthenticator {
         "Actions with INTERNAL auth method may not require USER auth level");
     checkArgument(
         !(auth.userPolicy().equals(UserPolicy.IGNORED)
-          && !authMethods.equals(ImmutableList.of(AuthMethod.INTERNAL))),
+            && !authMethods.equals(ImmutableList.of(AuthMethod.INTERNAL))),
         "Actions with auth methods beyond INTERNAL must not specify the IGNORED user policy");
   }
 }

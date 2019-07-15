@@ -73,11 +73,8 @@ public class CheckedBigquery {
     if (!knownExistingTables.contains(tableId)) {
       ensureTable(
           bigquery,
-          new TableReference()
-              .setDatasetId(datasetId)
-              .setProjectId(projectId)
-              .setTableId(tableId),
-            bigquerySchemas.get(tableId));
+          new TableReference().setDatasetId(datasetId).setProjectId(projectId).setTableId(tableId),
+          bigquerySchemas.get(tableId));
       knownExistingTables.add(tableId);
     }
 
@@ -85,19 +82,20 @@ public class CheckedBigquery {
   }
 
   /**
-   * Ensures the dataset exists by trying to create it. Note that it's not appreciably cheaper
-   * to check for dataset existence than it is to try to create it and check for exceptions.
+   * Ensures the dataset exists by trying to create it. Note that it's not appreciably cheaper to
+   * check for dataset existence than it is to try to create it and check for exceptions.
    */
   // Note that these are not static so they can be mocked for testing.
   private void ensureDataset(Bigquery bigquery, String projectId, String datasetId)
       throws IOException {
     try {
-      bigquery.datasets()
-          .insert(projectId,
-              new Dataset().setDatasetReference(
-                  new DatasetReference()
-                      .setProjectId(projectId)
-                      .setDatasetId(datasetId)))
+      bigquery
+          .datasets()
+          .insert(
+              projectId,
+              new Dataset()
+                  .setDatasetReference(
+                      new DatasetReference().setProjectId(projectId).setDatasetId(datasetId)))
           .execute();
     } catch (IOException e) {
       // Swallow errors about a duplicate dataset, and throw any other ones.
@@ -111,9 +109,12 @@ public class CheckedBigquery {
   private void ensureTable(Bigquery bigquery, TableReference table, List<TableFieldSchema> schema)
       throws IOException {
     try {
-      bigquery.tables().insert(table.getProjectId(), table.getDatasetId(), new Table()
-          .setSchema(new TableSchema().setFields(schema))
-          .setTableReference(table))
+      bigquery
+          .tables()
+          .insert(
+              table.getProjectId(),
+              table.getDatasetId(),
+              new Table().setSchema(new TableSchema().setFields(schema)).setTableReference(table))
           .execute();
       logger.atInfo().log(
           "Created BigQuery table %s:%s.%s",

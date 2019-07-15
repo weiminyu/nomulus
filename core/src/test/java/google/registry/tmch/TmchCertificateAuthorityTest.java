@@ -42,10 +42,7 @@ public class TmchCertificateAuthorityTest {
   public static final String GOOD_TEST_CERTIFICATE = loadFile("icann-tmch-test-good.crt");
   public static final String REVOKED_TEST_CERTIFICATE = loadFile("icann-tmch-test-revoked.crt");
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private FakeClock clock = new FakeClock(DateTime.parse("2014-01-01T00:00:00Z"));
 

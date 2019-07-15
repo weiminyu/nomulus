@@ -78,8 +78,7 @@ public final class TestDataHelper {
    */
   public static String loadFile(Class<?> context, String filename) {
     return fileCache.computeIfAbsent(
-        FileKey.create(context, filename),
-        k -> readResourceUtf8(context, filename));
+        FileKey.create(context, filename), k -> readResourceUtf8(context, filename));
   }
 
   /**
@@ -101,8 +100,7 @@ public final class TestDataHelper {
    */
   public static ByteSource loadBytes(Class<?> context, String filename) {
     return byteCache.computeIfAbsent(
-        FileKey.create(context, filename),
-        k -> readResourceBytes(context, filename));
+        FileKey.create(context, filename), k -> readResourceBytes(context, filename));
   }
 
   /**

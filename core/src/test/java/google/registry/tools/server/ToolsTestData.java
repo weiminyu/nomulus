@@ -26,9 +26,7 @@ public final class ToolsTestData {
     return TestDataHelper.loadBytes(ToolsTestData.class, filename);
   }
 
-  /**
-   * Loads data from file in {@code tools/server/testdata/} as a UTF-8 String.
-   */
+  /** Loads data from file in {@code tools/server/testdata/} as a UTF-8 String. */
   public static String loadFile(String filename) {
     return TestDataHelper.loadFile(ToolsTestData.class, filename);
   }

@@ -48,10 +48,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class ExportReservedTermsActionTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private final DriveConnection driveConnection = mock(DriveConnection.class);
   private final Response response = mock(Response.class);
@@ -67,19 +64,13 @@ public class ExportReservedTermsActionTest {
 
   @Before
   public void init() throws Exception {
-    ReservedList rl = persistReservedList(
-        "tld-reserved",
-        "lol,FULLY_BLOCKED",
-        "cat,FULLY_BLOCKED");
+    ReservedList rl = persistReservedList("tld-reserved", "lol,FULLY_BLOCKED", "cat,FULLY_BLOCKED");
     createTld("tld");
-    persistResource(Registry.get("tld").asBuilder()
-        .setReservedLists(rl)
-        .setDriveFolderId("brouhaha").build());
+    persistResource(
+        Registry.get("tld").asBuilder().setReservedLists(rl).setDriveFolderId("brouhaha").build());
     when(driveConnection.createOrUpdateFile(
-        anyString(),
-        any(MediaType.class),
-        anyString(),
-        any(byte[].class))).thenReturn("1001");
+            anyString(), any(MediaType.class), anyString(), any(byte[].class)))
+        .thenReturn("1001");
   }
 
   @Test
@@ -117,10 +108,8 @@ public class ExportReservedTermsActionTest {
   @Test
   public void test_uploadFileToDrive_failsWhenDriveCannotBeReached() throws Exception {
     when(driveConnection.createOrUpdateFile(
-        anyString(),
-        any(MediaType.class),
-        anyString(),
-        any(byte[].class))).thenThrow(new IOException("errorMessage"));
+            anyString(), any(MediaType.class), anyString(), any(byte[].class)))
+        .thenThrow(new IOException("errorMessage"));
     RuntimeException thrown = assertThrows(RuntimeException.class, () -> runAction("tld"));
     verify(response).setStatus(SC_INTERNAL_SERVER_ERROR);
     assertThat(thrown).hasCauseThat().hasMessageThat().isEqualTo("errorMessage");

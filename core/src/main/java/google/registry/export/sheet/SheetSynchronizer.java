@@ -39,7 +39,9 @@ class SheetSynchronizer {
   private static final String SHEET_NAME = "Registrars";
 
   @Inject Sheets sheetsService;
-  @Inject SheetSynchronizer() {}
+
+  @Inject
+  SheetSynchronizer() {}
 
   /**
    * Replace the contents of a Google Spreadsheet with {@code data}.
@@ -102,17 +104,14 @@ class SheetSynchronizer {
       }
       if (mutated) {
         ValueRange rowUpdate =
-            new ValueRange()
-                .setValues(originalVals.subList(i, i + 1))
-                .setRange(getCellRange(i));
+            new ValueRange().setValues(originalVals.subList(i, i + 1)).setRange(getCellRange(i));
         updates.add(rowUpdate);
       }
     }
     // Update the mutated cells if necessary
     if (!updates.isEmpty()) {
-      BatchUpdateValuesRequest updateRequest = new BatchUpdateValuesRequest()
-          .setValueInputOption("RAW")
-          .setData(updates);
+      BatchUpdateValuesRequest updateRequest =
+          new BatchUpdateValuesRequest().setValueInputOption("RAW").setData(updates);
 
       BatchUpdateValuesResponse response =
           sheetsService.spreadsheets().values().batchUpdate(spreadsheetId, updateRequest).execute();
@@ -132,17 +131,18 @@ class SheetSynchronizer {
       }
       // Start the append at index originalVals.size (where the previous operation left off)
       ValueRange appendUpdate = new ValueRange().setValues(valsBuilder.build());
-      AppendValuesResponse appendResponse = sheetsService
-          .spreadsheets()
-          .values()
-          .append(spreadsheetId, getCellRange(originalVals.size()), appendUpdate)
-          .setValueInputOption("RAW")
-          .setInsertDataOption("INSERT_ROWS")
-          .execute();
+      AppendValuesResponse appendResponse =
+          sheetsService
+              .spreadsheets()
+              .values()
+              .append(spreadsheetId, getCellRange(originalVals.size()), appendUpdate)
+              .setValueInputOption("RAW")
+              .setInsertDataOption("INSERT_ROWS")
+              .execute();
       logger.atInfo().log(
           "Appended %d rows to range %s",
           data.size() - originalVals.size(), appendResponse.getTableRange());
-    // Clear the extra rows if necessary
+      // Clear the extra rows if necessary
     } else if (data.size() < originalVals.size()) {
       // Clear other rows if there's more originalVals on the sheet than live data.
       ClearValuesResponse clearResponse =
@@ -168,8 +168,9 @@ class SheetSynchronizer {
    * (either row-major or column-major order, default is row-major.) For simplicity, we just specify
    * a single cell for these requests.
    *
-   * @see <a href="https://developers.google.com/sheets/api/guides/values#writing_to_a_single_range">
-   *   Writing to a single range</a>
+   * @see <a
+   *     href="https://developers.google.com/sheets/api/guides/values#writing_to_a_single_range">
+   *     Writing to a single range</a>
    */
   private String getCellRange(int rowNum) {
     // We add 1 to rowNum to compensate for Sheet's 1-indexing, and 1 to offset for the header

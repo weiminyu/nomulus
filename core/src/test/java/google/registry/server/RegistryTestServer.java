@@ -37,9 +37,11 @@ public final class RegistryTestServer {
 
   public static final ImmutableMap<String, Path> RUNFILES =
       new ImmutableMap.Builder<String, Path>()
-          .put("/index.html",
+          .put(
+              "/index.html",
               PROJECT_ROOT.resolve("core/src/main/java/google/registry/ui/html/index.html"))
-          .put("/error.html",
+          .put(
+              "/error.html",
               PROJECT_ROOT.resolve("core/src/main/java/google/registry/ui/html/error.html"))
           .put("/assets/js/*", RESOURCES_DIR.resolve("google/registry/ui"))
           .put("/assets/css/*", RESOURCES_DIR.resolve("google/registry/ui/css"))
@@ -84,9 +86,8 @@ public final class RegistryTestServer {
           route("/registrar-ote-status", FrontendServlet.class),
           route("/registrar-settings", FrontendServlet.class));
 
-  private static final ImmutableList<Class<? extends Filter>> FILTERS = ImmutableList.of(
-      ObjectifyFilter.class,
-      OfyFilter.class);
+  private static final ImmutableList<Class<? extends Filter>> FILTERS =
+      ImmutableList.of(ObjectifyFilter.class, OfyFilter.class);
 
   private final TestServer server;
 

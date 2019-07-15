@@ -28,8 +28,7 @@ public class DateAdapterTest {
 
   @Test
   public void testMarshal() {
-    assertThat(new DateAdapter().marshal(
-        new LocalDate(2010, 10, 17))).isEqualTo("2010-10-17");
+    assertThat(new DateAdapter().marshal(new LocalDate(2010, 10, 17))).isEqualTo("2010-10-17");
   }
 
   @Test

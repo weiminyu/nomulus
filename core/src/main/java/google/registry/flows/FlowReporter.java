@@ -49,7 +49,9 @@ public class FlowReporter {
   @Inject @InputXml byte[] inputXmlBytes;
   @Inject EppInput eppInput;
   @Inject Class<? extends Flow> flowClass;
-  @Inject FlowReporter() {}
+
+  @Inject
+  FlowReporter() {}
 
   /** Records information about the current flow execution in the GAE request logs. */
   public void recordToLogs() {
@@ -81,10 +83,10 @@ public class FlowReporter {
    * absent if no TLD could be detected.
    *
    * <p>This method is quick and dirty and doesn't attempt to validate the domain name in any way;
-   * it just takes anything after the first period to be the TLD and converts ASCII to lowercase.
-   * We want quick and dirty here because this will be called on not-yet-validated EPP XML where
-   * just about anything could be supplied, and there's no reason to validate twice when this just
-   * needs to be roughly correct.
+   * it just takes anything after the first period to be the TLD and converts ASCII to lowercase. We
+   * want quick and dirty here because this will be called on not-yet-validated EPP XML where just
+   * about anything could be supplied, and there's no reason to validate twice when this just needs
+   * to be roughly correct.
    */
   private static Optional<String> extractTld(String domainName) {
     int index = domainName.indexOf('.');

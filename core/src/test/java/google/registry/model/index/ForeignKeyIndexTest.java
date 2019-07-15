@@ -92,8 +92,8 @@ public class ForeignKeyIndexTest extends EntityTestCase {
     fki.topReference = Key.create(host1);
     fki.deletionTime = clock.nowUtc();
     persistResource(fki);
-    assertThat(ForeignKeyIndex.load(
-        HostResource.class, "ns1.example.com", clock.nowUtc())).isNull();
+    assertThat(ForeignKeyIndex.load(HostResource.class, "ns1.example.com", clock.nowUtc()))
+        .isNull();
   }
 
   @Test
@@ -101,11 +101,13 @@ public class ForeignKeyIndexTest extends EntityTestCase {
     persistActiveHost("ns1.example.com");
     HostResource host = persistActiveHost("ns2.example.com");
     persistResource(ForeignKeyIndex.create(host, clock.nowUtc().minusDays(1)));
-    assertThat(ForeignKeyIndex.load(
-        HostResource.class,
-        ImmutableList.of("ns1.example.com", "ns2.example.com", "ns3.example.com"),
-        clock.nowUtc()).keySet())
-            .containsExactly("ns1.example.com");
+    assertThat(
+            ForeignKeyIndex.load(
+                    HostResource.class,
+                    ImmutableList.of("ns1.example.com", "ns2.example.com", "ns3.example.com"),
+                    clock.nowUtc())
+                .keySet())
+        .containsExactly("ns1.example.com");
   }
 
   @Test
@@ -211,24 +213,24 @@ public class ForeignKeyIndexTest extends EntityTestCase {
     persistActiveContact("contactid1");
     ForeignKeyIndex<ContactResource> fki1 = loadContactFki("contactid1");
     assertThat(
-        ForeignKeyIndex.loadCached(
-            ContactResource.class,
-            ImmutableList.of("contactid1", "contactid2"),
-            clock.nowUtc()))
+            ForeignKeyIndex.loadCached(
+                ContactResource.class,
+                ImmutableList.of("contactid1", "contactid2"),
+                clock.nowUtc()))
         .containsExactly("contactid1", fki1);
     persistActiveContact("contactid2");
     deleteResource(fki1);
     assertThat(
-        ForeignKeyIndex.loadCached(
-            ContactResource.class,
-            ImmutableList.of("contactid1", "contactid2"),
-            clock.nowUtc()))
+            ForeignKeyIndex.loadCached(
+                ContactResource.class,
+                ImmutableList.of("contactid1", "contactid2"),
+                clock.nowUtc()))
         .containsExactly("contactid1", fki1);
     assertThat(
-        ForeignKeyIndex.load(
-            ContactResource.class,
-            ImmutableList.of("contactid1", "contactid2"),
-            clock.nowUtc()))
+            ForeignKeyIndex.load(
+                ContactResource.class,
+                ImmutableList.of("contactid1", "contactid2"),
+                clock.nowUtc()))
         .containsExactly("contactid2", loadContactFki("contactid2"));
   }
 }

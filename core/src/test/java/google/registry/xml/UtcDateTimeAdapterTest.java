@@ -36,9 +36,10 @@ public class UtcDateTimeAdapterTest {
 
   @Test
   public void testMarshalConvertsToZuluTime() {
-    assertThat(new UtcDateTimeAdapter().marshal(
-        new DateTime(2010, 10, 17, 0, 20, 0, DateTimeZone.forOffsetHours(-4))))
-            .isEqualTo("2010-10-17T04:20:00Z");
+    assertThat(
+            new UtcDateTimeAdapter()
+                .marshal(new DateTime(2010, 10, 17, 0, 20, 0, DateTimeZone.forOffsetHours(-4))))
+        .isEqualTo("2010-10-17T04:20:00Z");
   }
 
   @Test

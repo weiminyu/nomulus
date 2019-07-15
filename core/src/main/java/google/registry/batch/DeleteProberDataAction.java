@@ -58,8 +58,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 /**
- * Deletes all prober DomainBases and their subordinate history entries, poll messages, and
- * billing events, along with their ForeignKeyDomainIndex and EppResourceIndex entities.
+ * Deletes all prober DomainBases and their subordinate history entries, poll messages, and billing
+ * events, along with their ForeignKeyDomainIndex and EppResourceIndex entities.
  *
  * <p>See: https://www.youtube.com/watch?v=xuuv0syoHnM
  */
@@ -72,13 +72,23 @@ public class DeleteProberDataAction implements Runnable {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  @Inject @Parameter(PARAM_DRY_RUN) boolean isDryRun;
+  @Inject
+  @Parameter(PARAM_DRY_RUN)
+  boolean isDryRun;
   /** List of TLDs to work on. If empty - will work on all TLDs that end with .test. */
-  @Inject @Parameter(PARAM_TLDS) ImmutableSet<String> tlds;
-  @Inject @Config("registryAdminClientId") String registryAdminClientId;
+  @Inject
+  @Parameter(PARAM_TLDS)
+  ImmutableSet<String> tlds;
+
+  @Inject
+  @Config("registryAdminClientId")
+  String registryAdminClientId;
+
   @Inject MapreduceRunner mrRunner;
   @Inject Response response;
-  @Inject DeleteProberDataAction() {}
+
+  @Inject
+  DeleteProberDataAction() {}
 
   @Override
   public void run() {
@@ -100,8 +110,7 @@ public class DeleteProberDataAction implements Runnable {
             || tlds.stream().allMatch(tld -> tld.endsWith(".test")),
         "On production, can only work on TLDs that end with .test");
     ImmutableSet<String> deletableTlds =
-        getTldsOfType(TldType.TEST)
-            .stream()
+        getTldsOfType(TldType.TEST).stream()
             .filter(tld -> tlds.isEmpty() ? tld.endsWith(".test") : tlds.contains(tld))
             .collect(toImmutableSet());
     checkArgument(
@@ -109,8 +118,7 @@ public class DeleteProberDataAction implements Runnable {
         "If tlds are given, they must all exist and be TEST tlds. Given: %s, not found: %s",
         tlds,
         Sets.difference(tlds, deletableTlds));
-    return deletableTlds
-        .stream()
+    return deletableTlds.stream()
         .map(tld -> Registry.get(tld).getRoidSuffix())
         .collect(toImmutableSet());
   }
@@ -124,16 +132,15 @@ public class DeleteProberDataAction implements Runnable {
     /**
      * The maximum amount of time we allow a prober domain to be in use.
      *
-     * In practice, the prober's connection will time out well before this duration. This includes a
-     * decent buffer.
-     *
+     * <p>In practice, the prober's connection will time out well before this duration. This
+     * includes a decent buffer.
      */
     private static final Duration DOMAIN_USED_DURATION = Duration.standardHours(1);
 
     /**
      * The minimum amount of time we want a domain to be "soft deleted".
      *
-     * The domain has to remain soft deleted for at least enough time for the DNS task to run and
+     * <p>The domain has to remain soft deleted for at least enough time for the DNS task to run and
      * remove it from DNS itself. This is probably on the order of minutes.
      */
     private static final Duration SOFT_DELETE_DELAY = Duration.standardHours(1);
@@ -245,28 +252,33 @@ public class DeleteProberDataAction implements Runnable {
     }
 
     private void softDeleteDomain(final DomainBase domain) {
-      ofy().transactNew(() -> {
-          DomainBase deletedDomain = domain
-              .asBuilder()
-              .setDeletionTime(ofy().getTransactionTime())
-              .setStatusValues(null)
-              .build();
-          HistoryEntry historyEntry = new HistoryEntry.Builder()
-              .setParent(domain)
-              .setType(DOMAIN_DELETE)
-              .setModificationTime(ofy().getTransactionTime())
-              .setBySuperuser(true)
-              .setReason("Deletion of prober data")
-              .setClientId(registryAdminClientId)
-              .build();
-          // Note that we don't bother handling grace periods, billing events, pending transfers,
-          // poll messages, or auto-renews because these will all be hard-deleted the next time the
-          // mapreduce runs anyway.
-          ofy().save().entities(deletedDomain, historyEntry);
-          updateForeignKeyIndexDeletionTime(deletedDomain);
-          dnsQueue.addDomainRefreshTask(deletedDomain.getFullyQualifiedDomainName());
-        }
-      );
+      ofy()
+          .transactNew(
+              () -> {
+                DomainBase deletedDomain =
+                    domain
+                        .asBuilder()
+                        .setDeletionTime(ofy().getTransactionTime())
+                        .setStatusValues(null)
+                        .build();
+                HistoryEntry historyEntry =
+                    new HistoryEntry.Builder()
+                        .setParent(domain)
+                        .setType(DOMAIN_DELETE)
+                        .setModificationTime(ofy().getTransactionTime())
+                        .setBySuperuser(true)
+                        .setReason("Deletion of prober data")
+                        .setClientId(registryAdminClientId)
+                        .build();
+                // Note that we don't bother handling grace periods, billing events, pending
+                // transfers,
+                // poll messages, or auto-renews because these will all be hard-deleted the next
+                // time the
+                // mapreduce runs anyway.
+                ofy().save().entities(deletedDomain, historyEntry);
+                updateForeignKeyIndexDeletionTime(deletedDomain);
+                dnsQueue.addDomainRefreshTask(deletedDomain.getFullyQualifiedDomainName());
+              });
     }
   }
 }

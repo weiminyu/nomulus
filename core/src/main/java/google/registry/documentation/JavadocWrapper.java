@@ -40,10 +40,10 @@ import javax.annotation.Nullable;
 import javax.tools.StandardLocation;
 
 /**
- * Wrapper class to simplify calls to the javadoc system and hide internal details.  An instance
- * represents a set of parameters for calling out to javadoc; these parameters can be set via
- * the appropriate methods, and determine what files and packages javadoc will process.  The
- * actual running of javadoc occurs when calling getRootDoc() to retrieve a javadoc RootDoc.
+ * Wrapper class to simplify calls to the javadoc system and hide internal details. An instance
+ * represents a set of parameters for calling out to javadoc; these parameters can be set via the
+ * appropriate methods, and determine what files and packages javadoc will process. The actual
+ * running of javadoc occurs when calling getRootDoc() to retrieve a javadoc RootDoc.
  */
 public final class JavadocWrapper {
 
@@ -54,8 +54,8 @@ public final class JavadocWrapper {
       Modifier.PUBLIC | Modifier.PROTECTED | ModifierFilter.PACKAGE;
 
   /** Root directory for source files. If null, will use the current directory. */
-  private static final String SOURCE_PATH = getProjectRoot().resolve("core/src/main/java")
-      .toString();
+  private static final String SOURCE_PATH =
+      getProjectRoot().resolve("core/src/main/java").toString();
   /** Specific source files to generate documentation for. */
   private static final ImmutableSet<String> SOURCE_FILE_NAMES = ImmutableSet.of();
 
@@ -67,8 +67,8 @@ public final class JavadocWrapper {
   private static final boolean QUIET = true;
 
   /**
-   * Obtains a Javadoc {@link RootDoc} object containing raw Javadoc documentation.
-   * Wraps a call to the static method createRootDoc() and passes in instance-specific settings.
+   * Obtains a Javadoc {@link RootDoc} object containing raw Javadoc documentation. Wraps a call to
+   * the static method createRootDoc() and passes in instance-specific settings.
    */
   public static RootDoc getRootDoc() throws IOException {
     logger.atInfo().log("Starting Javadoc tool");
@@ -76,19 +76,15 @@ public final class JavadocWrapper {
     logger.atInfo().log("Using source directory: %s", sourceFilePath.getAbsolutePath());
     try {
       return createRootDoc(
-          SOURCE_PATH,
-          SOURCE_PACKAGE_NAMES,
-          SOURCE_FILE_NAMES,
-          VISIBILITY_MASK,
-          QUIET);
+          SOURCE_PATH, SOURCE_PACKAGE_NAMES, SOURCE_FILE_NAMES, VISIBILITY_MASK, QUIET);
     } finally {
       logger.atInfo().log("Javadoc tool finished");
     }
   }
 
   /**
-   * Obtains a Javadoc root document object for the specified source path and package/Java names.
-   * If the source path is null, then the working directory is assumed as the source path.
+   * Obtains a Javadoc root document object for the specified source path and package/Java names. If
+   * the source path is null, then the working directory is assumed as the source path.
    *
    * <p>If a list of package names is provided, then Javadoc will run on these packages and all
    * their subpackages, based out of the specified source path.
@@ -97,14 +93,16 @@ public final class JavadocWrapper {
    * The specified source path is not considered in this case.
    *
    * @see <a href="http://relation.to/12969.lace">Testing Java doclets</a>
-   * @see <a href="http://www.docjar.com/docs/api/com/sun/tools/javadoc/JavadocTool.html">JavadocTool</a>
+   * @see <a
+   *     href="http://www.docjar.com/docs/api/com/sun/tools/javadoc/JavadocTool.html">JavadocTool</a>
    */
   private static RootDoc createRootDoc(
       @Nullable String sourcePath,
       Collection<String> packageNames,
       Collection<String> fileNames,
       long visibilityMask,
-      boolean quiet) throws IOException {
+      boolean quiet)
+      throws IOException {
     // Create a context to hold settings for Javadoc.
     Context context = new Context();
 
@@ -115,9 +113,9 @@ public final class JavadocWrapper {
     Messager.preRegister(
         context,
         JavadocWrapper.class.getName(),
-        new PrintWriter(CharStreams.nullWriter()),     // For errors.
-        new PrintWriter(CharStreams.nullWriter()),     // For warnings.
-        new PrintWriter(CharStreams.nullWriter()));    // For notices.
+        new PrintWriter(CharStreams.nullWriter()), // For errors.
+        new PrintWriter(CharStreams.nullWriter()), // For warnings.
+        new PrintWriter(CharStreams.nullWriter())); // For notices.
 
     // Set source path option for Javadoc.
     try (JavacFileManager fileManager = new JavacFileManager(context, true, UTF_8)) {
@@ -140,18 +138,18 @@ public final class JavadocWrapper {
 
       // Invoke Javadoc and ask it for a RootDoc containing the specified packages.
       return javadocTool.getRootDocImpl(
-          Locale.US.toString(),                    // Javadoc comment locale
-          UTF_8.name(),                            // Source character encoding
-          new ModifierFilter(visibilityMask),      // Element visibility filter
-          javaNames.toList(),                      // Included Java file names
-          com.sun.tools.javac.util.List.nil(),     // Doclet options
-          com.sun.tools.javac.util.List.nil(),     // Source files
-          false,                                   // Don't use BreakIterator
-          subPackages.toList(),                    // Included sub-package names
-          com.sun.tools.javac.util.List.nil(),     // Excluded package names
-          false,                                   // Read source files, not classes
-          false,                                   // Don't run legacy doclet
-          quiet);                                  // If asked, run Javadoc quietly
+          Locale.US.toString(), // Javadoc comment locale
+          UTF_8.name(), // Source character encoding
+          new ModifierFilter(visibilityMask), // Element visibility filter
+          javaNames.toList(), // Included Java file names
+          com.sun.tools.javac.util.List.nil(), // Doclet options
+          com.sun.tools.javac.util.List.nil(), // Source files
+          false, // Don't use BreakIterator
+          subPackages.toList(), // Included sub-package names
+          com.sun.tools.javac.util.List.nil(), // Excluded package names
+          false, // Read source files, not classes
+          false, // Don't run legacy doclet
+          quiet); // If asked, run Javadoc quietly
     }
   }
 

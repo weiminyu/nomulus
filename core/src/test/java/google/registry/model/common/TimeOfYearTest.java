@@ -63,12 +63,13 @@ public class TimeOfYearTest {
     DateTime startDate = DateTime.parse("2012-05-01T00:00:00Z");
     DateTime endDate = DateTime.parse("2016-05-01T00:00:00Z");
     TimeOfYear timeOfYear = TimeOfYear.fromDateTime(DateTime.parse("2012-05-01T00:00:00Z"));
-    ImmutableSet<DateTime> expected = ImmutableSet.of(
-        DateTime.parse("2012-05-01T00:00:00Z"),
-        DateTime.parse("2013-05-01T00:00:00Z"),
-        DateTime.parse("2014-05-01T00:00:00Z"),
-        DateTime.parse("2015-05-01T00:00:00Z"),
-        DateTime.parse("2016-05-01T00:00:00Z"));
+    ImmutableSet<DateTime> expected =
+        ImmutableSet.of(
+            DateTime.parse("2012-05-01T00:00:00Z"),
+            DateTime.parse("2013-05-01T00:00:00Z"),
+            DateTime.parse("2014-05-01T00:00:00Z"),
+            DateTime.parse("2015-05-01T00:00:00Z"),
+            DateTime.parse("2016-05-01T00:00:00Z"));
     assertThat(timeOfYear.getInstancesInRange(Range.closed(startDate, endDate)))
         .containsExactlyElementsIn(expected);
   }
@@ -78,11 +79,12 @@ public class TimeOfYearTest {
     DateTime startDate = DateTime.parse("2012-05-01T00:00:00Z");
     DateTime endDate = DateTime.parse("2016-05-01T00:00:00Z");
     TimeOfYear timeOfYear = TimeOfYear.fromDateTime(DateTime.parse("2012-05-01T00:00:00Z"));
-    ImmutableSet<DateTime> expected = ImmutableSet.of(
-        DateTime.parse("2013-05-01T00:00:00Z"),
-        DateTime.parse("2014-05-01T00:00:00Z"),
-        DateTime.parse("2015-05-01T00:00:00Z"),
-        DateTime.parse("2016-05-01T00:00:00Z"));
+    ImmutableSet<DateTime> expected =
+        ImmutableSet.of(
+            DateTime.parse("2013-05-01T00:00:00Z"),
+            DateTime.parse("2014-05-01T00:00:00Z"),
+            DateTime.parse("2015-05-01T00:00:00Z"),
+            DateTime.parse("2016-05-01T00:00:00Z"));
     assertThat(timeOfYear.getInstancesInRange(Range.openClosed(startDate, endDate)))
         .containsExactlyElementsIn(expected);
   }
@@ -92,11 +94,12 @@ public class TimeOfYearTest {
     DateTime startDate = DateTime.parse("2012-05-01T00:00:00Z");
     DateTime endDate = DateTime.parse("2016-05-01T00:00:00Z");
     TimeOfYear timeOfYear = TimeOfYear.fromDateTime(DateTime.parse("2012-05-01T00:00:00Z"));
-    ImmutableSet<DateTime> expected = ImmutableSet.of(
-        DateTime.parse("2012-05-01T00:00:00Z"),
-        DateTime.parse("2013-05-01T00:00:00Z"),
-        DateTime.parse("2014-05-01T00:00:00Z"),
-        DateTime.parse("2015-05-01T00:00:00Z"));
+    ImmutableSet<DateTime> expected =
+        ImmutableSet.of(
+            DateTime.parse("2012-05-01T00:00:00Z"),
+            DateTime.parse("2013-05-01T00:00:00Z"),
+            DateTime.parse("2014-05-01T00:00:00Z"),
+            DateTime.parse("2015-05-01T00:00:00Z"));
     assertThat(timeOfYear.getInstancesInRange(Range.closedOpen(startDate, endDate)))
         .containsExactlyElementsIn(expected);
   }
@@ -106,10 +109,11 @@ public class TimeOfYearTest {
     DateTime startDate = DateTime.parse("2012-05-01T00:00:00Z");
     DateTime endDate = DateTime.parse("2016-05-01T00:00:00Z");
     TimeOfYear timeOfYear = TimeOfYear.fromDateTime(DateTime.parse("2012-05-01T00:00:00Z"));
-    ImmutableSet<DateTime> expected = ImmutableSet.of(
-        DateTime.parse("2013-05-01T00:00:00Z"),
-        DateTime.parse("2014-05-01T00:00:00Z"),
-        DateTime.parse("2015-05-01T00:00:00Z"));
+    ImmutableSet<DateTime> expected =
+        ImmutableSet.of(
+            DateTime.parse("2013-05-01T00:00:00Z"),
+            DateTime.parse("2014-05-01T00:00:00Z"),
+            DateTime.parse("2015-05-01T00:00:00Z"));
     assertThat(timeOfYear.getInstancesInRange(Range.open(startDate, endDate)))
         .containsExactlyElementsIn(expected);
   }

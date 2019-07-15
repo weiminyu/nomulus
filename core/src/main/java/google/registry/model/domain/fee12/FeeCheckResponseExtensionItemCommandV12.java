@@ -38,12 +38,10 @@ public class FeeCheckResponseExtensionItemCommandV12 extends ImmutableObject {
   String commandName;
 
   /** The phase that was checked. */
-  @XmlAttribute
-  String phase;
+  @XmlAttribute String phase;
 
   /** The subphase that was checked. */
-  @XmlAttribute
-  String subphase;
+  @XmlAttribute String subphase;
 
   /** The period that was checked. */
   Period period;
@@ -70,7 +68,6 @@ public class FeeCheckResponseExtensionItemCommandV12 extends ImmutableObject {
   /** The date after which the quoted fee is no longer valid (if applicable). */
   @XmlElement(name = "notAfter")
   DateTime notAfterDate;
-
 
   public String getFeeClass() {
     return feeClass;

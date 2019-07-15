@@ -32,8 +32,7 @@ import org.joda.money.CurrencyUnit;
 @XmlType(propOrder = {"currency", "items"})
 public class FeeCheckCommandExtensionV12 extends ImmutableObject
     implements FeeCheckCommandExtension<
-        FeeCheckCommandExtensionItemV12,
-        FeeCheckResponseExtensionV12> {
+        FeeCheckCommandExtensionItemV12, FeeCheckResponseExtensionV12> {
 
   CurrencyUnit currency;
 

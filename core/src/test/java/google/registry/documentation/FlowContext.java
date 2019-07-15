@@ -43,23 +43,26 @@ import java.util.Set;
  * Stores the context for a flow and computes exception mismatches between javadoc and tests.
  *
  * <p>This class uses the flow_docs library built for the documentation generator tool to pull out
- * the set of flow exceptions documented by custom javadoc tags on the specified flow.  It then
+ * the set of flow exceptions documented by custom javadoc tags on the specified flow. It then
  * derives the corresponding test files for that flow and pulls out the imported names from those
  * files, checking against a set of all possible flow exceptions to determine those used by this
- * particular test.  The set of javadoc-based exceptions and the set of imported exceptions should
- * be identical, ensuring a correspondence between error cases listed in the documentation and
- * those tested in the flow unit tests.
+ * particular test. The set of javadoc-based exceptions and the set of imported exceptions should be
+ * identical, ensuring a correspondence between error cases listed in the documentation and those
+ * tested in the flow unit tests.
  *
  * <p>If the two sets are not identical, the getMismatchedExceptions() method on this class will
- * return a non-empty string containing messages about what the mismatches were and which lines
- * need to be added or removed in which files in order to satisfy the correspondence condition.
+ * return a non-empty string containing messages about what the mismatches were and which lines need
+ * to be added or removed in which files in order to satisfy the correspondence condition.
  */
 public class FlowContext {
   /** Represents one of the two possible places an exception may be referenced from. */
   // TODO(b/19124943): This enum is only used in ErrorCaseMismatch and ideally belongs there, but
   // can't go in the inner class because it's not a static inner class.  At some point it might
   // be worth refactoring so that this enum can be properly scoped.
-  private enum SourceType { JAVADOC, IMPORT }
+  private enum SourceType {
+    JAVADOC,
+    IMPORT
+  }
 
   /** The package in which this flow resides. */
   final String packageName;
@@ -80,8 +83,8 @@ public class FlowContext {
   final SetMultimap<ErrorCase, String> importExceptionsToFilenames;
 
   /**
-   * Creates a FlowContext from a FlowDocumentation object and a set of all possible exceptions.
-   * The latter parameter is needed in order to filter imported names in the flow test file.
+   * Creates a FlowContext from a FlowDocumentation object and a set of all possible exceptions. The
+   * latter parameter is needed in order to filter imported names in the flow test file.
    */
   public FlowContext(FlowDocumentation flowDoc, Set<ErrorCase> possibleExceptions)
       throws IOException {
@@ -101,7 +104,9 @@ public class FlowContext {
    */
   private static Set<String> getTestFilenames(String flowName) throws IOException {
     String commonPrefix =
-        getProjectRoot().resolve("core/src/test/java").resolve(flowName.replace('.', '/'))
+        getProjectRoot()
+            .resolve("core/src/test/java")
+            .resolve(flowName.replace('.', '/'))
             .toString();
     return Sets.union(
         getFilenamesMatchingGlob(commonPrefix + "*Test.java"),
@@ -109,7 +114,7 @@ public class FlowContext {
   }
 
   /**
-   * Helper to return the set of filenames matching the given glob.  The glob should only have
+   * Helper to return the set of filenames matching the given glob. The glob should only have
    * asterisks in the portion following the last slash (if there is one).
    */
   private static Set<String> getFilenamesMatchingGlob(String fullGlob) throws IOException {
@@ -135,25 +140,23 @@ public class FlowContext {
   }
 
   /**
-   * Returns the set of exceptions imported in this test file.  First extracts the set of
-   * all names imported by the test file, and then uses these to filter a global list of possible
-   * exceptions, so that the additional exception information available via the global list objects
-   * (which are ErrorCases wrapping exception names) can be preserved.
+   * Returns the set of exceptions imported in this test file. First extracts the set of all names
+   * imported by the test file, and then uses these to filter a global list of possible exceptions,
+   * so that the additional exception information available via the global list objects (which are
+   * ErrorCases wrapping exception names) can be preserved.
    */
   private Set<ErrorCase> getImportExceptionsFromFile(String filename) throws IOException {
     JavaDocBuilder builder = new JavaDocBuilder();
     JavaSource src = builder.addSource(new File(filename));
     final Set<String> importedNames = Sets.newHashSet(src.getImports());
-    return possibleExceptions
-        .stream()
+    return possibleExceptions.stream()
         .filter(errorCase -> importedNames.contains(errorCase.getClassName()))
         .collect(toImmutableSet());
   }
 
-
   /**
-   * Represents a mismatch in this flow for a specific error case and documents how to fix it.
-   * A mismatch occurs when the exception for this error case appears in either the source file
+   * Represents a mismatch in this flow for a specific error case and documents how to fix it. A
+   * mismatch occurs when the exception for this error case appears in either the source file
    * javadoc or at least one matching test file, but not in both.
    */
   private class ErrorCaseMismatch {
@@ -182,7 +185,7 @@ public class FlowContext {
     final SourceType removeType;
 
     /**
-     * Constructs an ErrorCaseMismatch for the given ErrorCase and SourceType.  The latter parameter
+     * Constructs an ErrorCaseMismatch for the given ErrorCase and SourceType. The latter parameter
      * indicates the source type this exception was referenced from.
      */
     public ErrorCaseMismatch(ErrorCase errorCase, SourceType foundType) {
@@ -206,8 +209,7 @@ public class FlowContext {
       if (filenames.size() == 1) {
         return filenames.stream().collect(onlyElement());
       }
-      return filenames
-          .stream()
+      return filenames.stream()
           .map(filename -> String.format(TEMPLATE_MULTIPLE_FILES, filename))
           .collect(joining(""));
     }
@@ -216,12 +218,10 @@ public class FlowContext {
     private String makeAddSection() {
       String addTypeString = Ascii.toLowerCase(addType.toString());
       String codeLine = getCodeLineAs(addType);
-      Set<String> files = (addType == SourceType.JAVADOC
-          ? ImmutableSet.of(sourceFilename)
-          : testFilenames);
+      Set<String> files =
+          (addType == SourceType.JAVADOC ? ImmutableSet.of(sourceFilename) : testFilenames);
       return (files.size() == 1
-          ? String.format(
-              TEMPLATE_ADD, addTypeString, formatMultipleFiles(files), codeLine)
+          ? String.format(TEMPLATE_ADD, addTypeString, formatMultipleFiles(files), codeLine)
           : String.format(
               TEMPLATE_ADD_MULTIPLE, addTypeString, formatMultipleFiles(files), codeLine));
     }
@@ -231,12 +231,12 @@ public class FlowContext {
     private String makeRemoveSection() {
       String removeTypeString = Ascii.toLowerCase(removeType.toString());
       String codeLine = getCodeLineAs(removeType);
-      Set<String> files = (removeType == SourceType.JAVADOC
-          ? ImmutableSet.of(sourceFilename)
-          : importExceptionsToFilenames.get(errorCase));
+      Set<String> files =
+          (removeType == SourceType.JAVADOC
+              ? ImmutableSet.of(sourceFilename)
+              : importExceptionsToFilenames.get(errorCase));
       return (files.size() == 1
-          ? String.format(
-              TEMPLATE_REMOVE, removeTypeString, formatMultipleFiles(files), codeLine)
+          ? String.format(TEMPLATE_REMOVE, removeTypeString, formatMultipleFiles(files), codeLine)
           : String.format(
               TEMPLATE_REMOVE_MULTIPLE, removeTypeString, formatMultipleFiles(files), codeLine));
     }
@@ -244,14 +244,15 @@ public class FlowContext {
     /** Returns a string describing the mismatch for this flow exception and how to fix it. */
     @Override
     public String toString() {
-      String headerSection = String.format(
-          TEMPLATE_HEADER, Ascii.toLowerCase(removeType.toString()), errorCase.getName());
+      String headerSection =
+          String.format(
+              TEMPLATE_HEADER, Ascii.toLowerCase(removeType.toString()), errorCase.getName());
       return headerSection + makeAddSection() + makeRemoveSection();
     }
   }
 
   /**
-   * Returns a single string describing all mismatched exceptions for this flow.  An empty string
+   * Returns a single string describing all mismatched exceptions for this flow. An empty string
    * means no mismatched exceptions were found.
    */
   public String getMismatchedExceptions() {

@@ -64,7 +64,7 @@ import org.joda.time.DateTime;
  * @error {@link DomainFlowUtils.TldDoesNotExistException}
  * @error {@link DomainClaimsCheckNotAllowedWithAllocationTokens}
  */
-@ReportingSpec(ActivityReportField.DOMAIN_CHECK)  // Claims check is a special domain check.
+@ReportingSpec(ActivityReportField.DOMAIN_CHECK) // Claims check is a special domain check.
 public final class DomainClaimsCheckFlow implements Flow {
 
   @Inject ExtensionManager extensionManager;
@@ -73,7 +73,11 @@ public final class DomainClaimsCheckFlow implements Flow {
   @Inject @ClientId String clientId;
   @Inject @Superuser boolean isSuperuser;
   @Inject Clock clock;
-  @Inject @Config("maxChecks") int maxChecks;
+
+  @Inject
+  @Config("maxChecks")
+  int maxChecks;
+
   @Inject EppResponse.Builder responseBuilder;
 
   @Inject

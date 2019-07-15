@@ -49,9 +49,9 @@ public class CollectionUtilsTest {
   @Test
   public void testPartitionMap() {
     Map<String, String> map = ImmutableMap.of("ka", "va", "kb", "vb", "kc", "vc");
-    assertThat(partitionMap(map, 2)).containsExactlyElementsIn(ImmutableList.of(
-        ImmutableMap.of("ka", "va", "kb", "vb"),
-        ImmutableMap.of("kc", "vc")));
+    assertThat(partitionMap(map, 2))
+        .containsExactlyElementsIn(
+            ImmutableList.of(ImmutableMap.of("ka", "va", "kb", "vb"), ImmutableMap.of("kc", "vc")));
   }
 
   @Test

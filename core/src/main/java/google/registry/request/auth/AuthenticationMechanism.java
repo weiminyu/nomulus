@@ -27,8 +27,8 @@ public interface AuthenticationMechanism {
    * Attempt to authenticate an incoming request.
    *
    * @param request the request to be authenticated
-   * @return the results of the authentication check; if the request could not be authenticated,
-   *     the mechanism should return AuthResult.NOT_AUTHENTICATED
+   * @return the results of the authentication check; if the request could not be authenticated, the
+   *     mechanism should return AuthResult.NOT_AUTHENTICATED
    */
   AuthResult authenticate(HttpServletRequest request);
 }

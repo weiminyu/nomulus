@@ -133,8 +133,7 @@ public final class ConsoleOteSetupAction implements Runnable {
     logger.atInfo().log(
         "User %s is accessing the OT&E setup page. Method= %s",
         registrarAccessor.userIdForLogging(), method);
-    checkState(
-        !RegistryEnvironment.get().equals(PRODUCTION), "Can't create OT&E in prod");
+    checkState(!RegistryEnvironment.get().equals(PRODUCTION), "Can't create OT&E in prod");
     if (!authResult.userAuthInfo().isPresent()) {
       response.setStatus(SC_MOVED_TEMPORARILY);
       String location;

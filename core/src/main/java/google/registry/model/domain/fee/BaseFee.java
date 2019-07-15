@@ -78,13 +78,11 @@ public abstract class BaseFee extends ImmutableObject {
 
     boolean matchFormatString(String description) {
       return new ImmutableList.Builder<String>()
-          .add(formatString)
-          .addAll(extraAcceptableDescriptions)
-          .build()
-          .stream()
-          .anyMatch(
-              expectedDescription ->
-                  Ascii.toLowerCase(description).contains(Ascii.toLowerCase(expectedDescription)));
+          .add(formatString).addAll(extraAcceptableDescriptions).build().stream()
+              .anyMatch(
+                  expectedDescription ->
+                      Ascii.toLowerCase(description)
+                          .contains(Ascii.toLowerCase(expectedDescription)));
     }
   }
 

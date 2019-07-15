@@ -143,14 +143,14 @@ public final class DomainUpdateFlow implements TransactionalFlow {
   @Inject EppResponse.Builder responseBuilder;
   @Inject DomainUpdateFlowCustomLogic flowCustomLogic;
   @Inject DomainPricingLogic pricingLogic;
-  @Inject DomainUpdateFlow() {}
+
+  @Inject
+  DomainUpdateFlow() {}
 
   @Override
   public EppResponse run() throws EppException {
     extensionManager.register(
-        FeeUpdateCommandExtension.class,
-        MetadataExtension.class,
-        SecDnsUpdateExtension.class);
+        FeeUpdateCommandExtension.class, MetadataExtension.class, SecDnsUpdateExtension.class);
     flowCustomLogic.beforeValidation();
     extensionManager.validate();
     validateClientIsLoggedIn(clientId);
@@ -202,14 +202,11 @@ public final class DomainUpdateFlow implements TransactionalFlow {
     FeesAndCredits feesAndCredits = pricingLogic.getUpdatePrice(registry, targetId, now);
     validateFeesAckedIfPresent(feeUpdate, feesAndCredits);
     verifyNotInPendingDelete(
-        add.getContacts(),
-        command.getInnerChange().getRegistrant(),
-        add.getNameservers());
+        add.getContacts(), command.getInnerChange().getRegistrant(), add.getNameservers());
     validateContactsHaveTypes(add.getContacts());
     validateContactsHaveTypes(remove.getContacts());
     validateRegistrantAllowedOnTld(tld, command.getInnerChange().getRegistrantContactId());
-    validateNameserversAllowedOnTld(
-        tld, add.getNameserverFullyQualifiedHostNames());
+    validateNameserversAllowedOnTld(tld, add.getNameserverFullyQualifiedHostNames());
   }
 
   private HistoryEntry buildHistoryEntry(DomainBase existingDomain, DateTime now) {
@@ -270,26 +267,24 @@ public final class DomainUpdateFlow implements TransactionalFlow {
 
   /** Some status updates cost money. Bill only once no matter how many of them are changed. */
   private Optional<BillingEvent.OneTime> createBillingEventForStatusUpdates(
-      DomainBase existingDomain,
-      DomainBase newDomain,
-      HistoryEntry historyEntry,
-      DateTime now) {
+      DomainBase existingDomain, DomainBase newDomain, HistoryEntry historyEntry, DateTime now) {
     Optional<MetadataExtension> metadataExtension =
         eppInput.getSingleExtension(MetadataExtension.class);
     if (metadataExtension.isPresent() && metadataExtension.get().getRequestedByRegistrar()) {
-      for (StatusValue statusValue
-          : symmetricDifference(existingDomain.getStatusValues(), newDomain.getStatusValues())) {
+      for (StatusValue statusValue :
+          symmetricDifference(existingDomain.getStatusValues(), newDomain.getStatusValues())) {
         if (statusValue.isChargedStatus()) {
           // Only charge once.
-          return Optional.of(new BillingEvent.OneTime.Builder()
-              .setReason(Reason.SERVER_STATUS)
-              .setTargetId(targetId)
-              .setClientId(clientId)
-              .setCost(Registry.get(existingDomain.getTld()).getServerStatusChangeCost())
-              .setEventTime(now)
-              .setBillingTime(now)
-              .setParent(historyEntry)
-              .build());
+          return Optional.of(
+              new BillingEvent.OneTime.Builder()
+                  .setReason(Reason.SERVER_STATUS)
+                  .setTargetId(targetId)
+                  .setClientId(clientId)
+                  .setCost(Registry.get(existingDomain.getTld()).getServerStatusChangeCost())
+                  .setEventTime(now)
+                  .setBillingTime(now)
+                  .setParent(historyEntry)
+                  .build());
         }
       }
     }

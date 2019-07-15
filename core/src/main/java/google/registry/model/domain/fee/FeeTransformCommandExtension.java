@@ -26,8 +26,8 @@ import org.joda.money.CurrencyUnit;
 
 /** Base class for general transform commands with fees (create, renew, update, transfer). */
 @XmlTransient
-public abstract class FeeTransformCommandExtension
-    extends ImmutableObject implements CommandExtension {
+public abstract class FeeTransformCommandExtension extends ImmutableObject
+    implements CommandExtension {
 
   /** The currency of the fee. */
   CurrencyUnit currency;

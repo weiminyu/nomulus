@@ -42,8 +42,13 @@ public final class TmchSmdrlAction implements Runnable {
   private static final String SMDRL_SIG_PATH = "/smdrl/smdrl-latest.sig";
 
   @Inject Marksdb marksdb;
-  @Inject @Key("marksdbSmdrlLoginAndPassword") Optional<String> marksdbSmdrlLoginAndPassword;
-  @Inject TmchSmdrlAction() {}
+
+  @Inject
+  @Key("marksdbSmdrlLoginAndPassword")
+  Optional<String> marksdbSmdrlLoginAndPassword;
+
+  @Inject
+  TmchSmdrlAction() {}
 
   /** Synchronously fetches latest signed mark revocation list and saves it to Datastore. */
   @Override

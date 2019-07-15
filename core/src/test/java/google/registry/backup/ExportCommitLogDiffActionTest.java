@@ -49,10 +49,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class ExportCommitLogDiffActionTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   /** Local GCS service available for testing. */
   private final GcsService gcsService = GcsServiceFactory.createGcsService();
@@ -74,12 +71,11 @@ public class ExportCommitLogDiffActionTest {
     task.lowerCheckpointTime = oneMinuteAgo;
     task.upperCheckpointTime = now;
 
-    persistResource(CommitLogCheckpoint.create(
-        oneMinuteAgo,
-        ImmutableMap.of(1, oneMinuteAgo, 2, oneMinuteAgo, 3, oneMinuteAgo)));
-    CommitLogCheckpoint upperCheckpoint = persistResource(CommitLogCheckpoint.create(
-        now,
-        ImmutableMap.of(1, now, 2, now, 3, now)));
+    persistResource(
+        CommitLogCheckpoint.create(
+            oneMinuteAgo, ImmutableMap.of(1, oneMinuteAgo, 2, oneMinuteAgo, 3, oneMinuteAgo)));
+    CommitLogCheckpoint upperCheckpoint =
+        persistResource(CommitLogCheckpoint.create(now, ImmutableMap.of(1, now, 2, now, 3, now)));
 
     // Don't persist any manifests or mutations.
 
@@ -87,7 +83,8 @@ public class ExportCommitLogDiffActionTest {
 
     GcsFilename expectedFilename = new GcsFilename("gcs bucket", "commit_diff_until_" + now);
     assertWithMessage("GCS file not found: " + expectedFilename)
-        .that(gcsService.getMetadata(expectedFilename)).isNotNull();
+        .that(gcsService.getMetadata(expectedFilename))
+        .isNotNull();
     assertThat(gcsService.getMetadata(expectedFilename).getOptions().getUserMetadata())
         .containsExactly(
             LOWER_BOUND_CHECKPOINT,
@@ -109,24 +106,27 @@ public class ExportCommitLogDiffActionTest {
     // Persist the lower and upper checkpoints, with 3 buckets each and staggered times. We respect
     // the real invariant that the time for bucket n in the lower checkpoint is <= the time for
     // that bucket in the upper.
-    persistResource(CommitLogCheckpoint.create(
-        oneMinuteAgo,
-        ImmutableMap.of(
-            1, oneMinuteAgo,
-            2, oneMinuteAgo.minusDays(1),
-            3, oneMinuteAgo.minusDays(2))));
-    CommitLogCheckpoint upperCheckpoint = persistResource(CommitLogCheckpoint.create(
-        now,
-        ImmutableMap.of(
-            1, now,
-            2, now.minusDays(1),
-            3, oneMinuteAgo.minusDays(2))));  // Note that this matches the lower bound.
+    persistResource(
+        CommitLogCheckpoint.create(
+            oneMinuteAgo,
+            ImmutableMap.of(
+                1, oneMinuteAgo,
+                2, oneMinuteAgo.minusDays(1),
+                3, oneMinuteAgo.minusDays(2))));
+    CommitLogCheckpoint upperCheckpoint =
+        persistResource(
+            CommitLogCheckpoint.create(
+                now,
+                ImmutableMap.of(
+                    1, now,
+                    2, now.minusDays(1),
+                    3, oneMinuteAgo.minusDays(2)))); // Note that this matches the lower bound.
 
     // Persist some fake commit log manifests.
     // These shouldn't be in the diff because the lower bound is exclusive.
     persistManifestAndMutation(1, oneMinuteAgo);
     persistManifestAndMutation(2, oneMinuteAgo.minusDays(1));
-    persistManifestAndMutation(3, oneMinuteAgo.minusDays(2));  // Even though it's == upper bound.
+    persistManifestAndMutation(3, oneMinuteAgo.minusDays(2)); // Even though it's == upper bound.
     // These shouldn't be in the diff because they are above the upper bound.
     persistManifestAndMutation(1, now.plusMillis(1));
     persistManifestAndMutation(2, now.minusDays(1).plusMillis(1));
@@ -142,7 +142,8 @@ public class ExportCommitLogDiffActionTest {
 
     GcsFilename expectedFilename = new GcsFilename("gcs bucket", "commit_diff_until_" + now);
     assertWithMessage("GCS file not found: " + expectedFilename)
-        .that(gcsService.getMetadata(expectedFilename)).isNotNull();
+        .that(gcsService.getMetadata(expectedFilename))
+        .isNotNull();
     assertThat(gcsService.getMetadata(expectedFilename).getOptions().getUserMetadata())
         .containsExactly(
             LOWER_BOUND_CHECKPOINT,
@@ -159,17 +160,18 @@ public class ExportCommitLogDiffActionTest {
     CommitLogManifest manifest2 = createManifest(2, now.minusDays(1));
     CommitLogManifest manifest3 = createManifest(1, now.minusMillis(1));
     CommitLogManifest manifest4 = createManifest(1, now);
-    assertThat(exported).containsExactly(
-        upperCheckpoint,
-        manifest1,
-        createMutation(manifest1),
-        manifest2,
-        createMutation(manifest2),
-        manifest3,
-        createMutation(manifest3),
-        manifest4,
-        createMutation(manifest4))
-            .inOrder();
+    assertThat(exported)
+        .containsExactly(
+            upperCheckpoint,
+            manifest1,
+            createMutation(manifest1),
+            manifest2,
+            createMutation(manifest2),
+            manifest3,
+            createMutation(manifest3),
+            manifest4,
+            createMutation(manifest4))
+        .inOrder();
   }
 
   @Test
@@ -177,12 +179,11 @@ public class ExportCommitLogDiffActionTest {
     task.lowerCheckpointTime = oneMinuteAgo;
     task.upperCheckpointTime = now;
 
-    persistResource(CommitLogCheckpoint.create(
-        oneMinuteAgo,
-        ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
-    CommitLogCheckpoint upperCheckpoint = persistResource(CommitLogCheckpoint.create(
-        now,
-        ImmutableMap.of(1, now, 2, now, 3, now)));
+    persistResource(
+        CommitLogCheckpoint.create(
+            oneMinuteAgo, ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
+    CommitLogCheckpoint upperCheckpoint =
+        persistResource(CommitLogCheckpoint.create(now, ImmutableMap.of(1, now, 2, now, 3, now)));
 
     // Persist some fake commit log manifests that are at the same time but in different buckets.
     persistManifestAndMutation(1, oneMinuteAgo);
@@ -194,7 +195,8 @@ public class ExportCommitLogDiffActionTest {
 
     GcsFilename expectedFilename = new GcsFilename("gcs bucket", "commit_diff_until_" + now);
     assertWithMessage("GCS file not found: " + expectedFilename)
-        .that(gcsService.getMetadata(expectedFilename)).isNotNull();
+        .that(gcsService.getMetadata(expectedFilename))
+        .isNotNull();
     assertThat(gcsService.getMetadata(expectedFilename).getOptions().getUserMetadata())
         .containsExactly(
             LOWER_BOUND_CHECKPOINT,
@@ -211,17 +213,18 @@ public class ExportCommitLogDiffActionTest {
     CommitLogManifest manifest2 = createManifest(2, oneMinuteAgo);
     CommitLogManifest manifest3 = createManifest(1, now);
     CommitLogManifest manifest4 = createManifest(2, now);
-    assertThat(exported).containsExactly(
-        upperCheckpoint,
-        manifest1,
-        createMutation(manifest1),
-        manifest2,
-        createMutation(manifest2),
-        manifest3,
-        createMutation(manifest3),
-        manifest4,
-        createMutation(manifest4))
-            .inOrder();
+    assertThat(exported)
+        .containsExactly(
+            upperCheckpoint,
+            manifest1,
+            createMutation(manifest1),
+            manifest2,
+            createMutation(manifest2),
+            manifest3,
+            createMutation(manifest3),
+            manifest4,
+            createMutation(manifest4))
+        .inOrder();
   }
 
   @Test
@@ -230,12 +233,11 @@ public class ExportCommitLogDiffActionTest {
     task.lowerCheckpointTime = oneMinuteAgo;
     task.upperCheckpointTime = now;
 
-    persistResource(CommitLogCheckpoint.create(
-        oneMinuteAgo,
-        ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
-    CommitLogCheckpoint upperCheckpoint = persistResource(CommitLogCheckpoint.create(
-        now,
-        ImmutableMap.of(1, now, 2, now, 3, now)));
+    persistResource(
+        CommitLogCheckpoint.create(
+            oneMinuteAgo, ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
+    CommitLogCheckpoint upperCheckpoint =
+        persistResource(CommitLogCheckpoint.create(now, ImmutableMap.of(1, now, 2, now, 3, now)));
 
     // Persist some fake commit log manifests.
     persistManifestAndMutation(1, oneMinuteAgo);
@@ -249,7 +251,8 @@ public class ExportCommitLogDiffActionTest {
 
     GcsFilename expectedFilename = new GcsFilename("gcs bucket", "commit_diff_until_" + now);
     assertWithMessage("GCS file not found: " + expectedFilename)
-        .that(gcsService.getMetadata(expectedFilename)).isNotNull();
+        .that(gcsService.getMetadata(expectedFilename))
+        .isNotNull();
     assertThat(gcsService.getMetadata(expectedFilename).getOptions().getUserMetadata())
         .containsExactly(
             LOWER_BOUND_CHECKPOINT,
@@ -268,21 +271,22 @@ public class ExportCommitLogDiffActionTest {
     CommitLogManifest manifest4 = createManifest(1, now);
     CommitLogManifest manifest5 = createManifest(2, now);
     CommitLogManifest manifest6 = createManifest(3, now);
-    assertThat(exported).containsExactly(
-        upperCheckpoint,
-        manifest1,
-        createMutation(manifest1),
-        manifest2,
-        createMutation(manifest2),
-        manifest3,
-        createMutation(manifest3),
-        manifest4,
-        createMutation(manifest4),
-        manifest5,
-        createMutation(manifest5),
-        manifest6,
-        createMutation(manifest6))
-            .inOrder();
+    assertThat(exported)
+        .containsExactly(
+            upperCheckpoint,
+            manifest1,
+            createMutation(manifest1),
+            manifest2,
+            createMutation(manifest2),
+            manifest3,
+            createMutation(manifest3),
+            manifest4,
+            createMutation(manifest4),
+            manifest5,
+            createMutation(manifest5),
+            manifest6,
+            createMutation(manifest6))
+        .inOrder();
   }
 
   @Test
@@ -290,12 +294,13 @@ public class ExportCommitLogDiffActionTest {
     task.lowerCheckpointTime = oneMinuteAgo;
     task.upperCheckpointTime = now;
 
-    persistResource(CommitLogCheckpoint.create(
-        oneMinuteAgo,
-        ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
-    CommitLogCheckpoint upperCheckpoint = persistResource(CommitLogCheckpoint.create(
-        now,
-        ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
+    persistResource(
+        CommitLogCheckpoint.create(
+            oneMinuteAgo, ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
+    CommitLogCheckpoint upperCheckpoint =
+        persistResource(
+            CommitLogCheckpoint.create(
+                now, ImmutableMap.of(1, START_OF_TIME, 2, START_OF_TIME, 3, START_OF_TIME)));
 
     // Don't persist any commit log manifests; we're just checking that the task runs correctly
     // even if the upper timestamp contains START_OF_TIME values.
@@ -304,7 +309,8 @@ public class ExportCommitLogDiffActionTest {
 
     GcsFilename expectedFilename = new GcsFilename("gcs bucket", "commit_diff_until_" + now);
     assertWithMessage("GCS file not found: " + expectedFilename)
-        .that(gcsService.getMetadata(expectedFilename)).isNotNull();
+        .that(gcsService.getMetadata(expectedFilename))
+        .isNotNull();
     assertThat(gcsService.getMetadata(expectedFilename).getOptions().getUserMetadata())
         .containsExactly(
             LOWER_BOUND_CHECKPOINT,
@@ -406,12 +412,11 @@ public class ExportCommitLogDiffActionTest {
     task.lowerCheckpointTime = START_OF_TIME;
     task.upperCheckpointTime = now;
 
-    CommitLogCheckpoint upperCheckpoint = persistResource(CommitLogCheckpoint.create(
-        now,
-        ImmutableMap.of(1, now, 2, now, 3, now)));
+    CommitLogCheckpoint upperCheckpoint =
+        persistResource(CommitLogCheckpoint.create(now, ImmutableMap.of(1, now, 2, now, 3, now)));
 
     // Persist some fake commit log manifests.
-    persistManifestAndMutation(1, START_OF_TIME.plusMillis(1));  // Oldest possible manifest time.
+    persistManifestAndMutation(1, START_OF_TIME.plusMillis(1)); // Oldest possible manifest time.
     persistManifestAndMutation(2, oneMinuteAgo);
     persistManifestAndMutation(3, now);
 
@@ -419,7 +424,8 @@ public class ExportCommitLogDiffActionTest {
 
     GcsFilename expectedFilename = new GcsFilename("gcs bucket", "commit_diff_until_" + now);
     assertWithMessage("GCS file not found: " + expectedFilename)
-        .that(gcsService.getMetadata(expectedFilename)).isNotNull();
+        .that(gcsService.getMetadata(expectedFilename))
+        .isNotNull();
     assertThat(gcsService.getMetadata(expectedFilename).getOptions().getUserMetadata())
         .containsExactly(
             LOWER_BOUND_CHECKPOINT,
@@ -435,15 +441,16 @@ public class ExportCommitLogDiffActionTest {
     CommitLogManifest manifest1 = createManifest(1, START_OF_TIME.plusMillis(1));
     CommitLogManifest manifest2 = createManifest(2, oneMinuteAgo);
     CommitLogManifest manifest3 = createManifest(3, now);
-    assertThat(exported).containsExactly(
-        upperCheckpoint,
-        manifest1,
-        createMutation(manifest1),
-        manifest2,
-        createMutation(manifest2),
-        manifest3,
-        createMutation(manifest3))
-            .inOrder();
+    assertThat(exported)
+        .containsExactly(
+            upperCheckpoint,
+            manifest1,
+            createMutation(manifest1),
+            manifest2,
+            createMutation(manifest2),
+            manifest3,
+            createMutation(manifest3))
+        .inOrder();
   }
 
   private CommitLogManifest createManifest(int bucketNum, DateTime commitTime) {
@@ -452,12 +459,10 @@ public class ExportCommitLogDiffActionTest {
 
   private CommitLogMutation createMutation(CommitLogManifest manifest) {
     return CommitLogMutation.create(
-        Key.create(manifest),
-        TestObject.create(manifest.getCommitTime().toString()));
+        Key.create(manifest), TestObject.create(manifest.getCommitTime().toString()));
   }
 
   private void persistManifestAndMutation(int bucketNum, DateTime commitTime) {
-    persistResource(
-        createMutation(persistResource(createManifest(bucketNum, commitTime))));
+    persistResource(createMutation(persistResource(createManifest(bucketNum, commitTime))));
   }
 }

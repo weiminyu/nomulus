@@ -64,8 +64,7 @@ public class DeleteProberDataActionTest extends MapreduceTestCase<DeleteProberDa
 
   private static final DateTime DELETION_TIME = DateTime.parse("2010-01-01T00:00:00.000Z");
 
-  @Rule
-  public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
+  @Rule public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
 
   @Before
   public void init() {
@@ -189,32 +188,32 @@ public class DeleteProberDataActionTest extends MapreduceTestCase<DeleteProberDa
 
   @Test
   public void testSuccess_activeDomain_isSoftDeleted() throws Exception {
-    DomainBase domain = persistResource(
-        newDomainBase("blah.ib-any.test")
-            .asBuilder()
-            .setCreationTimeForTest(DateTime.now(UTC).minusYears(1))
-            .build());
+    DomainBase domain =
+        persistResource(
+            newDomainBase("blah.ib-any.test")
+                .asBuilder()
+                .setCreationTimeForTest(DateTime.now(UTC).minusYears(1))
+                .build());
     runMapreduce();
     DateTime timeAfterDeletion = DateTime.now(UTC);
-    assertThat(loadByForeignKey(DomainBase.class, "blah.ib-any.test", timeAfterDeletion))
-        .isEmpty();
+    assertThat(loadByForeignKey(DomainBase.class, "blah.ib-any.test", timeAfterDeletion)).isEmpty();
     assertThat(ofy().load().entity(domain).now().getDeletionTime()).isLessThan(timeAfterDeletion);
     assertDnsTasksEnqueued("blah.ib-any.test");
   }
 
   @Test
   public void testSuccess_activeDomain_doubleMapSoftDeletes() throws Exception {
-    DomainBase domain = persistResource(
-        newDomainBase("blah.ib-any.test")
-            .asBuilder()
-            .setCreationTimeForTest(DateTime.now(UTC).minusYears(1))
-            .build());
+    DomainBase domain =
+        persistResource(
+            newDomainBase("blah.ib-any.test")
+                .asBuilder()
+                .setCreationTimeForTest(DateTime.now(UTC).minusYears(1))
+                .build());
     runMapreduce();
     DateTime timeAfterDeletion = DateTime.now(UTC);
     resetAction();
     runMapreduce();
-    assertThat(loadByForeignKey(DomainBase.class, "blah.ib-any.test", timeAfterDeletion))
-        .isEmpty();
+    assertThat(loadByForeignKey(DomainBase.class, "blah.ib-any.test", timeAfterDeletion)).isEmpty();
     assertThat(ofy().load().entity(domain).now().getDeletionTime()).isLessThan(timeAfterDeletion);
     assertDnsTasksEnqueued("blah.ib-any.test");
   }
@@ -235,11 +234,12 @@ public class DeleteProberDataActionTest extends MapreduceTestCase<DeleteProberDa
 
   @Test
   public void testDryRun_doesntSoftDeleteData() throws Exception {
-    DomainBase domain = persistResource(
-        newDomainBase("blah.ib-any.test")
-            .asBuilder()
-            .setCreationTimeForTest(DateTime.now(UTC).minusYears(1))
-            .build());
+    DomainBase domain =
+        persistResource(
+            newDomainBase("blah.ib-any.test")
+                .asBuilder()
+                .setCreationTimeForTest(DateTime.now(UTC).minusYears(1))
+                .build());
     action.isDryRun = true;
     runMapreduce();
     assertThat(ofy().load().entity(domain).now().getDeletionTime()).isEqualTo(END_OF_TIME);
@@ -280,35 +280,36 @@ public class DeleteProberDataActionTest extends MapreduceTestCase<DeleteProberDa
    */
   private static Set<ImmutableObject> persistDomainAndDescendants(String fqdn) {
     DomainBase domain = persistDeletedDomain(fqdn, DELETION_TIME);
-    HistoryEntry historyEntry = persistSimpleResource(
-        new HistoryEntry.Builder()
-            .setParent(domain)
-            .setType(HistoryEntry.Type.DOMAIN_CREATE)
-            .build());
-    BillingEvent.OneTime billingEvent = persistSimpleResource(
-        new BillingEvent.OneTime.Builder()
-            .setParent(historyEntry)
-            .setBillingTime(DELETION_TIME.plusYears(1))
-            .setCost(Money.parse("USD 10"))
-            .setPeriodYears(1)
-            .setReason(Reason.CREATE)
-            .setClientId("TheRegistrar")
-            .setEventTime(DELETION_TIME)
-            .setTargetId(fqdn)
-            .build());
-    PollMessage.OneTime pollMessage = persistSimpleResource(
-        new PollMessage.OneTime.Builder()
-            .setParent(historyEntry)
-            .setEventTime(DELETION_TIME)
-            .setClientId("TheRegistrar")
-            .setMsg("Domain registered")
-            .build());
-    ForeignKeyIndex<DomainBase> fki =
-        ForeignKeyIndex.load(DomainBase.class, fqdn, START_OF_TIME);
+    HistoryEntry historyEntry =
+        persistSimpleResource(
+            new HistoryEntry.Builder()
+                .setParent(domain)
+                .setType(HistoryEntry.Type.DOMAIN_CREATE)
+                .build());
+    BillingEvent.OneTime billingEvent =
+        persistSimpleResource(
+            new BillingEvent.OneTime.Builder()
+                .setParent(historyEntry)
+                .setBillingTime(DELETION_TIME.plusYears(1))
+                .setCost(Money.parse("USD 10"))
+                .setPeriodYears(1)
+                .setReason(Reason.CREATE)
+                .setClientId("TheRegistrar")
+                .setEventTime(DELETION_TIME)
+                .setTargetId(fqdn)
+                .build());
+    PollMessage.OneTime pollMessage =
+        persistSimpleResource(
+            new PollMessage.OneTime.Builder()
+                .setParent(historyEntry)
+                .setEventTime(DELETION_TIME)
+                .setClientId("TheRegistrar")
+                .setMsg("Domain registered")
+                .build());
+    ForeignKeyIndex<DomainBase> fki = ForeignKeyIndex.load(DomainBase.class, fqdn, START_OF_TIME);
     EppResourceIndex eppIndex =
         ofy().load().entity(EppResourceIndex.create(Key.create(domain))).now();
-    return ImmutableSet.of(
-        domain, historyEntry, billingEvent, pollMessage, fki, eppIndex);
+    return ImmutableSet.of(domain, historyEntry, billingEvent, pollMessage, fki, eppIndex);
   }
 
   private static Set<ImmutableObject> persistLotsOfDomains(String tld) {

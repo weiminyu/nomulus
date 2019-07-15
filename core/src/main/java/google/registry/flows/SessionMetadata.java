@@ -21,8 +21,8 @@ public interface SessionMetadata {
 
   /**
    * Invalidates the session. A new instance must be created after this for future sessions.
-   * Attempts to invoke methods of this class after this method has been called will throw
-   * {@code IllegalStateException}.
+   * Attempts to invoke methods of this class after this method has been called will throw {@code
+   * IllegalStateException}.
    */
   void invalidate();
 

@@ -47,11 +47,10 @@ public class LaunchNotice extends ImmutableObject {
   public static class NoticeIdType extends ImmutableObject {
 
     /**
-     * The Trademark Claims Notice ID from
-     * {@link "http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.3"}.
+     * The Trademark Claims Notice ID from {@link
+     * "http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.3"}.
      */
-    @XmlValue
-    String tcnId;
+    @XmlValue String tcnId;
 
     /** The identifier of the TMDB provider to use, defaulting to the TMCH. */
     @IgnoreSave(IfNull.class)

@@ -71,11 +71,11 @@ import javax.xml.bind.annotation.XmlType;
  * The EppResponse class represents an EPP response message.
  *
  * <p>From the RFC: "An EPP server responds to a client command by returning a response to the
- * client.  EPP commands are atomic, so a command will either succeed completely or fail completely.
+ * client. EPP commands are atomic, so a command will either succeed completely or fail completely.
  * Success and failure results MUST NOT be mixed."
  *
- * @see <a href="http://tools.ietf.org/html/rfc5730#section-2.6">
- *     RFC 5730 - EPP - Response Format</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5730#section-2.6">RFC 5730 - EPP - Response
+ *     Format</a>
  */
 @XmlType(propOrder = {"result", "messageQueueInfo", "resData", "extensions", "trid"})
 public class EppResponse extends ImmutableObject implements ResponseOrGreeting {
@@ -117,28 +117,29 @@ public class EppResponse extends ImmutableObject implements ResponseOrGreeting {
 
   /** Zero or more response extensions. */
   @XmlElementRefs({
-      @XmlElementRef(type = FeeCheckResponseExtensionV06.class),
-      @XmlElementRef(type = FeeInfoResponseExtensionV06.class),
-      @XmlElementRef(type = FeeCreateResponseExtensionV06.class),
-      @XmlElementRef(type = FeeDeleteResponseExtensionV06.class),
-      @XmlElementRef(type = FeeRenewResponseExtensionV06.class),
-      @XmlElementRef(type = FeeTransferResponseExtensionV06.class),
-      @XmlElementRef(type = FeeUpdateResponseExtensionV06.class),
-      @XmlElementRef(type = FeeCheckResponseExtensionV11.class),
-      @XmlElementRef(type = FeeCreateResponseExtensionV11.class),
-      @XmlElementRef(type = FeeDeleteResponseExtensionV11.class),
-      @XmlElementRef(type = FeeRenewResponseExtensionV11.class),
-      @XmlElementRef(type = FeeTransferResponseExtensionV11.class),
-      @XmlElementRef(type = FeeUpdateResponseExtensionV11.class),
-      @XmlElementRef(type = FeeCheckResponseExtensionV12.class),
-      @XmlElementRef(type = FeeCreateResponseExtensionV12.class),
-      @XmlElementRef(type = FeeDeleteResponseExtensionV12.class),
-      @XmlElementRef(type = FeeRenewResponseExtensionV12.class),
-      @XmlElementRef(type = FeeTransferResponseExtensionV12.class),
-      @XmlElementRef(type = FeeUpdateResponseExtensionV12.class),
-      @XmlElementRef(type = LaunchCheckResponseExtension.class),
-      @XmlElementRef(type = RgpInfoExtension.class),
-      @XmlElementRef(type = SecDnsInfoExtension.class) })
+    @XmlElementRef(type = FeeCheckResponseExtensionV06.class),
+    @XmlElementRef(type = FeeInfoResponseExtensionV06.class),
+    @XmlElementRef(type = FeeCreateResponseExtensionV06.class),
+    @XmlElementRef(type = FeeDeleteResponseExtensionV06.class),
+    @XmlElementRef(type = FeeRenewResponseExtensionV06.class),
+    @XmlElementRef(type = FeeTransferResponseExtensionV06.class),
+    @XmlElementRef(type = FeeUpdateResponseExtensionV06.class),
+    @XmlElementRef(type = FeeCheckResponseExtensionV11.class),
+    @XmlElementRef(type = FeeCreateResponseExtensionV11.class),
+    @XmlElementRef(type = FeeDeleteResponseExtensionV11.class),
+    @XmlElementRef(type = FeeRenewResponseExtensionV11.class),
+    @XmlElementRef(type = FeeTransferResponseExtensionV11.class),
+    @XmlElementRef(type = FeeUpdateResponseExtensionV11.class),
+    @XmlElementRef(type = FeeCheckResponseExtensionV12.class),
+    @XmlElementRef(type = FeeCreateResponseExtensionV12.class),
+    @XmlElementRef(type = FeeDeleteResponseExtensionV12.class),
+    @XmlElementRef(type = FeeRenewResponseExtensionV12.class),
+    @XmlElementRef(type = FeeTransferResponseExtensionV12.class),
+    @XmlElementRef(type = FeeUpdateResponseExtensionV12.class),
+    @XmlElementRef(type = LaunchCheckResponseExtension.class),
+    @XmlElementRef(type = RgpInfoExtension.class),
+    @XmlElementRef(type = SecDnsInfoExtension.class)
+  })
   @XmlElementWrapper(name = "extension")
   ImmutableList<? extends ResponseExtension> extensions;
 
@@ -156,8 +157,8 @@ public class EppResponse extends ImmutableObject implements ResponseOrGreeting {
   }
 
   @Nullable
-  public ResponseExtension
-      getFirstExtensionOfType(ImmutableList<Class<? extends ResponseExtension>> classes) {
+  public ResponseExtension getFirstExtensionOfType(
+      ImmutableList<Class<? extends ResponseExtension>> classes) {
     for (Class<? extends ResponseExtension> clazz : classes) {
       ResponseExtension extension = getFirstExtensionOfType(clazz);
       if (extension != null) {
@@ -169,8 +170,8 @@ public class EppResponse extends ImmutableObject implements ResponseOrGreeting {
 
   @SafeVarargs
   @Nullable
-  public final ResponseExtension
-      getFirstExtensionOfType(Class<? extends ResponseExtension>... classes) {
+  public final ResponseExtension getFirstExtensionOfType(
+      Class<? extends ResponseExtension>... classes) {
     return getFirstExtensionOfType(ImmutableList.copyOf(classes));
   }
 

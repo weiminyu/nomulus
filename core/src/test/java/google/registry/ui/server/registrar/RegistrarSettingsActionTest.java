@@ -55,8 +55,7 @@ import org.mockito.ArgumentCaptor;
 @RunWith(JUnit4.class)
 public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase {
 
-  @Rule
-  public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
+  @Rule public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
 
   @Test
   public void testSuccess_updateRegistrarInfo_andSendsNotificationEmail() throws Exception {
@@ -69,22 +68,28 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
     ArgumentCaptor<EmailMessage> contentCaptor = ArgumentCaptor.forClass(EmailMessage.class);
     verify(emailService).sendEmail(contentCaptor.capture());
     assertThat(contentCaptor.getValue().body()).isEqualTo(expectedEmailBody);
-    assertTasksEnqueued("sheet", new TaskMatcher()
-        .url(SyncRegistrarsSheetAction.PATH)
-        .method("GET")
-        .header("Host", "backend.hostname"));
+    assertTasksEnqueued(
+        "sheet",
+        new TaskMatcher()
+            .url(SyncRegistrarsSheetAction.PATH)
+            .method("GET")
+            .header("Host", "backend.hostname"));
     assertMetric(CLIENT_ID, "update", "[OWNER]", "SUCCESS");
   }
 
   @Test
   public void testFailure_updateRegistrarInfo_duplicateContacts() {
-    Map<String, Object> response = action.handleJsonRequest(
-        readJsonFromFile("update_registrar_duplicate_contacts.json", getLastUpdateTime()));
-    assertThat(response).containsExactly(
-        "status", "ERROR",
-        "results", ImmutableList.of(),
-        "message",
-        "One email address (etphonehome@example.com) cannot be used for multiple contacts");
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            readJsonFromFile("update_registrar_duplicate_contacts.json", getLastUpdateTime()));
+    assertThat(response)
+        .containsExactly(
+            "status",
+            "ERROR",
+            "results",
+            ImmutableList.of(),
+            "message",
+            "One email address (etphonehome@example.com) cannot be used for multiple contacts");
     assertNoTasksEnqueued("sheet");
     assertMetric(CLIENT_ID, "update", "[OWNER]", "ERROR: ContactRequirementException");
   }
@@ -123,16 +128,19 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
     Map<String, Object> args = Maps.newHashMap(loadRegistrar(CLIENT_ID).toJsonMap());
     args.remove("lastUpdateTime");
 
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", args));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of(
+                "op", "update",
+                "id", CLIENT_ID,
+                "args", args));
 
-    assertThat(response).containsExactly(
-        "status", "ERROR",
-        "field", "lastUpdateTime",
-        "results", ImmutableList.of(),
-        "message", "This field is required.");
+    assertThat(response)
+        .containsExactly(
+            "status", "ERROR",
+            "field", "lastUpdateTime",
+            "results", ImmutableList.of(),
+            "message", "This field is required.");
     assertNoTasksEnqueued("sheet");
     assertMetric(CLIENT_ID, "update", "[OWNER]", "ERROR: FormFieldException");
   }
@@ -142,16 +150,19 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
     Map<String, Object> args = Maps.newHashMap(loadRegistrar(CLIENT_ID).toJsonMap());
     args.remove("emailAddress");
 
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", args));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of(
+                "op", "update",
+                "id", CLIENT_ID,
+                "args", args));
 
-    assertThat(response).containsExactly(
-        "status", "ERROR",
-        "field", "emailAddress",
-        "results", ImmutableList.of(),
-        "message", "This field is required.");
+    assertThat(response)
+        .containsExactly(
+            "status", "ERROR",
+            "field", "emailAddress",
+            "results", ImmutableList.of(),
+            "message", "This field is required.");
     assertNoTasksEnqueued("sheet");
     assertMetric(CLIENT_ID, "update", "[OWNER]", "ERROR: FormFieldException");
   }
@@ -160,10 +171,15 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
   public void testFailure_updateRegistrarInfo_notAuthorized() {
     setUserWithoutAccess();
 
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", ImmutableMap.of("lastUpdateTime", getLastUpdateTime())));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of(
+                "op",
+                "update",
+                "id",
+                CLIENT_ID,
+                "args",
+                ImmutableMap.of("lastUpdateTime", getLastUpdateTime())));
 
     assertThat(response)
         .containsExactly(
@@ -179,16 +195,19 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
     Map<String, Object> args = Maps.newHashMap(loadRegistrar(CLIENT_ID).toJsonMap());
     args.put("emailAddress", "lolcat");
 
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", args));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of(
+                "op", "update",
+                "id", CLIENT_ID,
+                "args", args));
 
-    assertThat(response).containsExactly(
-        "status", "ERROR",
-        "field", "emailAddress",
-        "results", ImmutableList.of(),
-        "message", "Please enter a valid email address.");
+    assertThat(response)
+        .containsExactly(
+            "status", "ERROR",
+            "field", "emailAddress",
+            "results", ImmutableList.of(),
+            "message", "Please enter a valid email address.");
     assertNoTasksEnqueued("sheet");
     assertMetric(CLIENT_ID, "update", "[OWNER]", "ERROR: FormFieldException");
   }
@@ -198,16 +217,19 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
     Map<String, Object> args = Maps.newHashMap(loadRegistrar(CLIENT_ID).toJsonMap());
     args.put("lastUpdateTime", "cookies");
 
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", args));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of(
+                "op", "update",
+                "id", CLIENT_ID,
+                "args", args));
 
-    assertThat(response).containsExactly(
-        "status", "ERROR",
-        "field", "lastUpdateTime",
-        "results", ImmutableList.of(),
-        "message", "Not a valid ISO date-time string.");
+    assertThat(response)
+        .containsExactly(
+            "status", "ERROR",
+            "field", "lastUpdateTime",
+            "results", ImmutableList.of(),
+            "message", "Not a valid ISO date-time string.");
     assertNoTasksEnqueued("sheet");
     assertMetric(CLIENT_ID, "update", "[OWNER]", "ERROR: FormFieldException");
   }
@@ -217,16 +239,19 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
     Map<String, Object> args = Maps.newHashMap(loadRegistrar(CLIENT_ID).toJsonMap());
     args.put("emailAddress", "ヘ(◕。◕ヘ)@example.com");
 
-    Map<String, Object> response = action.handleJsonRequest(ImmutableMap.of(
-        "op", "update",
-        "id", CLIENT_ID,
-        "args", args));
+    Map<String, Object> response =
+        action.handleJsonRequest(
+            ImmutableMap.of(
+                "op", "update",
+                "id", CLIENT_ID,
+                "args", args));
 
-    assertThat(response).containsExactly(
-        "status", "ERROR",
-        "field", "emailAddress",
-        "results", ImmutableList.of(),
-        "message", "Please only use ASCII-US characters.");
+    assertThat(response)
+        .containsExactly(
+            "status", "ERROR",
+            "field", "emailAddress",
+            "results", ImmutableList.of(),
+            "message", "Please only use ASCII-US characters.");
     assertNoTasksEnqueued("sheet");
     assertMetric(CLIENT_ID, "update", "[OWNER]", "ERROR: FormFieldException");
   }
@@ -234,7 +259,7 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
   /**
    * Makes sure a field update succeeds IF AND ONLY IF we have the "correct" role.
    *
-   * Each of the Registrar fields can be changed only by a single {@link Role}. We make sure that
+   * <p>Each of the Registrar fields can be changed only by a single {@link Role}. We make sure that
    * trying to update the field works if the user has the "correct" role, but fails if it doesn't.
    */
   private <T> void doTestUpdate(
@@ -264,9 +289,12 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
     Map<String, Object> response =
         action.handleJsonRequest(
             ImmutableMap.of(
-                "op", "update",
-                "id", CLIENT_ID,
-                "args", setter.apply(registrar.asBuilder(), newValue).build().toJsonMap()));
+                "op",
+                "update",
+                "id",
+                CLIENT_ID,
+                "args",
+                setter.apply(registrar.asBuilder(), newValue).build().toJsonMap()));
     Registrar updatedRegistrar = loadRegistrar(CLIENT_ID);
     persistResource(registrar);
 
@@ -296,8 +324,7 @@ public class RegistrarSettingsActionTest extends RegistrarSettingsActionTestCase
         new ImmutableSetMultimap.Builder<String, Role>()
             .putAll(CLIENT_ID, allExceptCorrectRoles)
             .build();
-    action.registrarAccessor =
-        AuthenticatedRegistrarAccessor.createForTesting(accessMap);
+    action.registrarAccessor = AuthenticatedRegistrarAccessor.createForTesting(accessMap);
     // Load the registrar as it is currently in datastore, and make sure the requested update will
     // actually change it
     Registrar registrar = loadRegistrar(CLIENT_ID);

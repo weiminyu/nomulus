@@ -30,8 +30,7 @@ public abstract class FeeCheckResponseExtensionItem extends FeeQueryResponseExte
 
     /** The name associated with the item. Has no effect if domain names are not supported. */
     public Builder<T> setDomainNameIfSupported(@SuppressWarnings("unused") String name) {
-      return this;  // Default impl is a noop.
+      return this; // Default impl is a noop.
     }
   }
 }
-

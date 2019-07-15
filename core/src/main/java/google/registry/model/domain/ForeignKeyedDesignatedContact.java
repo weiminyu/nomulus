@@ -25,15 +25,14 @@ import javax.xml.bind.annotation.XmlValue;
  * This is converted to and from the persisted type, {@link DesignatedContact}, which stores the
  * Datastore key instead of the foreign key.
  *
- * @see <a href="http://tools.ietf.org/html/rfc5731#section-2.2">
- *     RFC 5731 - EPP Domain Name Mapping - Contact and Client Identifiers</a>
+ * @see <a href="http://tools.ietf.org/html/rfc5731#section-2.2">RFC 5731 - EPP Domain Name Mapping
+ *     - Contact and Client Identifiers</a>
  */
 public class ForeignKeyedDesignatedContact extends ImmutableObject {
   @XmlAttribute(required = true)
   DesignatedContact.Type type;
 
-  @XmlValue
-  String contactId;
+  @XmlValue String contactId;
 
   public static ForeignKeyedDesignatedContact create(
       DesignatedContact.Type type, String contactId) {

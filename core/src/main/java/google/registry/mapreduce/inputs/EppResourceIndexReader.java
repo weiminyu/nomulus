@@ -35,8 +35,8 @@ class EppResourceIndexReader extends EppResourceBaseReader<EppResourceIndex> {
   /**
    * Called for each map invocation.
    *
-   * @throws NoSuchElementException if there are no more elements, as specified in the
-   *         {@link InputReader#next} Javadoc.
+   * @throws NoSuchElementException if there are no more elements, as specified in the {@link
+   *     InputReader#next} Javadoc.
    */
   @Override
   public EppResourceIndex next() throws NoSuchElementException {

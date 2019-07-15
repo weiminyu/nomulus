@@ -36,7 +36,8 @@ final class HashCertificateCommand implements Command {
 
   @Override
   public void run() throws IOException, CertificateParsingException {
-    checkArgument(mainParameters.size() <= 1,
+    checkArgument(
+        mainParameters.size() <= 1,
         "Expected at most one argument with the certificate filename. Actual: %s",
         Joiner.on(' ').join(mainParameters));
     if (mainParameters.isEmpty()) {

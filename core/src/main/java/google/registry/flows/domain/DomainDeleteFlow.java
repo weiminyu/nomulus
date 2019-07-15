@@ -113,10 +113,11 @@ import org.joda.time.Duration;
 @ReportingSpec(ActivityReportField.DOMAIN_DELETE)
 public final class DomainDeleteFlow implements TransactionalFlow {
 
-  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES = ImmutableSet.of(
-      StatusValue.CLIENT_DELETE_PROHIBITED,
-      StatusValue.PENDING_DELETE,
-      StatusValue.SERVER_DELETE_PROHIBITED);
+  private static final ImmutableSet<StatusValue> DISALLOWED_STATUSES =
+      ImmutableSet.of(
+          StatusValue.CLIENT_DELETE_PROHIBITED,
+          StatusValue.PENDING_DELETE,
+          StatusValue.SERVER_DELETE_PROHIBITED);
 
   @Inject ExtensionManager extensionManager;
   @Inject EppInput eppInput;
@@ -131,7 +132,9 @@ public final class DomainDeleteFlow implements TransactionalFlow {
   @Inject AsyncTaskEnqueuer asyncTaskEnqueuer;
   @Inject EppResponse.Builder responseBuilder;
   @Inject DomainDeleteFlowCustomLogic flowCustomLogic;
-  @Inject DomainDeleteFlow() {}
+
+  @Inject
+  DomainDeleteFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -186,14 +189,15 @@ public final class DomainDeleteFlow implements TransactionalFlow {
       DateTime redemptionTime = now.plus(redemptionGracePeriodLength);
       asyncTaskEnqueuer.enqueueAsyncResave(
           existingDomain, now, ImmutableSortedSet.of(redemptionTime, deletionTime));
-      builder.setDeletionTime(deletionTime)
+      builder
+          .setDeletionTime(deletionTime)
           .setStatusValues(ImmutableSet.of(StatusValue.PENDING_DELETE))
           // Clear out all old grace periods and add REDEMPTION, which does not include a key to a
           // billing event because there isn't one for a domain delete.
-          .setGracePeriods(ImmutableSet.of(GracePeriod.createWithoutBillingEvent(
-              GracePeriodStatus.REDEMPTION,
-              redemptionTime,
-              clientId)));
+          .setGracePeriods(
+              ImmutableSet.of(
+                  GracePeriod.createWithoutBillingEvent(
+                      GracePeriodStatus.REDEMPTION, redemptionTime, clientId)));
       // Note: The expiration time is unchanged, so if it's before the new deletion time, there will
       // be a "phantom autorenew" where the expiration time advances. No poll message will be
       // produced (since we are ending the autorenew recurrences at "now" below) and the billing
@@ -229,13 +233,15 @@ public final class DomainDeleteFlow implements TransactionalFlow {
       }
     }
     entitiesToSave.add(newDomain, historyEntry);
-    EntityChanges entityChanges = flowCustomLogic.beforeSave(
-        BeforeSaveParameters.newBuilder()
-            .setExistingDomain(existingDomain)
-            .setNewDomain(newDomain)
-            .setHistoryEntry(historyEntry)
-            .setEntityChanges(EntityChanges.newBuilder().setSaves(entitiesToSave.build()).build())
-            .build());
+    EntityChanges entityChanges =
+        flowCustomLogic.beforeSave(
+            BeforeSaveParameters.newBuilder()
+                .setExistingDomain(existingDomain)
+                .setNewDomain(newDomain)
+                .setHistoryEntry(historyEntry)
+                .setEntityChanges(
+                    EntityChanges.newBuilder().setSaves(entitiesToSave.build()).build())
+                .build());
     persistEntityChanges(entityChanges);
     BeforeResponseReturnData responseData =
         flowCustomLogic.beforeResponse(
@@ -274,28 +280,28 @@ public final class DomainDeleteFlow implements TransactionalFlow {
       boolean inAddGracePeriod) {
     // We ignore prober transactions
     if (registry.getTldType() == TldType.REAL) {
-      Duration maxGracePeriod = Collections.max(
-          ImmutableSet.of(
-              registry.getAddGracePeriodLength(),
-              registry.getAutoRenewGracePeriodLength(),
-              registry.getRenewGracePeriodLength()));
+      Duration maxGracePeriod =
+          Collections.max(
+              ImmutableSet.of(
+                  registry.getAddGracePeriodLength(),
+                  registry.getAutoRenewGracePeriodLength(),
+                  registry.getRenewGracePeriodLength()));
       ImmutableSet<DomainTransactionRecord> cancelledRecords =
           createCancelingRecords(
               existingResource,
               now,
               maxGracePeriod,
               Sets.immutableEnumSet(Sets.union(ADD_FIELDS, RENEW_FIELDS)));
-      historyBuilder
-          .setDomainTransactionRecords(
-              union(
-                  cancelledRecords,
-                  DomainTransactionRecord.create(
-                      existingResource.getTld(),
-                      now.plus(durationUntilDelete),
-                      inAddGracePeriod
-                          ? TransactionReportField.DELETED_DOMAINS_GRACE
-                          : TransactionReportField.DELETED_DOMAINS_NOGRACE,
-                      1)));
+      historyBuilder.setDomainTransactionRecords(
+          union(
+              cancelledRecords,
+              DomainTransactionRecord.create(
+                  existingResource.getTld(),
+                  now.plus(durationUntilDelete),
+                  inAddGracePeriod
+                      ? TransactionReportField.DELETED_DOMAINS_GRACE
+                      : TransactionReportField.DELETED_DOMAINS_NOGRACE,
+                  1)));
     }
     return historyBuilder
         .setType(HistoryEntry.Type.DOMAIN_DELETE)
@@ -339,8 +345,9 @@ public final class DomainDeleteFlow implements TransactionalFlow {
     for (GracePeriod gracePeriod : existingDomain.getGracePeriods()) {
       if (gracePeriod.hasBillingEvent()) {
         Money cost = getGracePeriodCost(gracePeriod, now);
-        creditsBuilder.add(Credit.create(
-            cost.negated().getAmount(), FeeType.CREDIT, gracePeriod.getType().getXmlName()));
+        creditsBuilder.add(
+            Credit.create(
+                cost.negated().getAmount(), FeeType.CREDIT, gracePeriod.getType().getXmlName()));
         feeResponseBuilder.setCurrency(checkNotNull(cost.getCurrencyUnit()));
       }
     }
@@ -354,9 +361,12 @@ public final class DomainDeleteFlow implements TransactionalFlow {
   private Money getGracePeriodCost(GracePeriod gracePeriod, DateTime now) {
     if (gracePeriod.getType() == GracePeriodStatus.AUTO_RENEW) {
       DateTime autoRenewTime =
-          ofy().load().key(checkNotNull(gracePeriod.getRecurringBillingEvent())).now()
+          ofy()
+              .load()
+              .key(checkNotNull(gracePeriod.getRecurringBillingEvent()))
+              .now()
               .getRecurrenceTimeOfYear()
-                  .getLastInstanceBeforeOrAt(now);
+              .getLastInstanceBeforeOrAt(now);
       return getDomainRenewCost(targetId, autoRenewTime, 1);
     }
     return ofy().load().key(checkNotNull(gracePeriod.getOneTimeBillingEvent())).now().getCost();

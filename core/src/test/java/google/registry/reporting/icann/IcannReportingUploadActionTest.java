@@ -154,6 +154,7 @@ public class IcannReportingUploadActionTest {
                 new InternetAddress("recipient@example.com"),
                 new InternetAddress("sender@example.com")));
   }
+
   @Test
   public void testFail_FileNotFound() throws Exception {
     IcannReportingUploadAction action = createAction();
@@ -164,4 +165,3 @@ public class IcannReportingUploadActionTest {
         .isEqualTo("Object MANIFEST.txt in bucket basin/somewhere/else not found");
   }
 }
-

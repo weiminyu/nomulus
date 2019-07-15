@@ -152,9 +152,10 @@ public class DatastoreHelper {
         .setCreationTimeForTest(START_OF_TIME)
         .setAuthInfo(DomainAuthInfo.create(PasswordAuth.create("2fooBAR")))
         .setRegistrant(contactKey)
-        .setContacts(ImmutableSet.of(
-            DesignatedContact.create(Type.ADMIN, contactKey),
-            DesignatedContact.create(Type.TECH, contactKey)))
+        .setContacts(
+            ImmutableSet.of(
+                DesignatedContact.create(Type.ADMIN, contactKey),
+                DesignatedContact.create(Type.TECH, contactKey)))
         .setRegistrationExpirationTime(END_OF_TIME)
         .build();
   }
@@ -277,8 +278,7 @@ public class DatastoreHelper {
    * Returns a persisted domain that is the passed-in domain modified to be deleted at the specified
    * time.
    */
-  public static DomainBase persistDomainAsDeleted(
-      DomainBase domain, DateTime deletionTime) {
+  public static DomainBase persistDomainAsDeleted(DomainBase domain, DateTime deletionTime) {
     return persistResource(domain.asBuilder().setDeletionTime(deletionTime).build());
   }
 
@@ -297,7 +297,7 @@ public class DatastoreHelper {
   }
 
   public static ReservedList persistReservedList(
-    String listName, boolean shouldPublish, String... lines) {
+      String listName, boolean shouldPublish, String... lines) {
     return persistResource(
         new ReservedList.Builder()
             .setName(listName)
@@ -414,10 +414,7 @@ public class DatastoreHelper {
   }
 
   public static BillingEvent.OneTime createBillingEventForTransfer(
-      DomainBase domain,
-      HistoryEntry historyEntry,
-      DateTime costLookupTime,
-      DateTime eventTime) {
+      DomainBase domain, HistoryEntry historyEntry, DateTime costLookupTime, DateTime eventTime) {
     return new BillingEvent.OneTime.Builder()
         .setReason(Reason.TRANSFER)
         .setTargetId(domain.getFullyQualifiedDomainName())
@@ -432,44 +429,47 @@ public class DatastoreHelper {
   }
 
   public static ContactResource persistContactWithPendingTransfer(
-      ContactResource contact,
-      DateTime requestTime,
-      DateTime expirationTime,
-      DateTime now) {
-    HistoryEntry historyEntryContactTransfer = persistResource(
-        new HistoryEntry.Builder()
-            .setType(HistoryEntry.Type.CONTACT_TRANSFER_REQUEST)
-            .setParent(contact)
-            .build());
+      ContactResource contact, DateTime requestTime, DateTime expirationTime, DateTime now) {
+    HistoryEntry historyEntryContactTransfer =
+        persistResource(
+            new HistoryEntry.Builder()
+                .setType(HistoryEntry.Type.CONTACT_TRANSFER_REQUEST)
+                .setParent(contact)
+                .build());
     return persistResource(
-        contact.asBuilder()
+        contact
+            .asBuilder()
             .setPersistedCurrentSponsorClientId("TheRegistrar")
             .addStatusValue(StatusValue.PENDING_TRANSFER)
-            .setTransferData(createTransferDataBuilder(requestTime, expirationTime)
+            .setTransferData(
+                createTransferDataBuilder(requestTime, expirationTime)
                     .setPendingTransferExpirationTime(now.plus(getContactAutomaticTransferLength()))
-                .setServerApproveEntities(
-                    ImmutableSet.of(
-                    // Pretend it's 3 days since the request
-                    Key.create(persistResource(
-                        createPollMessageForImplicitTransfer(
-                            contact,
-                            historyEntryContactTransfer,
-                            "NewRegistrar",
-                            requestTime,
-                            expirationTime,
-                            now,
-                            null))),
-                    Key.create(persistResource(
-                        createPollMessageForImplicitTransfer(
-                            contact,
-                            historyEntryContactTransfer,
-                            "TheRegistrar",
-                            requestTime,
-                            expirationTime,
-                            now,
-                            null)))))
-                .setTransferRequestTrid(Trid.create("transferClient-trid", "transferServer-trid"))
-                .build())
+                    .setServerApproveEntities(
+                        ImmutableSet.of(
+                            // Pretend it's 3 days since the request
+                            Key.create(
+                                persistResource(
+                                    createPollMessageForImplicitTransfer(
+                                        contact,
+                                        historyEntryContactTransfer,
+                                        "NewRegistrar",
+                                        requestTime,
+                                        expirationTime,
+                                        now,
+                                        null))),
+                            Key.create(
+                                persistResource(
+                                    createPollMessageForImplicitTransfer(
+                                        contact,
+                                        historyEntryContactTransfer,
+                                        "TheRegistrar",
+                                        requestTime,
+                                        expirationTime,
+                                        now,
+                                        null)))))
+                    .setTransferRequestTrid(
+                        Trid.create("transferClient-trid", "transferServer-trid"))
+                    .build())
             .build());
   }
 
@@ -539,38 +539,44 @@ public class DatastoreHelper {
       DateTime expirationTime,
       DateTime extendedRegistrationExpirationTime,
       DateTime now) {
-    HistoryEntry historyEntryDomainTransfer = persistResource(
-        new HistoryEntry.Builder()
-            .setType(HistoryEntry.Type.DOMAIN_TRANSFER_REQUEST)
-            .setParent(domain)
-            .build());
-    BillingEvent.OneTime transferBillingEvent = persistResource(createBillingEventForTransfer(
-            domain,
-            historyEntryDomainTransfer,
-            requestTime,
-            expirationTime));
-    BillingEvent.Recurring gainingClientAutorenewEvent = persistResource(
-        new BillingEvent.Recurring.Builder()
-            .setFlags(ImmutableSet.of(Flag.AUTO_RENEW))
-            .setReason(Reason.RENEW)
-            .setTargetId(domain.getFullyQualifiedDomainName())
-            .setClientId("NewRegistrar")
-            .setEventTime(extendedRegistrationExpirationTime)
-            .setRecurrenceEndTime(END_OF_TIME)
-            .setParent(historyEntryDomainTransfer)
-            .build());
-    PollMessage.Autorenew gainingClientAutorenewPollMessage = persistResource(
-        new PollMessage.Autorenew.Builder()
-            .setTargetId(domain.getFullyQualifiedDomainName())
-            .setClientId("NewRegistrar")
-            .setEventTime(extendedRegistrationExpirationTime)
-            .setAutorenewEndTime(END_OF_TIME)
-            .setMsg("Domain was auto-renewed.")
-            .setParent(historyEntryDomainTransfer)
-            .build());
+    HistoryEntry historyEntryDomainTransfer =
+        persistResource(
+            new HistoryEntry.Builder()
+                .setType(HistoryEntry.Type.DOMAIN_TRANSFER_REQUEST)
+                .setParent(domain)
+                .build());
+    BillingEvent.OneTime transferBillingEvent =
+        persistResource(
+            createBillingEventForTransfer(
+                domain, historyEntryDomainTransfer, requestTime, expirationTime));
+    BillingEvent.Recurring gainingClientAutorenewEvent =
+        persistResource(
+            new BillingEvent.Recurring.Builder()
+                .setFlags(ImmutableSet.of(Flag.AUTO_RENEW))
+                .setReason(Reason.RENEW)
+                .setTargetId(domain.getFullyQualifiedDomainName())
+                .setClientId("NewRegistrar")
+                .setEventTime(extendedRegistrationExpirationTime)
+                .setRecurrenceEndTime(END_OF_TIME)
+                .setParent(historyEntryDomainTransfer)
+                .build());
+    PollMessage.Autorenew gainingClientAutorenewPollMessage =
+        persistResource(
+            new PollMessage.Autorenew.Builder()
+                .setTargetId(domain.getFullyQualifiedDomainName())
+                .setClientId("NewRegistrar")
+                .setEventTime(extendedRegistrationExpirationTime)
+                .setAutorenewEndTime(END_OF_TIME)
+                .setMsg("Domain was auto-renewed.")
+                .setParent(historyEntryDomainTransfer)
+                .build());
     // Modify the existing autorenew event to reflect the pending transfer.
     persistResource(
-        ofy().load().key(domain.getAutorenewBillingEvent()).now().asBuilder()
+        ofy()
+            .load()
+            .key(domain.getAutorenewBillingEvent())
+            .now()
+            .asBuilder()
             .setRecurrenceEndTime(expirationTime)
             .build());
     // Update the end time of the existing autorenew poll message. We must delete it if it has no
@@ -578,49 +584,54 @@ public class DatastoreHelper {
     PollMessage.Autorenew autorenewPollMessage =
         ofy().load().key(domain.getAutorenewPollMessage()).now();
     if (autorenewPollMessage.getEventTime().isBefore(expirationTime)) {
-      persistResource(
-          autorenewPollMessage.asBuilder()
-              .setAutorenewEndTime(expirationTime)
-              .build());
+      persistResource(autorenewPollMessage.asBuilder().setAutorenewEndTime(expirationTime).build());
     } else {
       deleteResource(autorenewPollMessage);
     }
     TransferData.Builder transferDataBuilder =
         createTransferDataBuilder(requestTime, expirationTime);
-    return persistResource(domain.asBuilder()
-        .setPersistedCurrentSponsorClientId("TheRegistrar")
-        .addStatusValue(StatusValue.PENDING_TRANSFER)
-        .setTransferData(transferDataBuilder
-            .setPendingTransferExpirationTime(expirationTime)
-            .setTransferredRegistrationExpirationTime(extendedRegistrationExpirationTime)
-            .setServerApproveBillingEvent(Key.create(transferBillingEvent))
-            .setServerApproveAutorenewEvent(Key.create(gainingClientAutorenewEvent))
-            .setServerApproveAutorenewPollMessage(Key.create(gainingClientAutorenewPollMessage))
-            .setServerApproveEntities(ImmutableSet.of(
-                Key.create(transferBillingEvent),
-                Key.create(gainingClientAutorenewEvent),
-                Key.create(gainingClientAutorenewPollMessage),
-                Key.create(persistResource(
-                    createPollMessageForImplicitTransfer(
-                        domain,
-                        historyEntryDomainTransfer,
-                        "NewRegistrar",
-                        requestTime,
-                        expirationTime,
-                        now,
-                        extendedRegistrationExpirationTime))),
-                Key.create(persistResource(
-                    createPollMessageForImplicitTransfer(
-                        domain,
-                        historyEntryDomainTransfer,
-                        "TheRegistrar",
-                        requestTime,
-                        expirationTime,
-                        now,
-                        extendedRegistrationExpirationTime)))))
-            .setTransferRequestTrid(Trid.create("transferClient-trid", "transferServer-trid"))
-            .build())
-        .build());
+    return persistResource(
+        domain
+            .asBuilder()
+            .setPersistedCurrentSponsorClientId("TheRegistrar")
+            .addStatusValue(StatusValue.PENDING_TRANSFER)
+            .setTransferData(
+                transferDataBuilder
+                    .setPendingTransferExpirationTime(expirationTime)
+                    .setTransferredRegistrationExpirationTime(extendedRegistrationExpirationTime)
+                    .setServerApproveBillingEvent(Key.create(transferBillingEvent))
+                    .setServerApproveAutorenewEvent(Key.create(gainingClientAutorenewEvent))
+                    .setServerApproveAutorenewPollMessage(
+                        Key.create(gainingClientAutorenewPollMessage))
+                    .setServerApproveEntities(
+                        ImmutableSet.of(
+                            Key.create(transferBillingEvent),
+                            Key.create(gainingClientAutorenewEvent),
+                            Key.create(gainingClientAutorenewPollMessage),
+                            Key.create(
+                                persistResource(
+                                    createPollMessageForImplicitTransfer(
+                                        domain,
+                                        historyEntryDomainTransfer,
+                                        "NewRegistrar",
+                                        requestTime,
+                                        expirationTime,
+                                        now,
+                                        extendedRegistrationExpirationTime))),
+                            Key.create(
+                                persistResource(
+                                    createPollMessageForImplicitTransfer(
+                                        domain,
+                                        historyEntryDomainTransfer,
+                                        "TheRegistrar",
+                                        requestTime,
+                                        expirationTime,
+                                        now,
+                                        extendedRegistrationExpirationTime)))))
+                    .setTransferRequestTrid(
+                        Trid.create("transferClient-trid", "transferServer-trid"))
+                    .build())
+            .build());
   }
 
   /** Persists and returns a {@link Registrar} with the specified attributes. */
@@ -724,8 +735,7 @@ public class DatastoreHelper {
 
   public static void assertPollMessagesForResource(EppResource resource, PollMessage... expected) {
     assertThat(
-            getPollMessages(resource)
-                .stream()
+            getPollMessages(resource).stream()
                 .map(POLL_MESSAGE_ID_STRIPPER)
                 .collect(toImmutableList()))
         .containsExactlyElementsIn(
@@ -782,23 +792,16 @@ public class DatastoreHelper {
   }
 
   public static PollMessage getOnlyPollMessage(
-      String clientId,
-      DateTime now,
-      Class<? extends PollMessage> subType) {
-    return getPollMessages(clientId, now)
-        .stream()
+      String clientId, DateTime now, Class<? extends PollMessage> subType) {
+    return getPollMessages(clientId, now).stream()
         .filter(subType::isInstance)
         .map(subType::cast)
         .collect(onlyElement());
   }
 
   public static PollMessage getOnlyPollMessage(
-      EppResource resource,
-      String clientId,
-      DateTime now,
-      Class<? extends PollMessage> subType) {
-    return getPollMessages(resource, clientId, now)
-        .stream()
+      EppResource resource, String clientId, DateTime now, Class<? extends PollMessage> subType) {
+    return getPollMessages(resource, clientId, now).stream()
         .filter(subType::isInstance)
         .map(subType::cast)
         .collect(onlyElement());
@@ -809,10 +812,7 @@ public class DatastoreHelper {
     return createDomainRepoId(ObjectifyService.allocateId(), tld);
   }
 
-  /**
-   * Returns a newly allocated, globally unique contact/host repoId of the format
-   * HEX_TLD-ROID.
-   */
+  /** Returns a newly allocated, globally unique contact/host repoId of the format HEX_TLD-ROID. */
   public static String generateNewContactHostRoid() {
     return createRepoId(ObjectifyService.allocateId(), getContactAndHostRoidSuffix());
   }
@@ -942,7 +942,8 @@ public class DatastoreHelper {
 
   /** Returns all of the history entries that are parented off the given EppResource. */
   public static List<HistoryEntry> getHistoryEntries(EppResource resource) {
-    return ofy().load()
+    return ofy()
+        .load()
         .type(HistoryEntry.class)
         .ancestor(resource)
         .order("modificationTime")
@@ -955,8 +956,7 @@ public class DatastoreHelper {
    */
   public static List<HistoryEntry> getHistoryEntriesOfType(
       EppResource resource, final HistoryEntry.Type type) {
-    return getHistoryEntries(resource)
-        .stream()
+    return getHistoryEntries(resource).stream()
         .filter(entry -> entry.getType() == type)
         .collect(toImmutableList());
   }
@@ -967,7 +967,7 @@ public class DatastoreHelper {
    */
   public static HistoryEntry getOnlyHistoryEntryOfType(
       EppResource resource, final HistoryEntry.Type type) {
-    List<HistoryEntry> historyEntries =  getHistoryEntriesOfType(resource, type);
+    List<HistoryEntry> historyEntries = getHistoryEntriesOfType(resource, type);
     assertThat(historyEntries).hasSize(1);
     return historyEntries.get(0);
   }
@@ -975,22 +975,23 @@ public class DatastoreHelper {
   private static HistoryEntry.Type getHistoryEntryType(EppResource resource) {
     if (resource instanceof ContactResource) {
       return resource.getRepoId() != null
-          ? HistoryEntry.Type.CONTACT_CREATE : HistoryEntry.Type.CONTACT_UPDATE;
+          ? HistoryEntry.Type.CONTACT_CREATE
+          : HistoryEntry.Type.CONTACT_UPDATE;
     } else if (resource instanceof HostResource) {
       return resource.getRepoId() != null
-          ? HistoryEntry.Type.HOST_CREATE : HistoryEntry.Type.HOST_UPDATE;
+          ? HistoryEntry.Type.HOST_CREATE
+          : HistoryEntry.Type.HOST_UPDATE;
     } else if (resource instanceof DomainBase) {
       return resource.getRepoId() != null
-          ? HistoryEntry.Type.DOMAIN_CREATE : HistoryEntry.Type.DOMAIN_UPDATE;
+          ? HistoryEntry.Type.DOMAIN_CREATE
+          : HistoryEntry.Type.DOMAIN_UPDATE;
     } else {
       throw new AssertionError();
     }
   }
 
   public static PollMessage getOnlyPollMessageForHistoryEntry(HistoryEntry historyEntry) {
-    return Iterables.getOnlyElement(ofy().load()
-        .type(PollMessage.class)
-        .ancestor(historyEntry));
+    return Iterables.getOnlyElement(ofy().load().type(PollMessage.class).ancestor(historyEntry));
   }
 
   public static <T extends EppResource> HistoryEntry createHistoryEntryForEppResource(
@@ -1022,7 +1023,7 @@ public class DatastoreHelper {
     ofy().clearSessionCache();
   }
 
-  /** Force the create and update timestamps to get written into the resource. **/
+  /** Force the create and update timestamps to get written into the resource. * */
   public static <R> R cloneAndSetAutoTimestamps(final R resource) {
     return ofy().transact(() -> ofy().load().fromEntity(ofy().save().toEntity(resource)));
   }

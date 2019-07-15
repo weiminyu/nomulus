@@ -71,12 +71,14 @@ public class SyncRegistrarsSheetAction implements Runnable {
       @Override
       protected void log(Exception cause) {
         logger.atWarning().withCause(cause).log(message);
-      }},
+      }
+    },
     FAILED(SC_INTERNAL_SERVER_ERROR, "Spreadsheet synchronization failed") {
       @Override
       protected void log(Exception cause) {
         logger.atSevere().withCause(cause).log(message);
-      }};
+      }
+    };
 
     private final int statusCode;
     protected final String message;
@@ -106,11 +108,23 @@ public class SyncRegistrarsSheetAction implements Runnable {
 
   @Inject Response response;
   @Inject SyncRegistrarsSheet syncRegistrarsSheet;
-  @Inject @Config("sheetLockTimeout") Duration timeout;
-  @Inject @Config("sheetRegistrarId") Optional<String> idConfig;
-  @Inject @Parameter("id") Optional<String> idParam;
+
+  @Inject
+  @Config("sheetLockTimeout")
+  Duration timeout;
+
+  @Inject
+  @Config("sheetRegistrarId")
+  Optional<String> idConfig;
+
+  @Inject
+  @Parameter("id")
+  Optional<String> idParam;
+
   @Inject LockHandler lockHandler;
-  @Inject SyncRegistrarsSheetAction() {}
+
+  @Inject
+  SyncRegistrarsSheetAction() {}
 
   @Override
   public void run() {

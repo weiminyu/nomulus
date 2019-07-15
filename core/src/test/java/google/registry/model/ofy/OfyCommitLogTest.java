@@ -45,13 +45,9 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class OfyCommitLogTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   private final FakeClock clock = new FakeClock(DateTime.parse("2000-01-01TZ"));
 
@@ -251,8 +247,14 @@ public class OfyCommitLogTest {
   public void testSavingRootAndChild_updatesTimestampOnBackupGroupRoot() {
     ofy().transact(() -> ofy().save().entity(Root.create(1, getCrossTldKey())));
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
     clock.advanceOneMilli();
     ofy()
         .transact(
@@ -261,43 +263,79 @@ public class OfyCommitLogTest {
               ofy().save().entity(new Child());
             });
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
   }
 
   @Test
   public void testSavingOnlyChild_updatesTimestampOnBackupGroupRoot() {
     ofy().transact(() -> ofy().save().entity(Root.create(1, getCrossTldKey())));
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
     clock.advanceOneMilli();
     ofy().transact(() -> ofy().save().entity(new Child()));
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
   }
 
   @Test
   public void testDeletingChild_updatesTimestampOnBackupGroupRoot() {
     ofy().transact(() -> ofy().save().entity(Root.create(1, getCrossTldKey())));
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
     clock.advanceOneMilli();
     // The fact that the child was never persisted is irrelevant.
     ofy().transact(() -> ofy().delete().entity(new Child()));
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
   }
 
   @Test
   public void testReadingRoot_doesntUpdateTimestamp() {
     ofy().transact(() -> ofy().save().entity(Root.create(1, getCrossTldKey())));
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
     clock.advanceOneMilli();
     ofy()
         .transact(
@@ -308,16 +346,28 @@ public class OfyCommitLogTest {
               ofy().load().entity(Root.create(1, getCrossTldKey()));
             });
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc().minusMillis(1));
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc().minusMillis(1));
   }
 
   @Test
   public void testReadingChild_doesntUpdateTimestampOnBackupGroupRoot() {
     ofy().transact(() -> ofy().save().entity(Root.create(1, getCrossTldKey())));
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
     clock.advanceOneMilli();
     ofy()
         .transact(
@@ -328,8 +378,14 @@ public class OfyCommitLogTest {
               ofy().load().entity(new Child()); // All Child objects are under Root(1).
             });
     ofy().clearSessionCache();
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc().minusMillis(1));
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc().minusMillis(1));
   }
 
   @Test
@@ -344,8 +400,14 @@ public class OfyCommitLogTest {
             });
     ofy().clearSessionCache();
     for (int i = 1; i <= 3; i++) {
-      assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, i)).now()
-          .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+      assertThat(
+              ofy()
+                  .load()
+                  .key(Key.create(getCrossTldKey(), Root.class, i))
+                  .now()
+                  .getUpdateAutoTimestamp()
+                  .getTimestamp())
+          .isEqualTo(clock.nowUtc());
     }
     clock.advanceOneMilli();
     // Mutate one root, and a child of a second, ignoring the third.
@@ -357,24 +419,40 @@ public class OfyCommitLogTest {
             });
     ofy().clearSessionCache();
     // Child was touched.
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 1)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 1))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
     // Directly touched.
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 2)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc());
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 2))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc());
     // Wasn't touched.
-    assertThat(ofy().load().key(Key.create(getCrossTldKey(), Root.class, 3)).now()
-        .getUpdateAutoTimestamp().getTimestamp()).isEqualTo(clock.nowUtc().minusMillis(1));
+    assertThat(
+            ofy()
+                .load()
+                .key(Key.create(getCrossTldKey(), Root.class, 3))
+                .now()
+                .getUpdateAutoTimestamp()
+                .getTimestamp())
+        .isEqualTo(clock.nowUtc().minusMillis(1));
   }
 
   @Entity
   static class Root extends BackupGroupRoot {
 
-    @Parent
-    Key<EntityGroupRoot> parent;
+    @Parent Key<EntityGroupRoot> parent;
 
-    @Id
-    long id;
+    @Id long id;
 
     String value;
 
@@ -389,10 +467,8 @@ public class OfyCommitLogTest {
 
   @Entity
   static class Child extends ImmutableObject {
-    @Parent
-    Key<Root> parent = Key.create(Root.create(1, getCrossTldKey()));
+    @Parent Key<Root> parent = Key.create(Root.create(1, getCrossTldKey()));
 
-    @Id
-    long id = 1;
+    @Id long id = 1;
   }
 }

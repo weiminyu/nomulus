@@ -37,10 +37,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class CommitLogMutationTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private static final DateTime NOW = DateTime.now(DateTimeZone.UTC);
 

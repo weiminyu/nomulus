@@ -17,11 +17,11 @@ package google.registry.request.auth;
 /**
  * Authentication level.
  *
- * <p>Used by {@link Auth} to specify what authentication is required, and by {@link AuthResult})
- * to specify what authentication was found. These are a series of levels, from least to most
- * authentication required. The lowest level of requirement, NONE, can be satisfied by any level
- * of authentication, while the highest level, USER, can only be satisfied by the authentication of
- * a specific user. The level returned may be higher than what was required, if more authentication
+ * <p>Used by {@link Auth} to specify what authentication is required, and by {@link AuthResult}) to
+ * specify what authentication was found. These are a series of levels, from least to most
+ * authentication required. The lowest level of requirement, NONE, can be satisfied by any level of
+ * authentication, while the highest level, USER, can only be satisfied by the authentication of a
+ * specific user. The level returned may be higher than what was required, if more authentication
  * turns out to be possible. For instance, if an authenticated user is found, USER will be returned
  * even if no authentication was required.
  */

@@ -47,15 +47,13 @@ public abstract class EppMetric {
   }
 
   /**
-   * Create an {@link EppMetric.Builder} for a request context, with the given request ID and
-   * with start and end timestamps taken from the given clock.
+   * Create an {@link EppMetric.Builder} for a request context, with the given request ID and with
+   * start and end timestamps taken from the given clock.
    *
    * <p>The start timestamp is recorded now, and the end timestamp at {@code build()}.
    */
   public static Builder builderForRequest(Clock clock) {
-      return builder()
-          .setStartTimestamp(clock.nowUtc())
-          .setClock(clock);
+    return builder().setStartTimestamp(clock.nowUtc()).setClock(clock);
   }
 
   /** A builder to create instances of {@link EppMetric}. */

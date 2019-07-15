@@ -41,8 +41,7 @@ public class BeamUtils {
       ImmutableList<String> fieldNames, SchemaAndRecord schemaAndRecord) {
     GenericRecord record = schemaAndRecord.getRecord();
     ImmutableList<String> nullFields =
-        fieldNames
-            .stream()
+        fieldNames.stream()
             .filter(fieldName -> record.get(fieldName) == null)
             .collect(ImmutableList.toImmutableList());
     String missingFieldList = Joiner.on(", ").join(nullFields);

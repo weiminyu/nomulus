@@ -36,17 +36,16 @@ class EppResourceEntityReader<R extends EppResource> extends EppResourceBaseRead
    * The resource classes to postfilter for.
    *
    * <p>This can be {@link EppResource} or any descendant classes, regardless of whether those
-   * classes map directly to a kind in Datastore, with the restriction that none of the classes
-   * is a supertype of any of the others.
+   * classes map directly to a kind in Datastore, with the restriction that none of the classes is a
+   * supertype of any of the others.
    */
   private final ImmutableSet<Class<? extends R>> resourceClasses;
 
   public EppResourceEntityReader(
-      Key<EppResourceIndexBucket> bucketKey,
-      ImmutableSet<Class<? extends R>> resourceClasses) {
+      Key<EppResourceIndexBucket> bucketKey, ImmutableSet<Class<? extends R>> resourceClasses) {
     super(
         bucketKey,
-        ONE_MB * 2,  // Estimate 2MB of memory for this reader, since it loads a (max 1MB) entity.
+        ONE_MB * 2, // Estimate 2MB of memory for this reader, since it loads a (max 1MB) entity.
         varargsToKinds(resourceClasses));
     this.resourceClasses = resourceClasses;
   }
@@ -54,8 +53,8 @@ class EppResourceEntityReader<R extends EppResource> extends EppResourceBaseRead
   /**
    * Called for each map invocation.
    *
-   * @throws NoSuchElementException if there are no more elements, as specified in the
-   *         {@link InputReader#next} Javadoc.
+   * @throws NoSuchElementException if there are no more elements, as specified in the {@link
+   *     InputReader#next} Javadoc.
    */
   @Override
   public R next() throws NoSuchElementException {

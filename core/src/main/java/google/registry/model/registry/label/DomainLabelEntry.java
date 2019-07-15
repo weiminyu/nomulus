@@ -31,8 +31,7 @@ import google.registry.model.ImmutableObject;
 public abstract class DomainLabelEntry<T extends Comparable<?>, D extends DomainLabelEntry<?, ?>>
     extends ImmutableObject implements Comparable<D> {
 
-  @Id
-  String label;
+  @Id String label;
 
   String comment;
 

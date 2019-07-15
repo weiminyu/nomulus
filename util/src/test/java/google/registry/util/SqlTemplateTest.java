@@ -27,23 +27,17 @@ public class SqlTemplateTest {
 
   @Test
   public void testFillSqlTemplate() {
+    assertThat(SqlTemplate.create("%TEST%").put("TEST", "hello world").build())
+        .isEqualTo("hello world");
+    assertThat(SqlTemplate.create("one %TWO% three").put("TWO", "2").build())
+        .isEqualTo("one 2 three");
     assertThat(
-        SqlTemplate.create("%TEST%")
-            .put("TEST", "hello world")
-            .build())
-                .isEqualTo("hello world");
-    assertThat(
-        SqlTemplate.create("one %TWO% three")
-            .put("TWO", "2")
-            .build())
-                .isEqualTo("one 2 three");
-    assertThat(
-        SqlTemplate.create("%ONE% %TWO% %THREE%")
-            .put("ONE", "1")
-            .put("TWO", "2")
-            .put("THREE", "3")
-            .build())
-                .isEqualTo("1 2 3");
+            SqlTemplate.create("%ONE% %TWO% %THREE%")
+                .put("ONE", "1")
+                .put("TWO", "2")
+                .put("THREE", "3")
+                .build())
+        .isEqualTo("1 2 3");
   }
 
   @Test

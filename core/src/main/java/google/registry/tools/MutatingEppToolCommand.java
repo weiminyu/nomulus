@@ -19,8 +19,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.beust.jcommander.Parameter;
 
 /**
- * A command to execute an epp command that intends to mutate objects
- * (i.e. enables a dry run option).
+ * A command to execute an epp command that intends to mutate objects (i.e. enables a dry run
+ * option).
  */
 public abstract class MutatingEppToolCommand extends EppToolCommand {
 

@@ -30,8 +30,7 @@ import org.junit.runners.JUnit4;
 public final class RequestModuleTest {
   @Test
   public void testProvideJsonPayload() {
-    assertThat(provideJsonPayload(MediaType.JSON_UTF_8, "{\"k\":\"v\"}"))
-        .containsExactly("k", "v");
+    assertThat(provideJsonPayload(MediaType.JSON_UTF_8, "{\"k\":\"v\"}")).containsExactly("k", "v");
   }
 
   @Test

@@ -36,8 +36,7 @@ public class GoldenFileTestHelper {
   String nomulusCommand = null;
   String goldenFileDescription = null;
 
-  private static final String UPDATE_COMMAND =
-      "nomulus -e localhost %1$s > %2$s";
+  private static final String UPDATE_COMMAND = "nomulus -e localhost %1$s > %2$s";
 
   private static final String UPDATE_INSTRUCTIONS =
       Joiner.on('\n')
@@ -47,7 +46,6 @@ public class GoldenFileTestHelper {
               "Your changes affect the %3$s. To update the checked-in version, run:",
               UPDATE_COMMAND,
               "");
-
 
   public static GoldenFileTestHelper assertThat(String actualValue) {
     return new GoldenFileTestHelper().setActualValue(actualValue);

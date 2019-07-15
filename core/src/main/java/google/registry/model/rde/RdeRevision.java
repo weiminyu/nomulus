@@ -37,8 +37,7 @@ import org.joda.time.DateTime;
 public final class RdeRevision extends ImmutableObject {
 
   /** String triplet of tld, date, and mode, e.g. {@code soy_2015-09-01_full}. */
-  @Id
-  String id;
+  @Id String id;
 
   /**
    * Number of last revision successfully staged to GCS.
@@ -76,8 +75,11 @@ public final class RdeRevision extends ImmutableObject {
       verify(object == null, "RdeRevision object already created: %s", object);
     } else {
       verifyNotNull(object, "RDE revision object missing for %s?! revision=%s", triplet, revision);
-      verify(object.revision == revision - 1,
-          "RDE revision object should be at %s but was: %s", revision - 1, object);
+      verify(
+          object.revision == revision - 1,
+          "RDE revision object should be at %s but was: %s",
+          revision - 1,
+          object);
     }
     object = new RdeRevision();
     object.id = triplet;

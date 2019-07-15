@@ -45,7 +45,7 @@ public class LogoutFlowTest extends FlowTestCase<LogoutFlow> {
 
   @Test
   public void testFailure() {
-    sessionMetadata.setClientId(null);  // Turn off the implicit login
+    sessionMetadata.setClientId(null); // Turn off the implicit login
     EppException thrown = assertThrows(NotLoggedInException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
   }

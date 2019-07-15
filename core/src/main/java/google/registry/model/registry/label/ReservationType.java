@@ -52,14 +52,12 @@ public enum ReservationType {
   /** The domain can never be registered. */
   FULLY_BLOCKED("Reserved", 4);
 
-  @Nullable
-  private final String messageForCheck;
+  @Nullable private final String messageForCheck;
 
   ReservationType(@Nullable String messageForCheck, int severity) {
     this.messageForCheck = messageForCheck;
     checkState(
-        ordinal() == severity,
-        "ReservationType enum values aren't defined in severity order");
+        ordinal() == severity, "ReservationType enum values aren't defined in severity order");
   }
 
   @Nullable
@@ -67,12 +65,13 @@ public enum ReservationType {
     return messageForCheck;
   }
 
-  private static final Ordering<ReservationType> ORDERING = new Ordering<ReservationType>() {
-    @Override
-    public int compare(ReservationType left, ReservationType right) {
-      return Integer.compare(left.ordinal(), right.ordinal());
-    }
-  };
+  private static final Ordering<ReservationType> ORDERING =
+      new Ordering<ReservationType>() {
+        @Override
+        public int compare(ReservationType left, ReservationType right) {
+          return Integer.compare(left.ordinal(), right.ordinal());
+        }
+      };
 
   /**
    * Returns the {@code ReservationType} with the highest severity, used when a label has multiple

@@ -49,7 +49,9 @@ public class KillAllEppResourcesAction implements Runnable {
 
   @Inject MapreduceRunner mrRunner;
   @Inject Response response;
-  @Inject KillAllEppResourcesAction() {}
+
+  @Inject
+  KillAllEppResourcesAction() {}
 
   @Override
   public void run() {
@@ -76,6 +78,7 @@ public class KillAllEppResourcesAction implements Runnable {
      * {@link ForeignKeyIndex} of the referent, as appropriate.
      *
      * <p>This will delete:
+     *
      * <ul>
      *   <li>All {@link ForeignKeyIndex} types
      *   <li>{@link EppResourceIndex}

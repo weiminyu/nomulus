@@ -16,9 +16,7 @@ package google.registry.util;
 
 import java.util.concurrent.Callable;
 
-/**
- * A functional interface for a version of {@link Callable} that returns no value.
- */
+/** A functional interface for a version of {@link Callable} that returns no value. */
 @FunctionalInterface
 public interface VoidCallable {
 

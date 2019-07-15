@@ -64,7 +64,7 @@ public class UploadDatastoreBackupAction implements Runnable {
   static final String BACKUP_DATASET = "datastore_backups";
 
   /** Servlet-specific details needed for enqueuing tasks against itself. */
-  static final String QUEUE = "export-snapshot";  // See queue.xml.
+  static final String QUEUE = "export-snapshot"; // See queue.xml.
 
   static final String LATEST_BACKUP_VIEW_NAME = "latest_datastore_export";
 
@@ -74,7 +74,10 @@ public class UploadDatastoreBackupAction implements Runnable {
 
   @Inject CheckedBigquery checkedBigquery;
   @Inject BigqueryPollJobEnqueuer bigqueryPollEnqueuer;
-  @Inject @Config("projectId") String projectId;
+
+  @Inject
+  @Config("projectId")
+  String projectId;
 
   @Inject
   @Parameter(UPLOAD_BACKUP_FOLDER_PARAM)
@@ -175,11 +178,13 @@ public class UploadDatastoreBackupAction implements Runnable {
             .setTableId(tableId);
     return new Job()
         .setJobReference(jobRef)
-        .setConfiguration(new JobConfiguration()
-            .setLoad(new JobConfigurationLoad()
-                .setWriteDisposition(WriteDisposition.WRITE_EMPTY.toString())
-                .setSourceFormat(SourceFormat.DATASTORE_BACKUP.toString())
-                .setSourceUris(ImmutableList.of(sourceUri))
-                .setDestinationTable(tableReference)));
+        .setConfiguration(
+            new JobConfiguration()
+                .setLoad(
+                    new JobConfigurationLoad()
+                        .setWriteDisposition(WriteDisposition.WRITE_EMPTY.toString())
+                        .setSourceFormat(SourceFormat.DATASTORE_BACKUP.toString())
+                        .setSourceUris(ImmutableList.of(sourceUri))
+                        .setDestinationTable(tableReference)));
   }
 }

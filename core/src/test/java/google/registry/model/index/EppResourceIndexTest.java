@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /** Unit tests for {@link EppResourceIndex}. */
-public class EppResourceIndexTest extends EntityTestCase  {
+public class EppResourceIndexTest extends EntityTestCase {
 
   ContactResource contact;
 
@@ -59,15 +59,15 @@ public class EppResourceIndexTest extends EntityTestCase  {
     assertThat(ofy().load().key(loadedIndex.reference).now()).isEqualTo(contact);
   }
 
-  /**
-   * Returns all EppResourceIndex objects across all buckets.
-   */
+  /** Returns all EppResourceIndex objects across all buckets. */
   private static ImmutableList<EppResourceIndex> getEppResourceIndexObjects() {
     ImmutableList.Builder<EppResourceIndex> indexEntities = new ImmutableList.Builder<>();
     for (int i = 0; i < getEppResourceIndexBucketCount(); i++) {
-      indexEntities.addAll(ofy().load()
-          .type(EppResourceIndex.class)
-          .ancestor(Key.create(EppResourceIndexBucket.class, i + 1)));
+      indexEntities.addAll(
+          ofy()
+              .load()
+              .type(EppResourceIndex.class)
+              .ancestor(Key.create(EppResourceIndexBucket.class, i + 1)));
     }
     return indexEntities.build();
   }

@@ -31,7 +31,9 @@ abstract class Route {
   }
 
   abstract Action action();
+
   abstract Function<Object, Runnable> instantiator();
+
   abstract Class<?> actionClass();
 
   boolean isMethodAllowed(Action.Method requestMethod) {

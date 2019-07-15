@@ -65,18 +65,15 @@ public class BrdaCopyActionTest extends ShardableTestCase {
   private static final GcsFilename SIG_FILE =
       new GcsFilename("tub", "lol_2010-10-17_thin_S1_R0.sig");
 
-  @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
-
-  @Rule
-  public final GpgSystemCommandRule gpg = new GpgSystemCommandRule(
-      RdeTestData.loadBytes("pgp-public-keyring.asc"),
-      RdeTestData.loadBytes("pgp-private-keyring-escrow.asc"));
+  public final GpgSystemCommandRule gpg =
+      new GpgSystemCommandRule(
+          RdeTestData.loadBytes("pgp-public-keyring.asc"),
+          RdeTestData.loadBytes("pgp-private-keyring-escrow.asc"));
 
   private static PGPPublicKey encryptKey;
   private static PGPPrivateKey decryptKey;
@@ -110,8 +107,8 @@ public class BrdaCopyActionTest extends ShardableTestCase {
 
     byte[] xml = DEPOSIT_XML.read();
     GcsTestingUtils.writeGcsFile(gcsService, STAGE_FILE, Ghostryde.encode(xml, encryptKey));
-    GcsTestingUtils.writeGcsFile(gcsService, STAGE_LENGTH_FILE,
-        Long.toString(xml.length).getBytes(UTF_8));
+    GcsTestingUtils.writeGcsFile(
+        gcsService, STAGE_LENGTH_FILE, Long.toString(xml.length).getBytes(UTF_8));
   }
 
   @Test

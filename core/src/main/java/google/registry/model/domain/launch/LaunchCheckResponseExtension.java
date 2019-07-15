@@ -68,12 +68,10 @@ public class LaunchCheckResponseExtension extends ImmutableObject implements Res
   /** Holds the name and availability of a checked resource. */
   public static class LaunchCheckName extends ImmutableObject {
     /** Whether the resource is available. */
-    @XmlAttribute
-    boolean exists;
+    @XmlAttribute boolean exists;
 
     /** The name of the resource being checked. */
-    @XmlValue
-    String name;
+    @XmlValue String name;
 
     public static LaunchCheckName create(boolean exists, String name) {
       LaunchCheckName instance = new LaunchCheckName();

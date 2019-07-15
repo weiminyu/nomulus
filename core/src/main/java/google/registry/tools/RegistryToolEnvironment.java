@@ -33,9 +33,9 @@ enum RegistryToolEnvironment {
   SANDBOX(RegistryEnvironment.SANDBOX),
   LOCALHOST(RegistryEnvironment.LOCAL),
   UNITTEST(RegistryEnvironment.UNITTEST),
-  PDT(RegistryEnvironment.PRODUCTION, ImmutableMap.of(
-      "google.registry.rde.key.receiver",
-          "pdt-escrow-test@icann.org"));
+  PDT(
+      RegistryEnvironment.PRODUCTION,
+      ImmutableMap.of("google.registry.rde.key.receiver", "pdt-escrow-test@icann.org"));
 
   private static final ImmutableList<String> FLAGS = ImmutableList.of("-e", "--environment");
   private static RegistryToolEnvironment instance;
@@ -43,8 +43,7 @@ enum RegistryToolEnvironment {
   private final ImmutableMap<String, String> extraProperties;
 
   RegistryToolEnvironment(
-      RegistryEnvironment actualEnvironment,
-      ImmutableMap<String, String> extraProperties) {
+      RegistryEnvironment actualEnvironment, ImmutableMap<String, String> extraProperties) {
     this.actualEnvironment = actualEnvironment;
     this.extraProperties = extraProperties;
   }
@@ -113,15 +112,14 @@ enum RegistryToolEnvironment {
           if (expecting) {
             expecting = false;
           } else {
-            break;  // This is the command name, unless zero arity flags were added.
+            break; // This is the command name, unless zero arity flags were added.
           }
         }
         if (args[i].equals(flag)) {
           checkArgument(i + 1 < args.length, "%s flag missing value.", flag);
           return args[i + 1];
         }
-        if (args[i].startsWith(flag + "=")
-            || args[i].startsWith(flag + " ")) {
+        if (args[i].startsWith(flag + "=") || args[i].startsWith(flag + " ")) {
           return args[i].substring(flag.length() + 1);
         }
       }

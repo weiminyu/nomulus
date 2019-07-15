@@ -30,8 +30,8 @@ import org.joda.time.Duration;
 /**
  * SFTP connection {@link Session} delegate that implements {@link Closeable}.
  *
- * <p>This class acts as syntactic sugar for JSch so we can open and close SFTP connections in a
- * way that's friendlier to Java 7 try-resource statements. Delegate methods are provided on an
+ * <p>This class acts as syntactic sugar for JSch so we can open and close SFTP connections in a way
+ * that's friendlier to Java 7 try-resource statements. Delegate methods are provided on an
  * as-needed basis.
  *
  * @see JSchSftpChannel
@@ -60,10 +60,8 @@ final class JSchSshSession implements Closeable {
     JSchSshSession create(JSch jsch, URI uri) throws JSchException {
       RdeUploadUrl url = RdeUploadUrl.create(uri);
       logger.atInfo().log("Connecting to SSH endpoint: %s", url);
-      Session session = jsch.getSession(
-          url.getUser().orElse("domain-registry"),
-          url.getHost(),
-          url.getPort());
+      Session session =
+          jsch.getSession(url.getUser().orElse("domain-registry"), url.getHost(), url.getPort());
       if (url.getPass().isPresent()) {
         session.setPassword(url.getPass().get());
       }

@@ -53,29 +53,33 @@ import org.mockito.junit.MockitoRule;
 @RunWith(JUnit4.class)
 public class NordnVerifyActionTest {
 
-  private static final String LOG_ACCEPTED = "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,"
-      + "0000000000000478Nzs+3VMkR8ckuUynOLmyeqTmZQSbzDuf/R50n2n5QX4=,accepted,no-warnings,1\n"
-      + "roid,result-code\n"
-      + "SH8013-REP,2000";
+  private static final String LOG_ACCEPTED =
+      "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,"
+          + "0000000000000478Nzs+3VMkR8ckuUynOLmyeqTmZQSbzDuf/R50n2n5QX4=,accepted,no-warnings,1\n"
+          + "roid,result-code\n"
+          + "SH8013-REP,2000";
 
-  private static final String LOG_REJECTED = "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,"
-      + "0000000000000478Nzs+3VMkR8ckuUynOLmyeqTmZQSbzDuf/R50n2n5QX4=,rejected,no-warnings,1\n"
-      + "roid,result-code\n"
-      + "SH8013-REP,2001";
+  private static final String LOG_REJECTED =
+      "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,"
+          + "0000000000000478Nzs+3VMkR8ckuUynOLmyeqTmZQSbzDuf/R50n2n5QX4=,rejected,no-warnings,1\n"
+          + "roid,result-code\n"
+          + "SH8013-REP,2001";
 
-  private static final String LOG_WARNINGS = "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,"
-      + "0000000000000478Nzs+3VMkR8ckuUynOLmyeqTmZQSbzDuf/R50n2n5QX4=,accepted,warnings-present,3\n"
-      + "roid,result-code\n"
-      + "SH8013-REP,2001\n"
-      + "lulz-roid,3609\n"
-      + "sabokitty-roid,3610\n";
+  private static final String LOG_WARNINGS =
+      "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,"
+          + "0000000000000478Nzs+3VMkR8ckuUynOLmyeqTmZQSbzDuf/R50n2n5QX4=,accepted,warnings-present,3\n"
+          + "roid,result-code\n"
+          + "SH8013-REP,2001\n"
+          + "lulz-roid,3609\n"
+          + "sabokitty-roid,3610\n";
 
-  private static final String LOG_ERRORS = "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,"
-      + "0000000000000478Nzs+3VMkR8ckuUynOLmyeqTmZQSbzDuf/R50n2n5QX4=,accepted,warnings-present,3\n"
-      + "roid,result-code\n"
-      + "SH8013-REP,2000\n"
-      + "lulz-roid,4601\n"
-      + "bogpog,4611\n";
+  private static final String LOG_ERRORS =
+      "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,"
+          + "0000000000000478Nzs+3VMkR8ckuUynOLmyeqTmZQSbzDuf/R50n2n5QX4=,accepted,warnings-present,3\n"
+          + "roid,result-code\n"
+          + "SH8013-REP,2000\n"
+          + "lulz-roid,4601\n"
+          + "bogpog,4611\n";
 
   @Rule
   public final AppEngineRule appEngine =
@@ -121,7 +125,7 @@ public class NordnVerifyActionTest {
   public void testSuccess_hasLordnPassword_sendsAuthorizationHeader() throws Exception {
     action.run();
     assertThat(getHeaderFirst(getCapturedHttpRequest(), AUTHORIZATION))
-        .hasValue("Basic bG9sY2F0OmF0dGFjaw==");  // echo -n lolcat:attack | base64
+        .hasValue("Basic bG9sY2F0OmF0dGFjaw=="); // echo -n lolcat:attack | base64
   }
 
   @Test

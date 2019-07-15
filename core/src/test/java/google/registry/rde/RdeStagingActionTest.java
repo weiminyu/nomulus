@@ -105,8 +105,7 @@ public class RdeStagingActionTest extends MapreduceTestCase<RdeStagingAction> {
   private static final GcsFilename LENGTH_FILE =
       new GcsFilename("rde-bucket", "lol_2000-01-01_full_S1_R0.xml.length");
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   private final FakeClock clock = new FakeClock();
   private final FakeResponse response = new FakeResponse();
@@ -465,11 +464,11 @@ public class RdeStagingActionTest extends MapreduceTestCase<RdeStagingAction> {
     clock.setTo(DateTime.parse("2000-01-04TZ")); // Tuesday
     action.run();
     executeTasksUntilEmpty("mapreduce", clock);
-    assertTasksEnqueued("rde-upload",
-        new TaskMatcher()
-            .url(RdeUploadAction.PATH)
-            .param(RequestParameters.PARAM_TLD, "lol"));
-    assertTasksEnqueued("brda",
+    assertTasksEnqueued(
+        "rde-upload",
+        new TaskMatcher().url(RdeUploadAction.PATH).param(RequestParameters.PARAM_TLD, "lol"));
+    assertTasksEnqueued(
+        "brda",
         new TaskMatcher()
             .url(BrdaCopyAction.PATH)
             .param(RequestParameters.PARAM_TLD, "lol")
@@ -487,9 +486,10 @@ public class RdeStagingActionTest extends MapreduceTestCase<RdeStagingAction> {
     action.run();
     executeTasksUntilEmpty("mapreduce", clock);
 
-    for (GcsFilename filename : asList(
-        new GcsFilename("rde-bucket", "fop_1971-01-01_full_S1_R0.xml.ghostryde"),
-        new GcsFilename("rde-bucket", "fop_1971-01-05_thin_S1_R0.xml.ghostryde"))) {
+    for (GcsFilename filename :
+        asList(
+            new GcsFilename("rde-bucket", "fop_1971-01-01_full_S1_R0.xml.ghostryde"),
+            new GcsFilename("rde-bucket", "fop_1971-01-05_thin_S1_R0.xml.ghostryde"))) {
       XjcRdeDeposit deposit =
           unmarshal(
               XjcRdeDeposit.class, Ghostryde.decode(readGcsFile(gcsService, filename), decryptKey));
@@ -503,7 +503,10 @@ public class RdeStagingActionTest extends MapreduceTestCase<RdeStagingAction> {
     }
 
     assertThat(
-            ofy().load().key(Cursor.createKey(RDE_STAGING, Registry.get("fop"))).now()
+            ofy()
+                .load()
+                .key(Cursor.createKey(RDE_STAGING, Registry.get("fop")))
+                .now()
                 .getCursorTime())
         .isEqualTo(DateTime.parse("1971-01-02TZ"));
 
@@ -638,17 +641,20 @@ public class RdeStagingActionTest extends MapreduceTestCase<RdeStagingAction> {
     action.run();
     executeTasksUntilEmpty("mapreduce", clock);
 
-    XjcRdeDeposit deposit = unmarshal(
-        XjcRdeDeposit.class,
-        readXml("fop_2000-01-01_full_S1_R0.xml.ghostryde").getBytes(UTF_8));
+    XjcRdeDeposit deposit =
+        unmarshal(
+            XjcRdeDeposit.class,
+            readXml("fop_2000-01-01_full_S1_R0.xml.ghostryde").getBytes(UTF_8));
     assertThat(deposit.getResend()).isEqualTo(0);
 
     setCursor(Registry.get("fop"), RDE_STAGING, DateTime.parse("2000-01-01TZ"));
     action.response = new FakeResponse();
     action.run();
     executeTasksUntilEmpty("mapreduce", clock);
-    deposit = unmarshal(
-        XjcRdeDeposit.class, readXml("fop_2000-01-01_full_S1_R1.xml.ghostryde").getBytes(UTF_8));
+    deposit =
+        unmarshal(
+            XjcRdeDeposit.class,
+            readXml("fop_2000-01-01_full_S1_R1.xml.ghostryde").getBytes(UTF_8));
     assertThat(deposit.getResend()).isEqualTo(1);
   }
 
@@ -809,8 +815,7 @@ public class RdeStagingActionTest extends MapreduceTestCase<RdeStagingAction> {
   }
 
   @Test
-  public void testMapReduce_manualMode_nonZeroRevisionAndMultipleTlds()
-      throws Exception {
+  public void testMapReduce_manualMode_nonZeroRevisionAndMultipleTlds() throws Exception {
     doManualModeMapReduceTest(42, ImmutableSet.of("lol", "slug"));
   }
 
@@ -819,8 +824,8 @@ public class RdeStagingActionTest extends MapreduceTestCase<RdeStagingAction> {
     return new String(Ghostryde.decode(readGcsFile(gcsService, file), decryptKey), UTF_8);
   }
 
-  private <T extends XjcRdeContentType>
-      T extractAndRemoveContentWithType(Class<T> type, XjcRdeDeposit deposit) {
+  private <T extends XjcRdeContentType> T extractAndRemoveContentWithType(
+      Class<T> type, XjcRdeDeposit deposit) {
     for (JAXBElement<? extends XjcRdeContentType> content : deposit.getContents().getContents()) {
       XjcRdeContentType piece = content.getValue();
       if (type.isInstance(piece) && !alreadyExtracted.contains(piece)) {

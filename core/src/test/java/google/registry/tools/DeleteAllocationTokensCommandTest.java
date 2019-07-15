@@ -171,7 +171,7 @@ public class DeleteAllocationTokensCommandTest
     return persistResource(builder.build());
   }
 
-  private static Collection<AllocationToken> reloadTokens(AllocationToken ... tokens) {
+  private static Collection<AllocationToken> reloadTokens(AllocationToken... tokens) {
     return ofy().load().entities(tokens).values();
   }
 }

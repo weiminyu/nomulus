@@ -33,6 +33,7 @@ public class SerializeUtilsTest {
       return "LOL_VALUE";
     }
   }
+
   @Test
   public void testSerialize_nullValue_returnsNull() {
     assertThat(serialize(null)).isNull();

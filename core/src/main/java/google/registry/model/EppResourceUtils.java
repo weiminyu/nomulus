@@ -185,13 +185,8 @@ public final class EppResourceUtils {
    */
   public static <T extends EppResource> Iterable<T> queryNotDeleted(
       Class<T> clazz, DateTime now, String filterDefinition, Object filterValue) {
-    return ofy()
-        .load()
-        .type(clazz)
-        .filter(filterDefinition, filterValue)
-        .filter("deletionTime >", now.toDate())
-        .list()
-        .stream()
+    return ofy().load().type(clazz).filter(filterDefinition, filterValue)
+        .filter("deletionTime >", now.toDate()).list().stream()
         .map(EppResourceUtils.transformAtTime(now))
         .collect(toImmutableSet());
   }
@@ -224,14 +219,17 @@ public final class EppResourceUtils {
   public static <B extends EppResource.Builder<?, B> & BuilderWithTransferData<B>>
       void setAutomaticTransferSuccessProperties(B builder, TransferData transferData) {
     checkArgument(TransferStatus.PENDING.equals(transferData.getTransferStatus()));
-    builder.removeStatusValue(StatusValue.PENDING_TRANSFER)
-        .setTransferData(transferData.asBuilder()
-            .setTransferStatus(TransferStatus.SERVER_APPROVED)
-            .setServerApproveEntities(null)
-            .setServerApproveBillingEvent(null)
-            .setServerApproveAutorenewEvent(null)
-            .setServerApproveAutorenewPollMessage(null)
-            .build())
+    builder
+        .removeStatusValue(StatusValue.PENDING_TRANSFER)
+        .setTransferData(
+            transferData
+                .asBuilder()
+                .setTransferStatus(TransferStatus.SERVER_APPROVED)
+                .setServerApproveEntities(null)
+                .setServerApproveBillingEvent(null)
+                .setServerApproveAutorenewEvent(null)
+                .setServerApproveAutorenewPollMessage(null)
+                .build())
         .setLastTransferTime(transferData.getPendingTransferExpirationTime())
         .setPersistedCurrentSponsorClientId(transferData.getGainingClientId());
   }
@@ -265,12 +263,12 @@ public final class EppResourceUtils {
    * <p><b>Warning:</b> A resource can only be rolled backwards in time, not forwards; therefore
    * {@code resource} should be whatever's currently in Datastore.
    *
-   * <p><b>Warning:</b> Revisions are granular to 24-hour periods. It's recommended that
-   * {@code timestamp} be set to midnight. Otherwise you must take into consideration that under
-   * certain circumstances, a resource might be restored to a revision on the previous day, even if
-   * there were revisions made earlier on the same date as {@code timestamp}; however, a resource
-   * will never be restored to a revision occurring after {@code timestamp}. This behavior is due to
-   * the way {@link google.registry.model.translators.CommitLogRevisionsTranslatorFactory
+   * <p><b>Warning:</b> Revisions are granular to 24-hour periods. It's recommended that {@code
+   * timestamp} be set to midnight. Otherwise you must take into consideration that under certain
+   * circumstances, a resource might be restored to a revision on the previous day, even if there
+   * were revisions made earlier on the same date as {@code timestamp}; however, a resource will
+   * never be restored to a revision occurring after {@code timestamp}. This behavior is due to the
+   * way {@link google.registry.model.translators.CommitLogRevisionsTranslatorFactory
    * CommitLogRevisionsTranslatorFactory} manages the {@link EppResource#revisions} field. Please
    * note however that the creation and deletion times of a resource are granular to the
    * millisecond.
@@ -278,8 +276,8 @@ public final class EppResourceUtils {
    * @return an asynchronous operation returning resource at {@code timestamp} or {@code null} if
    *     resource is deleted or not yet created
    */
-  public static <T extends EppResource>
-      Result<T> loadAtPointInTime(final T resource, final DateTime timestamp) {
+  public static <T extends EppResource> Result<T> loadAtPointInTime(
+      final T resource, final DateTime timestamp) {
     // If we're before the resource creation time, don't try to find a "most recent revision".
     if (timestamp.isBefore(resource.getCreationTime())) {
       return new ResultNow<>(null);
@@ -294,7 +292,8 @@ public final class EppResourceUtils {
             : loadMostRecentRevisionAtTime(resource, timestamp);
     return () -> {
       T loadedResource = loadResult.now();
-      return (loadedResource == null) ? null
+      return (loadedResource == null)
+          ? null
           : (isActive(loadedResource, timestamp)
               ? cloneProjectedAtTime(loadedResource, timestamp)
               : null);
@@ -332,8 +331,8 @@ public final class EppResourceUtils {
   }
 
   @Nullable
-  private static <T extends EppResource> Key<CommitLogManifest>
-      findMostRecentRevisionAtTime(final T resource, final DateTime timestamp) {
+  private static <T extends EppResource> Key<CommitLogManifest> findMostRecentRevisionAtTime(
+      final T resource, final DateTime timestamp) {
     final Key<T> resourceKey = Key.create(resource);
     Entry<?, Key<CommitLogManifest>> revision = resource.getRevisions().floorEntry(timestamp);
     if (revision != null) {

@@ -67,8 +67,7 @@ public abstract class CommandTestCase<C extends Command> {
 
   @Rule public final MockitoRule mocks = MockitoJUnit.rule();
 
-  @Rule
-  public TemporaryFolder tmpDir = new TemporaryFolder();
+  @Rule public TemporaryFolder tmpDir = new TemporaryFolder();
 
   @Before
   public final void beforeCommandTestCase() throws Exception {
@@ -122,7 +121,7 @@ public abstract class CommandTestCase<C extends Command> {
   }
 
   /** Writes the data to a named temporary file and then returns a path to the file. */
-  String writeToNamedTmpFile(String filename, String...data) throws IOException {
+  String writeToNamedTmpFile(String filename, String... data) throws IOException {
     return writeToNamedTmpFile(filename, Joiner.on('\n').join(data).getBytes(UTF_8));
   }
 
@@ -137,7 +136,7 @@ public abstract class CommandTestCase<C extends Command> {
   }
 
   /** Writes the data to a temporary file and then returns a path to the file. */
-  String writeToTmpFile(String...data) throws IOException {
+  String writeToTmpFile(String... data) throws IOException {
     return writeToNamedTmpFile("tmp_file", data);
   }
 

@@ -54,9 +54,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/**
- * Unit tests for {@link DirectoryGroupsConnection}.
- */
+/** Unit tests for {@link DirectoryGroupsConnection}. */
 @RunWith(JUnit4.class)
 public class DirectoryGroupsConnectionTest {
   private final Directory directory = mock(Directory.class);
@@ -110,15 +108,16 @@ public class DirectoryGroupsConnectionTest {
 
   @Test
   public void test_addMemberToGroup_handlesExceptionThrownByDirectoryService() throws Exception {
-    when(membersInsert.execute()).thenThrow(
-        makeResponseException(SC_INTERNAL_SERVER_ERROR, "Could not contact Directory server."));
+    when(membersInsert.execute())
+        .thenThrow(
+            makeResponseException(SC_INTERNAL_SERVER_ERROR, "Could not contact Directory server."));
     assertThrows(GoogleJsonResponseException.class, this::runAddMemberTest);
   }
 
   @Test
   public void test_addMemberToGroup_handlesMemberKeyNotFoundException() throws Exception {
-    when(membersInsert.execute()).thenThrow(
-        makeResponseException(SC_NOT_FOUND, "Resource Not Found: memberKey"));
+    when(membersInsert.execute())
+        .thenThrow(makeResponseException(SC_NOT_FOUND, "Resource Not Found: memberKey"));
     RuntimeException thrown =
         assertThrows(
             RuntimeException.class,
@@ -174,8 +173,9 @@ public class DirectoryGroupsConnectionTest {
 
   @Test
   public void test_createGroup_handlesExceptionThrownByDirectoryService() throws Exception {
-    when(groupsInsert.execute()).thenThrow(
-        makeResponseException(SC_INTERNAL_SERVER_ERROR, "Could not contact Directory server."));
+    when(groupsInsert.execute())
+        .thenThrow(
+            makeResponseException(SC_INTERNAL_SERVER_ERROR, "Could not contact Directory server."));
     assertThrows(GoogleJsonResponseException.class, this::runCreateGroupTest);
   }
 
@@ -203,8 +203,9 @@ public class DirectoryGroupsConnectionTest {
     Set<String> emails = connection.getMembersOfGroup("contacts@bar.foo");
     verify(members).list("contacts@bar.foo");
     verify(membersList).setRoles("MEMBER");
-    assertThat(emails).containsExactlyElementsIn(
-        ImmutableSet.of("john@example.com", "tim@bar.foo", "tank@spam.how", "jank@latte.soy"));
+    assertThat(emails)
+        .containsExactlyElementsIn(
+            ImmutableSet.of("john@example.com", "tim@bar.foo", "tank@spam.how", "jank@latte.soy"));
   }
 
   @Test
@@ -280,30 +281,34 @@ public class DirectoryGroupsConnectionTest {
     return expected;
   }
 
-  /** Returns a valid GoogleJsonResponseException for the given status code and error message.  */
+  /** Returns a valid GoogleJsonResponseException for the given status code and error message. */
   private GoogleJsonResponseException makeResponseException(
-      final int statusCode,
-      final String message) throws Exception {
-    HttpTransport transport = new MockHttpTransport() {
-      @Override
-      public LowLevelHttpRequest buildRequest(String method, String url) {
-        return new MockLowLevelHttpRequest() {
+      final int statusCode, final String message) throws Exception {
+    HttpTransport transport =
+        new MockHttpTransport() {
           @Override
-          public LowLevelHttpResponse execute() {
-            MockLowLevelHttpResponse response = new MockLowLevelHttpResponse();
-            response.setStatusCode(statusCode);
-            response.setContentType(Json.MEDIA_TYPE);
-            response.setContent(String.format(
-                "{\"error\":{\"code\":%d,\"message\":\"%s\",\"domain\":\"global\","
-                + "\"reason\":\"duplicate\"}}",
-                statusCode,
-                message));
-            return response;
-          }};
-      }};
-    HttpRequest request = transport.createRequestFactory()
-        .buildGetRequest(HttpTesting.SIMPLE_GENERIC_URL)
-        .setThrowExceptionOnExecuteError(false);
+          public LowLevelHttpRequest buildRequest(String method, String url) {
+            return new MockLowLevelHttpRequest() {
+              @Override
+              public LowLevelHttpResponse execute() {
+                MockLowLevelHttpResponse response = new MockLowLevelHttpResponse();
+                response.setStatusCode(statusCode);
+                response.setContentType(Json.MEDIA_TYPE);
+                response.setContent(
+                    String.format(
+                        "{\"error\":{\"code\":%d,\"message\":\"%s\",\"domain\":\"global\","
+                            + "\"reason\":\"duplicate\"}}",
+                        statusCode, message));
+                return response;
+              }
+            };
+          }
+        };
+    HttpRequest request =
+        transport
+            .createRequestFactory()
+            .buildGetRequest(HttpTesting.SIMPLE_GENERIC_URL)
+            .setThrowExceptionOnExecuteError(false);
     return GoogleJsonResponseException.from(new JacksonFactory(), request.execute());
   }
 }

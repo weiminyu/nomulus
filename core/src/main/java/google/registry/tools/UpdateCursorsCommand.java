@@ -33,10 +33,7 @@ final class UpdateCursorsCommand extends MutatingCommand {
   @Parameter(description = "TLDs on which to operate. Omit for global cursors.")
   private List<String> tlds;
 
-  @Parameter(
-      names = "--type",
-      description = "Which cursor to update.",
-      required = true)
+  @Parameter(names = "--type", description = "Which cursor to update.", required = true)
   private CursorType cursorType;
 
   @Parameter(
@@ -55,9 +52,7 @@ final class UpdateCursorsCommand extends MutatingCommand {
       for (String tld : tlds) {
         Registry registry = Registry.get(tld);
         Cursor cursor = ofy().load().key(Cursor.createKey(cursorType, registry)).now();
-        stageEntityChange(
-            cursor,
-            Cursor.create(cursorType, newTimestamp, registry));
+        stageEntityChange(cursor, Cursor.create(cursorType, newTimestamp, registry));
       }
     }
   }

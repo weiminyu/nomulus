@@ -52,9 +52,7 @@ public interface ResourceCommand {
   @XmlTransient
   abstract class AbstractSingleResourceCommand extends ImmutableObject
       implements SingleResourceCommand {
-    @XmlElements({
-        @XmlElement(name = "id"),
-        @XmlElement(name = "name") })
+    @XmlElements({@XmlElement(name = "id"), @XmlElement(name = "name")})
     String targetId;
 
     @Override
@@ -71,9 +69,7 @@ public interface ResourceCommand {
   /** A check command for an {@link EppResource}. */
   @XmlTransient
   class ResourceCheck extends ImmutableObject implements ResourceCommand {
-    @XmlElements({
-        @XmlElement(name = "id"),
-        @XmlElement(name = "name") })
+    @XmlElements({@XmlElement(name = "id"), @XmlElement(name = "name")})
     List<String> targetUniqueIds;
 
     public ImmutableList<String> getTargetIds() {
@@ -91,10 +87,11 @@ public interface ResourceCommand {
    * @param <C> the change type
    */
   @XmlTransient
-  abstract class ResourceUpdate
-      <A extends ResourceUpdate.AddRemove,
-       B extends EppResource.Builder<?, ?>,
-       C extends ResourceCreateOrChange<B>> extends AbstractSingleResourceCommand  {
+  abstract class ResourceUpdate<
+          A extends ResourceUpdate.AddRemove,
+          B extends EppResource.Builder<?, ?>,
+          C extends ResourceCreateOrChange<B>>
+      extends AbstractSingleResourceCommand {
 
     /** Part of an update command that specifies set values to add or remove. */
     @XmlTransient
@@ -118,17 +115,17 @@ public interface ResourceCommand {
 
     public C getInnerChange() {
       C change = getNullableInnerChange();
-      return change == null ? new TypeInstantiator<C>(getClass()){}.instantiate() : change;
+      return change == null ? new TypeInstantiator<C>(getClass()) {}.instantiate() : change;
     }
 
     public A getInnerAdd() {
       A add = getNullableInnerAdd();
-      return add == null ? new TypeInstantiator<A>(getClass()){}.instantiate() : add;
+      return add == null ? new TypeInstantiator<A>(getClass()) {}.instantiate() : add;
     }
 
     public A getInnerRemove() {
       A remove = getNullableInnerRemove();
-      return remove == null ? new TypeInstantiator<A>(getClass()){}.instantiate() : remove;
+      return remove == null ? new TypeInstantiator<A>(getClass()) {}.instantiate() : remove;
     }
   }
 }

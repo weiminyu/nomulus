@@ -14,7 +14,6 @@
 
 package google.registry.ui.server.registrar;
 
-
 import static google.registry.request.RequestParameters.extractOptionalIntParameter;
 import static google.registry.request.RequestParameters.extractOptionalParameter;
 import static google.registry.request.RequestParameters.extractRequiredParameter;

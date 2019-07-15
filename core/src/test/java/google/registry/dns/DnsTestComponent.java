@@ -36,6 +36,8 @@ import javax.inject.Singleton;
     })
 interface DnsTestComponent {
   DnsQueue dnsQueue();
+
   RefreshDnsAction refreshDns();
+
   ReadDnsQueueAction readDnsQueueAction();
 }

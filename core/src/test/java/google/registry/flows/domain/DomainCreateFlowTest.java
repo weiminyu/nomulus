@@ -503,8 +503,7 @@ public class DomainCreateFlowTest extends ResourceFlowTestCase<DomainCreateFlow,
     persistContactsAndHosts("foo.tld");
     assertTransactionalFlow(true);
     String expectedResponseXml =
-        loadFile(
-            "domain_create_response.xml", ImmutableMap.of("DOMAIN", "example.foo.tld"));
+        loadFile("domain_create_response.xml", ImmutableMap.of("DOMAIN", "example.foo.tld"));
     runFlowAssertResponse(CommitMode.LIVE, UserPrivileges.NORMAL, expectedResponseXml);
     assertSuccessfulCreate("foo.tld", ImmutableSet.of());
     assertNoLordn();
@@ -536,8 +535,7 @@ public class DomainCreateFlowTest extends ResourceFlowTestCase<DomainCreateFlow,
         "domain_create_registration_encoded_signed_mark.xml",
         ImmutableMap.of("DOMAIN", "test-validate.tld", "PHASE", "open"));
     persistContactsAndHosts();
-    EppException thrown =
-        assertThrows(SignedMarksOnlyDuringSunriseException.class, this::runFlow);
+    EppException thrown = assertThrows(SignedMarksOnlyDuringSunriseException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
   }
 
@@ -1115,11 +1113,15 @@ public class DomainCreateFlowTest extends ResourceFlowTestCase<DomainCreateFlow,
             .asBuilder()
             .setTldStateTransitions(
                 ImmutableSortedMap.of(
-                    START_OF_TIME, PREDELEGATION,
-                    DateTime.parse("1999-01-01T00:00:00Z"), QUIET_PERIOD,
+                    START_OF_TIME,
+                    PREDELEGATION,
+                    DateTime.parse("1999-01-01T00:00:00Z"),
+                    QUIET_PERIOD,
                     // The anchor tenant is created here, on 1999-04-03
-                    DateTime.parse("1999-07-01T00:00:00Z"), START_DATE_SUNRISE,
-                    DateTime.parse("2000-01-01T00:00:00Z"), GENERAL_AVAILABILITY))
+                    DateTime.parse("1999-07-01T00:00:00Z"),
+                    START_DATE_SUNRISE,
+                    DateTime.parse("2000-01-01T00:00:00Z"),
+                    GENERAL_AVAILABILITY))
             .build());
     setEppInput("domain_create_anchor_allocationtoken.xml");
     persistContactsAndHosts();
@@ -1862,9 +1864,7 @@ public class DomainCreateFlowTest extends ResourceFlowTestCase<DomainCreateFlow,
     assertSunriseLordn("test-validate.tld");
   }
 
-  /**
-   * Test that missing type= argument on launch create works in start-date sunrise.
-   */
+  /** Test that missing type= argument on launch create works in start-date sunrise. */
   @Test
   public void testSuccess_startDateSunriseRegistration_withEncodedSignedMark_noType()
       throws Exception {

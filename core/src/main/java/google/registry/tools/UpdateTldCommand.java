@@ -80,8 +80,9 @@ class UpdateTldCommand extends CreateOrUpdateTldCommand {
   @Nullable
   @Parameter(
       names = "--set_current_tld_state",
-      description = "Set the current TLD state. Specifically, adds a TLD transition at the "
-          + "current time for the specified state.")
+      description =
+          "Set the current TLD state. Specifically, adds a TLD transition at the "
+              + "current time for the specified state.")
   TldState setCurrentTldState;
 
   @Override
@@ -139,7 +140,8 @@ class UpdateTldCommand extends CreateOrUpdateTldCommand {
         "allowed_registrants", allowedRegistrants, allowedRegistrantsAdd, allowedRegistrantsRemove);
     checkConflicts(
         "allowed_nameservers", allowedNameservers, allowedNameserversAdd, allowedNameserversRemove);
-    checkArgument(setCurrentTldState == null || tldStateTransitions.isEmpty(),
+    checkArgument(
+        setCurrentTldState == null || tldStateTransitions.isEmpty(),
         "Don't pass both --set_current_tld_state and --tld_state_transitions");
   }
 

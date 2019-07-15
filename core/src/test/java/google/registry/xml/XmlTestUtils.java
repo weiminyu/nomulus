@@ -41,8 +41,8 @@ import org.json.XML;
 /** Helper class for unit tests that need XML. */
 public class XmlTestUtils {
 
-  public static void assertXmlEquals(
-      String expected, String actual, String... ignoredPaths) throws Exception {
+  public static void assertXmlEquals(String expected, String actual, String... ignoredPaths)
+      throws Exception {
     assertXmlEqualsWithMessage(expected, actual, "", ignoredPaths);
   }
 
@@ -54,18 +54,17 @@ public class XmlTestUtils {
     Map<String, Object> expectedMap = toComparableJson(expected, ignoredPaths);
     Map<String, Object> actualMap = toComparableJson(actual, ignoredPaths);
     if (!expectedMap.equals(actualMap)) {
-      assert_().fail(String.format(
-          "%s: Expected:\n%s\n\nActual:\n%s\n\nDiff:\n%s\n\n",
-          message,
-          expected,
-          actual,
-          prettyPrintXmlDeepDiff(expectedMap, actualMap, null)));
+      assert_()
+          .fail(
+              String.format(
+                  "%s: Expected:\n%s\n\nActual:\n%s\n\nDiff:\n%s\n\n",
+                  message, expected, actual, prettyPrintXmlDeepDiff(expectedMap, actualMap, null)));
     }
   }
 
   /**
-   * Map an element or attribute name using a namespace map to replace the namespace identifier
-   * with the complete URI as given in the map. If the name has no namespace identifier, the default
+   * Map an element or attribute name using a namespace map to replace the namespace identifier with
+   * the complete URI as given in the map. If the name has no namespace identifier, the default
    * namespace mapping is used. If the namespace identifier does not exist in the map, the name is
    * left unchanged.
    */
@@ -84,7 +83,7 @@ public class XmlTestUtils {
       }
       ns = "";
       simpleKey = name;
-    // Handle names with identifiers.
+      // Handle names with identifiers.
     } else {
       ns = components.get(0);
       simpleKey = components.get(1);
@@ -98,17 +97,16 @@ public class XmlTestUtils {
   }
 
   /**
-   * Deeply explore the object and normalize values so that things we consider equal compare so.
-   * The return value consists of two parts: the updated key and the value. The value is
-   * straightforward enough: it is the rendering of the subtree to be attached at the current point.
-   * The key is more complicated, because of namespaces. When an XML element specifies namespaces
-   * using xmlns attributes, those namespaces apply to the element as well as all of its
-   * descendants. That means that, when prefixing the element name with the full namespace path,
-   * as required to do proper comparison, the element name depends on its children. When looping
-   * through a JSONObject map, we can't just recursively generate the value and store it using the
-   * key. We may have to update the key as well, to get the namespaces correct. A returned key of
-   * null indicates that we should use the existing key. A non-null key indicates that we should
-   * replace the existing key.
+   * Deeply explore the object and normalize values so that things we consider equal compare so. The
+   * return value consists of two parts: the updated key and the value. The value is straightforward
+   * enough: it is the rendering of the subtree to be attached at the current point. The key is more
+   * complicated, because of namespaces. When an XML element specifies namespaces using xmlns
+   * attributes, those namespaces apply to the element as well as all of its descendants. That means
+   * that, when prefixing the element name with the full namespace path, as required to do proper
+   * comparison, the element name depends on its children. When looping through a JSONObject map, we
+   * can't just recursively generate the value and store it using the key. We may have to update the
+   * key as well, to get the namespaces correct. A returned key of null indicates that we should use
+   * the existing key. A non-null key indicates that we should replace the existing key.
    *
    * @param elementName the name under which the current subtree was found, or null if the current
    *     subtree's name is nonexistent or irrelevant
@@ -124,7 +122,8 @@ public class XmlTestUtils {
       Object obj,
       @Nullable String path,
       Set<String> ignoredPaths,
-      Map<String, String> nsMap) throws Exception {
+      Map<String, String> nsMap)
+      throws Exception {
     if (obj instanceof JSONObject) {
       JSONObject jsonObject = (JSONObject) obj;
       Map<String, Object> map = new HashMap<>();
@@ -253,14 +252,15 @@ public class XmlTestUtils {
   }
 
   @SuppressWarnings("unchecked")
-  private static Map<String, Object> toComparableJson(
-      String xml, String... ignoredPaths) throws Exception {
-    return (Map<String, Object>) normalize(
-        null,
-        XML.toJSONObject(xml),
-        null,
-        ImmutableSet.copyOf(ignoredPaths),
-        ImmutableMap.of()).getValue();
+  private static Map<String, Object> toComparableJson(String xml, String... ignoredPaths)
+      throws Exception {
+    return (Map<String, Object>)
+        normalize(
+                null,
+                XML.toJSONObject(xml),
+                null,
+                ImmutableSet.copyOf(ignoredPaths),
+                ImmutableMap.of())
+            .getValue();
   }
 }
-

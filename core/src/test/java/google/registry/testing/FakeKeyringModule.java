@@ -62,7 +62,7 @@ public final class FakeKeyringModule {
     PGPPublicKeyRingCollection publics;
     PGPSecretKeyRingCollection privates;
     try (InputStream publicInput = PGP_PUBLIC_KEYRING.openStream();
-         InputStream privateInput = PGP_PRIVATE_KEYRING.openStream()) {
+        InputStream privateInput = PGP_PRIVATE_KEYRING.openStream()) {
       publics = new BcPGPPublicKeyRingCollection(PGPUtil.getDecoderStream(publicInput));
       privates = new BcPGPSecretKeyRingCollection(PGPUtil.getDecoderStream(privateInput));
     } catch (PGPException e) {
@@ -160,7 +160,7 @@ public final class FakeKeyringModule {
     PGPPublicKeyRingCollection publics;
     PGPSecretKeyRingCollection privates;
     try (InputStream publicInput = PGP_PUBLIC_KEYRING.openStream();
-         InputStream privateInput = PGP_PRIVATE_KEYRING.openStream()) {
+        InputStream privateInput = PGP_PRIVATE_KEYRING.openStream()) {
       publics = new BcPGPPublicKeyRingCollection(PGPUtil.getDecoderStream(publicInput));
       privates = new BcPGPSecretKeyRingCollection(PGPUtil.getDecoderStream(privateInput));
     } catch (PGPException e) {

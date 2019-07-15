@@ -37,15 +37,14 @@ import javax.annotation.Nullable;
 final class LoggingParameters {
 
   @Nullable
-  @Parameter(
-      names = "--log_level",
-      description = "Default level at which to log messages")
+  @Parameter(names = "--log_level", description = "Default level at which to log messages")
   private Level logLevel;
 
   @Parameter(
       names = "--logging_configs",
-      description = "Comma-delimited list of logging properties to add to the logging.properties "
-          + "file, e.g. com.example.level=WARNING,com.example.FooClass.level=SEVERE")
+      description =
+          "Comma-delimited list of logging properties to add to the logging.properties "
+              + "file, e.g. com.example.level=WARNING,com.example.FooClass.level=SEVERE")
   private List<String> configLines = new ArrayList<>();
 
   @Nullable
@@ -59,9 +58,8 @@ final class LoggingParameters {
       readResourceBytes(LoggingParameters.class, "logging.properties");
 
   void configureLogging() throws IOException {
-    ByteSource baseConfig = (configFile != null)
-        ? Files.asByteSource(configFile.toFile())
-        : DEFAULT_LOG_CONFIG;
+    ByteSource baseConfig =
+        (configFile != null) ? Files.asByteSource(configFile.toFile()) : DEFAULT_LOG_CONFIG;
     if (logLevel != null) {
       configLines.add(".level = " + logLevel);
     }

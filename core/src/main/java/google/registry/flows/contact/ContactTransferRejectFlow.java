@@ -65,7 +65,9 @@ public final class ContactTransferRejectFlow implements TransactionalFlow {
   @Inject @TargetId String targetId;
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject ContactTransferRejectFlow() {}
+
+  @Inject
+  ContactTransferRejectFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -79,11 +81,12 @@ public final class ContactTransferRejectFlow implements TransactionalFlow {
     verifyResourceOwnership(clientId, existingContact);
     ContactResource newContact =
         denyPendingTransfer(existingContact, TransferStatus.CLIENT_REJECTED, now, clientId);
-    HistoryEntry historyEntry = historyBuilder
-        .setType(HistoryEntry.Type.CONTACT_TRANSFER_REJECT)
-        .setModificationTime(now)
-        .setParent(Key.create(existingContact))
-        .build();
+    HistoryEntry historyEntry =
+        historyBuilder
+            .setType(HistoryEntry.Type.CONTACT_TRANSFER_REJECT)
+            .setModificationTime(now)
+            .setParent(Key.create(existingContact))
+            .build();
     PollMessage gainingPollMessage =
         createGainingTransferPollMessage(targetId, newContact.getTransferData(), historyEntry);
     ofy().save().<Object>entities(newContact, historyEntry, gainingPollMessage);

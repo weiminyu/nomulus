@@ -84,7 +84,7 @@ public class AuthenticatedRegistrarAccessorTest {
   /**
    * Creates an AuthResult for a fake user.
    *
-   * The user will be a RegistrarContact for "TheRegistrar", but not for "NewRegistrar".
+   * <p>The user will be a RegistrarContact for "TheRegistrar", but not for "NewRegistrar".
    *
    * @param isAdmin if true, the user is an administrator for the app-engine project.
    */
@@ -93,9 +93,7 @@ public class AuthenticatedRegistrarAccessorTest {
         AuthLevel.USER,
         UserAuthInfo.create(
             new User(
-                String.format(
-                    "%s@gmail.com",
-                    isAdmin ? "admin" : "user"),
+                String.format("%s@gmail.com", isAdmin ? "admin" : "user"),
                 "gmail.com",
                 THE_REGISTRAR_GAE_USER_ID),
             isAdmin));
@@ -172,12 +170,9 @@ public class AuthenticatedRegistrarAccessorTest {
         .containsExactly(
             CLIENT_ID_WITH_CONTACT, ADMIN,
             CLIENT_ID_WITH_CONTACT, OWNER,
-
             REAL_CLIENT_ID_WITHOUT_CONTACT, ADMIN,
-
             OTE_CLIENT_ID_WITHOUT_CONTACT, ADMIN,
             OTE_CLIENT_ID_WITHOUT_CONTACT, OWNER,
-
             ADMIN_CLIENT_ID, ADMIN,
             ADMIN_CLIENT_ID, OWNER);
     verifyZeroInteractions(lazyGroupsConnection);
@@ -205,12 +200,9 @@ public class AuthenticatedRegistrarAccessorTest {
         .containsExactly(
             CLIENT_ID_WITH_CONTACT, ADMIN,
             CLIENT_ID_WITH_CONTACT, OWNER,
-
             REAL_CLIENT_ID_WITHOUT_CONTACT, ADMIN,
-
             OTE_CLIENT_ID_WITHOUT_CONTACT, ADMIN,
             OTE_CLIENT_ID_WITHOUT_CONTACT, OWNER,
-
             ADMIN_CLIENT_ID, ADMIN,
             ADMIN_CLIENT_ID, OWNER);
     verify(lazyGroupsConnection).get();
@@ -346,10 +338,7 @@ public class AuthenticatedRegistrarAccessorTest {
   /** Fail loading registrar even if admin, if registrar doesn't exist. */
   @Test
   public void testGetRegistrarForUser_doesntExist_isAdmin() {
-    expectGetRegistrarFailure(
-        "BadClientId",
-        GAE_ADMIN,
-        "Registrar BadClientId does not exist");
+    expectGetRegistrarFailure("BadClientId", GAE_ADMIN, "Registrar BadClientId does not exist");
     verifyZeroInteractions(lazyGroupsConnection);
   }
 
@@ -364,8 +353,7 @@ public class AuthenticatedRegistrarAccessorTest {
     assertAboutLogs().that(testLogHandler).hasLogAtLevelWithMessage(Level.INFO, message);
   }
 
-  private void expectGetRegistrarFailure(
-      String clientId, AuthResult authResult, String message) {
+  private void expectGetRegistrarFailure(String clientId, AuthResult authResult, String message) {
     AuthenticatedRegistrarAccessor registrarAccessor =
         new AuthenticatedRegistrarAccessor(
             authResult, ADMIN_CLIENT_ID, SUPPORT_GROUP, lazyGroupsConnection);

@@ -51,10 +51,7 @@ public class SendEmailUtilsTest {
   public void testSuccess_sendToOneAddress() throws Exception {
     setRecipients(ImmutableList.of("johnny@fakesite.tld"));
     assertThat(sendEmailUtils.hasRecipients()).isTrue();
-    assertThat(
-            sendEmailUtils.sendEmail(
-                "Welcome to the Internet",
-                "It is a dark and scary place."))
+    assertThat(sendEmailUtils.sendEmail("Welcome to the Internet", "It is a dark and scary place."))
         .isTrue();
     verifyMessageSent("johnny@fakesite.tld");
   }
@@ -63,10 +60,7 @@ public class SendEmailUtilsTest {
   public void testSuccess_sendToMultipleAddresses() throws Exception {
     setRecipients(ImmutableList.of("foo@example.com", "bar@example.com"));
     assertThat(sendEmailUtils.hasRecipients()).isTrue();
-    assertThat(
-            sendEmailUtils.sendEmail(
-                "Welcome to the Internet",
-                "It is a dark and scary place."))
+    assertThat(sendEmailUtils.sendEmail("Welcome to the Internet", "It is a dark and scary place."))
         .isTrue();
     verifyMessageSent("foo@example.com", "bar@example.com");
   }
@@ -75,10 +69,7 @@ public class SendEmailUtilsTest {
   public void testSuccess_ignoresMalformedEmailAddress() throws Exception {
     setRecipients(ImmutableList.of("foo@example.com", "1iñvalidemail"));
     assertThat(sendEmailUtils.hasRecipients()).isTrue();
-    assertThat(
-            sendEmailUtils.sendEmail(
-                "Welcome to the Internet",
-                "It is a dark and scary place."))
+    assertThat(sendEmailUtils.sendEmail("Welcome to the Internet", "It is a dark and scary place."))
         .isTrue();
     verifyMessageSent("foo@example.com");
   }
@@ -87,10 +78,7 @@ public class SendEmailUtilsTest {
   public void testFailure_noAddresses() throws Exception {
     setRecipients(ImmutableList.of());
     assertThat(sendEmailUtils.hasRecipients()).isFalse();
-    assertThat(
-            sendEmailUtils.sendEmail(
-                "Welcome to the Internet",
-                "It is a dark and scary place."))
+    assertThat(sendEmailUtils.sendEmail("Welcome to the Internet", "It is a dark and scary place."))
         .isFalse();
     verify(emailService, never()).sendEmail(any());
   }
@@ -99,10 +87,7 @@ public class SendEmailUtilsTest {
   public void testFailure_onlyGivenMalformedAddress() throws Exception {
     setRecipients(ImmutableList.of("1iñvalidemail"));
     assertThat(sendEmailUtils.hasRecipients()).isTrue();
-    assertThat(
-            sendEmailUtils.sendEmail(
-                "Welcome to the Internet",
-                "It is a dark and scary place."))
+    assertThat(sendEmailUtils.sendEmail("Welcome to the Internet", "It is a dark and scary place."))
         .isFalse();
     verify(emailService, never()).sendEmail(any());
   }
@@ -114,10 +99,7 @@ public class SendEmailUtilsTest {
     doThrow(new RuntimeException(new MessagingException("expected")))
         .when(emailService)
         .sendEmail(any());
-    assertThat(
-            sendEmailUtils.sendEmail(
-                "Welcome to the Internet",
-                "It is a dark and scary place."))
+    assertThat(sendEmailUtils.sendEmail("Welcome to the Internet", "It is a dark and scary place."))
         .isFalse();
     verifyMessageSent("foo@example.com");
   }

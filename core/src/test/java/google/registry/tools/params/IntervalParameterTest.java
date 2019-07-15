@@ -32,9 +32,9 @@ public class IntervalParameterTest {
   @Test
   public void testConvert() {
     assertThat(instance.convert("2004-06-09T12:30:00Z/2004-07-10T13:30:00Z"))
-        .isEqualTo(new Interval(
-            DateTime.parse("2004-06-09T12:30:00Z"),
-            DateTime.parse("2004-07-10T13:30:00Z")));
+        .isEqualTo(
+            new Interval(
+                DateTime.parse("2004-06-09T12:30:00Z"), DateTime.parse("2004-07-10T13:30:00Z")));
   }
 
   @Test

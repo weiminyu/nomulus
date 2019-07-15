@@ -42,7 +42,7 @@ import org.joda.time.DateTime;
 /**
  * A persistable Host resource including mutable and non-mutable fields.
  *
- * <p>A host's {@link TransferData} is stored on the superordinate domain.  Non-subordinate hosts
+ * <p>A host's {@link TransferData} is stored on the superordinate domain. Non-subordinate hosts
  * don't carry a full set of TransferData; all they have is lastTransferTime.
  *
  * @see <a href="https://tools.ietf.org/html/rfc5732">RFC 5732</a>
@@ -59,12 +59,10 @@ public class HostResource extends EppResource implements ForeignKeyedEppResource
    * from (creationTime, deletionTime) there can only be one host in Datastore with this name.
    * However, there can be many hosts with the same name and non-overlapping lifetimes.
    */
-  @Index
-  String fullyQualifiedHostName;
+  @Index String fullyQualifiedHostName;
 
   /** IP Addresses for this host. Can be null if this is an external host. */
-  @Index
-  Set<InetAddress> inetAddresses;
+  @Index Set<InetAddress> inetAddresses;
 
   /** The superordinate domain of this host, or null if this is an external host. */
   @Index
@@ -133,11 +131,11 @@ public class HostResource extends EppResource implements ForeignKeyedEppResource
    *
    * <p>If the host is not subordinate the domain can be null and we just return last transfer time.
    *
-   * @param superordinateDomain the loaded superordinate domain, which must match the key in
-   *     the {@link #superordinateDomain} field. Passing it as a parameter allows the caller to
-   *     control the degree of consistency used to load it.
+   * @param superordinateDomain the loaded superordinate domain, which must match the key in the
+   *     {@link #superordinateDomain} field. Passing it as a parameter allows the caller to control
+   *     the degree of consistency used to load it.
    */
-   public DateTime computeLastTransferTime(@Nullable DomainBase superordinateDomain) {
+  public DateTime computeLastTransferTime(@Nullable DomainBase superordinateDomain) {
     if (!isSubordinate()) {
       checkArgument(superordinateDomain == null);
       return getLastTransferTime();
@@ -186,13 +184,13 @@ public class HostResource extends EppResource implements ForeignKeyedEppResource
     }
 
     public Builder addInetAddresses(ImmutableSet<InetAddress> inetAddresses) {
-      return setInetAddresses(ImmutableSet.copyOf(
-          union(getInstance().getInetAddresses(), inetAddresses)));
+      return setInetAddresses(
+          ImmutableSet.copyOf(union(getInstance().getInetAddresses(), inetAddresses)));
     }
 
     public Builder removeInetAddresses(ImmutableSet<InetAddress> inetAddresses) {
-      return setInetAddresses(ImmutableSet.copyOf(
-          difference(getInstance().getInetAddresses(), inetAddresses)));
+      return setInetAddresses(
+          ImmutableSet.copyOf(difference(getInstance().getInetAddresses(), inetAddresses)));
     }
 
     public Builder setSuperordinateDomain(Key<DomainBase> superordinateDomain) {

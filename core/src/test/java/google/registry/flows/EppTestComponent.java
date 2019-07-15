@@ -49,11 +49,7 @@ import org.joda.time.Duration;
 
 /** Dagger component for running EPP tests. */
 @Singleton
-@Component(
-    modules = {
-        ConfigModule.class,
-        EppTestComponent.FakesAndMocksModule.class
-    })
+@Component(modules = {ConfigModule.class, EppTestComponent.FakesAndMocksModule.class})
 interface EppTestComponent {
 
   RequestComponent startRequest();
@@ -84,9 +80,7 @@ interface EppTestComponent {
     }
 
     public static FakesAndMocksModule create(
-        FakeClock clock,
-        EppMetric.Builder eppMetricBuilder,
-        TmchXmlSignature tmchXmlSignature) {
+        FakeClock clock, EppMetric.Builder eppMetricBuilder, TmchXmlSignature tmchXmlSignature) {
       FakesAndMocksModule instance = new FakesAndMocksModule();
       AppEngineServiceUtils appEngineServiceUtils = mock(AppEngineServiceUtils.class);
       when(appEngineServiceUtils.getServiceHostname("backend")).thenReturn("backend.hostname.fake");
@@ -172,7 +166,7 @@ interface EppTestComponent {
   @Subcomponent
   interface RequestComponent {
     EppController eppController();
+
     FlowComponent.Builder flowComponentBuilder();
   }
 }
-

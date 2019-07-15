@@ -152,7 +152,7 @@ public class FeesAndCredits extends ImmutableObject implements Buildable {
       return this;
     }
 
-    public Builder setFeesAndCredits(BaseFee ... feesAndCredits) {
+    public Builder setFeesAndCredits(BaseFee... feesAndCredits) {
       return setFeesAndCredits(ImmutableList.copyOf(feesAndCredits));
     }
 

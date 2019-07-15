@@ -39,10 +39,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class MutatingCommandTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
   Registrar registrar1;
   Registrar registrar2;
   Registrar newRegistrar1;
@@ -62,18 +59,18 @@ public class MutatingCommandTest {
     createTld("tld");
     host1 = persistActiveHost("host1.example.tld");
     host2 = persistActiveHost("host2.example.tld");
-    newHost1 = host1.asBuilder()
-        .setLastEppUpdateTime(DateTime.parse("2014-09-09T09:09:09.000Z"))
-        .build();
+    newHost1 =
+        host1.asBuilder().setLastEppUpdateTime(DateTime.parse("2014-09-09T09:09:09.000Z")).build();
     newHost2 = host2.asBuilder().setPersistedCurrentSponsorClientId("Registrar2").build();
   }
 
   @Test
   public void testSuccess_noChanges() throws Exception {
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      protected void init() {}
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          protected void init() {}
+        };
     command.init();
     assertThat(command.prompt()).isEqualTo("No entity changes to apply.");
     assertThat(command.execute()).isEqualTo("Updated 0 entities.\n");
@@ -81,29 +78,31 @@ public class MutatingCommandTest {
 
   @Test
   public void testSuccess_update() throws Exception {
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      public void init() {
-        stageEntityChange(host1, newHost1);
-        stageEntityChange(host2, newHost2);
-        stageEntityChange(registrar1, newRegistrar1);
-        stageEntityChange(registrar2, newRegistrar2);
-      }
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          public void init() {
+            stageEntityChange(host1, newHost1);
+            stageEntityChange(host2, newHost2);
+            stageEntityChange(registrar1, newRegistrar1);
+            stageEntityChange(registrar2, newRegistrar2);
+          }
+        };
     command.init();
     String changes = command.prompt();
-    assertThat(changes).isEqualTo(
-        "Update HostResource@2-ROID\n"
-            + "lastEppUpdateTime: null -> 2014-09-09T09:09:09.000Z\n"
-            + "\n"
-            + "Update HostResource@3-ROID\n"
-            + "currentSponsorClientId: TheRegistrar -> Registrar2\n"
-            + "\n"
-            + "Update Registrar@Registrar1\n"
-            + "billingIdentifier: null -> 42\n"
-            + "\n"
-            + "Update Registrar@Registrar2\n"
-            + "blockPremiumNames: false -> true\n");
+    assertThat(changes)
+        .isEqualTo(
+            "Update HostResource@2-ROID\n"
+                + "lastEppUpdateTime: null -> 2014-09-09T09:09:09.000Z\n"
+                + "\n"
+                + "Update HostResource@3-ROID\n"
+                + "currentSponsorClientId: TheRegistrar -> Registrar2\n"
+                + "\n"
+                + "Update Registrar@Registrar1\n"
+                + "billingIdentifier: null -> 42\n"
+                + "\n"
+                + "Update Registrar@Registrar2\n"
+                + "blockPremiumNames: false -> true\n");
     String results = command.execute();
     assertThat(results).isEqualTo("Updated 4 entities.\n");
     assertThat(ofy().load().entity(host1).now()).isEqualTo(newHost1);
@@ -115,29 +114,35 @@ public class MutatingCommandTest {
   @Test
   public void testSuccess_create() throws Exception {
     ofy().deleteWithoutBackup().entities(Arrays.asList(host1, host2, registrar1, registrar2)).now();
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      protected void init() {
-        stageEntityChange(null, newHost1);
-        stageEntityChange(null, newHost2);
-        stageEntityChange(null, newRegistrar1);
-        stageEntityChange(null, newRegistrar2);
-      }
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          protected void init() {
+            stageEntityChange(null, newHost1);
+            stageEntityChange(null, newHost2);
+            stageEntityChange(null, newRegistrar1);
+            stageEntityChange(null, newRegistrar2);
+          }
+        };
     command.init();
     String changes = command.prompt();
-    assertThat(changes).isEqualTo(
-        "Create HostResource@2-ROID\n"
-            + newHost1 + "\n"
-            + "\n"
-            + "Create HostResource@3-ROID\n"
-            + newHost2 + "\n"
-            + "\n"
-            + "Create Registrar@Registrar1\n"
-            + newRegistrar1 + "\n"
-            + "\n"
-            + "Create Registrar@Registrar2\n"
-            + newRegistrar2 + "\n");
+    assertThat(changes)
+        .isEqualTo(
+            "Create HostResource@2-ROID\n"
+                + newHost1
+                + "\n"
+                + "\n"
+                + "Create HostResource@3-ROID\n"
+                + newHost2
+                + "\n"
+                + "\n"
+                + "Create Registrar@Registrar1\n"
+                + newRegistrar1
+                + "\n"
+                + "\n"
+                + "Create Registrar@Registrar2\n"
+                + newRegistrar2
+                + "\n");
     String results = command.execute();
     assertThat(results).isEqualTo("Updated 4 entities.\n");
     assertThat(ofy().load().entity(newHost1).now()).isEqualTo(newHost1);
@@ -148,29 +153,35 @@ public class MutatingCommandTest {
 
   @Test
   public void testSuccess_delete() throws Exception {
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      protected void init() {
-        stageEntityChange(host1, null);
-        stageEntityChange(host2, null);
-        stageEntityChange(registrar1, null);
-        stageEntityChange(registrar2, null);
-      }
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          protected void init() {
+            stageEntityChange(host1, null);
+            stageEntityChange(host2, null);
+            stageEntityChange(registrar1, null);
+            stageEntityChange(registrar2, null);
+          }
+        };
     command.init();
     String changes = command.prompt();
-    assertThat(changes).isEqualTo(
-        "Delete HostResource@2-ROID\n"
-            + host1 + "\n"
-            + "\n"
-            + "Delete HostResource@3-ROID\n"
-            + host2 + "\n"
-            + "\n"
-            + "Delete Registrar@Registrar1\n"
-            + registrar1 + "\n"
-            + "\n"
-            + "Delete Registrar@Registrar2\n"
-            + registrar2 + "\n");
+    assertThat(changes)
+        .isEqualTo(
+            "Delete HostResource@2-ROID\n"
+                + host1
+                + "\n"
+                + "\n"
+                + "Delete HostResource@3-ROID\n"
+                + host2
+                + "\n"
+                + "\n"
+                + "Delete Registrar@Registrar1\n"
+                + registrar1
+                + "\n"
+                + "\n"
+                + "Delete Registrar@Registrar2\n"
+                + registrar2
+                + "\n");
     String results = command.execute();
     assertThat(results).isEqualTo("Updated 4 entities.\n");
     assertThat(ofy().load().entity(host1).now()).isNull();
@@ -181,22 +192,24 @@ public class MutatingCommandTest {
 
   @Test
   public void testSuccess_noopUpdate() throws Exception {
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      protected void init() {
-        stageEntityChange(host1, host1);
-        stageEntityChange(registrar1, registrar1);
-      }
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          protected void init() {
+            stageEntityChange(host1, host1);
+            stageEntityChange(registrar1, registrar1);
+          }
+        };
     command.init();
     String changes = command.prompt();
     System.out.println(changes);
-    assertThat(changes).isEqualTo(
-        "Update HostResource@2-ROID\n"
-            + "[no changes]\n"
-            + "\n"
-            + "Update Registrar@Registrar1\n"
-            + "[no changes]\n");
+    assertThat(changes)
+        .isEqualTo(
+            "Update HostResource@2-ROID\n"
+                + "[no changes]\n"
+                + "\n"
+                + "Update Registrar@Registrar1\n"
+                + "[no changes]\n");
     String results = command.execute();
     assertThat(results).isEqualTo("Updated 2 entities.\n");
     assertThat(ofy().load().entity(host1).now()).isEqualTo(host1);
@@ -205,32 +218,37 @@ public class MutatingCommandTest {
 
   @Test
   public void testSuccess_batching() throws Exception {
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      protected void init() {
-        stageEntityChange(host1, null);
-        stageEntityChange(host2, newHost2);
-        flushTransaction();
-        flushTransaction(); // Flushing should be idempotent.
-        stageEntityChange(registrar1, null);
-        stageEntityChange(registrar2, newRegistrar2);
-        // Even though there is no trailing flushTransaction(), these last two should be executed.
-      }
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          protected void init() {
+            stageEntityChange(host1, null);
+            stageEntityChange(host2, newHost2);
+            flushTransaction();
+            flushTransaction(); // Flushing should be idempotent.
+            stageEntityChange(registrar1, null);
+            stageEntityChange(registrar2, newRegistrar2);
+            // Even though there is no trailing flushTransaction(), these last two should be
+            // executed.
+          }
+        };
     command.init();
     String changes = command.prompt();
-    assertThat(changes).isEqualTo(
-        "Delete HostResource@2-ROID\n"
-            + host1 + "\n"
-            + "\n"
-            + "Update HostResource@3-ROID\n"
-            + "currentSponsorClientId: TheRegistrar -> Registrar2\n"
-            + "\n"
-            + "Delete Registrar@Registrar1\n"
-            + registrar1 + "\n"
-            + "\n"
-            + "Update Registrar@Registrar2\n"
-            + "blockPremiumNames: false -> true\n");
+    assertThat(changes)
+        .isEqualTo(
+            "Delete HostResource@2-ROID\n"
+                + host1
+                + "\n"
+                + "\n"
+                + "Update HostResource@3-ROID\n"
+                + "currentSponsorClientId: TheRegistrar -> Registrar2\n"
+                + "\n"
+                + "Delete Registrar@Registrar1\n"
+                + registrar1
+                + "\n"
+                + "\n"
+                + "Update Registrar@Registrar2\n"
+                + "blockPremiumNames: false -> true\n");
     String results = command.execute();
     assertThat(results).isEqualTo("Updated 4 entities.\n");
     assertThat(ofy().load().entity(host1).now()).isNull();
@@ -243,34 +261,38 @@ public class MutatingCommandTest {
   public void testSuccess_batching_partialExecutionWorks() throws Exception {
     // The expected behavior here is that the first transaction will work and be committed, and
     // the second transaction will throw an IllegalStateException and not commit.
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      protected void init() {
-        stageEntityChange(host1, null);
-        stageEntityChange(host2, newHost2);
-        flushTransaction();
-        stageEntityChange(registrar1, null);
-        stageEntityChange(registrar2, newRegistrar2); // This will fail.
-        flushTransaction();
-      }
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          protected void init() {
+            stageEntityChange(host1, null);
+            stageEntityChange(host2, newHost2);
+            flushTransaction();
+            stageEntityChange(registrar1, null);
+            stageEntityChange(registrar2, newRegistrar2); // This will fail.
+            flushTransaction();
+          }
+        };
     command.init();
     // Save an update to registrar2 that will cause the second transaction to fail because the
     // resource has been updated since the command inited the resources to process.
     registrar2 = persistResource(registrar2.asBuilder().setContactsRequireSyncing(false).build());
     String changes = command.prompt();
-    assertThat(changes).isEqualTo(
-        "Delete HostResource@2-ROID\n"
-            + host1 + "\n"
-            + "\n"
-            + "Update HostResource@3-ROID\n"
-            + "currentSponsorClientId: TheRegistrar -> Registrar2\n"
-            + "\n"
-            + "Delete Registrar@Registrar1\n"
-            + registrar1 + "\n"
-            + "\n"
-            + "Update Registrar@Registrar2\n"
-            + "blockPremiumNames: false -> true\n");
+    assertThat(changes)
+        .isEqualTo(
+            "Delete HostResource@2-ROID\n"
+                + host1
+                + "\n"
+                + "\n"
+                + "Update HostResource@3-ROID\n"
+                + "currentSponsorClientId: TheRegistrar -> Registrar2\n"
+                + "\n"
+                + "Delete Registrar@Registrar1\n"
+                + registrar1
+                + "\n"
+                + "\n"
+                + "Update Registrar@Registrar2\n"
+                + "blockPremiumNames: false -> true\n");
 
     IllegalStateException thrown = assertThrows(IllegalStateException.class, command::execute);
     assertThat(thrown).hasMessageThat().contains("Entity changed since init() was called.");
@@ -283,12 +305,13 @@ public class MutatingCommandTest {
 
   @Test
   public void testFailure_nullEntityChange() {
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      protected void init() {
-        stageEntityChange(null, null);
-      }
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          protected void init() {
+            stageEntityChange(null, null);
+          }
+        };
     assertThrows(IllegalArgumentException.class, command::init);
   }
 
@@ -311,12 +334,13 @@ public class MutatingCommandTest {
 
   @Test
   public void testFailure_updateDifferentLongId() {
-    MutatingCommand command = new MutatingCommand() {
-      @Override
-      protected void init() {
-        stageEntityChange(host1, host2);
-      }
-    };
+    MutatingCommand command =
+        new MutatingCommand() {
+          @Override
+          protected void init() {
+            stageEntityChange(host1, host2);
+          }
+        };
     IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class, command::init);
     assertThat(thrown)
         .hasMessageThat()

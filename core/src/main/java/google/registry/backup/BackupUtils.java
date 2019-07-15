@@ -41,8 +41,8 @@ public class BackupUtils {
   }
 
   /**
-   * Converts the given {@link ImmutableObject} to a raw Datastore entity and write it to an
-   * {@link OutputStream} in delimited protocol buffer format.
+   * Converts the given {@link ImmutableObject} to a raw Datastore entity and write it to an {@link
+   * OutputStream} in delimited protocol buffer format.
    */
   static void serializeEntity(ImmutableObject entity, OutputStream stream) throws IOException {
     EntityTranslator.convertToPb(ofy().save().toEntity(entity)).writeDelimitedTo(stream);
@@ -61,11 +61,12 @@ public class BackupUtils {
       @Override
       protected ImmutableObject computeNext() {
         EntityProto proto = new EntityProto();
-        if (proto.parseDelimitedFrom(input)) {  // False means end of stream; other errors throw.
+        if (proto.parseDelimitedFrom(input)) { // False means end of stream; other errors throw.
           return ofy().load().fromEntity(EntityTranslator.createFromPb(proto));
         }
         return endOfData();
-      }};
+      }
+    };
   }
 
   public static ImmutableList<ImmutableObject> deserializeEntities(byte[] bytes) {

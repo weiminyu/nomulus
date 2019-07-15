@@ -348,14 +348,14 @@ public class ProxyModule {
   @Singleton
   @Component(
       modules = {
-          ProxyModule.class,
-          CertificateModule.class,
-          HttpsRelayProtocolModule.class,
-          WhoisProtocolModule.class,
-          WebWhoisProtocolsModule.class,
-          EppProtocolModule.class,
-          HealthCheckProtocolModule.class,
-          MetricsModule.class
+        ProxyModule.class,
+        CertificateModule.class,
+        HttpsRelayProtocolModule.class,
+        WhoisProtocolModule.class,
+        WebWhoisProtocolsModule.class,
+        EppProtocolModule.class,
+        HealthCheckProtocolModule.class,
+        MetricsModule.class
       })
   interface ProxyComponent {
 

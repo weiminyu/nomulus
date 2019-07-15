@@ -56,34 +56,29 @@ import org.joda.time.DateTime;
  * entity into multiple entities, each entity containing {@value #SHARD_SIZE} rows.
  *
  * @see google.registry.tmch.SmdrlCsvParser
- * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.2">
- *     TMCH functional specifications - SMD Revocation List</a>
+ * @see <a href="http://tools.ietf.org/html/draft-lozano-tmch-func-spec-08#section-6.2">TMCH
+ *     functional specifications - SMD Revocation List</a>
  */
 @Entity
 @NotBackedUp(reason = Reason.EXTERNALLY_SOURCED)
 public class SignedMarkRevocationList extends ImmutableObject {
 
-  @VisibleForTesting
-  static final int SHARD_SIZE = 10000;
+  @VisibleForTesting static final int SHARD_SIZE = 10000;
 
   /** Common ancestor for queries. */
-  @Parent
-  Key<EntityGroupRoot> parent = getCrossTldKey();
+  @Parent Key<EntityGroupRoot> parent = getCrossTldKey();
 
   /** ID for the sharded entity. */
-  @Id
-  long id;
+  @Id long id;
 
   /** Time when this list was last updated, as specified in the first line of the CSV file. */
   DateTime creationTime;
 
   /** A map from SMD IDs to revocation time. */
-  @EmbedMap
-  Map</*@MatchesPattern("[0-9]+-[0-9]+")*/ String, DateTime> revokes;
+  @EmbedMap Map</*@MatchesPattern("[0-9]+-[0-9]+")*/ String, DateTime> revokes;
 
   /** Indicates that this is a shard rather than a "full" list. */
-  @Ignore
-  boolean isShard;
+  @Ignore boolean isShard;
 
   /**
    * A cached supplier that fetches the SMDRL shards from Datastore and recombines them into a
@@ -164,8 +159,7 @@ public class SignedMarkRevocationList extends ImmutableObject {
               ofy()
                   .saveWithoutBackup()
                   .entities(
-                      CollectionUtils.partitionMap(revokes, SHARD_SIZE)
-                          .stream()
+                      CollectionUtils.partitionMap(revokes, SHARD_SIZE).stream()
                           .map(
                               shardRevokes -> {
                                 SignedMarkRevocationList shard = create(creationTime, shardRevokes);

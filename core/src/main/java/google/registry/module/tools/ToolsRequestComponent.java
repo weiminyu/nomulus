@@ -51,41 +51,63 @@ import google.registry.tools.server.VerifyOteAction;
 @RequestScope
 @Subcomponent(
     modules = {
-        BackupModule.class,
-        DnsModule.class,
-        EppToolModule.class,
-        LoadTestModule.class,
-        MapreduceModule.class,
-        RequestModule.class,
-        ToolsServerModule.class,
-        WhiteboxModule.class,
+      BackupModule.class,
+      DnsModule.class,
+      EppToolModule.class,
+      LoadTestModule.class,
+      MapreduceModule.class,
+      RequestModule.class,
+      ToolsServerModule.class,
+      WhiteboxModule.class,
     })
 interface ToolsRequestComponent {
   CreateGroupsAction createGroupsAction();
+
   CreatePremiumListAction createPremiumListAction();
+
   DeleteEntityAction deleteEntityAction();
+
   EppToolAction eppToolAction();
+
   FlowComponent.Builder flowComponentBuilder();
+
   GenerateZoneFilesAction generateZoneFilesAction();
+
   KillAllCommitLogsAction killAllCommitLogsAction();
+
   KillAllEppResourcesAction killAllEppResourcesAction();
+
   ListDomainsAction listDomainsAction();
+
   ListHostsAction listHostsAction();
+
   ListPremiumListsAction listPremiumListsAction();
+
   ListRegistrarsAction listRegistrarsAction();
+
   ListReservedListsAction listReservedListsAction();
+
   ListTldsAction listTldsAction();
+
   LoadTestAction loadTestAction();
+
   RefreshDnsForAllDomainsAction refreshDnsForAllDomainsAction();
+
   ResaveAllHistoryEntriesAction resaveAllHistoryEntriesAction();
+
   RestoreCommitLogsAction restoreCommitLogsAction();
+
   UpdatePremiumListAction updatePremiumListAction();
+
   VerifyOteAction verifyOteAction();
 
   @Subcomponent.Builder
   abstract class Builder implements RequestComponentBuilder<ToolsRequestComponent> {
-    @Override public abstract Builder requestModule(RequestModule requestModule);
-    @Override public abstract ToolsRequestComponent build();
+    @Override
+    public abstract Builder requestModule(RequestModule requestModule);
+
+    @Override
+    public abstract ToolsRequestComponent build();
   }
 
   @Module(subcomponents = ToolsRequestComponent.class)

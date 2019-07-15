@@ -242,12 +242,25 @@ public final class RdeStagingReducer extends Reducer<PendingDeposit, DepositFrag
   static class Factory {
     @Inject TaskQueueUtils taskQueueUtils;
     @Inject LockHandler lockHandler;
-    @Inject @Config("gcsBufferSize") int gcsBufferSize;
-    @Inject @Config("rdeBucket") String bucket;
-    @Inject @Config("rdeStagingLockTimeout") Duration lockTimeout;
-    @Inject @KeyModule.Key("rdeStagingEncryptionKey") byte[] stagingKeyBytes;
 
-    @Inject Factory() {}
+    @Inject
+    @Config("gcsBufferSize")
+    int gcsBufferSize;
+
+    @Inject
+    @Config("rdeBucket")
+    String bucket;
+
+    @Inject
+    @Config("rdeStagingLockTimeout")
+    Duration lockTimeout;
+
+    @Inject
+    @KeyModule.Key("rdeStagingEncryptionKey")
+    byte[] stagingKeyBytes;
+
+    @Inject
+    Factory() {}
 
     RdeStagingReducer create(ValidationMode validationMode) {
       return new RdeStagingReducer(

@@ -56,7 +56,9 @@ public final class CommitLogCheckpointAction implements Runnable {
   @Inject Clock clock;
   @Inject CommitLogCheckpointStrategy strategy;
   @Inject TaskQueueUtils taskQueueUtils;
-  @Inject CommitLogCheckpointAction() {}
+
+  @Inject
+  CommitLogCheckpointAction() {}
 
   @Override
   public void run() {

@@ -81,9 +81,9 @@ public final class AppEngineRule extends ExternalResource {
       readResourceUtf8("google/registry/env/common/default/WEB-INF/queue.xml");
 
   /** A parsed version of the indexes used in the prod code. */
-  private static final Set<String> MANUAL_INDEXES = getIndexXmlStrings(
-      readResourceUtf8(
-          "google/registry/env/common/default/WEB-INF/datastore-indexes.xml"));
+  private static final Set<String> MANUAL_INDEXES =
+      getIndexXmlStrings(
+          readResourceUtf8("google/registry/env/common/default/WEB-INF/datastore-indexes.xml"));
 
   private static final String LOGGING_PROPERTIES =
       readResourceUtf8(AppEngineRule.class, "logging.properties");
@@ -164,20 +164,22 @@ public final class AppEngineRule extends ExternalResource {
         .setState(State.ACTIVE)
         .setIcannReferralEmail("lol@sloth.test")
         .setUrl("http://my.fake.url")
-        .setInternationalizedAddress(new RegistrarAddress.Builder()
-            .setStreet(ImmutableList.of("123 Example Boulevard"))
-            .setCity("Williamsburg")
-            .setState("NY")
-            .setZip("11211")
-            .setCountryCode("US")
-            .build())
-        .setLocalizedAddress(new RegistrarAddress.Builder()
-            .setStreet(ImmutableList.of("123 Example B\u0151ulevard"))
-            .setCity("Williamsburg")
-            .setState("NY")
-            .setZip("11211")
-            .setCountryCode("US")
-            .build())
+        .setInternationalizedAddress(
+            new RegistrarAddress.Builder()
+                .setStreet(ImmutableList.of("123 Example Boulevard"))
+                .setCity("Williamsburg")
+                .setState("NY")
+                .setZip("11211")
+                .setCountryCode("US")
+                .build())
+        .setLocalizedAddress(
+            new RegistrarAddress.Builder()
+                .setStreet(ImmutableList.of("123 Example B\u0151ulevard"))
+                .setCity("Williamsburg")
+                .setState("NY")
+                .setZip("11211")
+                .setCountryCode("US")
+                .build())
         .setPhoneNumber("+1.3334445555")
         .setPhonePasscode("12345")
         .setContactsRequireSyncing(true);
@@ -210,8 +212,8 @@ public final class AppEngineRule extends ExternalResource {
   }
 
   /**
-   * Public factory for first RegistrarContact to allow comparison
-   * against stored value in unit tests.
+   * Public factory for first RegistrarContact to allow comparison against stored value in unit
+   * tests.
    */
   public static RegistrarContact makeRegistrarContact1() {
     return new RegistrarContact.Builder()
@@ -227,8 +229,8 @@ public final class AppEngineRule extends ExternalResource {
   }
 
   /**
-   * Public factory for second RegistrarContact to allow comparison
-   * against stored value in unit tests.
+   * Public factory for second RegistrarContact to allow comparison against stored value in unit
+   * tests.
    */
   public static RegistrarContact makeRegistrarContact2() {
     return new RegistrarContact.Builder()
@@ -244,11 +246,15 @@ public final class AppEngineRule extends ExternalResource {
   /** Hack to make sure AppEngineRule is always wrapped in a TemporaryFolder rule. */
   @Override
   public Statement apply(Statement base, Description description) {
-    return RuleChain.outerRule(temporaryFolder).around(new TestRule() {
-      @Override
-      public Statement apply(Statement base, Description description) {
-        return AppEngineRule.super.apply(base, null);
-      }}).apply(base, description);
+    return RuleChain.outerRule(temporaryFolder)
+        .around(
+            new TestRule() {
+              @Override
+              public Statement apply(Statement base, Description description) {
+                return AppEngineRule.super.apply(base, null);
+              }
+            })
+        .apply(base, description);
   }
 
   @Override
@@ -259,32 +265,33 @@ public final class AppEngineRule extends ExternalResource {
       configs.add(new LocalURLFetchServiceTestConfig());
     }
     if (withDatastore) {
-      configs.add(new LocalDatastoreServiceTestConfig()
-          // We need to set this to allow cross entity group transactions.
-          .setApplyAllHighRepJobPolicy()
-          // This causes unit tests to write a file containing any indexes the test required. We
-          // can use that file below to make sure we have the right indexes in our prod code.
-          .setNoIndexAutoGen(false));
+      configs.add(
+          new LocalDatastoreServiceTestConfig()
+              // We need to set this to allow cross entity group transactions.
+              .setApplyAllHighRepJobPolicy()
+              // This causes unit tests to write a file containing any indexes the test required. We
+              // can use that file below to make sure we have the right indexes in our prod code.
+              .setNoIndexAutoGen(false));
       // This forces app engine to write the generated indexes to a usable location.
       System.setProperty("appengine.generated.dir", temporaryFolder.getRoot().getAbsolutePath());
     }
     if (withLocalModules) {
-      configs.add(new LocalModulesServiceTestConfig()
-          .addBasicScalingModuleVersion("default", "1", 1)
-          .addBasicScalingModuleVersion("tools", "1", 1)
-          .addBasicScalingModuleVersion("backend", "1", 1));
+      configs.add(
+          new LocalModulesServiceTestConfig()
+              .addBasicScalingModuleVersion("default", "1", 1)
+              .addBasicScalingModuleVersion("tools", "1", 1)
+              .addBasicScalingModuleVersion("backend", "1", 1));
     }
     if (withTaskQueue) {
       File queueFile = temporaryFolder.newFile("queue.xml");
       Files.asCharSink(queueFile, UTF_8).write(taskQueueXml);
-      configs.add(new LocalTaskQueueTestConfig()
-          .setQueueXmlPath(queueFile.getAbsolutePath()));
+      configs.add(new LocalTaskQueueTestConfig().setQueueXmlPath(queueFile.getAbsolutePath()));
     }
     if (withUserService) {
       configs.add(new LocalUserServiceTestConfig());
     }
 
-    helper = new LocalServiceTestHelper(configs.toArray(new LocalServiceTestConfig[]{}));
+    helper = new LocalServiceTestHelper(configs.toArray(new LocalServiceTestConfig[] {}));
 
     if (withUserService) {
       // Set top-level properties on LocalServiceTestConfig for user login.
@@ -385,7 +392,7 @@ public final class AppEngineRule extends ExternalResource {
       for (int i = 0; i < ((JSONArray) object).length(); ++i) {
         builder.add(((JSONArray) object).getJSONObject(i));
       }
-    } else if (object instanceof JSONObject){
+    } else if (object instanceof JSONObject) {
       // When there's only a single entry it won't be wrapped in an array.
       builder.add((JSONObject) object);
     }
@@ -395,15 +402,15 @@ public final class AppEngineRule extends ExternalResource {
   /** Turn a JSON representation of an index into xml. */
   private static String getIndexXmlString(JSONObject source) throws JSONException {
     StringBuilder builder = new StringBuilder();
-    builder.append(String.format(
-        "<datastore-index kind=\"%s\" ancestor=\"%s\" source=\"manual\">\n",
-        source.getString("kind"),
-        source.get("ancestor").toString()));
+    builder.append(
+        String.format(
+            "<datastore-index kind=\"%s\" ancestor=\"%s\" source=\"manual\">\n",
+            source.getString("kind"), source.get("ancestor").toString()));
     for (JSONObject property : getJsonAsArray(source.get("property"))) {
-      builder.append(String.format(
-          "  <property name=\"%s\" direction=\"%s\"/>\n",
-          property.getString("name"),
-          property.getString("direction")));
+      builder.append(
+          String.format(
+              "  <property name=\"%s\" direction=\"%s\"/>\n",
+              property.getString("name"), property.getString("direction")));
     }
     return builder.append("</datastore-index>").toString();
   }

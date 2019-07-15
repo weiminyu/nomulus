@@ -33,7 +33,7 @@ public class ResourceCheckFlowTestCase<F extends Flow, R extends EppResource>
     assertTransactionalFlow(false);
     assertThat(((CheckData) runFlow().getResponse().getResponseData().get(0)).getChecks())
         .containsExactlyElementsIn(expected);
-    assertNoHistory();  // Checks don't create a history event.
-    assertNoBillingEvents();  // Checks are always free.
+    assertNoHistory(); // Checks don't create a history event.
+    assertNoBillingEvents(); // Checks are always free.
   }
 }

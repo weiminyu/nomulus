@@ -50,17 +50,17 @@ import org.junit.runner.RunWith;
 @SuppressWarnings("resource")
 public class GhostrydeTest {
 
-  @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
 
   @DataPoints
-  public static Content[] contents = new Content[] {
-    new Content("hi"),
-    new Content("(◕‿◕)"),
-    new Content(repeat("Fanatics have their dreams, wherewith they weave.\n", 1000)),
-    new Content("\0yolo"),
-    new Content(""),
-  };
+  public static Content[] contents =
+      new Content[] {
+        new Content("hi"),
+        new Content("(◕‿◕)"),
+        new Content(repeat("Fanatics have their dreams, wherewith they weave.\n", 1000)),
+        new Content("\0yolo"),
+        new Content(""),
+      };
 
   @Theory
   public void testSimpleApi(Content content) throws Exception {
@@ -248,10 +248,11 @@ public class GhostrydeTest {
     // Make the last byte of the private key off by one. muahahaha
     byte[] keyData = rsa.getPrivateKey().getPrivateKeyDataPacket().getEncoded();
     keyData[keyData.length - 1]++;
-    PGPPrivateKey privateKey = new PGPPrivateKey(
-        rsa.getKeyID(),
-        rsa.getPrivateKey().getPublicKeyPacket(),
-        rsa.getPrivateKey().getPrivateKeyDataPacket());
+    PGPPrivateKey privateKey =
+        new PGPPrivateKey(
+            rsa.getKeyID(),
+            rsa.getPrivateKey().getPublicKeyPacket(),
+            rsa.getPrivateKey().getPrivateKeyDataPacket());
 
     ByteArrayOutputStream bsOut = new ByteArrayOutputStream();
     try (OutputStream encoder = Ghostryde.encoder(bsOut, publicKey)) {

@@ -26,11 +26,17 @@ import javax.mail.internet.InternetAddress;
 public abstract class EmailMessage {
 
   public abstract String subject();
+
   public abstract String body();
+
   public abstract ImmutableList<InternetAddress> recipients();
+
   public abstract InternetAddress from();
+
   public abstract Optional<InternetAddress> bcc();
+
   public abstract Optional<MediaType> contentType();
+
   public abstract Optional<Attachment> attachment();
 
   public static Builder newBuilder() {
@@ -52,11 +58,17 @@ public abstract class EmailMessage {
   public abstract static class Builder {
 
     public abstract Builder setSubject(String subject);
+
     public abstract Builder setBody(String body);
+
     public abstract Builder setRecipients(Collection<InternetAddress> recipients);
+
     public abstract Builder setFrom(InternetAddress from);
+
     public abstract Builder setBcc(InternetAddress bcc);
+
     public abstract Builder setContentType(MediaType contentType);
+
     public abstract Builder setAttachment(Attachment attachment);
 
     abstract ImmutableList.Builder<InternetAddress> recipientsBuilder();
@@ -74,7 +86,9 @@ public abstract class EmailMessage {
   public abstract static class Attachment {
 
     public abstract MediaType contentType();
+
     public abstract String filename();
+
     public abstract String content();
 
     public static Builder newBuilder() {
@@ -86,8 +100,11 @@ public abstract class EmailMessage {
     public abstract static class Builder {
 
       public abstract Builder setContentType(MediaType contentType);
+
       public abstract Builder setFilename(String filename);
+
       public abstract Builder setContent(String content);
+
       public abstract Attachment build();
     }
   }

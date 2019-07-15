@@ -95,7 +95,8 @@ class GcpJsonFormatter extends Formatter {
    * Map {@link Level} to a severity string that Stackdriver understands.
    *
    * @see <a
-   *     href="https://github.com/googleapis/google-cloud-java/blob/master/google-cloud-clients/google-cloud-logging/src/main/java/com/google/cloud/logging/LoggingHandler.java#L325">{@code LoggingHandler}</a>
+   *     href="https://github.com/googleapis/google-cloud-java/blob/master/google-cloud-clients/google-cloud-logging/src/main/java/com/google/cloud/logging/LoggingHandler.java#L325">{@code
+   *     LoggingHandler}</a>
    */
   private static String severityFor(Level level) {
     switch (level.intValue()) {

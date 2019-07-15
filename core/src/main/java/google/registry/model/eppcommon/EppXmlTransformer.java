@@ -27,29 +27,30 @@ import google.registry.xml.XmlTransformer;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
-/** {@link XmlTransformer} for marshalling to and from the Epp model classes.  */
-public class EppXmlTransformer  {
+/** {@link XmlTransformer} for marshalling to and from the Epp model classes. */
+public class EppXmlTransformer {
 
   // Hardcoded XML schemas, ordered with respect to dependency.
-  private static final ImmutableList<String> SCHEMAS = ImmutableList.of(
-      "eppcom.xsd",
-      "epp.xsd",
-      "contact.xsd",
-      "host.xsd",
-      "domain.xsd",
-      "rgp.xsd",
-      "secdns.xsd",
-      "fee06.xsd",
-      "fee11.xsd",
-      "fee12.xsd",
-      "metadata.xsd",
-      "mark.xsd",
-      "dsig.xsd",
-      "smd.xsd",
-      "launch.xsd",
-      "allocate.xsd",
-      "superuser.xsd",
-      "allocationToken-1.0.xsd");
+  private static final ImmutableList<String> SCHEMAS =
+      ImmutableList.of(
+          "eppcom.xsd",
+          "epp.xsd",
+          "contact.xsd",
+          "host.xsd",
+          "domain.xsd",
+          "rgp.xsd",
+          "secdns.xsd",
+          "fee06.xsd",
+          "fee11.xsd",
+          "fee12.xsd",
+          "metadata.xsd",
+          "mark.xsd",
+          "dsig.xsd",
+          "smd.xsd",
+          "launch.xsd",
+          "allocate.xsd",
+          "superuser.xsd",
+          "allocationToken-1.0.xsd");
 
   private static final XmlTransformer INPUT_TRANSFORMER =
       new XmlTransformer(SCHEMAS, EppInput.class);
@@ -71,9 +72,8 @@ public class EppXmlTransformer  {
   }
 
   private static byte[] marshal(
-      XmlTransformer transformer,
-      ImmutableObject root,
-      ValidationMode validation) throws XmlException {
+      XmlTransformer transformer, ImmutableObject root, ValidationMode validation)
+      throws XmlException {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     transformer.marshal(root, byteArrayOutputStream, UTF_8, validation);
     return byteArrayOutputStream.toByteArray();

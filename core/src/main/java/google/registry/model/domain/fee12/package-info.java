@@ -18,8 +18,9 @@
     elementFormDefault = XmlNsForm.QUALIFIED)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlJavaTypeAdapters({
-    @XmlJavaTypeAdapter(CurrencyUnitAdapter.class),
-    @XmlJavaTypeAdapter(UtcDateTimeAdapter.class)})
+  @XmlJavaTypeAdapter(CurrencyUnitAdapter.class),
+  @XmlJavaTypeAdapter(UtcDateTimeAdapter.class)
+})
 package google.registry.model.domain.fee12;
 
 import google.registry.model.translators.CurrencyUnitAdapter;
@@ -31,4 +32,3 @@ import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
-

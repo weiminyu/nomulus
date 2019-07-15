@@ -36,7 +36,8 @@ public final class StaticPremiumListPricingEngine implements PremiumPricingEngin
   /** The name of the pricing engine, as used in {@code Registry.pricingEngineClassName}. */
   public static final String NAME = "google.registry.model.pricing.StaticPremiumListPricingEngine";
 
-  @Inject StaticPremiumListPricingEngine() {}
+  @Inject
+  StaticPremiumListPricingEngine() {}
 
   @Override
   public DomainPrices getDomainPrices(String fullyQualifiedDomainName, DateTime priceTime) {
@@ -47,9 +48,13 @@ public final class StaticPremiumListPricingEngine implements PremiumPricingEngin
     boolean isNameCollisionInSunrise =
         registry.getTldState(priceTime).equals(START_DATE_SUNRISE)
             && getReservationTypes(label, tld).contains(NAME_COLLISION);
-    String feeClass = emptyToNull(Joiner.on('-').skipNulls().join(
-            premiumPrice.isPresent() ? "premium" : null,
-            isNameCollisionInSunrise ? "collision" : null));
+    String feeClass =
+        emptyToNull(
+            Joiner.on('-')
+                .skipNulls()
+                .join(
+                    premiumPrice.isPresent() ? "premium" : null,
+                    isNameCollisionInSunrise ? "collision" : null));
     return DomainPrices.create(
         premiumPrice.isPresent(),
         premiumPrice.orElse(registry.getStandardCreateCost()),

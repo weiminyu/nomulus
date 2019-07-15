@@ -58,9 +58,17 @@ public final class Marksdb {
   private static final int MAX_DNL_LOGGING_LENGTH = 500;
 
   @Inject URLFetchService fetchService;
-  @Inject @Config("tmchMarksdbUrl") String tmchMarksdbUrl;
-  @Inject @Key("marksdbPublicKey") PGPPublicKey marksdbPublicKey;
-  @Inject Marksdb() {}
+
+  @Inject
+  @Config("tmchMarksdbUrl")
+  String tmchMarksdbUrl;
+
+  @Inject
+  @Key("marksdbPublicKey")
+  PGPPublicKey marksdbPublicKey;
+
+  @Inject
+  Marksdb() {}
 
   /**
    * Extracts a {@link PGPSignature} object from a blob of {@code .sig} data.
@@ -74,27 +82,26 @@ public final class Marksdb {
       PGPObjectFactory decoder = new BcPGPObjectFactory(PGPUtil.getDecoderStream(input));
       Object object = decoder.nextObject();
       if (object == null) {
-        throw new SignatureException(String.format(
-            "No OpenPGP packets found in signature.\n%s",
-            dumpHex(signature)));
+        throw new SignatureException(
+            String.format("No OpenPGP packets found in signature.\n%s", dumpHex(signature)));
       }
       if (!(object instanceof PGPSignatureList)) {
-        throw new SignatureException(String.format(
-            "Expected PGPSignatureList packet but got %s\n%s",
-            object.getClass().getSimpleName(),
-            dumpHex(signature)));
+        throw new SignatureException(
+            String.format(
+                "Expected PGPSignatureList packet but got %s\n%s",
+                object.getClass().getSimpleName(), dumpHex(signature)));
       }
       PGPSignatureList sigs = (PGPSignatureList) object;
       if (sigs.isEmpty()) {
-        throw new SignatureException(String.format(
-            "PGPSignatureList doesn't have a PGPSignature.\n%s",
-            dumpHex(signature)));
+        throw new SignatureException(
+            String.format("PGPSignatureList doesn't have a PGPSignature.\n%s", dumpHex(signature)));
       }
       return sigs.get(0);
     } catch (IOException e) {
-      throw new SignatureException(String.format(
-          "Failed to extract PGPSignature object from .sig blob.\n%s",
-          dumpHex(signature)), e);
+      throw new SignatureException(
+          String.format(
+              "Failed to extract PGPSignature object from .sig blob.\n%s", dumpHex(signature)),
+          e);
     }
   }
 
@@ -105,9 +112,8 @@ public final class Marksdb {
     sig.init(new BcPGPContentVerifierBuilderProvider(), publicKey);
     sig.update(data);
     if (!sig.verify()) {
-      throw new SignatureException(String.format(
-          "MarksDB PGP signature verification failed.\n%s",
-          dumpHex(signature)));
+      throw new SignatureException(
+          String.format("MarksDB PGP signature verification failed.\n%s", dumpHex(signature)));
     }
   }
 
@@ -118,8 +124,7 @@ public final class Marksdb {
     try {
       rsp = fetchService.fetch(req);
     } catch (IOException e) {
-      throw new IOException(
-          String.format("Error connecting to MarksDB at URL %s", url), e);
+      throw new IOException(String.format("Error connecting to MarksDB at URL %s", url), e);
     }
     if (rsp.getResponseCode() != SC_OK) {
       throw new UrlFetchException("Failed to fetch from MarksDB", req, rsp);

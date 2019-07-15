@@ -47,7 +47,9 @@ public class ResaveAllEppResourcesAction implements Runnable {
 
   @Inject MapreduceRunner mrRunner;
   @Inject Response response;
-  @Inject ResaveAllEppResourcesAction() {}
+
+  @Inject
+  ResaveAllEppResourcesAction() {}
 
   @Override
   public void run() {
@@ -65,6 +67,7 @@ public class ResaveAllEppResourcesAction implements Runnable {
       extends Mapper<Key<EppResource>, Void, Void> {
 
     private static final long serialVersionUID = -7721628665138087001L;
+
     public ResaveAllEppResourcesActionMapper() {}
 
     @Override
@@ -84,4 +87,3 @@ public class ResaveAllEppResourcesAction implements Runnable {
     }
   }
 }
-

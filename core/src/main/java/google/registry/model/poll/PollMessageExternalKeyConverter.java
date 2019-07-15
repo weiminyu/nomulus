@@ -78,9 +78,9 @@ public class PollMessageExternalKeyConverter {
   /**
    * Returns an Objectify Key to a PollMessage corresponding with the external ID.
    *
-   * <p>Note that the year field that is included at the end of the poll message isn't actually
-   * used for anything; it exists solely to create unique externally visible IDs for autorenews. We
-   * thus ignore it (for now) for backwards compatibility reasons, so that registrars can still ACK
+   * <p>Note that the year field that is included at the end of the poll message isn't actually used
+   * for anything; it exists solely to create unique externally visible IDs for autorenews. We thus
+   * ignore it (for now) for backwards compatibility reasons, so that registrars can still ACK
    * existing poll message IDs they may have lying around.
    *
    * @throws PollMessageExternalKeyParseException if the external key has an invalid format.
@@ -114,4 +114,3 @@ public class PollMessageExternalKeyConverter {
 
   private PollMessageExternalKeyConverter() {}
 }
-

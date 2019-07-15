@@ -47,13 +47,19 @@ class GcsDiffFileLister {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   @Inject GcsService gcsService;
-  @Inject @Config("commitLogGcsBucket") String gcsBucket;
+
+  @Inject
+  @Config("commitLogGcsBucket")
+  String gcsBucket;
+
   @Inject @Backups ListeningExecutorService executor;
-  @Inject GcsDiffFileLister() {}
+
+  @Inject
+  GcsDiffFileLister() {}
 
   /**
    * Traverses the sequence of diff files backwards from checkpointTime and inserts the file
-   * metadata into "sequence".  Returns true if a complete sequence was discovered, false if one or
+   * metadata into "sequence". Returns true if a complete sequence was discovered, false if one or
    * more files are missing.
    */
   private boolean constructDiffSequence(
@@ -95,14 +101,13 @@ class GcsDiffFileLister {
     // List all of the diff files on GCS and build a map from each file's upper checkpoint time
     // (extracted from the filename) to its asynchronously-loaded metadata, keeping only files with
     // an upper checkpoint time > fromTime.
-    TreeMap<DateTime, ListenableFuture<GcsFileMetadata>> upperBoundTimesToMetadata
-        = new TreeMap<>();
+    TreeMap<DateTime, ListenableFuture<GcsFileMetadata>> upperBoundTimesToMetadata =
+        new TreeMap<>();
     Iterator<ListItem> listItems;
     try {
       // TODO(b/23554360): Use a smarter prefixing strategy to speed this up.
-      listItems = gcsService.list(
-          gcsBucket,
-          new ListOptions.Builder().setPrefix(DIFF_FILE_PREFIX).build());
+      listItems =
+          gcsService.list(gcsBucket, new ListOptions.Builder().setPrefix(DIFF_FILE_PREFIX).build());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -130,12 +135,12 @@ class GcsDiffFileLister {
     // may be missing files at the end).
     TreeMap<DateTime, GcsFileMetadata> sequence = new TreeMap<>();
     logger.atInfo().log("Restoring until: %s", lastUpperBoundTime);
-    boolean inconsistentFileSet = !constructDiffSequence(
-        upperBoundTimesToMetadata, fromTime, lastUpperBoundTime, sequence);
+    boolean inconsistentFileSet =
+        !constructDiffSequence(upperBoundTimesToMetadata, fromTime, lastUpperBoundTime, sequence);
 
     // Verify that all of the elements in the original set are represented in the sequence.  If we
     // find anything that's not represented, construct a sequence for it.
-    boolean checkForMoreExtraDiffs = true;  // Always loop at least once.
+    boolean checkForMoreExtraDiffs = true; // Always loop at least once.
     while (checkForMoreExtraDiffs) {
       checkForMoreExtraDiffs = false;
       for (DateTime key : upperBoundTimesToMetadata.descendingKeySet()) {
@@ -154,7 +159,7 @@ class GcsDiffFileLister {
     checkState(
         !inconsistentFileSet,
         "Unable to compute commit diff history, there are either gaps or forks in the history "
-        + "file set.  Check log for details.");
+            + "file set.  Check log for details.");
 
     logger.atInfo().log(
         "Actual restore from time: %s", getLowerBoundTime(sequence.firstEntry().getValue()));

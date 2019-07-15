@@ -37,7 +37,9 @@ public class DriveConnection {
 
   /** Drive client instance wrapped by this class. */
   @Inject Drive drive;
-  @Inject public DriveConnection() {}
+
+  @Inject
+  public DriveConnection() {}
 
   /**
    * Creates a folder with the given parent.
@@ -45,7 +47,8 @@ public class DriveConnection {
    * @returns the folder id.
    */
   public String createFolder(String title, String parentFolderId) throws IOException {
-    return drive.files()
+    return drive
+        .files()
         .insert(createFileReference(title, GOOGLE_FOLDER, parentFolderId))
         .execute()
         .getId();
@@ -58,7 +61,8 @@ public class DriveConnection {
    */
   public String createFile(String title, MediaType mimeType, String parentFolderId, byte[] bytes)
       throws IOException {
-    return drive.files()
+    return drive
+        .files()
         .insert(
             createFileReference(title, mimeType, parentFolderId),
             new ByteArrayContent(mimeType.toString(), bytes))
@@ -75,17 +79,14 @@ public class DriveConnection {
    * @returns the file id.
    */
   public String createOrUpdateFile(
-      String title,
-      MediaType mimeType,
-      String parentFolderId,
-      byte[] bytes) throws IOException {
+      String title, MediaType mimeType, String parentFolderId, byte[] bytes) throws IOException {
     List<String> existingFiles = listFiles(parentFolderId, String.format("title = '%s'", title));
     if (existingFiles.size() > 1) {
-      throw new IllegalStateException(String.format(
-          "Could not update file '%s' in Drive folder id '%s' because multiple files with that "
-              + "name already exist.",
-          title,
-          parentFolderId));
+      throw new IllegalStateException(
+          String.format(
+              "Could not update file '%s' in Drive folder id '%s' because multiple files with that "
+                  + "name already exist.",
+              title, parentFolderId));
     }
     return existingFiles.isEmpty()
         ? createFile(title, mimeType, parentFolderId, bytes)
@@ -93,30 +94,31 @@ public class DriveConnection {
   }
 
   /**
-   * Updates the file with the given id in place, setting the title, content, and mime type to
-   * the newly specified values.
+   * Updates the file with the given id in place, setting the title, content, and mime type to the
+   * newly specified values.
    *
    * @returns the file id.
    */
   public String updateFile(String fileId, String title, MediaType mimeType, byte[] bytes)
       throws IOException {
     File file = new File().setTitle(title);
-    return drive.files()
+    return drive
+        .files()
         .update(fileId, file, new ByteArrayContent(mimeType.toString(), bytes))
         .execute()
         .getId();
   }
   /**
-   * Returns a list of Drive file ids for all files in Google Drive in the folder with the
-   * specified id.
+   * Returns a list of Drive file ids for all files in Google Drive in the folder with the specified
+   * id.
    */
   public List<String> listFiles(String parentFolderId) throws IOException {
     return listFiles(parentFolderId, null);
   }
 
   /**
-   * Returns a list of Drive file ids for all files in Google Drive in the folder with the
-   * specified id and matching the given Drive query.
+   * Returns a list of Drive file ids for all files in Google Drive in the folder with the specified
+   * id and matching the given Drive query.
    *
    * @see <a href="https://developers.google.com/drive/web/search-parameters">The query format</a>
    */
@@ -142,8 +144,9 @@ public class DriveConnection {
     return new File()
         .setTitle(title)
         .setMimeType(mimeType.toString())
-        .setParents(parentFolderId == null
-            ? null
-            : ImmutableList.of(new ParentReference().setId(parentFolderId)));
+        .setParents(
+            parentFolderId == null
+                ? null
+                : ImmutableList.of(new ParentReference().setId(parentFolderId)));
   }
 }

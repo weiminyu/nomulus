@@ -31,8 +31,13 @@ public class HelloFlow implements Flow {
 
   @Inject ExtensionManager extensionManager;
   @Inject Clock clock;
-  @Inject @Config("greetingServerId") String greetingServerId;
-  @Inject HelloFlow() {}
+
+  @Inject
+  @Config("greetingServerId")
+  String greetingServerId;
+
+  @Inject
+  HelloFlow() {}
 
   @Override
   public Greeting run() throws EppException {

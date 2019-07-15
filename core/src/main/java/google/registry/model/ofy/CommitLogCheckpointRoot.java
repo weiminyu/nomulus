@@ -25,17 +25,14 @@ import google.registry.model.annotations.NotBackedUp;
 import google.registry.model.annotations.NotBackedUp.Reason;
 import org.joda.time.DateTime;
 
-/**
- * Singleton parent entity for all commit log checkpoints.
- */
+/** Singleton parent entity for all commit log checkpoints. */
 @Entity
 @NotBackedUp(reason = Reason.COMMIT_LOGS)
 public class CommitLogCheckpointRoot extends ImmutableObject {
 
-  public static final long SINGLETON_ID = 1;  // There is always exactly one of these.
+  public static final long SINGLETON_ID = 1; // There is always exactly one of these.
 
-  @Id
-  long id = SINGLETON_ID;
+  @Id long id = SINGLETON_ID;
 
   /** Singleton key for CommitLogCheckpointParent. */
   public static Key<CommitLogCheckpointRoot> getKey() {

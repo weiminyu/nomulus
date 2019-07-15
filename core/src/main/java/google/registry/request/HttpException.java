@@ -52,8 +52,8 @@ public abstract class HttpException extends RuntimeException {
   /**
    * Transmits the error response to the client.
    *
-   * <p>{@link #getMessage()} will be sent to the browser, whereas {@link #toString()} and
-   * {@link #getCause()} will be logged.
+   * <p>{@link #getMessage()} will be sent to the browser, whereas {@link #toString()} and {@link
+   * #getCause()} will be logged.
    */
   public final void send(HttpServletResponse rsp) throws IOException {
     rsp.sendError(getResponseCode(), htmlEscaper().escape(getMessage()));

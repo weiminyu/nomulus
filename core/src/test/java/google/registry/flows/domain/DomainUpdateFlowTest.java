@@ -510,8 +510,7 @@ public class DomainUpdateFlowTest extends ResourceFlowTestCase<DomainUpdateFlow,
     doSecDnsSuccessfulTest(
         "domain_update_dsdata_add.xml",
         ImmutableSet.of(SOME_DSDATA),
-        ImmutableSet.of(
-            SOME_DSDATA, DelegationSignerData.create(1, 8, 4, base16().decode("4567"))),
+        ImmutableSet.of(SOME_DSDATA, DelegationSignerData.create(1, 8, 4, base16().decode("4567"))),
         ImmutableMap.of("KEY_TAG", "1", "ALG", "8", "DIGEST_TYPE", "4", "DIGEST", "4567"));
   }
 
@@ -1168,8 +1167,7 @@ public class DomainUpdateFlowTest extends ResourceFlowTestCase<DomainUpdateFlow,
   }
 
   @Test
-  public void testFailure_addedNameserverDisallowedInTld()
-      throws Exception {
+  public void testFailure_addedNameserverDisallowedInTld() throws Exception {
     persistReferencedEntities();
     persistDomain();
     persistResource(

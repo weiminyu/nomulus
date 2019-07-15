@@ -37,15 +37,13 @@ import org.junit.runners.JUnit4;
 
 /** Unit tests for {@link DeleteOldCommitLogsAction}. */
 @RunWith(JUnit4.class)
-public class DeleteOldCommitLogsActionTest
-    extends MapreduceTestCase<DeleteOldCommitLogsAction> {
+public class DeleteOldCommitLogsActionTest extends MapreduceTestCase<DeleteOldCommitLogsAction> {
 
   private final FakeClock clock = new FakeClock(DateTime.parse("2000-01-01TZ"));
   private final FakeResponse response = new FakeResponse();
   private ContactResource contact;
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   @Before
   public void setup() {
@@ -72,13 +70,15 @@ public class DeleteOldCommitLogsActionTest
 
   private void mutateContact(String email) {
     ofy().clearSessionCache();
-    ContactResource contact = ofy().load()
-        .type(ContactResource.class)
-        .first()
-        .now()
-        .asBuilder()
-        .setEmailAddress(email)
-        .build();
+    ContactResource contact =
+        ofy()
+            .load()
+            .type(ContactResource.class)
+            .first()
+            .now()
+            .asBuilder()
+            .setEmailAddress(email)
+            .build();
     DatastoreHelper.persistResourceWithCommitLog(contact);
   }
 
@@ -107,9 +107,7 @@ public class DeleteOldCommitLogsActionTest
     return ImmutableList.copyOf(ofy().load().type(clazz).iterable());
   }
 
-  /**
-   * Check that with very short maxAge, only the referenced elements remain.
-   */
+  /** Check that with very short maxAge, only the referenced elements remain. */
   @Test
   public void test_shortMaxAge() throws Exception {
     runMapreduce(Duration.millis(1));
@@ -121,9 +119,7 @@ public class DeleteOldCommitLogsActionTest
     assertThat(ofyLoadType(CommitLogMutation.class)).hasSize(contact.getRevisions().size() * 3);
   }
 
-  /**
-   * Check that with very long maxAge, all the elements remain.
-   */
+  /** Check that with very long maxAge, all the elements remain. */
   @Test
   public void test_longMaxAge() throws Exception {
 

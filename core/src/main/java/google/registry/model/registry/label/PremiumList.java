@@ -52,9 +52,7 @@ import javax.annotation.Nullable;
 import org.joda.money.Money;
 import org.joda.time.Duration;
 
-/**
- * A premium list entity, persisted to Datastore, that is used to check domain label prices.
- */
+/** A premium list entity, persisted to Datastore, that is used to check domain label prices. */
 @ReportedOn
 @Entity
 public final class PremiumList extends BaseDomainLabelList<Money, PremiumList.PremiumListEntry> {
@@ -67,18 +65,16 @@ public final class PremiumList extends BaseDomainLabelList<Money, PremiumList.Pr
   @Entity
   public static class PremiumListRevision extends ImmutableObject {
 
-    @Parent
-    Key<PremiumList> parent;
+    @Parent Key<PremiumList> parent;
 
-    @Id
-    long revisionId;
+    @Id long revisionId;
 
     /**
      * A Bloom filter that is used to determine efficiently and quickly whether a label might be
      * premium.
      *
      * <p>If the label might be premium, then the premium list entry must be loaded by key and
-     * checked for existence.  Otherwise, we know it's not premium, and no Datastore load is
+     * checked for existence. Otherwise, we know it's not premium, and no Datastore load is
      * required.
      */
     private BloomFilter<String> probablePremiumLabels;
@@ -242,7 +238,7 @@ public final class PremiumList extends BaseDomainLabelList<Money, PremiumList.Pr
   }
 
   /**
-   * A premium list entry entity, persisted to Datastore.  Each instance represents the price of a
+   * A premium list entry entity, persisted to Datastore. Each instance represents the price of a
    * single label on a given TLD.
    */
   @ReportedOn
@@ -250,8 +246,7 @@ public final class PremiumList extends BaseDomainLabelList<Money, PremiumList.Pr
   public static class PremiumListEntry extends DomainLabelEntry<Money, PremiumListEntry>
       implements Buildable {
 
-    @Parent
-    Key<PremiumListRevision> parent;
+    @Parent Key<PremiumListRevision> parent;
 
     Money price;
 
@@ -314,7 +309,7 @@ public final class PremiumList extends BaseDomainLabelList<Money, PremiumList.Pr
     return new Builder(clone(this));
   }
 
-  /** A builder for constructing {@link PremiumList} objects, since they are immutable.  */
+  /** A builder for constructing {@link PremiumList} objects, since they are immutable. */
   public static class Builder extends BaseDomainLabelList.Builder<PremiumList, Builder> {
 
     public Builder() {}

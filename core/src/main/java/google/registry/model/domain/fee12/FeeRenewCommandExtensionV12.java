@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlType;
 /** A fee extension that may be present on domain renew commands. */
 @XmlRootElement(name = "renew")
 @XmlType(propOrder = {"currency", "fees", "credits"})
-public class FeeRenewCommandExtensionV12  extends FeeRenewCommandExtension {
+public class FeeRenewCommandExtensionV12 extends FeeRenewCommandExtension {
 
   @XmlElement(name = "credit")
   List<Credit> credits;

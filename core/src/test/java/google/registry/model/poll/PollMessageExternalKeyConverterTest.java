@@ -45,13 +45,9 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class PollMessageExternalKeyConverterTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public InjectRule inject = new InjectRule();
+  @Rule public InjectRule inject = new InjectRule();
 
   HistoryEntry historyEntry;
   FakeClock clock = new FakeClock(DateTime.parse("2007-07-07T01:01:01Z"));
@@ -60,18 +56,20 @@ public class PollMessageExternalKeyConverterTest {
   public void setUp() {
     inject.setStaticField(Ofy.class, "clock", clock);
     createTld("foobar");
-    historyEntry = persistResource(new HistoryEntry.Builder()
-      .setParent(persistActiveDomain("foo.foobar"))
-      .setType(HistoryEntry.Type.DOMAIN_CREATE)
-      .setPeriod(Period.create(1, Period.Unit.YEARS))
-      .setXmlBytes("<xml></xml>".getBytes(UTF_8))
-      .setModificationTime(clock.nowUtc())
-      .setClientId("foo")
-      .setTrid(Trid.create("ABC-123", "server-trid"))
-      .setBySuperuser(false)
-      .setReason("reason")
-      .setRequestedByRegistrar(false)
-      .build());
+    historyEntry =
+        persistResource(
+            new HistoryEntry.Builder()
+                .setParent(persistActiveDomain("foo.foobar"))
+                .setType(HistoryEntry.Type.DOMAIN_CREATE)
+                .setPeriod(Period.create(1, Period.Unit.YEARS))
+                .setXmlBytes("<xml></xml>".getBytes(UTF_8))
+                .setModificationTime(clock.nowUtc())
+                .setClientId("foo")
+                .setTrid(Trid.create("ABC-123", "server-trid"))
+                .setBySuperuser(false)
+                .setReason("reason")
+                .setRequestedByRegistrar(false)
+                .build());
   }
 
   @Test
@@ -151,7 +149,6 @@ public class PollMessageExternalKeyConverterTest {
         PollMessageExternalKeyParseException.class,
         () -> parsePollMessageExternalId("1-3-EXAMPLE-4-5-2007-2009"));
   }
-
 
   @Test
   public void testFailure_nonNumericIds() {

@@ -115,17 +115,18 @@ class LoadTestCommand extends ConfirmingCommand
   protected String execute() throws Exception {
     System.err.println("Initiating load test...");
 
-    ImmutableMap<String, Object> params = new ImmutableMap.Builder<String, Object>()
-        .put("tld", tld)
-        .put("clientId", clientId)
-        .put("successfulHostCreates", successfulHostCreates)
-        .put("successfulDomainCreates", successfulDomainCreates)
-        .put("successfulContactCreates", successfulContactCreates)
-        .put("hostInfos", hostInfos)
-        .put("domainInfos", domainInfos)
-        .put("contactInfos", contactInfos)
-        .put("runSeconds", runSeconds)
-        .build();
+    ImmutableMap<String, Object> params =
+        new ImmutableMap.Builder<String, Object>()
+            .put("tld", tld)
+            .put("clientId", clientId)
+            .put("successfulHostCreates", successfulHostCreates)
+            .put("successfulDomainCreates", successfulDomainCreates)
+            .put("successfulContactCreates", successfulContactCreates)
+            .put("hostInfos", hostInfos)
+            .put("domainInfos", domainInfos)
+            .put("contactInfos", contactInfos)
+            .put("runSeconds", runSeconds)
+            .build();
 
     return connection.sendPostRequest(
         LoadTestAction.PATH, params, MediaType.PLAIN_TEXT_UTF_8, new byte[0]);

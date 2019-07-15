@@ -78,9 +78,10 @@ public class LordnLogTest {
 
   @Test
   public void testSuccess_noDnLines() {
-    LordnLog.parse(ImmutableList.of(
-        "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,lolcat,accepted,no-warnings,0",
-        "roid,result-code"));
+    LordnLog.parse(
+        ImmutableList.of(
+            "1,2012-08-16T02:15:00.0Z,2012-08-16T00:00:00.0Z,lolcat,accepted,no-warnings,0",
+            "roid,result-code"));
   }
 
   @Test
@@ -116,26 +117,26 @@ public class LordnLogTest {
 
   @Test
   public void testSuccess_toString() {
-    assertThat(LordnLog.parse(EXAMPLE_WITH_WARNINGS).toString()).isEqualTo(
-        "LordnLog{"
-        + "logId=0000000000000004799, "
-        + "status=ACCEPTED, "
-        + "logCreation=2014-03-21T15:40:08.400Z, "
-        + "lordnCreation=2014-03-21T15:35:28.000Z, "
-        + "hasWarnings=true, "
-        + "results={"
-        + "19dc9b4-roid=Result{code=3610, outcome=WARNING, "
-        + "description=DN reported outside of the time window}, "
-        + "1580e26-roid=Result{code=3610, outcome=WARNING, "
-        + "description=DN reported outside of the time window}"
-        + "}}");
+    assertThat(LordnLog.parse(EXAMPLE_WITH_WARNINGS).toString())
+        .isEqualTo(
+            "LordnLog{"
+                + "logId=0000000000000004799, "
+                + "status=ACCEPTED, "
+                + "logCreation=2014-03-21T15:40:08.400Z, "
+                + "lordnCreation=2014-03-21T15:35:28.000Z, "
+                + "hasWarnings=true, "
+                + "results={"
+                + "19dc9b4-roid=Result{code=3610, outcome=WARNING, "
+                + "description=DN reported outside of the time window}, "
+                + "1580e26-roid=Result{code=3610, outcome=WARNING, "
+                + "description=DN reported outside of the time window}"
+                + "}}");
   }
 
   @Test
   public void testSuccess_resultToString() {
-    assertThat(
-        LordnLog.parse(EXAMPLE_FROM_RFC).iterator().next().toString())
-            .isEqualTo("SH8013-REP=Result{code=2000, outcome=OK, description=OK}");
+    assertThat(LordnLog.parse(EXAMPLE_FROM_RFC).iterator().next().toString())
+        .isEqualTo("SH8013-REP=Result{code=2000, outcome=OK, description=OK}");
   }
 
   @Test

@@ -29,10 +29,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class EppLoggedOutTest extends EppTestCase {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Test
   public void testHello() throws Exception {
@@ -48,8 +45,10 @@ public class EppLoggedOutTest extends EppTestCase {
         .hasResponse(
             "response_error_no_cltrid.xml",
             ImmutableMap.of(
-                "CODE", "2001",
-                "MSG", "Syntax error at line 4, column 65: cvc-complex-type.3.2.2: "
+                "CODE",
+                "2001",
+                "MSG",
+                "Syntax error at line 4, column 65: cvc-complex-type.3.2.2: "
                     + "Attribute 'xsi:schemaLocation' is not allowed to appear in element 'epp'."));
   }
 }

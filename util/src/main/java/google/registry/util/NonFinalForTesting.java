@@ -30,8 +30,8 @@ import java.lang.annotation.Target;
  * field may <em>appear</em> safe to change to {@code final}, it will actually be reflectively
  * modified by a unit test, and therefore should not be {@code final}.
  *
- * <p>When this annotation is used on methods, it means that you should not override the method
- * and it's only non-{@code final} so it can be mocked.
+ * <p>When this annotation is used on methods, it means that you should not override the method and
+ * it's only non-{@code final} so it can be mocked.
  *
  * @see google.registry.testing.InjectRule
  */

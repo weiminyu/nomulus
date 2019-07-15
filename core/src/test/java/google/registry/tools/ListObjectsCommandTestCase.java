@@ -54,9 +54,7 @@ public abstract class ListObjectsCommandTestCase<C extends ListObjectsCommand>
     ImmutableMap<String, Object> otherParameters = getOtherParameters();
     if (!otherParameters.isEmpty()) {
       otherParams =
-          otherParameters
-              .entrySet()
-              .stream()
+          otherParameters.entrySet().stream()
               .map(entry -> String.format("--%s=%s", entry.getKey(), entry.getValue()))
               .collect(toImmutableList());
     }

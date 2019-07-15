@@ -49,10 +49,7 @@ public interface PremiumPricingEngine {
     private Optional<String> feeClass;
 
     static DomainPrices create(
-        boolean isPremium,
-        Money createCost,
-        Money renewCost,
-        Optional<String> feeClass) {
+        boolean isPremium, Money createCost, Money renewCost, Optional<String> feeClass) {
       DomainPrices instance = new DomainPrices();
       instance.isPremium = isPremium;
       instance.createCost = createCost;

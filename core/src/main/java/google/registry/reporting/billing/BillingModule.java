@@ -37,7 +37,6 @@ public final class BillingModule {
   static final String PARAM_SHOULD_PUBLISH = "shouldPublish";
   static final String CRON_QUEUE = "retryable-cron-tasks";
 
-
   @Provides
   @Parameter(PARAM_SHOULD_PUBLISH)
   static boolean provideShouldPublish(
@@ -57,5 +56,5 @@ public final class BillingModule {
   @Qualifier
   @Documented
   @Retention(RUNTIME)
-  @interface InvoiceDirectoryPrefix{}
+  @interface InvoiceDirectoryPrefix {}
 }

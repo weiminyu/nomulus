@@ -96,7 +96,6 @@ public class EppLoginTlsTest extends EppTestCase {
                 "CODE", "2200", "MSG", "Registrar certificate does not match stored certificate"));
   }
 
-
   @Test
   public void testBadCertificate_failsBadCertificate2200() throws Exception {
     setClientCertificateHash("laffo");

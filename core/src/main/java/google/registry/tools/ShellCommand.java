@@ -155,8 +155,7 @@ public class ShellCommand implements Command {
     if (consoleReader != null) {
       @SuppressWarnings("unchecked")
       ImmutableList<Completor> completors = ImmutableList.copyOf(consoleReader.getCompletors());
-      completors
-          .forEach(consoleReader::removeCompletor);
+      completors.forEach(consoleReader::removeCompletor);
       consoleReader.addCompletor(new JCommanderCompletor(jcommander));
     }
     return this;
@@ -246,7 +245,7 @@ public class ShellCommand implements Command {
           && lastTime.plus(IDLE_THRESHOLD).isBefore(clock.nowUtc())) {
         throw new RuntimeException(
             "Been idle for too long, while in 'extra careful' mode. "
-            + "The last command was saved in history. Please rerun the shell and try again.");
+                + "The last command was saved in history. Please rerun the shell and try again.");
       }
       lastTime = clock.nowUtc();
       String[] lineArgs = parseCommand(line);
@@ -356,12 +355,7 @@ public class ShellCommand implements Command {
         if (type.startsWith("class ")) {
           type = type.substring(6);
         }
-        return create(
-            String.format(
-                "%s\n  (%s)",
-                parameter.getDescription(),
-                type),
-            options);
+        return create(String.format("%s\n  (%s)", parameter.getDescription(), type), options);
       }
 
       static ParamDoc create(String documentation, ImmutableList<String> options) {
@@ -372,7 +366,7 @@ public class ShellCommand implements Command {
     /**
      * Populates the completions and documentation based on the JCommander.
      *
-     * The input data is copied, so changing the jcommander after creation of the
+     * <p>The input data is copied, so changing the jcommander after creation of the
      * JCommanderCompletor doesn't change the completions.
      */
     JCommanderCompletor(JCommander jcommander) {
@@ -489,19 +483,14 @@ public class ShellCommand implements Command {
     }
 
     private List<String> getCommandCompletions(String word) {
-      return commandFlagDocs
-          .rowKeySet()
-          .stream()
+      return commandFlagDocs.rowKeySet().stream()
           .filter(s -> s.startsWith(word))
           .map(s -> s + " ")
           .collect(toImmutableList());
     }
 
     private List<String> getFlagCompletions(String command, String word) {
-      return commandFlagDocs
-          .row(command)
-          .keySet()
-          .stream()
+      return commandFlagDocs.row(command).keySet().stream()
           .filter(s -> s.startsWith(word))
           .map(s -> s + " ")
           .collect(toImmutableList());
@@ -517,16 +506,12 @@ public class ShellCommand implements Command {
       // flag, but if it's "--flag=value" then that flag is set and we want documentation of the
       // main parameters.
       boolean isFlagParameter =
-          context != null
-              && context.startsWith("-")
-              && context.indexOf('=') == -1;
+          context != null && context.startsWith("-") && context.indexOf('=') == -1;
       ParamDoc paramDoc =
           Optional.ofNullable(commandFlagDocs.get(command, isFlagParameter ? context : ""))
               .orElse(DEFAULT_PARAM_DOC);
       if (!word.isEmpty()) {
-        return paramDoc
-            .options()
-            .stream()
+        return paramDoc.options().stream()
             .filter(s -> s.startsWith(word))
             .map(s -> s + " ")
             .collect(toImmutableList());

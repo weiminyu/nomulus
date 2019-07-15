@@ -28,12 +28,12 @@ import javax.annotation.concurrent.NotThreadSafe;
  * {@link InputStream} wrapper that offers some additional magic.
  *
  * <ul>
- * <li>Byte counting
- * <li>Log byte count on close
- * <li>Check expected byte count when closed (Optional)
- * <li>Close original {@link InputStream} when closed (Optional)
- * <li>Overridable {@link #onClose()} method
- * <li>Throws {@link NullPointerException} if read after {@link #close()}
+ *   <li>Byte counting
+ *   <li>Log byte count on close
+ *   <li>Check expected byte count when closed (Optional)
+ *   <li>Close original {@link InputStream} when closed (Optional)
+ *   <li>Overridable {@link #onClose()} method
+ *   <li>Throws {@link NullPointerException} if read after {@link #close()}
  * </ul>
  *
  * @see ImprovedOutputStream

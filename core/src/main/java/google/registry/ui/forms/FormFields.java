@@ -43,8 +43,8 @@ public final class FormFields {
   /**
    * Form field that ensures input does not contain tabs, line feeds, or carriage returns.
    *
-   * @see <a href="http://www.w3.org/TR/xmlschema11-2/#normalizedString">
-   *     XSD Datatypes - normalizedString</a>
+   * @see <a href="http://www.w3.org/TR/xmlschema11-2/#normalizedString">XSD Datatypes -
+   *     normalizedString</a>
    */
   public static final FormField<String, String> XS_NORMALIZED_STRING =
       FormField.named("xsNormalizedString")
@@ -58,45 +58,45 @@ public final class FormFields {
    * @see <a href="http://tools.ietf.org/html/rfc5733#section-4">RFC 5733 - EPP - Formal Syntax</a>
    */
   public static final FormField<String, String> PHONE_NUMBER =
-      XS_TOKEN.asBuilderNamed("phoneNumber")
+      XS_TOKEN
+          .asBuilderNamed("phoneNumber")
           .range(atMost(17))
-          .matches(Pattern.compile("(\\+[0-9]{1,3}\\.[0-9]{1,14})?"),
+          .matches(
+              Pattern.compile("(\\+[0-9]{1,3}\\.[0-9]{1,14})?"),
               "Must be a valid +E.164 phone number, e.g. +1.2125650000")
           .build();
 
   /** Form field for EPP client identifiers. */
-  public static final FormField<String, String> CLID = XS_TOKEN.asBuilderNamed("clid")
-      .range(closed(3, 16))
-      .build();
+  public static final FormField<String, String> CLID =
+      XS_TOKEN.asBuilderNamed("clid").range(closed(3, 16)).build();
 
   /** Form field for passwords (see pwType in epp.xsd). */
-  public static final FormField<String, String> PASSWORD = XS_TOKEN.asBuilderNamed("password")
-      .range(closed(6, 16))
-      .build();
+  public static final FormField<String, String> PASSWORD =
+      XS_TOKEN.asBuilderNamed("password").range(closed(6, 16)).build();
 
   /** Form field for non-empty tokens (see minToken in eppcom.xsd). */
-  public static final FormField<String, String> MIN_TOKEN = XS_TOKEN.asBuilderNamed("minToken")
-      .emptyToNull()
-      .build();
+  public static final FormField<String, String> MIN_TOKEN =
+      XS_TOKEN.asBuilderNamed("minToken").emptyToNull().build();
 
   /** Form field for nameType (see rde-registrar/notification). */
-  public static final FormField<String, String> NAME = XS_NORMALIZED_STRING.asBuilderNamed("name")
-      .range(closed(1, 255))
-      .build();
+  public static final FormField<String, String> NAME =
+      XS_NORMALIZED_STRING.asBuilderNamed("name").range(closed(1, 255)).build();
 
   /** Form field for {@code labelType} from {@code eppcom.xsd}. */
-  public static final FormField<String, String> LABEL = XS_TOKEN.asBuilderNamed("label")
-        .range(closed(1, 255))
-        .build();
+  public static final FormField<String, String> LABEL =
+      XS_TOKEN.asBuilderNamed("label").range(closed(1, 255)).build();
 
   /** Email address form field. */
-  public static final FormField<String, String> EMAIL = XS_TOKEN.asBuilderNamed("email")
-        .matches(Pattern.compile("[^@]+@[^@.]+\\.[^@]+"), "Please enter a valid email address.")
-        .build();
+  public static final FormField<String, String> EMAIL =
+      XS_TOKEN
+          .asBuilderNamed("email")
+          .matches(Pattern.compile("[^@]+@[^@.]+\\.[^@]+"), "Please enter a valid email address.")
+          .build();
 
   /** Two-letter ISO country code form field. */
   public static final FormField<String, String> COUNTRY_CODE =
-      XS_TOKEN.asBuilderNamed("countryCode")
+      XS_TOKEN
+          .asBuilderNamed("countryCode")
           .range(singleton(2))
           .uppercased()
           .in(ImmutableSet.copyOf(getISOCountries()))
@@ -107,10 +107,13 @@ public final class FormFields {
    *
    * @see <a href="http://tools.ietf.org/html/rfc5730#section-4.2">Shared Structure Schema</a>
    */
-  public static final FormField<String, String> ROID = XS_TOKEN.asBuilderNamed("roid")
-      .matches(Pattern.compile("(\\w|_){1,80}-\\w{1,8}"),
-          "Please enter a valid EPP ROID, e.g. SH8013-REP")
-      .build();
+  public static final FormField<String, String> ROID =
+      XS_TOKEN
+          .asBuilderNamed("roid")
+          .matches(
+              Pattern.compile("(\\w|_){1,80}-\\w{1,8}"),
+              "Please enter a valid EPP ROID, e.g. SH8013-REP")
+          .build();
 
   private FormFields() {}
 }

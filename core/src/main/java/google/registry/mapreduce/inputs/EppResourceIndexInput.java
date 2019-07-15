@@ -20,9 +20,7 @@ import com.googlecode.objectify.Key;
 import google.registry.model.index.EppResourceIndex;
 import google.registry.model.index.EppResourceIndexBucket;
 
-/**
- * A MapReduce {@link Input} that loads all {@link EppResourceIndex} entities.
- */
+/** A MapReduce {@link Input} that loads all {@link EppResourceIndex} entities. */
 class EppResourceIndexInput extends EppResourceBaseInput<EppResourceIndex> {
 
   private static final long serialVersionUID = -1231269296567279059L;

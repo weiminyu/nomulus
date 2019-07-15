@@ -73,14 +73,14 @@ import org.junit.runners.JUnit4;
 /**
  * Bouncy Castle &ndash; How does it work?!
  *
- * <p>I wrote these tests to teach myself how to use the Bouncy Castle cryptography library;
- * however I still believe these tests are useful enough to stick around in the domain registry
- * codebase because:
+ * <p>I wrote these tests to teach myself how to use the Bouncy Castle cryptography library; however
+ * I still believe these tests are useful enough to stick around in the domain registry codebase
+ * because:
  *
  * <ol>
- * <li>They can serve as documentation for future maintainers about how Bouncy Castle works.
- * <li>They'll let us know if any of our assumptions about the library's behaviour are broken by
- *   future releases.
+ *   <li>They can serve as documentation for future maintainers about how Bouncy Castle works.
+ *   <li>They'll let us know if any of our assumptions about the library's behaviour are broken by
+ *       future releases.
  * </ol>
  *
  * <p>Bouncy Castle is a very difficult library to use. OpenPGP (and cryptography in general!) is
@@ -92,38 +92,38 @@ import org.junit.runners.JUnit4;
  * Bouncy Castle code, taking tips here and there from our codebase and Stack Overflow responses.
  *
  * <p>The biggest threat we'll face in the future is that so many of the methods used in this file
- * are deprecated in the current (as of August 2013) Bouncy Castle release 1.49. We're still
- * using 1.46 so thankfully we're not far enough behind that the Bouncy Castle authors have decided
- * to remove these functions. But a migration effort will be necessary in the future.
+ * are deprecated in the current (as of August 2013) Bouncy Castle release 1.49. We're still using
+ * 1.46 so thankfully we're not far enough behind that the Bouncy Castle authors have decided to
+ * remove these functions. But a migration effort will be necessary in the future.
  */
 @RunWith(JUnit4.class)
 @SuppressWarnings("resource")
 public class BouncyCastleTest {
 
-  private static final String FALL_OF_HYPERION_A_DREAM = ""
-      + "Fanatics have their dreams, wherewith they weave\n"
-      + "A paradise for a sect; the savage too\n"
-      + "From forth the loftiest fashion of his sleep\n"
-      + "Guesses at Heaven; pity these have not\n"
-      + "Trac'd upon vellum or wild Indian leaf\n"
-      + "The shadows of melodious utterance.\n"
-      + "But bare of laurel they live, dream, and die;\n"
-      + "For Poesy alone can tell her dreams,\n"
-      + "With the fine spell of words alone can save\n"
-      + "Imagination from the sable charm\n"
-      + "And dumb enchantment. Who alive can say,\n"
-      + "'Thou art no Poet may'st not tell thy dreams?'\n"
-      + "Since every man whose soul is not a clod\n"
-      + "Hath visions, and would speak, if he had loved\n"
-      + "And been well nurtured in his mother tongue.\n"
-      + "Whether the dream now purpos'd to rehearse\n"
-      + "Be poet's or fanatic's will be known\n"
-      + "When this warm scribe my hand is in the grave.\n";
+  private static final String FALL_OF_HYPERION_A_DREAM =
+      ""
+          + "Fanatics have their dreams, wherewith they weave\n"
+          + "A paradise for a sect; the savage too\n"
+          + "From forth the loftiest fashion of his sleep\n"
+          + "Guesses at Heaven; pity these have not\n"
+          + "Trac'd upon vellum or wild Indian leaf\n"
+          + "The shadows of melodious utterance.\n"
+          + "But bare of laurel they live, dream, and die;\n"
+          + "For Poesy alone can tell her dreams,\n"
+          + "With the fine spell of words alone can save\n"
+          + "Imagination from the sable charm\n"
+          + "And dumb enchantment. Who alive can say,\n"
+          + "'Thou art no Poet may'st not tell thy dreams?'\n"
+          + "Since every man whose soul is not a clod\n"
+          + "Hath visions, and would speak, if he had loved\n"
+          + "And been well nurtured in his mother tongue.\n"
+          + "Whether the dream now purpos'd to rehearse\n"
+          + "Be poet's or fanatic's will be known\n"
+          + "When this warm scribe my hand is in the grave.\n";
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
 
   @Test
   public void testCompressDecompress() throws Exception {
@@ -142,7 +142,7 @@ public class BouncyCastleTest {
     try (ByteArrayInputStream input = new ByteArrayInputStream(data)) {
       PGPObjectFactory pgpFact = new BcPGPObjectFactory(input);
       PGPCompressedData object = (PGPCompressedData) pgpFact.nextObject();
-      InputStream original = object.getDataStream();  // Closing this would close input.
+      InputStream original = object.getDataStream(); // Closing this would close input.
       assertThat(CharStreams.toString(new InputStreamReader(original, UTF_8)))
           .isEqualTo(FALL_OF_HYPERION_A_DREAM);
       assertThat(pgpFact.nextObject()).isNull();
@@ -159,8 +159,8 @@ public class BouncyCastleTest {
 
     // Sign the data and write signature data to "signatureFile".
     // Note: RSA_GENERAL will encrypt AND sign. RSA_SIGN and RSA_ENCRYPT are deprecated.
-    PGPSignatureGenerator signer = new PGPSignatureGenerator(
-        new BcPGPContentSignerBuilder(RSA_GENERAL, SHA256));
+    PGPSignatureGenerator signer =
+        new PGPSignatureGenerator(new BcPGPContentSignerBuilder(RSA_GENERAL, SHA256));
     signer.init(PGPSignature.BINARY_DOCUMENT, privateKey);
     addUserInfoToSignature(publicKey, signer);
     signer.update(FALL_OF_HYPERION_A_DREAM.getBytes(UTF_8));
@@ -198,8 +198,8 @@ public class BouncyCastleTest {
     PGPPrivateKey privateKey = extractPrivateKey(privateKeyRing.getSecretKey());
 
     // Sign the data and write signature data to "signatureFile".
-    PGPSignatureGenerator signer = new PGPSignatureGenerator(
-        new BcPGPContentSignerBuilder(RSA_GENERAL, SHA256));
+    PGPSignatureGenerator signer =
+        new PGPSignatureGenerator(new BcPGPContentSignerBuilder(RSA_GENERAL, SHA256));
     signer.init(PGPSignature.BINARY_DOCUMENT, privateKey);
     addUserInfoToSignature(publicKey, signer);
     ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -242,8 +242,8 @@ public class BouncyCastleTest {
     PGPPublicKey publicKey = publicKeyRing.getPublicKey();
 
     // Alice encrypts the secret message for Bob using his "publicKey".
-    PGPEncryptedDataGenerator encryptor = new PGPEncryptedDataGenerator(
-        new BcPGPDataEncryptorBuilder(AES_128));
+    PGPEncryptedDataGenerator encryptor =
+        new PGPEncryptedDataGenerator(new BcPGPDataEncryptorBuilder(AES_128));
     encryptor.addMethod(new BcPublicKeyKeyEncryptionMethodGenerator(publicKey));
     byte[] encryptedData;
     try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
@@ -279,15 +279,16 @@ public class BouncyCastleTest {
     int bufferSize = 64 * 1024;
 
     // Alice loads Bob's "publicKey" into memory from her public key ring.
-    PGPPublicKeyRingCollection publicKeyRings = new BcPGPPublicKeyRingCollection(
-        PGPUtil.getDecoderStream(new ByteArrayInputStream(PUBLIC_KEY)));
+    PGPPublicKeyRingCollection publicKeyRings =
+        new BcPGPPublicKeyRingCollection(
+            PGPUtil.getDecoderStream(new ByteArrayInputStream(PUBLIC_KEY)));
     PGPPublicKeyRing publicKeyRing =
         publicKeyRings.getKeyRings("eric@bouncycastle.org", true, true).next();
     PGPPublicKey publicKey = publicKeyRing.getPublicKey();
 
     // Alice encrypts the secret message for Bob using his "publicKey".
-    PGPEncryptedDataGenerator encryptor = new PGPEncryptedDataGenerator(
-        new BcPGPDataEncryptorBuilder(AES_128));
+    PGPEncryptedDataGenerator encryptor =
+        new PGPEncryptedDataGenerator(new BcPGPDataEncryptorBuilder(AES_128));
     encryptor.addMethod(new BcPublicKeyKeyEncryptionMethodGenerator(publicKey));
     byte[] encryptedData;
     try (ByteArrayOutputStream output = new ByteArrayOutputStream()) {
@@ -299,8 +300,9 @@ public class BouncyCastleTest {
     logger.atInfo().log("Encrypted data: %s", dumpHex(encryptedData));
 
     // Bob loads his chain of private keys into memory.
-    PGPSecretKeyRingCollection privateKeyRings = new BcPGPSecretKeyRingCollection(
-        PGPUtil.getDecoderStream(new ByteArrayInputStream(PRIVATE_KEY)));
+    PGPSecretKeyRingCollection privateKeyRings =
+        new BcPGPSecretKeyRingCollection(
+            PGPUtil.getDecoderStream(new ByteArrayInputStream(PRIVATE_KEY)));
 
     // Bob decrypt's the OpenPGP message (w/ ciphertext) using his "privateKey".
     try (ByteArrayInputStream input = new ByteArrayInputStream(encryptedData)) {
@@ -324,8 +326,9 @@ public class BouncyCastleTest {
     int bufsz = 64 * 1024;
 
     // Alice loads Bob's "publicKey" into memory from her public key ring.
-    PGPPublicKeyRingCollection publicKeyRings = new BcPGPPublicKeyRingCollection(
-        PGPUtil.getDecoderStream(new ByteArrayInputStream(PUBLIC_KEY)));
+    PGPPublicKeyRingCollection publicKeyRings =
+        new BcPGPPublicKeyRingCollection(
+            PGPUtil.getDecoderStream(new ByteArrayInputStream(PUBLIC_KEY)));
     PGPPublicKeyRing publicKeyRing =
         publicKeyRings.getKeyRings("eric@bouncycastle.org", true, true).next();
     PGPPublicKey publicKey = publicKeyRing.getPublicKey();
@@ -347,8 +350,9 @@ public class BouncyCastleTest {
     logger.atInfo().log("Encrypted data: %s", dumpHex(encryptedData));
 
     // Bob loads his chain of private keys into memory.
-    PGPSecretKeyRingCollection privateKeyRings = new BcPGPSecretKeyRingCollection(
-        PGPUtil.getDecoderStream(new ByteArrayInputStream(PRIVATE_KEY)));
+    PGPSecretKeyRingCollection privateKeyRings =
+        new BcPGPSecretKeyRingCollection(
+            PGPUtil.getDecoderStream(new ByteArrayInputStream(PRIVATE_KEY)));
 
     // Bob decrypt's the OpenPGP message (w/ ciphertext) using his "privateKey".
     try (ByteArrayInputStream input = new ByteArrayInputStream(encryptedData)) {
@@ -393,37 +397,40 @@ public class BouncyCastleTest {
 
   private static PGPPrivateKey extractPrivateKey(PGPSecretKey secretKey) throws PGPException {
     return secretKey.extractPrivateKey(
-        new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider())
-            .build(PASSWORD));
+        new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider()).build(PASSWORD));
   }
 
   private static final char[] PASSWORD = "hello world".toCharArray();
 
-  private static final byte[] PUBLIC_KEY = Base64.decode(""
-      + "mIsEPz2nJAEEAOTVqWMvqYE693qTgzKv/TJpIj3hI8LlYPC6m1dk0z3bDLwVVk9F"
-      + "FAB+CWS8RdFOWt/FG3tEv2nzcoNdRvjv9WALyIGNawtae4Ml6oAT06/511yUzXHO"
-      + "k+9xK3wkXN5jdzUhf4cA2oGpLSV/pZlocsIDL+jCUQtumUPwFodmSHhzAAYptC9F"
-      + "cmljIEVjaGlkbmEgKHRlc3Qga2V5KSA8ZXJpY0Bib3VuY3ljYXN0bGUub3JnPoi4"
-      + "BBMBAgAiBQI/PackAhsDBQkAg9YABAsHAwIDFQIDAxYCAQIeAQIXgAAKCRA1WGFG"
-      + "/fPzc8WMA/9BbjuB8E48QAlxoiVf9U8SfNelrz/ONJA/bMvWr/JnOGA9PPmFD5Uc"
-      + "+kV/q+i94dEMjsC5CQ1moUHWSP2xlQhbOzBP2+oPXw3z2fBs9XJgnTH6QWMAAvLs"
-      + "3ug9po0loNHLobT/D/XdXvcrb3wvwvPT2FptZqrtonH/OdzT9JdfrA==");
+  private static final byte[] PUBLIC_KEY =
+      Base64.decode(
+          ""
+              + "mIsEPz2nJAEEAOTVqWMvqYE693qTgzKv/TJpIj3hI8LlYPC6m1dk0z3bDLwVVk9F"
+              + "FAB+CWS8RdFOWt/FG3tEv2nzcoNdRvjv9WALyIGNawtae4Ml6oAT06/511yUzXHO"
+              + "k+9xK3wkXN5jdzUhf4cA2oGpLSV/pZlocsIDL+jCUQtumUPwFodmSHhzAAYptC9F"
+              + "cmljIEVjaGlkbmEgKHRlc3Qga2V5KSA8ZXJpY0Bib3VuY3ljYXN0bGUub3JnPoi4"
+              + "BBMBAgAiBQI/PackAhsDBQkAg9YABAsHAwIDFQIDAxYCAQIeAQIXgAAKCRA1WGFG"
+              + "/fPzc8WMA/9BbjuB8E48QAlxoiVf9U8SfNelrz/ONJA/bMvWr/JnOGA9PPmFD5Uc"
+              + "+kV/q+i94dEMjsC5CQ1moUHWSP2xlQhbOzBP2+oPXw3z2fBs9XJgnTH6QWMAAvLs"
+              + "3ug9po0loNHLobT/D/XdXvcrb3wvwvPT2FptZqrtonH/OdzT9JdfrA==");
 
-  private static final byte[] PRIVATE_KEY = Base64.decode(""
-      + "lQH8BD89pyQBBADk1aljL6mBOvd6k4Myr/0yaSI94SPC5WDwuptXZNM92wy8FVZP"
-      + "RRQAfglkvEXRTlrfxRt7RL9p83KDXUb47/VgC8iBjWsLWnuDJeqAE9Ov+ddclM1x"
-      + "zpPvcSt8JFzeY3c1IX+HANqBqS0lf6WZaHLCAy/owlELbplD8BaHZkh4cwAGKf4D"
-      + "AwKbLeIOVYTEdWD5v/YgW8ERs0pDsSIfBTvsJp2qA798KeFuED6jGsHUzdi1M990"
-      + "6PRtplQgnoYmYQrzEc6DXAiAtBR4Kuxi4XHx0ZR2wpVlVxm2Ypgz7pbBNWcWqzvw"
-      + "33inl7tR4IDsRdJOY8cFlN+1tSCf16sDidtKXUVjRjZNYJytH18VfSPlGXMeYgtw"
-      + "3cSGNTERwKaq5E/SozT2MKTiORO0g0Mtyz+9MEB6XVXFavMun/mXURqbZN/k9BFb"
-      + "z+TadpkihrLD1xw3Hp+tpe4CwPQ2GdWKI9KNo5gEnbkJgLrSMGgWalPhknlNHRyY"
-      + "bSq6lbIMJEE3LoOwvYWwweR1+GrV9farJESdunl1mDr5/d6rKru+FFDwZM3na1IF"
-      + "4Ei4FpqhivZ4zG6pN5XqLy+AK85EiW4XH0yAKX1O4YlbmDU4BjxhiwTdwuVMCjLO"
-      + "5++jkz5BBQWdFX8CCMA4FJl36G70IbGzuFfOj07ly7QvRXJpYyBFY2hpZG5hICh0"
-      + "ZXN0IGtleSkgPGVyaWNAYm91bmN5Y2FzdGxlLm9yZz6IuAQTAQIAIgUCPz2nJAIb"
-      + "AwUJAIPWAAQLBwMCAxUCAwMWAgECHgECF4AACgkQNVhhRv3z83PFjAP/QW47gfBO"
-      + "PEAJcaIlX/VPEnzXpa8/zjSQP2zL1q/yZzhgPTz5hQ+VHPpFf6voveHRDI7AuQkN"
-      + "ZqFB1kj9sZUIWzswT9vqD18N89nwbPVyYJ0x+kFjAALy7N7oPaaNJaDRy6G0/w/1"
-      + "3V73K298L8Lz09habWaq7aJx/znc0/SXX6w=");
+  private static final byte[] PRIVATE_KEY =
+      Base64.decode(
+          ""
+              + "lQH8BD89pyQBBADk1aljL6mBOvd6k4Myr/0yaSI94SPC5WDwuptXZNM92wy8FVZP"
+              + "RRQAfglkvEXRTlrfxRt7RL9p83KDXUb47/VgC8iBjWsLWnuDJeqAE9Ov+ddclM1x"
+              + "zpPvcSt8JFzeY3c1IX+HANqBqS0lf6WZaHLCAy/owlELbplD8BaHZkh4cwAGKf4D"
+              + "AwKbLeIOVYTEdWD5v/YgW8ERs0pDsSIfBTvsJp2qA798KeFuED6jGsHUzdi1M990"
+              + "6PRtplQgnoYmYQrzEc6DXAiAtBR4Kuxi4XHx0ZR2wpVlVxm2Ypgz7pbBNWcWqzvw"
+              + "33inl7tR4IDsRdJOY8cFlN+1tSCf16sDidtKXUVjRjZNYJytH18VfSPlGXMeYgtw"
+              + "3cSGNTERwKaq5E/SozT2MKTiORO0g0Mtyz+9MEB6XVXFavMun/mXURqbZN/k9BFb"
+              + "z+TadpkihrLD1xw3Hp+tpe4CwPQ2GdWKI9KNo5gEnbkJgLrSMGgWalPhknlNHRyY"
+              + "bSq6lbIMJEE3LoOwvYWwweR1+GrV9farJESdunl1mDr5/d6rKru+FFDwZM3na1IF"
+              + "4Ei4FpqhivZ4zG6pN5XqLy+AK85EiW4XH0yAKX1O4YlbmDU4BjxhiwTdwuVMCjLO"
+              + "5++jkz5BBQWdFX8CCMA4FJl36G70IbGzuFfOj07ly7QvRXJpYyBFY2hpZG5hICh0"
+              + "ZXN0IGtleSkgPGVyaWNAYm91bmN5Y2FzdGxlLm9yZz6IuAQTAQIAIgUCPz2nJAIb"
+              + "AwUJAIPWAAQLBwMCAxUCAwMWAgECHgECF4AACgkQNVhhRv3z83PFjAP/QW47gfBO"
+              + "PEAJcaIlX/VPEnzXpa8/zjSQP2zL1q/yZzhgPTz5hQ+VHPpFf6voveHRDI7AuQkN"
+              + "ZqFB1kj9sZUIWzswT9vqD18N89nwbPVyYJ0x+kFjAALy7N7oPaaNJaDRy6G0/w/1"
+              + "3V73K298L8Lz09habWaq7aJx/znc0/SXX6w=");
 }

@@ -35,12 +35,10 @@ import google.registry.model.annotations.NotBackedUp.Reason;
 public class CommitLogMutation extends ImmutableObject {
 
   /** The manifest this belongs to. */
-  @Parent
-  Key<CommitLogManifest> parent;
+  @Parent Key<CommitLogManifest> parent;
 
   /** Serialized web-safe string representation of saved entity key. */
-  @Id
-  String entityKey;
+  @Id String entityKey;
 
   /**
    * Raw entity that was saved during the transaction, serialized as a protocol buffer.
@@ -76,8 +74,7 @@ public class CommitLogMutation extends ImmutableObject {
    */
   @VisibleForTesting
   public static CommitLogMutation createFromRaw(
-      Key<CommitLogManifest> parent,
-      com.google.appengine.api.datastore.Entity rawEntity) {
+      Key<CommitLogManifest> parent, com.google.appengine.api.datastore.Entity rawEntity) {
     CommitLogMutation instance = new CommitLogMutation();
     instance.parent = checkNotNull(parent);
     // Creates a web-safe key string.
@@ -87,8 +84,7 @@ public class CommitLogMutation extends ImmutableObject {
   }
 
   /** Returns the key of a mutation based on the {@code entityKey} of the entity it stores. */
-  public static
-      Key<CommitLogMutation> createKey(Key<CommitLogManifest> parent, Key<?> entityKey) {
+  public static Key<CommitLogMutation> createKey(Key<CommitLogManifest> parent, Key<?> entityKey) {
     return Key.create(parent, CommitLogMutation.class, entityKey.getString());
   }
 }

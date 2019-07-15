@@ -96,7 +96,7 @@ public class DomainBase extends EppResource
           StatusValue.INACTIVE,
           StatusValue.PENDING_DELETE,
           StatusValue.SERVER_HOLD);
-  
+
   /**
    * Fully qualified domain name (puny-coded), which serves as the foreign key for this domain.
    *
@@ -106,16 +106,13 @@ public class DomainBase extends EppResource
    *
    * @invariant fullyQualifiedDomainName == fullyQualifiedDomainName.toLowerCase(Locale.ENGLISH)
    */
-  @Index
-  String fullyQualifiedDomainName;
+  @Index String fullyQualifiedDomainName;
 
   /** The top level domain this is under, dernormalized from {@link #fullyQualifiedDomainName}. */
-  @Index
-  String tld;
+  @Index String tld;
 
   /** References to hosts that are the nameservers for the domain. */
-  @Index
-  Set<Key<HostResource>> nsHosts;
+  @Index Set<Key<HostResource>> nsHosts;
 
   /**
    * The union of the contacts visible via {@link #getContacts} and {@link #getRegistrant}.
@@ -326,8 +323,7 @@ public class DomainBase extends EppResource
       // If the transfer time is precisely the moment that the domain expires, there will not be an
       // autorenew billing event (since we end the recurrence at transfer time and recurrences are
       // exclusive of their ending), and we can just proceed with the transfer.
-      DomainBase domainAtTransferTime =
-          cloneProjectedAtTime(transferExpirationTime.minusMillis(1));
+      DomainBase domainAtTransferTime = cloneProjectedAtTime(transferExpirationTime.minusMillis(1));
       // If we are within an autorenew grace period, the transfer will subsume the autorenew. There
       // will already be a cancellation written in advance by the transfer request flow, so we don't
       // need to worry about billing, but we do need to cancel out the expiration time increase.
@@ -339,17 +335,22 @@ public class DomainBase extends EppResource
       }
       // Set the expiration, autorenew events, and grace period for the transfer. (Transfer ends
       // all other graces).
-      Builder builder = domainAtTransferTime.asBuilder()
-          // Extend the registration by the correct number of years from the expiration time that
-          // was current on the domain right before the transfer, capped at 10 years from the
-          // moment of the transfer.
-          .setRegistrationExpirationTime(extendRegistrationWithCap(
-              transferExpirationTime,
-              domainAtTransferTime.getRegistrationExpirationTime(),
-              extraYears))
-          // Set the speculatively-written new autorenew events as the domain's autorenew events.
-          .setAutorenewBillingEvent(transferData.getServerApproveAutorenewEvent())
-          .setAutorenewPollMessage(transferData.getServerApproveAutorenewPollMessage());
+      Builder builder =
+          domainAtTransferTime
+              .asBuilder()
+              // Extend the registration by the correct number of years from the expiration time
+              // that
+              // was current on the domain right before the transfer, capped at 10 years from the
+              // moment of the transfer.
+              .setRegistrationExpirationTime(
+                  extendRegistrationWithCap(
+                      transferExpirationTime,
+                      domainAtTransferTime.getRegistrationExpirationTime(),
+                      extraYears))
+              // Set the speculatively-written new autorenew events as the domain's autorenew
+              // events.
+              .setAutorenewBillingEvent(transferData.getServerApproveAutorenewEvent())
+              .setAutorenewPollMessage(transferData.getServerApproveAutorenewPollMessage());
       if (transferData.getTransferPeriod().getValue() == 1) {
         // Set the grace period using a key to the prescheduled transfer billing event.  Not using
         // GracePeriod.forBillingEvent() here in order to avoid the actual Datastore fetch.
@@ -381,10 +382,11 @@ public class DomainBase extends EppResource
     Builder builder = asBuilder();
     if (isBeforeOrAt(registrationExpirationTime, now)) {
       // Autorenew by the number of years between the old expiration time and now.
-      DateTime lastAutorenewTime = leapSafeAddYears(
-          registrationExpirationTime,
-          new Interval(registrationExpirationTime, now).toPeriod().getYears());
-      DateTime newExpirationTime  = lastAutorenewTime.plusYears(1);
+      DateTime lastAutorenewTime =
+          leapSafeAddYears(
+              registrationExpirationTime,
+              new Interval(registrationExpirationTime, now).toPeriod().getYears());
+      DateTime newExpirationTime = lastAutorenewTime.plusYears(1);
       builder
           .setRegistrationExpirationTime(newExpirationTime)
           .addGracePeriod(
@@ -430,32 +432,24 @@ public class DomainBase extends EppResource
 
   /** Return what the expiration time would be if the given number of years were added to it. */
   public static DateTime extendRegistrationWithCap(
-      DateTime now,
-      DateTime currentExpirationTime,
-      @Nullable Integer extendedRegistrationYears) {
+      DateTime now, DateTime currentExpirationTime, @Nullable Integer extendedRegistrationYears) {
     // We must cap registration at the max years (aka 10), even if that truncates the last year.
     return earliestOf(
         leapSafeAddYears(
-            currentExpirationTime,
-            Optional.ofNullable(extendedRegistrationYears).orElse(0)),
+            currentExpirationTime, Optional.ofNullable(extendedRegistrationYears).orElse(0)),
         leapSafeAddYears(now, MAX_REGISTRATION_YEARS));
   }
 
   /** Loads and returns the fully qualified host names of all linked nameservers. */
   public ImmutableSortedSet<String> loadNameserverFullyQualifiedHostNames() {
-    return ofy()
-        .load()
-        .keys(getNameservers())
-        .values()
-        .stream()
+    return ofy().load().keys(getNameservers()).values().stream()
         .map(HostResource::getFullyQualifiedHostName)
         .collect(toImmutableSortedSet(Ordering.natural()));
   }
 
   /** A key to the registrant who registered this domain. */
   public Key<ContactResource> getRegistrant() {
-    return nullToEmpty(allContacts)
-        .stream()
+    return nullToEmpty(allContacts).stream()
         .filter(IS_REGISTRANT)
         .findFirst()
         .get()
@@ -464,8 +458,7 @@ public class DomainBase extends EppResource
 
   /** Associated contacts for the domain (other than registrant). */
   public ImmutableSet<DesignatedContact> getContacts() {
-    return nullToEmpty(allContacts)
-        .stream()
+    return nullToEmpty(allContacts).stream()
         .filter(IS_REGISTRANT.negate())
         .collect(toImmutableSet());
   }
@@ -476,8 +469,7 @@ public class DomainBase extends EppResource
 
   /** Returns all referenced contacts from this domain or application. */
   public ImmutableSet<Key<ContactResource>> getReferencedContacts() {
-    return nullToEmptyImmutableCopy(allContacts)
-        .stream()
+    return nullToEmptyImmutableCopy(allContacts).stream()
         .map(DesignatedContact::getContactKey)
         .filter(Objects::nonNull)
         .collect(toImmutableSet());
@@ -517,10 +509,10 @@ public class DomainBase extends EppResource
       // A DomainBase has status INACTIVE if there are no nameservers.
       if (getInstance().getNameservers().isEmpty()) {
         addStatusValue(StatusValue.INACTIVE);
-      } else {  // There are nameservers, so make sure INACTIVE isn't there.
+      } else { // There are nameservers, so make sure INACTIVE isn't there.
         removeStatusValue(StatusValue.INACTIVE);
       }
-      
+
       checkArgumentNotNull(
           emptyToNull(instance.fullyQualifiedDomainName), "Missing fullyQualifiedDomainName");
       checkArgument(instance.allContacts.stream().anyMatch(IS_REGISTRANT), "Missing registrant");
@@ -543,9 +535,10 @@ public class DomainBase extends EppResource
 
     public Builder setRegistrant(Key<ContactResource> registrant) {
       // Replace the registrant contact inside allContacts.
-      getInstance().allContacts = union(
-          getInstance().getContacts(),
-          DesignatedContact.create(Type.REGISTRANT, checkArgumentNotNull(registrant)));
+      getInstance().allContacts =
+          union(
+              getInstance().getContacts(),
+              DesignatedContact.create(Type.REGISTRANT, checkArgumentNotNull(registrant)));
       return thisCastToDerived();
     }
 
@@ -621,13 +614,14 @@ public class DomainBase extends EppResource
     }
 
     public Builder addSubordinateHost(String hostToAdd) {
-      return setSubordinateHosts(ImmutableSet.copyOf(
-          union(getInstance().getSubordinateHosts(), hostToAdd)));
+      return setSubordinateHosts(
+          ImmutableSet.copyOf(union(getInstance().getSubordinateHosts(), hostToAdd)));
     }
 
     public Builder removeSubordinateHost(String hostToRemove) {
-      return setSubordinateHosts(ImmutableSet.copyOf(
-          CollectionUtils.difference(getInstance().getSubordinateHosts(), hostToRemove)));
+      return setSubordinateHosts(
+          ImmutableSet.copyOf(
+              CollectionUtils.difference(getInstance().getSubordinateHosts(), hostToRemove)));
     }
 
     public Builder setRegistrationExpirationTime(DateTime registrationExpirationTime) {
@@ -640,14 +634,12 @@ public class DomainBase extends EppResource
       return this;
     }
 
-    public Builder setAutorenewBillingEvent(
-        Key<BillingEvent.Recurring> autorenewBillingEvent) {
+    public Builder setAutorenewBillingEvent(Key<BillingEvent.Recurring> autorenewBillingEvent) {
       getInstance().autorenewBillingEvent = autorenewBillingEvent;
       return this;
     }
 
-    public Builder setAutorenewPollMessage(
-        Key<PollMessage.Autorenew> autorenewPollMessage) {
+    public Builder setAutorenewPollMessage(Key<PollMessage.Autorenew> autorenewPollMessage) {
       getInstance().autorenewPollMessage = autorenewPollMessage;
       return this;
     }
@@ -668,8 +660,8 @@ public class DomainBase extends EppResource
     }
 
     public Builder removeGracePeriod(GracePeriod gracePeriod) {
-      getInstance().gracePeriods = CollectionUtils
-          .difference(getInstance().getGracePeriods(), gracePeriod);
+      getInstance().gracePeriods =
+          CollectionUtils.difference(getInstance().getGracePeriods(), gracePeriod);
       return this;
     }
 

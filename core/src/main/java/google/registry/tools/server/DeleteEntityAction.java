@@ -95,10 +95,10 @@ public class DeleteEntityAction implements Runnable {
     // Delete ofy entities.
     final ImmutableList<Object> ofyDeletions = ofyDeletionsBuilder.build();
     ofy().transactNew(() -> ofy().delete().entities(ofyDeletions).now());
-    String message = String.format(
-        "Deleted %d raw entities and %d registered entities",
-        rawDeletions.size(),
-        ofyDeletions.size());
+    String message =
+        String.format(
+            "Deleted %d raw entities and %d registered entities",
+            rawDeletions.size(), ofyDeletions.size());
     logger.atInfo().log(message);
     response.setPayload(message);
   }

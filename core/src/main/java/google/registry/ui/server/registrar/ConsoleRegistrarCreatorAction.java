@@ -94,7 +94,7 @@ public final class ConsoleRegistrarCreatorAction implements Runnable {
           google.registry.ui.soy.AnalyticsSoyInfo.getInstance(),
           google.registry.ui.soy.registrar.RegistrarCreateConsoleSoyInfo.getInstance());
 
-  @VisibleForTesting  // webdriver and screenshot tests need this
+  @VisibleForTesting // webdriver and screenshot tests need this
   public static final Supplier<SoyCssRenamingMap> CSS_RENAMING_MAP_SUPPLIER =
       SoyTemplateUtils.createCssRenamingMapSupplier(
           Resources.getResource("google/registry/ui/css/registrar_bin.css.js"),
@@ -108,37 +108,99 @@ public final class ConsoleRegistrarCreatorAction implements Runnable {
   @Inject XsrfTokenManager xsrfTokenManager;
   @Inject AuthResult authResult;
   @Inject SendEmailUtils sendEmailUtils;
-  @Inject @Config("logoFilename") String logoFilename;
-  @Inject @Config("productName") String productName;
-  @Inject @Config("analyticsConfig") Map<String, Object> analyticsConfig;
-  @Inject @Named("base58StringGenerator") StringGenerator passwordGenerator;
-  @Inject @Named("digitOnlyStringGenerator") StringGenerator passcodeGenerator;
-  @Inject @Parameter("clientId") Optional<String> clientId;
-  @Inject @Parameter("name") Optional<String> name;
-  @Inject @Parameter("billingAccount") Optional<String> billingAccount;
-  @Inject @Parameter("ianaId") Optional<Integer> ianaId;
-  @Inject @Parameter("referralEmail") Optional<String> referralEmail;
-  @Inject @Parameter("driveId") Optional<String> driveId;
-  @Inject @Parameter("consoleUserEmail") Optional<String> consoleUserEmail;
+
+  @Inject
+  @Config("logoFilename")
+  String logoFilename;
+
+  @Inject
+  @Config("productName")
+  String productName;
+
+  @Inject
+  @Config("analyticsConfig")
+  Map<String, Object> analyticsConfig;
+
+  @Inject
+  @Named("base58StringGenerator")
+  StringGenerator passwordGenerator;
+
+  @Inject
+  @Named("digitOnlyStringGenerator")
+  StringGenerator passcodeGenerator;
+
+  @Inject
+  @Parameter("clientId")
+  Optional<String> clientId;
+
+  @Inject
+  @Parameter("name")
+  Optional<String> name;
+
+  @Inject
+  @Parameter("billingAccount")
+  Optional<String> billingAccount;
+
+  @Inject
+  @Parameter("ianaId")
+  Optional<Integer> ianaId;
+
+  @Inject
+  @Parameter("referralEmail")
+  Optional<String> referralEmail;
+
+  @Inject
+  @Parameter("driveId")
+  Optional<String> driveId;
+
+  @Inject
+  @Parameter("consoleUserEmail")
+  Optional<String> consoleUserEmail;
 
   // Address fields, some of which are required and others are optional.
-  @Inject @Parameter("street1") Optional<String> street1;
-  @Inject @Parameter("street2") Optional<String> optionalStreet2;
-  @Inject @Parameter("street3") Optional<String> optionalStreet3;
-  @Inject @Parameter("city") Optional<String> city;
-  @Inject @Parameter("state") Optional<String> optionalState;
-  @Inject @Parameter("zip") Optional<String> optionalZip;
-  @Inject @Parameter("countryCode") Optional<String> countryCode;
+  @Inject
+  @Parameter("street1")
+  Optional<String> street1;
 
-  @Inject @Parameter("password") Optional<String> optionalPassword;
-  @Inject @Parameter("passcode") Optional<String> optionalPasscode;
+  @Inject
+  @Parameter("street2")
+  Optional<String> optionalStreet2;
 
-  @Inject ConsoleRegistrarCreatorAction() {}
+  @Inject
+  @Parameter("street3")
+  Optional<String> optionalStreet3;
+
+  @Inject
+  @Parameter("city")
+  Optional<String> city;
+
+  @Inject
+  @Parameter("state")
+  Optional<String> optionalState;
+
+  @Inject
+  @Parameter("zip")
+  Optional<String> optionalZip;
+
+  @Inject
+  @Parameter("countryCode")
+  Optional<String> countryCode;
+
+  @Inject
+  @Parameter("password")
+  Optional<String> optionalPassword;
+
+  @Inject
+  @Parameter("passcode")
+  Optional<String> optionalPasscode;
+
+  @Inject
+  ConsoleRegistrarCreatorAction() {}
 
   @Override
   public void run() {
-    response.setHeader(X_FRAME_OPTIONS, "SAMEORIGIN");  // Disallow iframing.
-    response.setHeader("X-Ui-Compatible", "IE=edge");  // Ask IE not to be silly.
+    response.setHeader(X_FRAME_OPTIONS, "SAMEORIGIN"); // Disallow iframing.
+    response.setHeader("X-Ui-Compatible", "IE=edge"); // Ask IE not to be silly.
 
     logger.atInfo().log(
         "User %s is accessing the Registrar creation page. Method= %s",
@@ -320,11 +382,11 @@ public final class ConsoleRegistrarCreatorAction implements Runnable {
       data.put("errorMessage", e.getMessage());
       response.setPayload(
           TOFU_SUPPLIER
-          .get()
-          .newRenderer(RegistrarCreateConsoleSoyInfo.FORM_PAGE)
-          .setCssRenamingMap(CSS_RENAMING_MAP_SUPPLIER.get())
-          .setData(data)
-          .render());
+              .get()
+              .newRenderer(RegistrarCreateConsoleSoyInfo.FORM_PAGE)
+              .setCssRenamingMap(CSS_RENAMING_MAP_SUPPLIER.get())
+              .setData(data)
+              .render());
     }
   }
 
@@ -349,6 +411,7 @@ public final class ConsoleRegistrarCreatorAction implements Runnable {
   private String toEmailLine(Optional<?> value, String name) {
     return String.format("    %s: %s\n", name, value.orElse(null));
   }
+
   private void sendExternalUpdates() {
     if (!sendEmailUtils.hasRecipients()) {
       return;

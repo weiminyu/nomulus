@@ -47,8 +47,7 @@ public final class CommitLogManifestInputTest {
   private static final DateTime DATE_TIME_NEW = DateTime.parse("2016-12-19T12:01Z");
   private static final DateTime DATE_TIME_NEW2 = DateTime.parse("2017-12-19T12:00Z");
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Test
   public void testInputOlderThan_allFound() throws Exception {
@@ -58,8 +57,7 @@ public final class CommitLogManifestInputTest {
     }
     List<Key<CommitLogManifest>> seen = new ArrayList<>();
     Input<Key<CommitLogManifest>> input = new CommitLogManifestInput(DATE_TIME_THRESHOLD);
-    for (InputReader<Key<CommitLogManifest>> reader
-        : input.createReaders()) {
+    for (InputReader<Key<CommitLogManifest>> reader : input.createReaders()) {
       reader.beginShard();
       reader.beginSlice();
       seen.add(reader.next());
@@ -83,8 +81,7 @@ public final class CommitLogManifestInputTest {
     }
     List<Key<CommitLogManifest>> seen = new ArrayList<>();
     Input<Key<CommitLogManifest>> input = new CommitLogManifestInput(DATE_TIME_THRESHOLD);
-    for (InputReader<Key<CommitLogManifest>> reader
-        : input.createReaders()) {
+    for (InputReader<Key<CommitLogManifest>> reader : input.createReaders()) {
       reader.beginShard();
       reader.beginSlice();
       try {
@@ -111,8 +108,7 @@ public final class CommitLogManifestInputTest {
     }
     List<Key<CommitLogManifest>> seen = new ArrayList<>();
     Input<Key<CommitLogManifest>> input = new CommitLogManifestInput();
-    for (InputReader<Key<CommitLogManifest>> reader
-        : input.createReaders()) {
+    for (InputReader<Key<CommitLogManifest>> reader : input.createReaders()) {
       reader.beginShard();
       reader.beginSlice();
       try {
@@ -129,8 +125,7 @@ public final class CommitLogManifestInputTest {
   }
 
   private static Key<CommitLogManifest> createManifest(
-      Key<CommitLogBucket> parent,
-      DateTime dateTime) {
+      Key<CommitLogBucket> parent, DateTime dateTime) {
     CommitLogManifest commitLogManifest = CommitLogManifest.create(parent, dateTime, null);
     DatastoreHelper.persistResource(commitLogManifest);
     return Key.create(commitLogManifest);

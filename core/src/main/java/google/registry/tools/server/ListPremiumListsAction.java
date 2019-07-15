@@ -37,7 +37,8 @@ public final class ListPremiumListsAction extends ListObjectsAction<PremiumList>
 
   public static final String PATH = "/_dr/admin/list/premiumLists";
 
-  @Inject ListPremiumListsAction() {}
+  @Inject
+  ListPremiumListsAction() {}
 
   @Override
   public ImmutableSet<String> getPrimaryKeyFields() {

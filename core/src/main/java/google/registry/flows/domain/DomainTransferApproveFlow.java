@@ -91,10 +91,12 @@ public final class DomainTransferApproveFlow implements TransactionalFlow {
   @Inject @Superuser boolean isSuperuser;
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject DomainTransferApproveFlow() {}
+
+  @Inject
+  DomainTransferApproveFlow() {}
 
   /**
-   * <p>The logic in this flow, which handles client approvals, very closely parallels the logic in
+   * The logic in this flow, which handles client approvals, very closely parallels the logic in
    * {@link DomainBase#cloneProjectedAtTime} which handles implicit server approvals.
    */
   @Override
@@ -144,34 +146,38 @@ public final class DomainTransferApproveFlow implements TransactionalFlow {
       // then the gaining registrar is not charged for the one year renewal and the losing registrar
       // still needs to be charged for the auto-renew.
       if (billingEvent.isPresent()) {
-        ofy().save().entity(
-            BillingEvent.Cancellation.forGracePeriod(autorenewGrace, historyEntry, targetId));
+        ofy()
+            .save()
+            .entity(
+                BillingEvent.Cancellation.forGracePeriod(autorenewGrace, historyEntry, targetId));
       }
     }
     // Close the old autorenew event and poll message at the transfer time (aka now). This may end
     // up deleting the poll message.
     updateAutorenewRecurrenceEndTime(existingDomain, now);
-    DateTime newExpirationTime = extendRegistrationWithCap(
-        now, existingDomain.getRegistrationExpirationTime(), extraYears);
+    DateTime newExpirationTime =
+        extendRegistrationWithCap(now, existingDomain.getRegistrationExpirationTime(), extraYears);
     // Create a new autorenew event starting at the expiration time.
-    BillingEvent.Recurring autorenewEvent = new BillingEvent.Recurring.Builder()
-        .setReason(Reason.RENEW)
-        .setFlags(ImmutableSet.of(Flag.AUTO_RENEW))
-        .setTargetId(targetId)
-        .setClientId(gainingClientId)
-        .setEventTime(newExpirationTime)
-        .setRecurrenceEndTime(END_OF_TIME)
-        .setParent(historyEntry)
-        .build();
+    BillingEvent.Recurring autorenewEvent =
+        new BillingEvent.Recurring.Builder()
+            .setReason(Reason.RENEW)
+            .setFlags(ImmutableSet.of(Flag.AUTO_RENEW))
+            .setTargetId(targetId)
+            .setClientId(gainingClientId)
+            .setEventTime(newExpirationTime)
+            .setRecurrenceEndTime(END_OF_TIME)
+            .setParent(historyEntry)
+            .build();
     // Create a new autorenew poll message.
-    PollMessage.Autorenew gainingClientAutorenewPollMessage = new PollMessage.Autorenew.Builder()
-        .setTargetId(targetId)
-        .setClientId(gainingClientId)
-        .setEventTime(newExpirationTime)
-        .setAutorenewEndTime(END_OF_TIME)
-        .setMsg("Domain was auto-renewed.")
-        .setParent(historyEntry)
-        .build();
+    PollMessage.Autorenew gainingClientAutorenewPollMessage =
+        new PollMessage.Autorenew.Builder()
+            .setTargetId(targetId)
+            .setClientId(gainingClientId)
+            .setEventTime(newExpirationTime)
+            .setAutorenewEndTime(END_OF_TIME)
+            .setMsg("Domain was auto-renewed.")
+            .setParent(historyEntry)
+            .build();
     // Construct the post-transfer domain.
     DomainBase partiallyApprovedDomain =
         approvePendingTransfer(existingDomain, TransferStatus.CLIENT_APPROVED, now);
@@ -199,11 +205,9 @@ public final class DomainTransferApproveFlow implements TransactionalFlow {
             .setLastEppUpdateClientId(clientId)
             .build();
     // Create a poll message for the gaining client.
-    PollMessage gainingClientPollMessage = createGainingTransferPollMessage(
-        targetId,
-        newDomain.getTransferData(),
-        newExpirationTime,
-        historyEntry);
+    PollMessage gainingClientPollMessage =
+        createGainingTransferPollMessage(
+            targetId, newDomain.getTransferData(), newExpirationTime, historyEntry);
     ImmutableSet.Builder<ImmutableObject> entitiesToSave = new ImmutableSet.Builder<>();
     entitiesToSave.add(
         newDomain,
@@ -217,8 +221,9 @@ public final class DomainTransferApproveFlow implements TransactionalFlow {
     // been implicitly server approved.
     ofy().delete().keys(existingDomain.getTransferData().getServerApproveEntities());
     return responseBuilder
-        .setResData(createTransferResponse(
-            targetId, newDomain.getTransferData(), newDomain.getRegistrationExpirationTime()))
+        .setResData(
+            createTransferResponse(
+                targetId, newDomain.getTransferData(), newDomain.getRegistrationExpirationTime()))
         .build();
   }
 
@@ -239,10 +244,10 @@ public final class DomainTransferApproveFlow implements TransactionalFlow {
             union(
                 cancelingRecords,
                 DomainTransactionRecord.create(
-                        existingDomain.getTld(),
-                        now.plus(registry.getTransferGracePeriodLength()),
-                        TRANSFER_SUCCESSFUL,
-                        1)))
+                    existingDomain.getTld(),
+                    now.plus(registry.getTransferGracePeriodLength()),
+                    TRANSFER_SUCCESSFUL,
+                    1)))
         .build();
   }
 }

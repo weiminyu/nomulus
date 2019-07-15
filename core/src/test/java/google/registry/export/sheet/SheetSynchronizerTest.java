@@ -157,9 +157,9 @@ public class SheetSynchronizerTest {
   public void testSynchronize_moreData_appendsValues() throws Exception {
     existingSheet.add(createRow("a", "b"));
     existingSheet.add(createRow("diffVal1", "diffVal2"));
-    data = ImmutableList.of(
-        ImmutableMap.of("a", "val1", "b", "val2"),
-        ImmutableMap.of("a", "val3", "b", "val4"));
+    data =
+        ImmutableList.of(
+            ImmutableMap.of("a", "val1", "b", "val2"), ImmutableMap.of("a", "val3", "b", "val4"));
     sheetSynchronizer.synchronize("aSheetId", data);
 
     verifyZeroInteractions(clearReq);
@@ -168,8 +168,7 @@ public class SheetSynchronizerTest {
     List<List<Object>> updatedVals = newArrayList();
     updatedVals.add(createRow("val1", "val2"));
     expectedRequest.setData(
-        newArrayList(
-            new ValueRange().setRange("Registrars!A2").setValues(updatedVals)));
+        newArrayList(new ValueRange().setRange("Registrars!A2").setValues(updatedVals)));
     expectedRequest.setValueInputOption("RAW");
     verify(values).batchUpdate("aSheetId", expectedRequest);
 

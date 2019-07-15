@@ -37,13 +37,13 @@ import java.util.Map;
  * the content to be displayed. The columns are:
  *
  * <ol>
- * <li>the URL path which maps to this action (with a "(*)" after it if the prefix flag is set)
- * <li>the simple name of the action class
- * <li>the allowable HTTP methods
- * <li>whether to automatically print "ok" in the response
- * <li>the allowable authentication methods
- * <li>the minimum authentication level
- * <li>the user policy
+ *   <li>the URL path which maps to this action (with a "(*)" after it if the prefix flag is set)
+ *   <li>the simple name of the action class
+ *   <li>the allowable HTTP methods
+ *   <li>whether to automatically print "ok" in the response
+ *   <li>the allowable authentication methods
+ *   <li>the minimum authentication level
+ *   <li>the user policy
  * </ol>
  *
  * <p>See the Auth class for more information about authentication settings.
@@ -56,8 +56,7 @@ public class RouterDisplayHelper {
   private static final String AUTH_METHODS = "authMethods";
   private static final String MINIMUM_LEVEL = "minLevel";
 
-  private static final String FORMAT =
-      "%%-%ds %%-%ds %%-%ds %%-2s %%-%ds %%-%ds %%s";
+  private static final String FORMAT = "%%-%ds %%-%ds %%-%ds %%-2s %%-%ds %%-%ds %%s";
 
   /** Returns a string representation of the routing map in the specified component. */
   public static String extractHumanReadableRoutesFromComponent(Class<?> componentClass) {
@@ -88,14 +87,7 @@ public class RouterDisplayHelper {
 
   private static String headerToString(String formatString) {
     return String.format(
-        formatString,
-        "PATH",
-        "CLASS",
-        "METHODS",
-        "OK",
-        "AUTH_METHODS",
-        "MIN",
-        "USER_POLICY");
+        formatString, "PATH", "CLASS", "METHODS", "OK", "AUTH_METHODS", "MIN", "USER_POLICY");
   }
 
   private static String routeToString(Route route, String formatString) {

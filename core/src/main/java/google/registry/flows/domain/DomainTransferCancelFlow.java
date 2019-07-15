@@ -80,7 +80,9 @@ public final class DomainTransferCancelFlow implements TransactionalFlow {
   @Inject @Superuser boolean isSuperuser;
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject DomainTransferCancelFlow() {}
+
+  @Inject
+  DomainTransferCancelFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -99,11 +101,13 @@ public final class DomainTransferCancelFlow implements TransactionalFlow {
     HistoryEntry historyEntry = buildHistoryEntry(existingDomain, registry, now);
     DomainBase newDomain =
         denyPendingTransfer(existingDomain, TransferStatus.CLIENT_CANCELLED, now, clientId);
-    ofy().save().<ImmutableObject>entities(
-        newDomain,
-        historyEntry,
-        createLosingTransferPollMessage(
-            targetId, newDomain.getTransferData(), null, historyEntry));
+    ofy()
+        .save()
+        .<ImmutableObject>entities(
+            newDomain,
+            historyEntry,
+            createLosingTransferPollMessage(
+                targetId, newDomain.getTransferData(), null, historyEntry));
     // Reopen the autorenew event and poll message that we closed for the implicit transfer. This
     // may recreate the autorenew poll message if it was deleted when the transfer request was made.
     updateAutorenewRecurrenceEndTime(existingDomain, END_OF_TIME);

@@ -31,10 +31,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class ConcurrentTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Test
   public void testTransform_emptyList_returnsEmptyList() {

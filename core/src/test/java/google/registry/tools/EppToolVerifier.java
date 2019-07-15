@@ -154,8 +154,7 @@ public class EppToolVerifier {
   public void verifyNoMoreSent() throws Exception {
     setArgumentsIfNeeded();
     assertThat(
-            capturedParams
-                .stream()
+            capturedParams.stream()
                 .skip(paramIndex)
                 .map(bytes -> new String(bytes, UTF_8))
                 .toArray())
@@ -177,9 +176,7 @@ public class EppToolVerifier {
   private String bytesToXml(byte[] bytes) throws Exception {
     checkState(clientId != null, "expectClientId must be called before any verifySent command");
     Map<String, String> map =
-        Splitter.on('&')
-        .withKeyValueSeparator('=')
-        .split(new String(bytes, UTF_8));
+        Splitter.on('&').withKeyValueSeparator('=').split(new String(bytes, UTF_8));
     assertThat(map).hasSize(4);
     assertThat(map).containsEntry("dryRun", Boolean.toString(dryRun));
     assertThat(map).containsEntry("clientId", clientId);

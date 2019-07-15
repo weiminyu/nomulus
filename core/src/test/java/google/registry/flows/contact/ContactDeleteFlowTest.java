@@ -128,7 +128,8 @@ public class ContactDeleteFlowTest
   private void doFailingStatusTest(StatusValue statusValue, Class<? extends EppException> exception)
       throws Exception {
     persistResource(
-        newContactResource(getUniqueIdFromCommand()).asBuilder()
+        newContactResource(getUniqueIdFromCommand())
+            .asBuilder()
             .setStatusValues(ImmutableSet.of(statusValue))
             .build());
     EppException thrown = assertThrows(exception, this::runFlow);
@@ -165,8 +166,7 @@ public class ContactDeleteFlowTest
   @Test
   public void testFailure_failfastWhenLinkedToDomain() throws Exception {
     createTld("tld");
-    persistResource(
-        newDomainBase("example.tld", persistActiveContact(getUniqueIdFromCommand())));
+    persistResource(newDomainBase("example.tld", persistActiveContact(getUniqueIdFromCommand())));
     EppException thrown = assertThrows(ResourceToDeleteIsReferencedException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
   }
@@ -174,8 +174,7 @@ public class ContactDeleteFlowTest
   @Test
   public void testFailure_failfastWhenLinkedToApplication() throws Exception {
     createTld("tld");
-    persistResource(
-        newDomainBase("example.tld", persistActiveContact(getUniqueIdFromCommand())));
+    persistResource(newDomainBase("example.tld", persistActiveContact(getUniqueIdFromCommand())));
     EppException thrown = assertThrows(ResourceToDeleteIsReferencedException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
   }

@@ -26,7 +26,7 @@ public class CidrAddressBlockTranslatorFactory
 
   @Override
   SimpleTranslator<CidrAddressBlock, String> createTranslator() {
-    return new SimpleTranslator<CidrAddressBlock, String>(){
+    return new SimpleTranslator<CidrAddressBlock, String>() {
       @Override
       public CidrAddressBlock loadValue(String datastoreValue) {
         return CidrAddressBlock.create(datastoreValue);
@@ -35,6 +35,7 @@ public class CidrAddressBlockTranslatorFactory
       @Override
       public String saveValue(CidrAddressBlock pojoValue) {
         return pojoValue.toString();
-      }};
+      }
+    };
   }
 }

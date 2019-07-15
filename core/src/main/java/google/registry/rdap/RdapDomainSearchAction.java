@@ -61,9 +61,8 @@ import javax.inject.Inject;
  *     (RDAP) Query Format</a>
  * @see <a href="http://tools.ietf.org/html/rfc7483">RFC 7483: JSON Responses for the Registration
  *     Data Access Protocol (RDAP)</a>
- *
- * TODO(guyben):This isn't required by the RDAP Technical Implementation Guide, and hence should be
- * deleted, at least until it's actually required.
+ *     <p>TODO(guyben):This isn't required by the RDAP Technical Implementation Guide, and hence
+ *     should be deleted, at least until it's actually required.
  */
 @Action(
     service = Action.Service.PUBAPI,
@@ -74,15 +73,24 @@ public class RdapDomainSearchAction extends RdapSearchActionBase {
 
   static final int RESULT_SET_SIZE_SCALING_FACTOR = 30;
 
-  @NonFinalForTesting
-  static int maxNameserversInFirstStage = 300;
+  @NonFinalForTesting static int maxNameserversInFirstStage = 300;
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  @Inject @Parameter("name") Optional<String> nameParam;
-  @Inject @Parameter("nsLdhName") Optional<String> nsLdhNameParam;
-  @Inject @Parameter("nsIp") Optional<String> nsIpParam;
-  @Inject public RdapDomainSearchAction() {
+  @Inject
+  @Parameter("name")
+  Optional<String> nameParam;
+
+  @Inject
+  @Parameter("nsLdhName")
+  Optional<String> nsLdhNameParam;
+
+  @Inject
+  @Parameter("nsIp")
+  Optional<String> nsIpParam;
+
+  @Inject
+  public RdapDomainSearchAction() {
     super("domain search", EndpointType.DOMAINS);
   }
 
@@ -179,9 +187,7 @@ public class RdapDomainSearchAction extends RdapSearchActionBase {
     Optional<DomainBase> domainBase =
         loadByForeignKey(DomainBase.class, partialStringQuery.getInitialString(), getRequestTime());
     return makeSearchResults(
-        shouldBeVisible(domainBase)
-            ? ImmutableList.of(domainBase.get())
-            : ImmutableList.of());
+        shouldBeVisible(domainBase) ? ImmutableList.of(domainBase.get()) : ImmutableList.of());
   }
 
   /** Searches for domains by domain name with an initial string, wildcard and possible suffix. */
@@ -221,11 +227,7 @@ public class RdapDomainSearchAction extends RdapSearchActionBase {
     // searchByDomainNameWithInitialString, unable to perform an inequality query on deletion time.
     // Don't use queryItems, because it doesn't handle pending deletes.
     int querySizeLimit = RESULT_SET_SIZE_SCALING_FACTOR * rdapResultSetMaxSize;
-    Query<DomainBase> query =
-        ofy()
-            .load()
-            .type(DomainBase.class)
-            .filter("tld", tld);
+    Query<DomainBase> query = ofy().load().type(DomainBase.class).filter("tld", tld);
     if (cursorString.isPresent()) {
       query = query.filter("fullyQualifiedDomainName >", cursorString.get());
     }
@@ -418,18 +420,15 @@ public class RdapDomainSearchAction extends RdapSearchActionBase {
     // and fetch all domains, to make sure that we can return the first domains in alphabetical
     // order.
     ImmutableSortedSet.Builder<DomainBase> domainSetBuilder =
-        ImmutableSortedSet.orderedBy(
-            Comparator.comparing(DomainBase::getFullyQualifiedDomainName));
+        ImmutableSortedSet.orderedBy(Comparator.comparing(DomainBase::getFullyQualifiedDomainName));
     int numHostKeysSearched = 0;
     for (List<Key<HostResource>> chunk : Iterables.partition(hostKeys, 30)) {
       numHostKeysSearched += chunk.size();
-      Query<DomainBase> query = ofy().load()
-          .type(DomainBase.class)
-          .filter("nsHosts in", chunk);
+      Query<DomainBase> query = ofy().load().type(DomainBase.class).filter("nsHosts in", chunk);
       if (!shouldIncludeDeleted()) {
         query = query.filter("deletionTime >", getRequestTime());
-      // If we are not performing an inequality query, we can filter on the cursor in the query.
-      // Otherwise, we will need to filter the results afterward.
+        // If we are not performing an inequality query, we can filter on the cursor in the query.
+        // Otherwise, we will need to filter the results afterward.
       } else if (cursorString.isPresent()) {
         query = query.filter("fullyQualifiedDomainName >", cursorString.get());
       }
@@ -483,8 +482,7 @@ public class RdapDomainSearchAction extends RdapSearchActionBase {
     OutputDataType outputDataType =
         (domains.size() > 1) ? OutputDataType.SUMMARY : OutputDataType.FULL;
     DomainSearchResponse.Builder builder =
-        DomainSearchResponse.builder()
-            .setIncompletenessWarningType(incompletenessWarningType);
+        DomainSearchResponse.builder().setIncompletenessWarningType(incompletenessWarningType);
     Optional<String> newCursor = Optional.empty();
     for (DomainBase domain : Iterables.limit(domains, rdapResultSetMaxSize)) {
       newCursor = Optional.of(domain.getFullyQualifiedDomainName());

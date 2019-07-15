@@ -87,13 +87,15 @@ public class ShellCommandTest {
       CommandRunner commandRunner, Duration delay, String... commands) throws Exception {
     ArrayDeque<String> queue = new ArrayDeque<String>(ImmutableList.copyOf(commands));
     BufferedReader bufferedReader = mock(BufferedReader.class);
-    when(bufferedReader.readLine()).thenAnswer((x) -> {
-      clock.advanceBy(delay);
-      if (queue.isEmpty()) {
-        throw new IOException();
-      }
-      return queue.poll();
-    });
+    when(bufferedReader.readLine())
+        .thenAnswer(
+            (x) -> {
+              clock.advanceBy(delay);
+              if (queue.isEmpty()) {
+                throw new IOException();
+              }
+              return queue.poll();
+            });
     return new ShellCommand(bufferedReader, clock, commandRunner);
   }
 
@@ -183,9 +185,7 @@ public class ShellCommandTest {
   }
 
   private void performJCommanderCompletorTest(
-      String line,
-      int expectedBackMotion,
-      String... expectedCompletions) {
+      String line, int expectedBackMotion, String... expectedCompletions) {
     JCommander jcommander = new JCommander();
     jcommander.setProgramName("test");
     jcommander.addCommand("help", new HelpCommand(jcommander));
@@ -353,15 +353,13 @@ public class ShellCommandTest {
     }
 
     @Parameter(
-      names = {"-x", "--xparam"},
-      description = "test parameter"
-    )
+        names = {"-x", "--xparam"},
+        description = "test parameter")
     String xparam = "default value";
 
     @Parameter(
-      names = {"--xorg"},
-      description = "test organization"
-    )
+        names = {"--xorg"},
+        description = "test organization")
     OrgType orgType = OrgType.PRIVATE;
 
     // List for recording command invocations by run().

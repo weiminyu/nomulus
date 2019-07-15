@@ -58,11 +58,12 @@ public class TimedTransitionPropertyTest {
     }
   }
 
-  private static final ImmutableSortedMap<DateTime, String> values = ImmutableSortedMap.of(
-      START_OF_TIME, "0",
-      DATE_1, "1",
-      DATE_2, "2",
-      DATE_3, "3");
+  private static final ImmutableSortedMap<DateTime, String> values =
+      ImmutableSortedMap.of(
+          START_OF_TIME, "0",
+          DATE_1, "1",
+          DATE_2, "2",
+          DATE_3, "3");
 
   TimedTransitionProperty<String, StringTimedTransition> timedString;
 

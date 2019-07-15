@@ -27,13 +27,12 @@ import org.joda.money.CurrencyUnit;
  * response to EPP domain check commands.
  */
 @XmlRootElement(name = "chkData")
-public class FeeCheckResponseExtensionV11
-    extends ImmutableObject implements FeeCheckResponseExtension<FeeCheckResponseExtensionItemV11> {
+public class FeeCheckResponseExtensionV11 extends ImmutableObject
+    implements FeeCheckResponseExtension<FeeCheckResponseExtensionItemV11> {
 
   /** Check responses. */
   @XmlElement(name = "cd")
   ImmutableList<FeeCheckResponseExtensionItemV11> items;
-
 
   @Override
   public void setCurrencyIfSupported(CurrencyUnit currency) {}
@@ -44,8 +43,8 @@ public class FeeCheckResponseExtensionV11
     return items;
   }
 
-  static FeeCheckResponseExtensionV11
-      create(ImmutableList<FeeCheckResponseExtensionItemV11> items) {
+  static FeeCheckResponseExtensionV11 create(
+      ImmutableList<FeeCheckResponseExtensionItemV11> items) {
     FeeCheckResponseExtensionV11 instance = new FeeCheckResponseExtensionV11();
     instance.items = items;
     return instance;

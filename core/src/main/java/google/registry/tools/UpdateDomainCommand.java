@@ -61,25 +61,23 @@ final class UpdateDomainCommand extends CreateOrUpdateDomainCommand {
   private Set<String> addNameservers = new HashSet<>();
 
   @Parameter(
-    names = "--add_admins",
-    description = "Admins to add. Cannot be set if --admins is set."
-  )
+      names = "--add_admins",
+      description = "Admins to add. Cannot be set if --admins is set.")
   private List<String> addAdmins = new ArrayList<>();
 
   @Parameter(names = "--add_techs", description = "Techs to add. Cannot be set if --techs is set.")
   private List<String> addTechs = new ArrayList<>();
 
   @Parameter(
-    names = "--add_statuses",
-    description = "Statuses to add. Cannot be set if --statuses is set."
-  )
+      names = "--add_statuses",
+      description = "Statuses to add. Cannot be set if --statuses is set.")
   private List<String> addStatuses = new ArrayList<>();
 
   @Parameter(
-    names = "--add_ds_records",
-    description = "DS records to add. Cannot be set if --ds_records or --clear_ds_records is set.",
-    converter = DsRecordConverter.class
-  )
+      names = "--add_ds_records",
+      description =
+          "DS records to add. Cannot be set if --ds_records or --clear_ds_records is set.",
+      converter = DsRecordConverter.class)
   private List<DsRecord> addDsRecords = new ArrayList<>();
 
   @Parameter(
@@ -92,36 +90,30 @@ final class UpdateDomainCommand extends CreateOrUpdateDomainCommand {
   private Set<String> removeNameservers = new HashSet<>();
 
   @Parameter(
-    names = "--remove_admins",
-    description = "Admins to remove. Cannot be set if --admins is set."
-  )
+      names = "--remove_admins",
+      description = "Admins to remove. Cannot be set if --admins is set.")
   private List<String> removeAdmins = new ArrayList<>();
 
   @Parameter(
-    names = "--remove_techs",
-    description = "Techs to remove. Cannot be set if --techs is set."
-  )
+      names = "--remove_techs",
+      description = "Techs to remove. Cannot be set if --techs is set.")
   private List<String> removeTechs = new ArrayList<>();
 
   @Parameter(
-    names = "--remove_statuses",
-    description = "Statuses to remove. Cannot be set if --statuses is set."
-  )
+      names = "--remove_statuses",
+      description = "Statuses to remove. Cannot be set if --statuses is set.")
   private List<String> removeStatuses = new ArrayList<>();
 
   @Parameter(
-    names = "--remove_ds_records",
-    description =
-        "DS records to remove. Cannot be set if --ds_records or --clear_ds_records is set.",
-    converter = DsRecordConverter.class
-  )
+      names = "--remove_ds_records",
+      description =
+          "DS records to remove. Cannot be set if --ds_records or --clear_ds_records is set.",
+      converter = DsRecordConverter.class)
   private List<DsRecord> removeDsRecords = new ArrayList<>();
 
   @Parameter(
-    names = "--clear_ds_records",
-    description =
-        "removes all DS records. Is implied true if --ds_records is set."
-  )
+      names = "--clear_ds_records",
+      description = "removes all DS records. Is implied true if --ds_records is set.")
   boolean clearDsRecords = false;
 
   @Override
@@ -151,7 +143,7 @@ final class UpdateDomainCommand extends CreateOrUpdateDomainCommand {
               + "you cannot use the add_statuses and remove_statuses flags.");
     }
 
-    if (!dsRecords.isEmpty() || clearDsRecords){
+    if (!dsRecords.isEmpty() || clearDsRecords) {
       checkArgument(
           addDsRecords.isEmpty() && removeDsRecords.isEmpty(),
           "If you provide the ds_records or clear_ds_records flags, "
@@ -173,8 +165,7 @@ final class UpdateDomainCommand extends CreateOrUpdateDomainCommand {
 
       if (!nameservers.isEmpty() || !admins.isEmpty() || !techs.isEmpty() || !statuses.isEmpty()) {
         DateTime now = DateTime.now(UTC);
-        Optional<DomainBase> domainOptional =
-            loadByForeignKey(DomainBase.class, domain, now);
+        Optional<DomainBase> domainOptional = loadByForeignKey(DomainBase.class, domain, now);
         checkArgumentPresent(domainOptional, "Domain '%s' does not exist or is deleted", domain);
         DomainBase domainBase = domainOptional.get();
         checkArgument(
@@ -291,9 +282,7 @@ final class UpdateDomainCommand extends CreateOrUpdateDomainCommand {
 
   ImmutableSet<String> getContactsOfType(
       DomainBase domainBase, final DesignatedContact.Type contactType) {
-    return domainBase
-        .getContacts()
-        .stream()
+    return domainBase.getContacts().stream()
         .filter(contact -> contact.getType().equals(contactType))
         .map(contact -> ofy().load().key(contact.getContactKey()).now().getContactId())
         .collect(toImmutableSet());

@@ -28,6 +28,7 @@ public final class DomainNameUtils {
 
   /** Prefix for unicode domain name parts. */
   public static final String ACE_PREFIX = "xn--";
+
   public static final String ACE_PREFIX_REGEX = "^xn--";
 
   /** Checks whether "name" is a strict subdomain of "potentialParent". */
@@ -35,7 +36,8 @@ public final class DomainNameUtils {
     int numNameParts = name.parts().size();
     int numParentParts = potentialParent.parts().size();
     return numNameParts > numParentParts
-        && name.parts().subList(numNameParts - numParentParts, numNameParts)
+        && name.parts()
+            .subList(numNameParts - numParentParts, numNameParts)
             .equals(potentialParent.parts());
   }
 
@@ -57,8 +59,8 @@ public final class DomainNameUtils {
    *
    * <p>This function is compatible with multi-part tlds, e.g. {@code co.uk}. This function will
    * also work on domains for which the registry is not authoritative. If you are certain that the
-   * input will be under a TLD this registry controls, then it is preferable to use
-   * {@link google.registry.model.registry.Registries#findTldForName(InternetDomainName)
+   * input will be under a TLD this registry controls, then it is preferable to use {@link
+   * google.registry.model.registry.Registries#findTldForName(InternetDomainName)
    * Registries#findTldForName}, which will work on hostnames in addition to domains.
    *
    * @param fullyQualifiedDomainName must be a punycode SLD (not a host or unicode)
@@ -95,15 +97,12 @@ public final class DomainNameUtils {
    *     under the tld
    */
   public static String getSecondLevelDomain(String hostName, String tld) {
-    checkArgument(
-        !Strings.isNullOrEmpty(hostName),
-        "hostName cannot be null or empty");
+    checkArgument(!Strings.isNullOrEmpty(hostName), "hostName cannot be null or empty");
     checkArgument(!Strings.isNullOrEmpty(tld), "tld cannot be null or empty");
     ImmutableList<String> domainParts = InternetDomainName.from(hostName).parts();
     ImmutableList<String> tldParts = InternetDomainName.from(tld).parts();
     checkArgument(
-        domainParts.size() > tldParts.size(),
-        "hostName must be at least one level below the tld");
+        domainParts.size() > tldParts.size(), "hostName must be at least one level below the tld");
     checkArgument(
         domainParts
             .subList(domainParts.size() - tldParts.size(), domainParts.size())

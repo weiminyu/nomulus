@@ -73,8 +73,8 @@ public class DomainTransactionRecord extends ImmutableObject implements Buildabl
    * The field added to by reportAmount within the transaction report.
    *
    * <p>The reportField specifies which column the reportAmount contributes to in the overall
-   * report. ICANN wants a column for every add/renew broken down by number of years, so we have
-   * the NET_ADDS_#_YR and NET_RENEWS_#_YR boilerplate to facilitate report generation.
+   * report. ICANN wants a column for every add/renew broken down by number of years, so we have the
+   * NET_ADDS_#_YR and NET_RENEWS_#_YR boilerplate to facilitate report generation.
    */
   public enum TransactionReportField {
     NET_ADDS_1_YR,
@@ -225,8 +225,7 @@ public class DomainTransactionRecord extends ImmutableObject implements Buildabl
     public DomainTransactionRecord build() {
       checkArgumentNotNull(getInstance().reportingTime, "reportingTime must be set");
       checkArgumentNotNull(getInstance().tld, "tld must be set");
-      checkArgumentNotNull(
-          getInstance().reportField, "reportField must be set");
+      checkArgumentNotNull(getInstance().reportField, "reportField must be set");
       checkArgumentNotNull(getInstance().reportAmount, "reportAmount must be set");
       return super.build();
     }

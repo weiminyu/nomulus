@@ -62,8 +62,13 @@ public final class ContactCreateFlow implements TransactionalFlow {
   @Inject @TargetId String targetId;
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject @Config("contactAndHostRoidSuffix") String roidSuffix;
-  @Inject ContactCreateFlow() {}
+
+  @Inject
+  @Config("contactAndHostRoidSuffix")
+  String roidSuffix;
+
+  @Inject
+  ContactCreateFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -92,13 +97,15 @@ public final class ContactCreateFlow implements TransactionalFlow {
     historyBuilder
         .setType(HistoryEntry.Type.CONTACT_CREATE)
         .setModificationTime(now)
-        .setXmlBytes(null)  // We don't want to store contact details in the history entry.
+        .setXmlBytes(null) // We don't want to store contact details in the history entry.
         .setParent(Key.create(newContact));
-    ofy().save().entities(
-        newContact,
-        historyBuilder.build(),
-        ForeignKeyIndex.create(newContact, newContact.getDeletionTime()),
-        EppResourceIndex.create(Key.create(newContact)));
+    ofy()
+        .save()
+        .entities(
+            newContact,
+            historyBuilder.build(),
+            ForeignKeyIndex.create(newContact, newContact.getDeletionTime()),
+            EppResourceIndex.create(Key.create(newContact)));
     return responseBuilder
         .setResData(ContactCreateData.create(newContact.getContactId(), now))
         .build();

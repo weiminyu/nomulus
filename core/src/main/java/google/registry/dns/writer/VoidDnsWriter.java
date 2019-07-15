@@ -27,8 +27,8 @@ import javax.inject.Inject;
 public final class VoidDnsWriter extends BaseDnsWriter {
 
   /**
-   * The name of the pricing engine, as used in {@code Registry.dnsWriter}. Remember to change
-   * the value on affected Registry objects to prevent runtime failures.
+   * The name of the pricing engine, as used in {@code Registry.dnsWriter}. Remember to change the
+   * value on affected Registry objects to prevent runtime failures.
    */
   public static final String NAME = "VoidDnsWriter";
 

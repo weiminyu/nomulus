@@ -102,10 +102,7 @@ public class RdapMetrics {
   static final IncrementableMetric requests =
       MetricRegistryImpl.getDefault()
           .newIncrementableMetric(
-              "/rdap/requests",
-              "Count of RDAP Requests",
-              "count",
-              LABEL_DESCRIPTORS_FOR_REQUESTS);
+              "/rdap/requests", "Count of RDAP Requests", "count", LABEL_DESCRIPTORS_FOR_REQUESTS);
 
   @VisibleForTesting
   static final IncrementableMetric responses =
@@ -163,8 +160,7 @@ public class RdapMetrics {
    * ways of looking at the data, since cardinality constraints prevent us from saving all the
    * information in a single metric.
    */
-  public void updateMetrics(
-      RdapMetricInformation rdapMetricInformation) {
+  public void updateMetrics(RdapMetricInformation rdapMetricInformation) {
     requests.increment(
         rdapMetricInformation.endpointType().toString(),
         rdapMetricInformation.includeDeleted() ? "YES" : "NO",

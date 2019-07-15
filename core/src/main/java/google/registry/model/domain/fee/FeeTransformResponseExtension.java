@@ -42,8 +42,7 @@ public class FeeTransformResponseExtension extends ImmutableObject implements Re
   List<Fee> fees;
 
   /** This field is exposed to JAXB only via the getter so that subclasses can override it. */
-  @XmlTransient
-  List<Credit> credits;
+  @XmlTransient List<Credit> credits;
 
   @XmlElement(name = "credit")
   public ImmutableList<Credit> getCredits() {

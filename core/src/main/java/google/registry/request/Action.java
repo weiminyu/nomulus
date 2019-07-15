@@ -26,7 +26,11 @@ import java.lang.annotation.Target;
 public @interface Action {
 
   /** HTTP methods recognized by the request processor. */
-  enum Method { GET, HEAD, POST }
+  enum Method {
+    GET,
+    HEAD,
+    POST
+  }
 
   /** App Engine services supported by the request processor. */
   enum Service {

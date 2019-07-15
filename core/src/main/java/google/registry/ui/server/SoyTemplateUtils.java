@@ -66,8 +66,7 @@ public final class SoyTemplateUtils {
 
   /** Returns a memoized supplier of the thing you pass to {@code setCssRenamingMap()}. */
   public static Supplier<SoyCssRenamingMap> createCssRenamingMapSupplier(
-      final URL cssMap,
-      final URL cssMapDebug) {
+      final URL cssMap, final URL cssMapDebug) {
     return memoize(
         () -> {
           final ImmutableMap<String, String> renames = getCssRenames(cssMap, cssMapDebug);
@@ -85,7 +84,7 @@ public final class SoyTemplateUtils {
     try {
       switch (ConsoleDebug.get()) {
         case RAW:
-          return ImmutableMap.of();  // See firstNonNull() above for clarification.
+          return ImmutableMap.of(); // See firstNonNull() above for clarification.
         case DEBUG:
           return extractCssRenames(Resources.toString(cssMapDebug, UTF_8));
         default:
@@ -100,10 +99,12 @@ public final class SoyTemplateUtils {
    * Extract class name rewrites from a {@code .css.js} mapping file.
    *
    * <p>This is the file created when you pass {@code --css_renaming_output_file} to the Closure
-   * Stylesheets compiler. In order for this to work, {@code --output_renaming_map_format} should
-   * be {@code CLOSURE_COMPILED} or {@code CLOSURE_UNCOMPILED}.
+   * Stylesheets compiler. In order for this to work, {@code --output_renaming_map_format} should be
+   * {@code CLOSURE_COMPILED} or {@code CLOSURE_UNCOMPILED}.
    *
-   * <p>Here's an example of what the {@code .css.js} file looks like:<pre>
+   * <p>Here's an example of what the {@code .css.js} file looks like:
+   *
+   * <pre>
    *
    *   goog.setCssNameMapping({
    *     "nonLatin": "a",

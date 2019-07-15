@@ -66,14 +66,37 @@ public final class BrdaCopyAction implements Runnable {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   @Inject GcsUtils gcsUtils;
-  @Inject @Config("brdaBucket") String brdaBucket;
-  @Inject @Config("rdeBucket") String stagingBucket;
-  @Inject @Parameter(RequestParameters.PARAM_TLD) String tld;
-  @Inject @Parameter(RdeModule.PARAM_WATERMARK) DateTime watermark;
-  @Inject @Key("brdaReceiverKey") PGPPublicKey receiverKey;
-  @Inject @Key("brdaSigningKey") PGPKeyPair signingKey;
-  @Inject @Key("rdeStagingDecryptionKey") PGPPrivateKey stagingDecryptionKey;
-  @Inject BrdaCopyAction() {}
+
+  @Inject
+  @Config("brdaBucket")
+  String brdaBucket;
+
+  @Inject
+  @Config("rdeBucket")
+  String stagingBucket;
+
+  @Inject
+  @Parameter(RequestParameters.PARAM_TLD)
+  String tld;
+
+  @Inject
+  @Parameter(RdeModule.PARAM_WATERMARK)
+  DateTime watermark;
+
+  @Inject
+  @Key("brdaReceiverKey")
+  PGPPublicKey receiverKey;
+
+  @Inject
+  @Key("brdaSigningKey")
+  PGPKeyPair signingKey;
+
+  @Inject
+  @Key("rdeStagingDecryptionKey")
+  PGPPrivateKey stagingDecryptionKey;
+
+  @Inject
+  BrdaCopyAction() {}
 
   @Override
   public void run() {
@@ -98,11 +121,12 @@ public final class BrdaCopyAction implements Runnable {
         InputStream ghostrydeDecoder = Ghostryde.decoder(gcsInput, stagingDecryptionKey);
         OutputStream rydeOut = gcsUtils.openOutputStream(rydeFile);
         OutputStream sigOut = gcsUtils.openOutputStream(sigFile);
-        RydeEncoder rydeEncoder = new RydeEncoder.Builder()
-            .setRydeOutput(rydeOut, receiverKey)
-            .setSignatureOutput(sigOut, signingKey)
-            .setFileMetadata(prefix, xmlLength, watermark)
-            .build()) {
+        RydeEncoder rydeEncoder =
+            new RydeEncoder.Builder()
+                .setRydeOutput(rydeOut, receiverKey)
+                .setSignatureOutput(sigOut, signingKey)
+                .setFileMetadata(prefix, xmlLength, watermark)
+                .build()) {
       ByteStreams.copy(ghostrydeDecoder, rydeEncoder);
     }
   }

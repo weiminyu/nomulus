@@ -71,15 +71,25 @@ public final class IcannReportingUploadAction implements Runnable {
   @Config("reportingBucket")
   String reportingBucket;
 
-  @Inject @Parameter(PARAM_SUBDIR) String subdir;
+  @Inject
+  @Parameter(PARAM_SUBDIR)
+  String subdir;
 
   @Inject GcsUtils gcsUtils;
   @Inject IcannHttpReporter icannReporter;
   @Inject Retrier retrier;
   @Inject Response response;
-  @Inject @Config("gSuiteOutgoingEmailAddress") InternetAddress sender;
-  @Inject @Config("alertRecipientEmailAddress") InternetAddress recipient;
+
+  @Inject
+  @Config("gSuiteOutgoingEmailAddress")
+  InternetAddress sender;
+
+  @Inject
+  @Config("alertRecipientEmailAddress")
+  InternetAddress recipient;
+
   @Inject SendEmailService emailService;
+
   @Inject
   IcannReportingUploadAction() {}
 
@@ -116,9 +126,10 @@ public final class IcannReportingUploadAction implements Runnable {
   }
 
   private void emailUploadResults(ImmutableMap<String, Boolean> reportSummary) {
-    String subject = String.format(
-        "ICANN Monthly report upload summary: %d/%d succeeded",
-        reportSummary.values().stream().filter((b) -> b).count(), reportSummary.size());
+    String subject =
+        String.format(
+            "ICANN Monthly report upload summary: %d/%d succeeded",
+            reportSummary.values().stream().filter((b) -> b).count(), reportSummary.size());
     String body =
         String.format(
             "Report Filename - Upload status:\n%s",

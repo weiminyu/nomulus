@@ -43,9 +43,14 @@ public final class PgpHelper {
 
   /**
    * Narrowed key search requirements.
+   *
    * @see PgpHelper#lookupPublicKey
    */
-  public enum KeyRequirement { ENCRYPT, SIGN, ENCRYPT_SIGN }
+  public enum KeyRequirement {
+    ENCRYPT,
+    SIGN,
+    ENCRYPT_SIGN
+  }
 
   /** Converts {@code publicKey} to bytes. */
   public static byte[] convertPublicKeyToBytes(PGPPublicKey publicKey) {
@@ -83,8 +88,8 @@ public final class PgpHelper {
           return result.get();
         }
       }
-      throw new VerifyException(String.format(
-          "No public key (%s) found matching substring: %s", want, query));
+      throw new VerifyException(
+          String.format("No public key (%s) found matching substring: %s", want, query));
     } catch (PGPException e) {
       throw new VerifyException(String.format("Public key lookup failed for query: %s", query), e);
     }
@@ -104,14 +109,18 @@ public final class PgpHelper {
     PGPPublicKey publicKey = lookupPublicKey(publics, query, want);
     PGPPrivateKey privateKey;
     try {
-      PGPSecretKey secret = verifyNotNull(privates.getSecretKey(publicKey.getKeyID()),
-          "Keyring missing private key associated with public key id: %x (query '%s')",
-          publicKey.getKeyID(), query);
+      PGPSecretKey secret =
+          verifyNotNull(
+              privates.getSecretKey(publicKey.getKeyID()),
+              "Keyring missing private key associated with public key id: %x (query '%s')",
+              publicKey.getKeyID(),
+              query);
       // We do not support putting a password on the private key so we're just going to
       // put char[0] here.
-      privateKey = secret.extractPrivateKey(
-          new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider())
-              .build(new char[0]));
+      privateKey =
+          secret.extractPrivateKey(
+              new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider())
+                  .build(new char[0]));
     } catch (PGPException e) {
       throw new VerifyException(String.format("Could not load PGP private key for: %s", query), e);
     }
@@ -121,9 +130,9 @@ public final class PgpHelper {
   /**
    * Return appropriate key or subkey for given task from public key.
    *
-   * <p>Weirder older PGP public keys will actually have multiple keys. The main key will usually
-   * be sign-only in such situations. So you've gotta go digging in through the key packets and
-   * make sure you get the one that's valid for encryption, or whatever you want to do.
+   * <p>Weirder older PGP public keys will actually have multiple keys. The main key will usually be
+   * sign-only in such situations. So you've gotta go digging in through the key packets and make
+   * sure you get the one that's valid for encryption, or whatever you want to do.
    */
   public static Optional<PGPPublicKey> lookupPublicSubkey(
       PGPPublicKeyRing ring, KeyRequirement want) {

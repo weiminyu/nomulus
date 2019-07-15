@@ -62,8 +62,8 @@ public class WhoisAction implements Runnable {
   static final MediaType CONTENT_TYPE = MediaType.PLAIN_TEXT_UTF_8;
 
   /**
-   * As stated above, this is the low level interface intended for port 43, and as such, it
-   * always prefers ASCII.
+   * As stated above, this is the low level interface intended for port 43, and as such, it always
+   * prefers ASCII.
    */
   static final boolean PREFER_UNICODE = false;
 
@@ -72,7 +72,11 @@ public class WhoisAction implements Runnable {
   @Inject Response response;
   @Inject Retrier retrier;
   @Inject WhoisReader whoisReader;
-  @Inject @Config("whoisDisclaimer") String disclaimer;
+
+  @Inject
+  @Config("whoisDisclaimer")
+  String disclaimer;
+
   @Inject WhoisMetric.Builder metricBuilder;
   @Inject WhoisMetrics whoisMetrics;
 

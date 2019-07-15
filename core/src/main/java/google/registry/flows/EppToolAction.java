@@ -38,19 +38,32 @@ public class EppToolAction implements Runnable {
 
   public static final String PATH = "/_dr/epptool";
 
-  @Inject @Parameter("clientId") String clientId;
-  @Inject @Parameter("superuser") boolean isSuperuser;
-  @Inject @Parameter("dryRun") boolean isDryRun;
-  @Inject @Parameter("xml") String xml;
+  @Inject
+  @Parameter("clientId")
+  String clientId;
+
+  @Inject
+  @Parameter("superuser")
+  boolean isSuperuser;
+
+  @Inject
+  @Parameter("dryRun")
+  boolean isDryRun;
+
+  @Inject
+  @Parameter("xml")
+  String xml;
+
   @Inject EppRequestHandler eppRequestHandler;
-  @Inject EppToolAction() {}
+
+  @Inject
+  EppToolAction() {}
 
   @Override
   public void run() {
     eppRequestHandler.executeEpp(
         new StatelessRequestSessionMetadata(
-            clientId,
-            ProtocolDefinition.getVisibleServiceExtensionUris()),
+            clientId, ProtocolDefinition.getVisibleServiceExtensionUris()),
         new PasswordOnlyTransportCredentials(),
         EppRequestSource.TOOL,
         isDryRun,

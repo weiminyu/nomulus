@@ -44,9 +44,9 @@ import org.joda.time.DateTime;
  *
  * <p>The "gaining" registrar requests a transfer from the "losing" (aka current) registrar. The
  * losing registrar has a "transfer" time period to respond (by default five days) after which the
- * transfer is automatically approved. This flow can be used by the gaining or losing registrars
- * (or anyone with the correct authId) to see the status of a transfer, which may still be pending
- * or may have been approved, rejected, cancelled or implicitly approved by virtue of the transfer
+ * transfer is automatically approved. This flow can be used by the gaining or losing registrars (or
+ * anyone with the correct authId) to see the status of a transfer, which may still be pending or
+ * may have been approved, rejected, cancelled or implicitly approved by virtue of the transfer
  * period expiring.
  *
  * @error {@link google.registry.flows.ResourceFlowUtils.BadAuthInfoForResourceException}
@@ -63,11 +63,13 @@ public final class DomainTransferQueryFlow implements Flow {
   @Inject @TargetId String targetId;
   @Inject Clock clock;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject DomainTransferQueryFlow() {}
+
+  @Inject
+  DomainTransferQueryFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
-    extensionManager.validate();  // There are no legal extensions for this flow.
+    extensionManager.validate(); // There are no legal extensions for this flow.
     validateClientIsLoggedIn(clientId);
     DateTime now = clock.nowUtc();
     DomainBase domain = loadAndVerifyExistence(DomainBase.class, targetId, now);

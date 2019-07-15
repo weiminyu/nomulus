@@ -37,8 +37,7 @@ public class EnumToAttributeAdapter<E extends Enum<E> & EnumToAttributeAdapter.E
    * to deal with pure enums.
    */
   static class EnumShim {
-    @XmlAttribute
-    String s;
+    @XmlAttribute String s;
   }
 
   // Enums that can be unmarshalled from input can override this.

@@ -31,10 +31,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class ContactCommandTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private void doXmlRoundtripTest(String inputFilename) throws Exception {
     EppLoader eppLoader = new EppLoader(this, inputFilename);
@@ -43,9 +40,11 @@ public class ContactCommandTest {
     // is fine because we never marshal an input command... except for this test which verifies
     // roundtripping, so we hack the output here. Since the marshal step won't validate, we use
     // the non-validating lenient marshal, do the change, and then do the validate afterwards.
-    String marshaled = new String(marshalInput(eppLoader.getEpp(), LENIENT), UTF_8).replaceAll(
-        "<contact:name>(sh8013|sah8013|8013sah)</contact:name>",
-        "<contact:id>$1</contact:id>");
+    String marshaled =
+        new String(marshalInput(eppLoader.getEpp(), LENIENT), UTF_8)
+            .replaceAll(
+                "<contact:name>(sh8013|sah8013|8013sah)</contact:name>",
+                "<contact:id>$1</contact:id>");
     validateInput(marshaled);
     assertXmlEquals(eppLoader.getEppXml(), marshaled);
   }

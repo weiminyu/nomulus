@@ -67,7 +67,8 @@ public final class SyncGroupMembersAction implements Runnable {
       @Override
       protected void log(Throwable cause) {
         logger.atSevere().withCause(cause).log(message);
-      }};
+      }
+    };
 
     final int statusCode;
     final String message;
@@ -84,10 +85,16 @@ public final class SyncGroupMembersAction implements Runnable {
   }
 
   @Inject GroupsConnection groupsConnection;
-  @Inject @Config("gSuiteDomainName") String gSuiteDomainName;
+
+  @Inject
+  @Config("gSuiteDomainName")
+  String gSuiteDomainName;
+
   @Inject Response response;
   @Inject Retrier retrier;
-  @Inject SyncGroupMembersAction() {}
+
+  @Inject
+  SyncGroupMembersAction() {}
 
   private void sendResponse(Result result, @Nullable List<Throwable> causes) {
     nullToEmpty(causes).forEach(result::log);
@@ -104,8 +111,7 @@ public final class SyncGroupMembersAction implements Runnable {
     // Take the registrar's clientId, make it lowercase, and remove all characters that aren't
     // alphanumeric, hyphens, or underscores.
     return String.format(
-        "%s-%s-contacts@%s",
-        normalizeClientId(clientId), type.getDisplayName(), gSuiteDomainName);
+        "%s-%s-contacts@%s", normalizeClientId(clientId), type.getDisplayName(), gSuiteDomainName);
   }
 
   /**
@@ -175,12 +181,11 @@ public final class SyncGroupMembersAction implements Runnable {
       long totalAdded = 0;
       long totalRemoved = 0;
       for (final RegistrarContact.Type type : RegistrarContact.Type.values()) {
-        groupKey = getGroupEmailAddressForContactType(
-            registrar.getClientId(), type, gSuiteDomainName);
+        groupKey =
+            getGroupEmailAddressForContactType(registrar.getClientId(), type, gSuiteDomainName);
         Set<String> currentMembers = groupsConnection.getMembersOfGroup(groupKey);
         Set<String> desiredMembers =
-            registrarContacts
-                .stream()
+            registrarContacts.stream()
                 .filter(contact -> contact.getTypes().contains(type))
                 .map(RegistrarContact::getEmailAddress)
                 .collect(toImmutableSet());
@@ -198,8 +203,10 @@ public final class SyncGroupMembersAction implements Runnable {
           registrar.getClientId(), totalAdded, totalRemoved);
     } catch (IOException e) {
       // Package up exception and re-throw with attached additional relevant info.
-      String msg = String.format("Couldn't sync contacts for registrar %s to group %s",
-          registrar.getClientId(), groupKey);
+      String msg =
+          String.format(
+              "Couldn't sync contacts for registrar %s to group %s",
+              registrar.getClientId(), groupKey);
       throw new RuntimeException(msg, e);
     }
   }

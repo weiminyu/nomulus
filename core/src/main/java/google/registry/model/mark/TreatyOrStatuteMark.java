@@ -23,18 +23,20 @@ import javax.xml.bind.annotation.XmlType;
 import org.joda.time.DateTime;
 
 /** Information about a mark derived from a treaty or statute. */
-@XmlType(propOrder = {
-    "id",
-    "markName",
-    "markHolders",
-    "contacts",
-    "markProtections",
-    "labels",
-    "goodsAndServices",
-    "referenceNumber",
-    "protectionDate",
-    "title",
-    "executionDate"})
+@XmlType(
+    propOrder = {
+      "id",
+      "markName",
+      "markHolders",
+      "contacts",
+      "markProtections",
+      "labels",
+      "goodsAndServices",
+      "referenceNumber",
+      "protectionDate",
+      "title",
+      "executionDate"
+    })
 public class TreatyOrStatuteMark extends ProtectedMark {
 
   /** A list of countries and region of the country where the mark is protected. */

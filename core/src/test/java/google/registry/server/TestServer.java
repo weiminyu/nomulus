@@ -128,14 +128,15 @@ public final class TestServer {
   /** Stops the HTTP server. */
   public void stop() {
     try {
-      Void unusedReturnValue = SimpleTimeLimiter.create(newCachedThreadPool())
-          .callWithTimeout(
-              () -> {
-                server.stop();
-                return null;
-              },
-              SHUTDOWN_TIMEOUT_MS,
-              TimeUnit.MILLISECONDS);
+      Void unusedReturnValue =
+          SimpleTimeLimiter.create(newCachedThreadPool())
+              .callWithTimeout(
+                  () -> {
+                    server.stop();
+                    return null;
+                  },
+                  SHUTDOWN_TIMEOUT_MS,
+                  TimeUnit.MILLISECONDS);
     } catch (Exception e) {
       throwIfUnchecked(e);
       throw new RuntimeException(e);
@@ -160,8 +161,7 @@ public final class TestServer {
     context.addServlet(new ServletHolder(HealthzServlet.class), "/healthz");
     for (Map.Entry<String, Path> runfile : runfiles.entrySet()) {
       context.addServlet(
-          StaticResourceServlet.create(runfile.getKey(), runfile.getValue()),
-          runfile.getKey());
+          StaticResourceServlet.create(runfile.getKey(), runfile.getValue()), runfile.getKey());
     }
     for (Route route : routes) {
       context.addServlet(

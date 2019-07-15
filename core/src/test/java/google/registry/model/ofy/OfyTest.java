@@ -62,29 +62,27 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class OfyTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
   /** An entity to use in save and delete tests. */
   private HistoryEntry someObject;
 
   @Before
   public void init() {
     createTld("tld");
-    someObject = new HistoryEntry.Builder()
-        .setClientId("client id")
-        .setModificationTime(START_OF_TIME)
-        .setParent(persistActiveContact("parentContact"))
-        .setTrid(Trid.create("client", "server"))
-        .setXmlBytes("<xml></xml>".getBytes(UTF_8))
-        .build();
+    someObject =
+        new HistoryEntry.Builder()
+            .setClientId("client id")
+            .setModificationTime(START_OF_TIME)
+            .setParent(persistActiveContact("parentContact"))
+            .setTrid(Trid.create("client", "server"))
+            .setXmlBytes("<xml></xml>".getBytes(UTF_8))
+            .build();
     // This can't be initialized earlier because namespaces need the AppEngineRule to work.
   }
 
   private void doBackupGroupRootTimestampInversionTest(Runnable runnable) {
-    DateTime groupTimestamp = ofy().load().key(someObject.getParent()).now()
-        .getUpdateAutoTimestamp().getTimestamp();
+    DateTime groupTimestamp =
+        ofy().load().key(someObject.getParent()).now().getUpdateAutoTimestamp().getTimestamp();
     // Set the clock in Ofy to the same time as the backup group root's save time.
     Ofy ofy = new Ofy(new FakeClock(groupTimestamp));
     TimestampInversionException thrown =
@@ -179,11 +177,9 @@ public class OfyTest {
   @com.googlecode.objectify.annotation.Entity
   public static class LifecycleObject extends ImmutableObject {
 
-    @Parent
-    Key<?> parent = getCrossTldKey();
+    @Parent Key<?> parent = getCrossTldKey();
 
-    @Id
-    long id = 1;
+    @Id long id = 1;
 
     boolean onLoadCalled;
     boolean onSaveCalled;
@@ -221,119 +217,148 @@ public class OfyTest {
   /** Avoid regressions of b/21309102 where transaction time did not change on each retry. */
   @Test
   public void testTransact_getsNewTimestampOnEachTry() {
-    ofy().transact(new VoidWork() {
+    ofy()
+        .transact(
+            new VoidWork() {
 
-      DateTime firstAttemptTime;
+              DateTime firstAttemptTime;
 
-      @Override
-      public void vrun() {
-        if (firstAttemptTime == null) {
-          // Sleep a bit to ensure that the next attempt is at a new millisecond.
-          firstAttemptTime = ofy().getTransactionTime();
-          sleepUninterruptibly(10, MILLISECONDS);
-          throw new ConcurrentModificationException();
-        }
-        assertThat(ofy().getTransactionTime()).isGreaterThan(firstAttemptTime);
-      }});
+              @Override
+              public void vrun() {
+                if (firstAttemptTime == null) {
+                  // Sleep a bit to ensure that the next attempt is at a new millisecond.
+                  firstAttemptTime = ofy().getTransactionTime();
+                  sleepUninterruptibly(10, MILLISECONDS);
+                  throw new ConcurrentModificationException();
+                }
+                assertThat(ofy().getTransactionTime()).isGreaterThan(firstAttemptTime);
+              }
+            });
   }
 
   @Test
   public void testTransact_transientFailureException_retries() {
-    assertThat(ofy().transact(new Work<Integer>() {
+    assertThat(
+            ofy()
+                .transact(
+                    new Work<Integer>() {
 
-      int count = 0;
+                      int count = 0;
 
-      @Override
-      public Integer run() {
-        count++;
-        if (count == 3) {
-          return count;
-        }
-        throw new TransientFailureException("");
-      }})).isEqualTo(3);
+                      @Override
+                      public Integer run() {
+                        count++;
+                        if (count == 3) {
+                          return count;
+                        }
+                        throw new TransientFailureException("");
+                      }
+                    }))
+        .isEqualTo(3);
   }
 
   @Test
   public void testTransact_datastoreTimeoutException_noManifest_retries() {
-    assertThat(ofy().transact(new Work<Integer>() {
+    assertThat(
+            ofy()
+                .transact(
+                    new Work<Integer>() {
 
-      int count = 0;
+                      int count = 0;
 
-      @Override
-      public Integer run() {
-        // We don't write anything in this transaction, so there is no commit log manifest.
-        // Therefore it's always safe to retry since nothing got written.
-        count++;
-        if (count == 3) {
-          return count;
-        }
-        throw new DatastoreTimeoutException("");
-      }})).isEqualTo(3);
+                      @Override
+                      public Integer run() {
+                        // We don't write anything in this transaction, so there is no commit log
+                        // manifest.
+                        // Therefore it's always safe to retry since nothing got written.
+                        count++;
+                        if (count == 3) {
+                          return count;
+                        }
+                        throw new DatastoreTimeoutException("");
+                      }
+                    }))
+        .isEqualTo(3);
   }
 
   @Test
   public void testTransact_datastoreTimeoutException_manifestNotWrittenToDatastore_retries() {
-    assertThat(ofy().transact(new Work<Integer>() {
+    assertThat(
+            ofy()
+                .transact(
+                    new Work<Integer>() {
 
-      int count = 0;
+                      int count = 0;
 
-      @Override
-      public Integer run() {
-        // There will be something in the manifest now, but it won't be committed if we throw.
-        ofy().save().entity(someObject);
-        count++;
-        if (count == 3) {
-          return count;
-        }
-        throw new DatastoreTimeoutException("");
-      }})).isEqualTo(3);
+                      @Override
+                      public Integer run() {
+                        // There will be something in the manifest now, but it won't be committed if
+                        // we throw.
+                        ofy().save().entity(someObject);
+                        count++;
+                        if (count == 3) {
+                          return count;
+                        }
+                        throw new DatastoreTimeoutException("");
+                      }
+                    }))
+        .isEqualTo(3);
   }
 
   @Test
   public void testTransact_datastoreTimeoutException_manifestWrittenToDatastore_returnsSuccess() {
     // A work unit that throws if it is ever retried.
-    VoidWork work = new VoidWork() {
-      boolean firstCallToVrun = true;
+    VoidWork work =
+        new VoidWork() {
+          boolean firstCallToVrun = true;
 
-      @Override
-      public void vrun() {
-        if (firstCallToVrun) {
-          firstCallToVrun = false;
-          ofy().save().entity(someObject);
-          return;
-        }
-        fail("Shouldn't have retried.");
-      }};
+          @Override
+          public void vrun() {
+            if (firstCallToVrun) {
+              firstCallToVrun = false;
+              ofy().save().entity(someObject);
+              return;
+            }
+            fail("Shouldn't have retried.");
+          }
+        };
     // A commit logged work that throws on the first attempt to get its result.
-    CommitLoggedWork<Void> commitLoggedWork = new CommitLoggedWork<Void>(work, new SystemClock()) {
-      boolean firstCallToGetResult = true;
+    CommitLoggedWork<Void> commitLoggedWork =
+        new CommitLoggedWork<Void>(work, new SystemClock()) {
+          boolean firstCallToGetResult = true;
 
-      @Override
-      public Void getResult() {
-        if (firstCallToGetResult) {
-          firstCallToGetResult = false;
-          throw new DatastoreTimeoutException("");
-        }
-        return null;
-      }};
+          @Override
+          public Void getResult() {
+            if (firstCallToGetResult) {
+              firstCallToGetResult = false;
+              throw new DatastoreTimeoutException("");
+            }
+            return null;
+          }
+        };
     // Despite the DatastoreTimeoutException in the first call to getResult(), this should succeed
     // without retrying. If a retry is triggered, the test should fail due to the call to fail().
     ofy().transactCommitLoggedWork(commitLoggedWork);
   }
 
   void doReadOnlyRetryTest(final RuntimeException e) {
-    assertThat(ofy().transactNewReadOnly(new Work<Integer>() {
+    assertThat(
+            ofy()
+                .transactNewReadOnly(
+                    new Work<Integer>() {
 
-      int count = 0;
+                      int count = 0;
 
-      @Override
-      public Integer run() {
-        count++;
-        if (count == 3) {
-          return count;
-        }
-        throw e;
-      }})).isEqualTo(3);
+                      @Override
+                      public Integer run() {
+                        count++;
+                        if (count == 3) {
+                          return count;
+                        }
+                        throw e;
+                      }
+                    }))
+        .isEqualTo(3);
   }
 
   @Test
@@ -363,8 +388,7 @@ public class OfyTest {
   public void test_getBaseEntityClassFromEntityOrKey_subclassEntity() {
     DomainBase domain = DatastoreHelper.newDomainBase("test.tld");
     assertThat(getBaseEntityClassFromEntityOrKey(domain)).isEqualTo(DomainBase.class);
-    assertThat(getBaseEntityClassFromEntityOrKey(Key.create(domain)))
-        .isEqualTo(DomainBase.class);
+    assertThat(getBaseEntityClassFromEntityOrKey(Key.create(domain))).isEqualTo(DomainBase.class);
   }
 
   @Test

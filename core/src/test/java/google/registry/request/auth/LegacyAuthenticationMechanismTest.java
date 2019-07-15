@@ -41,11 +41,7 @@ import org.mockito.junit.MockitoRule;
 @RunWith(JUnit4.class)
 public final class LegacyAuthenticationMechanismTest {
 
-
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Rule public final MockitoRule mocks = MockitoJUnit.rule();
 

@@ -45,13 +45,9 @@ import org.junit.Rule;
 /** Common unit test code for actions inheriting {@link RdapActionBase}. */
 public abstract class RdapActionBaseTestCase<A extends RdapActionBase> {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   protected static final AuthResult AUTH_RESULT =
       AuthResult.create(
@@ -123,9 +119,7 @@ public abstract class RdapActionBaseTestCase<A extends RdapActionBase> {
     return response.getPayload();
   }
 
-  protected JsonObject generateExpectedJsonError(
-      String description,
-      int code) {
+  protected JsonObject generateExpectedJsonError(String description, int code) {
     String title;
     switch (code) {
       case 404:
@@ -149,9 +143,12 @@ public abstract class RdapActionBaseTestCase<A extends RdapActionBase> {
     }
     return RdapTestHelper.loadJsonFile(
         "rdap_error.json",
-        "DESCRIPTION", description,
-        "TITLE", title,
-        "CODE", String.valueOf(code));
+        "DESCRIPTION",
+        description,
+        "TITLE",
+        title,
+        "CODE",
+        String.valueOf(code));
   }
 
   protected static JsonFileBuilder jsonFileBuilder() {

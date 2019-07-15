@@ -25,9 +25,7 @@ import java.util.List;
 @Parameters(separators = " =", commandDescription = "Show host resource(s)")
 final class GetHostCommand extends GetEppResourceCommand {
 
-  @Parameter(
-      description = "Fully qualified host name(s)",
-      required = true)
+  @Parameter(description = "Fully qualified host name(s)", required = true)
   private List<String> mainParameters;
 
   @Override

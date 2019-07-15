@@ -72,16 +72,14 @@ public abstract class ForeignKeyIndex<E extends EppResource> extends BackupGroup
   @Entity
   public static class ForeignKeyHostIndex extends ForeignKeyIndex<HostResource> {}
 
-  static final ImmutableMap<
-          Class<? extends EppResource>, Class<? extends ForeignKeyIndex<?>>>
+  static final ImmutableMap<Class<? extends EppResource>, Class<? extends ForeignKeyIndex<?>>>
       RESOURCE_CLASS_TO_FKI_CLASS =
           ImmutableMap.of(
               ContactResource.class, ForeignKeyContactIndex.class,
               DomainBase.class, ForeignKeyDomainIndex.class,
               HostResource.class, ForeignKeyHostIndex.class);
 
-  @Id
-  String foreignKey;
+  @Id String foreignKey;
 
   /**
    * The deletion time of this {@link ForeignKeyIndex}.
@@ -89,8 +87,7 @@ public abstract class ForeignKeyIndex<E extends EppResource> extends BackupGroup
    * <p>This will generally be equal to the deletion time of {@link #topReference}. However, in the
    * case of a {@link HostResource} that was renamed, this field will hold the time of the rename.
    */
-  @Index
-  DateTime deletionTime;
+  @Index DateTime deletionTime;
 
   /**
    * The referenced resource.
@@ -140,15 +137,15 @@ public abstract class ForeignKeyIndex<E extends EppResource> extends BackupGroup
   /**
    * Loads a {@link Key} to an {@link EppResource} from Datastore by foreign key.
    *
-   * <p>Returns null if no foreign key index with this foreign key was ever created, or if the
-   * most recently created foreign key index was deleted before time "now". This method does not
-   * actually check that the referenced resource actually exists. However, for normal epp resources,
-   * it is safe to assume that the referenced resource exists if the foreign key index does.
+   * <p>Returns null if no foreign key index with this foreign key was ever created, or if the most
+   * recently created foreign key index was deleted before time "now". This method does not actually
+   * check that the referenced resource actually exists. However, for normal epp resources, it is
+   * safe to assume that the referenced resource exists if the foreign key index does.
    *
    * @param clazz the resource type to load
    * @param foreignKey id to match
    * @param now the current logical time to use when checking for soft deletion of the foreign key
-   *        index
+   *     index
    */
   @Nullable
   public static <E extends EppResource> Key<E> loadAndGetKey(
@@ -260,16 +257,14 @@ public abstract class ForeignKeyIndex<E extends EppResource> extends BackupGroup
       // This cast is safe because when we loaded ForeignKeyIndexes above we used type clazz, which
       // is scoped to E.
       @SuppressWarnings("unchecked")
-      Map<String, ForeignKeyIndex<E>> fkisFromCache = cacheForeignKeyIndexes
-          .getAll(fkiKeys)
-          .entrySet()
-          .stream()
-          .filter(entry -> entry.getValue().isPresent())
-          .filter(entry -> now.isBefore(entry.getValue().get().getDeletionTime()))
-          .collect(
-              ImmutableMap.toImmutableMap(
-                  entry -> entry.getKey().getName(),
-                  entry -> (ForeignKeyIndex<E>) entry.getValue().get()));
+      Map<String, ForeignKeyIndex<E>> fkisFromCache =
+          cacheForeignKeyIndexes.getAll(fkiKeys).entrySet().stream()
+              .filter(entry -> entry.getValue().isPresent())
+              .filter(entry -> now.isBefore(entry.getValue().get().getDeletionTime()))
+              .collect(
+                  ImmutableMap.toImmutableMap(
+                      entry -> entry.getKey().getName(),
+                      entry -> (ForeignKeyIndex<E>) entry.getValue().get()));
       return fkisFromCache;
     } catch (ExecutionException e) {
       throw new RuntimeException("Error loading cached ForeignKeyIndexes", e.getCause());

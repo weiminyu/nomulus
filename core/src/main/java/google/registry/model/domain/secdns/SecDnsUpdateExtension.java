@@ -37,8 +37,7 @@ public class SecDnsUpdateExtension extends ImmutableObject implements CommandExt
    * <p>We don't support urgent updates but we need this to be present to provide appropriate error
    * messages if a client requests it.
    */
-  @XmlAttribute
-  Boolean urgent;
+  @XmlAttribute Boolean urgent;
 
   /** Allows removing some or all delegations. */
   @XmlElement(name = "rem")

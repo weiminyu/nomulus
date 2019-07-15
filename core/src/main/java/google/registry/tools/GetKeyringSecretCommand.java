@@ -30,9 +30,8 @@ import org.bouncycastle.openpgp.PGPKeyPair;
 
 /** Retrieves ASCII-armored secrets from the active {@link Keyring} implementation. */
 @Parameters(
-  separators = " =",
-  commandDescription = "Retrieves the value of a secret from the keyring."
-)
+    separators = " =",
+    commandDescription = "Retrieves the value of a secret from the keyring.")
 final class GetKeyringSecretCommand implements CommandWithRemoteApi {
 
   @Inject Keyring keyring;
@@ -44,10 +43,9 @@ final class GetKeyringSecretCommand implements CommandWithRemoteApi {
   private KeyringKeyName keyringKeyName;
 
   @Parameter(
-    names = {"-o", "--output"},
-    description = "Name of output file for key data.",
-    validateWith = PathParameter.OutputFile.class
-  )
+      names = {"-o", "--output"},
+      description = "Name of output file for key data.",
+      validateWith = PathParameter.OutputFile.class)
   private Path outputPath = null;
 
   @Override
@@ -101,9 +99,10 @@ final class GetKeyringSecretCommand implements CommandWithRemoteApi {
       case RDE_STAGING_KEY_PAIR:
         // Note that we're saving a key pair rather than just the private key because we can't
         // serialize a private key on its own. See {@link KeySerializer}.
-        out.write(KeySerializer.serializeKeyPair(
-            new PGPKeyPair(
-                keyring.getRdeStagingEncryptionKey(), keyring.getRdeStagingDecryptionKey())));
+        out.write(
+            KeySerializer.serializeKeyPair(
+                new PGPKeyPair(
+                    keyring.getRdeStagingEncryptionKey(), keyring.getRdeStagingDecryptionKey())));
         break;
       case RDE_STAGING_PUBLIC_KEY:
         out.write(KeySerializer.serializePublicKey(keyring.getRdeStagingEncryptionKey()));

@@ -51,7 +51,9 @@ public final class EppController {
   @Inject EppMetric.Builder eppMetricBuilder;
   @Inject EppMetrics eppMetrics;
   @Inject ServerTridProvider serverTridProvider;
-  @Inject EppController() {}
+
+  @Inject
+  EppController() {}
 
   /** Reads EPP XML, executes the matching flow, and returns an {@link EppOutput}. */
   public EppOutput handleEppCommand(
@@ -99,17 +101,20 @@ public final class EppController {
           eppMetricBuilder.setTlds(extractTlds(eppInput.getTargetIds()));
         }
       }
-      EppOutput output = runFlowConvertEppErrors(flowComponentBuilder
-          .flowModule(new FlowModule.Builder()
-              .setSessionMetadata(sessionMetadata)
-              .setCredentials(credentials)
-              .setEppRequestSource(eppRequestSource)
-              .setIsDryRun(isDryRun)
-              .setIsSuperuser(isSuperuser)
-              .setInputXmlBytes(inputXmlBytes)
-              .setEppInput(eppInput)
-              .build())
-          .build());
+      EppOutput output =
+          runFlowConvertEppErrors(
+              flowComponentBuilder
+                  .flowModule(
+                      new FlowModule.Builder()
+                          .setSessionMetadata(sessionMetadata)
+                          .setCredentials(credentials)
+                          .setEppRequestSource(eppRequestSource)
+                          .setIsDryRun(isDryRun)
+                          .setIsSuperuser(isSuperuser)
+                          .setInputXmlBytes(inputXmlBytes)
+                          .setEppInput(eppInput)
+                          .build())
+                  .build());
       if (output.isResponse()) {
         eppMetricBuilder.setStatus(output.getResponse().getResult().getCode());
       }
@@ -143,9 +148,6 @@ public final class EppController {
   /** Creates a response indicating an EPP failure. */
   @VisibleForTesting
   static EppOutput getErrorResponse(Result result, Trid trid) {
-    return EppOutput.create(new EppResponse.Builder()
-        .setResult(result)
-        .setTrid(trid)
-        .build());
+    return EppOutput.create(new EppResponse.Builder().setResult(result).setTrid(trid).build());
   }
 }

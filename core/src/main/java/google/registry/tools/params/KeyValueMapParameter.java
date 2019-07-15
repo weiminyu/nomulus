@@ -23,11 +23,11 @@ import org.joda.money.CurrencyUnit;
 /**
  * Combined converter and validator class for key-value map JCommander argument strings.
  *
- * <p>These strings have the form {@code <K-str>=<V-str>,[<K-str>=<V-str>]*} where
- * {@code <K-str>} and {@code <V-str>} are strings that can be parsed into instances of some key
- * type {@code K} and value type {@code V}, respectively. This class converts a string into an
- * ImmutableMap mapping {@code K} to {@code V}. Validation and conversion share the same logic;
- * validation is just done by attempting conversion and throwing exceptions if need be.
+ * <p>These strings have the form {@code <K-str>=<V-str>,[<K-str>=<V-str>]*} where {@code <K-str>}
+ * and {@code <V-str>} are strings that can be parsed into instances of some key type {@code K} and
+ * value type {@code V}, respectively. This class converts a string into an ImmutableMap mapping
+ * {@code K} to {@code V}. Validation and conversion share the same logic; validation is just done
+ * by attempting conversion and throwing exceptions if need be.
  *
  * <p>Subclasses must implement parseKey() and parseValue() to define how to parse {@code <K-str>}
  * and {@code <V-str>} into {@code K} and {@code V}, respectively.

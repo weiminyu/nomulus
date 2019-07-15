@@ -37,9 +37,7 @@ public class CreateHostCommandTest extends EppToolCommandTestCase<CreateHostComm
   @Test
   public void testSuccess_minimal() throws Exception {
     // Test that each optional field can be omitted.
-    runCommandForced(
-        "--client=NewRegistrar",
-        "--host=notours.external");
+    runCommandForced("--client=NewRegistrar", "--host=notours.external");
     eppVerifier.verifySent("host_create_minimal.xml");
   }
 

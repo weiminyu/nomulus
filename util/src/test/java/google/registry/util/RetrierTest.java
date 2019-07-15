@@ -89,8 +89,7 @@ public class RetrierTest {
 
   @Test
   public void testRetrySucceeded() {
-    assertThat(retrier.callWithRetry(new CountingThrower(2), CountingException.class))
-        .isEqualTo(2);
+    assertThat(retrier.callWithRetry(new CountingThrower(2), CountingException.class)).isEqualTo(2);
   }
 
   @Test

@@ -28,7 +28,10 @@ import java.util.Map;
 public final class JsonResponseHelper {
 
   /** Possible results of an RPC operation. */
-  public enum Status { SUCCESS, ERROR }
+  public enum Status {
+    SUCCESS,
+    ERROR
+  }
 
   /** Creates a JSON response message securely to the browser client with a parser breaker. */
   public static ImmutableMap<String, Object> create(

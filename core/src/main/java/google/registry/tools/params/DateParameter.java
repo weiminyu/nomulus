@@ -32,8 +32,8 @@ public final class DateParameter extends ParameterConverterValidator<DateTime> {
   }
 
   /**
-   * Parser for DateTimes that permits only a restricted subset of ISO 8601 datetime syntax.
-   * The supported format is "YYYY-MM-DD", i.e. there must only be a complete date.
+   * Parser for DateTimes that permits only a restricted subset of ISO 8601 datetime syntax. The
+   * supported format is "YYYY-MM-DD", i.e. there must only be a complete date.
    */
   private static final DateTimeFormatter STRICT_DATE_PARSER =
       new DateTimeFormatter(null, ISODateTimeFormat.date().getParser());

@@ -76,16 +76,15 @@ public abstract class ComparingInvocationHandler<T> implements InvocationHandler
   /**
    * Implements toString for specific types.
    *
-   * <p>By default objects are logged using their .toString. If .toString isn't implemented for
-   * some relevant classes (or if we want to use a different version), override this method with
-   * the desired implementation.
+   * <p>By default objects are logged using their .toString. If .toString isn't implemented for some
+   * relevant classes (or if we want to use a different version), override this method with the
+   * desired implementation.
    *
    * @param method the method whose return value is given
    * @param object the object returned by a call to method
    */
   protected String stringifyResult(
-      @SuppressWarnings("unused") Method method,
-      @Nullable Object object) {
+      @SuppressWarnings("unused") Method method, @Nullable Object object) {
     return String.valueOf(object);
   }
 
@@ -101,9 +100,7 @@ public abstract class ComparingInvocationHandler<T> implements InvocationHandler
    * @param second the object returned by a call to method for the "second" implementation
    */
   protected boolean compareResults(
-      @SuppressWarnings("unused") Method method,
-      @Nullable Object actual,
-      @Nullable Object second) {
+      @SuppressWarnings("unused") Method method, @Nullable Object actual, @Nullable Object second) {
     return Objects.equals(actual, second);
   }
 
@@ -118,9 +115,7 @@ public abstract class ComparingInvocationHandler<T> implements InvocationHandler
    * @param second the exception thrown by a call to method for the "second" implementation
    */
   protected boolean compareThrown(
-      @SuppressWarnings("unused") Method method,
-      Throwable actual,
-      Throwable second) {
+      @SuppressWarnings("unused") Method method, Throwable actual, Throwable second) {
     return true;
   }
 
@@ -133,9 +128,7 @@ public abstract class ComparingInvocationHandler<T> implements InvocationHandler
    * @param method the method whose return value is given
    * @param throwable the exception thrown by a call to method
    */
-  protected String stringifyThrown(
-      @SuppressWarnings("unused") Method method,
-      Throwable throwable) {
+  protected String stringifyThrown(@SuppressWarnings("unused") Method method, Throwable throwable) {
     return throwable.toString();
   }
 
@@ -186,8 +179,7 @@ public abstract class ComparingInvocationHandler<T> implements InvocationHandler
             method,
             String.format(
                 "Got different results! '%s' vs '%s'",
-                stringifyResult(method, actualResult),
-                stringifyResult(method, secondResult)));
+                stringifyResult(method, actualResult), stringifyResult(method, secondResult)));
       }
     }
 

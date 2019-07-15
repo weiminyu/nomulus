@@ -71,9 +71,7 @@ public class Retrier implements Serializable {
    * @return <V> the value returned by the {@link Callable}.
    */
   private <V> V callWithRetry(
-      Callable<V> callable,
-      FailureReporter failureReporter,
-      Predicate<Throwable> isRetryable) {
+      Callable<V> callable, FailureReporter failureReporter, Predicate<Throwable> isRetryable) {
     int failures = 0;
     while (true) {
       try {

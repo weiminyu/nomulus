@@ -20,12 +20,11 @@ import javax.annotation.Detainted;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**
- * Exception thrown when a form is invalid.  Problems with a specific
- * form field should use {@link FormFieldException} instead.
+ * Exception thrown when a form is invalid. Problems with a specific form field should use {@link
+ * FormFieldException} instead.
  *
- * <p>You can safely throw {@code FormException} from within your form
- * validator, and the message will automatically be propagated to the
- * client form interface.
+ * <p>You can safely throw {@code FormException} from within your form validator, and the message
+ * will automatically be propagated to the client form interface.
  */
 @NotThreadSafe
 public class FormException extends RuntimeException {
@@ -43,7 +42,7 @@ public class FormException extends RuntimeException {
    * Creates a new {@link FormException}
    *
    * @param userMessage should be a friendly message that's safe to show to the user.
-   * @param cause the original cause of this exception.  May be null.
+   * @param cause the original cause of this exception. May be null.
    */
   public FormException(@Detainted String userMessage, Throwable cause) {
     super(checkNotNull(userMessage, "userMessage"), cause);

@@ -55,11 +55,11 @@ import org.joda.time.Duration;
  * <p>This includes a {@link RateLimiter} to limit the {@link Queue#leaseTasks} call rate to 9 QPS,
  * to stay under the 10 QPS limit for this function.
  *
- * <p>Note that overlapping calls to {@link ReadDnsQueueAction} (the only place where
- * {@link DnsQueue#leaseTasks} is used) will have different rate limiters, so they could exceed the
- * allowed rate. This should be rare though - because {@link DnsQueue#leaseTasks} is only used in
- * {@link ReadDnsQueueAction}, which is run as a cron job with running time shorter than the cron
- * repeat time - meaning there should never be two instances running at once.
+ * <p>Note that overlapping calls to {@link ReadDnsQueueAction} (the only place where {@link
+ * DnsQueue#leaseTasks} is used) will have different rate limiters, so they could exceed the allowed
+ * rate. This should be rare though - because {@link DnsQueue#leaseTasks} is only used in {@link
+ * ReadDnsQueueAction}, which is run as a cron job with running time shorter than the cron repeat
+ * time - meaning there should never be two instances running at once.
  *
  * @see google.registry.config.RegistryConfig.ConfigModule#provideReadDnsQueueRuntime
  */
@@ -99,9 +99,7 @@ public class DnsQueue {
     return new DnsQueue(getQueue(DNS_PULL_QUEUE_NAME), clock);
   }
 
-  @NonFinalForTesting
-  @VisibleForTesting
-  long leaseTasksBatchSize = QueueConstants.maxLeaseCount();
+  @NonFinalForTesting @VisibleForTesting long leaseTasksBatchSize = QueueConstants.maxLeaseCount();
 
   /** Enqueues the given task type with the given target name to the DNS queue. */
   private TaskHandle addToQueue(
@@ -119,13 +117,12 @@ public class DnsQueue {
             .param(PARAM_TLD, tld));
   }
 
-  /**
-   * Adds a task to the queue to refresh the DNS information for the specified subordinate host.
-   */
+  /** Adds a task to the queue to refresh the DNS information for the specified subordinate host. */
   public TaskHandle addHostRefreshTask(String fullyQualifiedHostName) {
     Optional<InternetDomainName> tld =
         Registries.findTldForName(InternetDomainName.from(fullyQualifiedHostName));
-    checkArgument(tld.isPresent(),
+    checkArgument(
+        tld.isPresent(),
         String.format("%s is not a subordinate host to a known tld", fullyQualifiedHostName));
     return addToQueue(TargetType.HOST, fullyQualifiedHostName, tld.get().toString(), Duration.ZERO);
   }

@@ -28,14 +28,13 @@ import org.joda.money.CurrencyUnit;
  */
 @XmlRootElement(name = "infData")
 @XmlType(propOrder = {"currency", "command", "period", "fees", "feeClass"})
-public class FeeInfoResponseExtensionV06
-    extends FeeQueryResponseExtensionItem implements ResponseExtension {
+public class FeeInfoResponseExtensionV06 extends FeeQueryResponseExtensionItem
+    implements ResponseExtension {
 
   CurrencyUnit currency;
 
   /** The command that was checked. */
   FeeExtensionCommandDescriptor command;
-
 
   /** Builder for {@link FeeInfoResponseExtensionV06}. */
   public static class Builder

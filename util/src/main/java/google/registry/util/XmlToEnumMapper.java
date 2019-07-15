@@ -29,9 +29,7 @@ public final class XmlToEnumMapper<T extends Enum<?>> {
     return map.get(value);
   }
 
-  /**
-   * Creates a new {@link XmlToEnumMapper} from xml value to enum value.
-   */
+  /** Creates a new {@link XmlToEnumMapper} from xml value to enum value. */
   public static <T extends Enum<?>> XmlToEnumMapper<T> create(T[] enumValues) {
     return new XmlToEnumMapper<>(enumValues);
   }
@@ -40,10 +38,8 @@ public final class XmlToEnumMapper<T extends Enum<?>> {
     ImmutableMap.Builder<String, T> mapBuilder = new ImmutableMap.Builder<>();
     for (T value : enumValues) {
       try {
-        XmlEnumValue xmlAnnotation = value
-            .getDeclaringClass()
-            .getField(value.name())
-            .getAnnotation(XmlEnumValue.class);
+        XmlEnumValue xmlAnnotation =
+            value.getDeclaringClass().getField(value.name()).getAnnotation(XmlEnumValue.class);
         checkArgumentNotNull(xmlAnnotation, "Cannot map enum value to xml name: " + value);
         String xmlName = xmlAnnotation.value();
         mapBuilder = mapBuilder.put(xmlName, value);

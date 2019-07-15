@@ -106,9 +106,7 @@ public class RenewDomainCommandTest extends EppToolCommandTestCase<RenewDomainCo
     persistDeletedDomain("deleted.tld", DateTime.parse("2012-10-05T05:05:05Z"));
     IllegalArgumentException e =
         assertThrows(IllegalArgumentException.class, () -> runCommandForced("deleted.tld"));
-    assertThat(e)
-        .hasMessageThat()
-        .isEqualTo("Domain 'deleted.tld' does not exist or is deleted");
+    assertThat(e).hasMessageThat().isEqualTo("Domain 'deleted.tld' does not exist or is deleted");
   }
 
   @Test
@@ -128,9 +126,7 @@ public class RenewDomainCommandTest extends EppToolCommandTestCase<RenewDomainCo
     IllegalArgumentException e =
         assertThrows(
             IllegalArgumentException.class, () -> runCommandForced("domain.tld", "--period 10"));
-    assertThat(e)
-        .hasMessageThat()
-        .isEqualTo("Cannot renew domains for 10 or more years");
+    assertThat(e).hasMessageThat().isEqualTo("Cannot renew domains for 10 or more years");
   }
 
   @Test

@@ -23,16 +23,16 @@ import org.joda.time.YearMonth;
  * <p>DNS systems may have different ways of providing this information, so it's useful to
  * modularize this.
  *
- * <p>Derived classes must provide a constructor that accepts a
- * {@link google.registry.reporting.icann.DnsCountQueryCoordinator.Params}.  To override this,
- * define dnsCountQueryCoordinatorClass in your config file.
+ * <p>Derived classes must provide a constructor that accepts a {@link
+ * google.registry.reporting.icann.DnsCountQueryCoordinator.Params}. To override this, define
+ * dnsCountQueryCoordinatorClass in your config file.
  */
 public interface DnsCountQueryCoordinator {
 
   /**
    * Class to carry parameters for a new coordinator.
    *
-   * If your report query requires any additional parameters, add them here.
+   * <p>If your report query requires any additional parameters, add them here.
    */
   class Params {
     public BigqueryConnection bigquery;

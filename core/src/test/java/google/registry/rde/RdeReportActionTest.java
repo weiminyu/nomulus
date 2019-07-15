@@ -78,13 +78,9 @@ public class RdeReportActionTest {
   private static final ByteSource REPORT_XML = RdeTestData.loadBytes("report.xml");
   private static final ByteSource IIRDEA_BAD_XML = RdeTestData.loadBytes("iirdea_bad.xml");
   private static final ByteSource IIRDEA_GOOD_XML = RdeTestData.loadBytes("iirdea_good.xml");
-  @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private final FakeResponse response = new FakeResponse();
   private final EscrowTaskRunner runner = mock(EscrowTaskRunner.class);
@@ -132,8 +128,9 @@ public class RdeReportActionTest {
     RdeReportAction action = createAction();
     action.tld = "lol";
     action.run();
-    verify(runner).lockRunAndRollForward(
-        action, Registry.get("lol"), standardSeconds(30), RDE_REPORT, standardDays(1));
+    verify(runner)
+        .lockRunAndRollForward(
+            action, Registry.get("lol"), standardSeconds(30), RDE_REPORT, standardDays(1));
     verifyNoMoreInteractions(runner);
   }
 
@@ -153,8 +150,7 @@ public class RdeReportActionTest {
     assertThat(request.getValue().getURL().getPath()).endsWith("/test/20101017001");
     Map<String, String> headers = mapifyHeaders(request.getValue().getHeaders());
     assertThat(headers).containsEntry("CONTENT_TYPE", "text/xml");
-    assertThat(headers)
-        .containsEntry("AUTHORIZATION", "Basic dGVzdF9yeTpmb28=");
+    assertThat(headers).containsEntry("AUTHORIZATION", "Basic dGVzdF9yeTpmb28=");
 
     // Verify the payload XML was the same as what's in testdata/report.xml.
     XjcRdeReportReport report = parseReport(request.getValue().getPayload());

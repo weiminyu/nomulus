@@ -28,9 +28,7 @@ public class DomainLookupCommand extends DomainOrHostLookupCommand {
   private final String whoisRedactedEmailText;
 
   public DomainLookupCommand(
-      InternetDomainName domainName,
-      boolean fullOutput,
-      String whoisRedactedEmailText) {
+      InternetDomainName domainName, boolean fullOutput, String whoisRedactedEmailText) {
     super(domainName, "Domain");
     this.fullOutput = fullOutput;
     this.whoisRedactedEmailText = whoisRedactedEmailText;

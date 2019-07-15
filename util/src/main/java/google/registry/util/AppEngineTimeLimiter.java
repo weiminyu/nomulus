@@ -35,7 +35,7 @@ public class AppEngineTimeLimiter {
    * An {@code ExecutorService} that uses a new thread for every task.
    *
    * <p>We need to use fresh threads for each request so that we can use App Engine's request
-   * threads.  If we cached these threads in a thread pool (and if we were executing on a backend,
+   * threads. If we cached these threads in a thread pool (and if we were executing on a backend,
    * where there is no time limit on requests) the caching would cause the thread to keep the task
    * that opened it alive even after returning an http response, and would also cause the namespace
    * that the original thread was created in to leak out to later reuses of the thread.

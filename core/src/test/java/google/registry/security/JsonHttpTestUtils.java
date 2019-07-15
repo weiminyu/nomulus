@@ -27,9 +27,7 @@ import java.util.Map;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
-/**
- * Helper class for testing JSON RPC servlets.
- */
+/** Helper class for testing JSON RPC servlets. */
 public final class JsonHttpTestUtils {
 
   /** Returns JSON payload for mocked result of {@code rsp.getReader()}. */
@@ -46,12 +44,14 @@ public final class JsonHttpTestUtils {
    * Returns JSON data parsed out of the contents of the given writer. If the data will be fetched
    * multiple times, consider {@link #createJsonResponseSupplier}.
    *
-   * <p>Example Mockito usage:<pre>  {@code
+   * <p>Example Mockito usage:
    *
-   *   StringWriter writer = new StringWriter();
-   *   when(rsp.getWriter()).thenReturn(new PrintWriter(writer));
-   *   servlet.service(req, rsp);
-   *   assertThat(getJsonResponse(writer)).containsEntry("status", "SUCCESS");}</pre>
+   * <pre>{@code
+   * StringWriter writer = new StringWriter();
+   * when(rsp.getWriter()).thenReturn(new PrintWriter(writer));
+   * servlet.service(req, rsp);
+   * assertThat(getJsonResponse(writer)).containsEntry("status", "SUCCESS");
+   * }</pre>
    */
   public static Map<String, Object> getJsonResponse(StringWriter writer) {
     String jsonText = writer.toString();
@@ -70,13 +70,15 @@ public final class JsonHttpTestUtils {
   /**
    * Returns a memoized supplier that'll provide the JSON response object of the tested servlet.
    *
-   * <p>This works with Mockito as follows:<pre>   {@code
+   * <p>This works with Mockito as follows:
    *
-   *   StringWriter writer = new StringWriter();
-   *   Supplier<Map<String, Object>> json = createJsonResponseSupplier(writer);
-   *   when(rsp.getWriter()).thenReturn(new PrintWriter(writer));
-   *   servlet.service(req, rsp);
-   *   assertThat(json.get()).containsEntry("status", "SUCCESS");}</pre>
+   * <pre>{@code
+   * StringWriter writer = new StringWriter();
+   * Supplier<Map<String, Object>> json = createJsonResponseSupplier(writer);
+   * when(rsp.getWriter()).thenReturn(new PrintWriter(writer));
+   * servlet.service(req, rsp);
+   * assertThat(json.get()).containsEntry("status", "SUCCESS");
+   * }</pre>
    */
   public static Supplier<Map<String, Object>> createJsonResponseSupplier(
       final StringWriter writer) {

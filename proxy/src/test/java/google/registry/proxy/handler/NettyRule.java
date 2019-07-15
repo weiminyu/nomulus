@@ -88,10 +88,7 @@ final class NettyRule extends ExternalResource {
   }
 
   /** Sets up a client channel connecting to the give local address. */
-  void setUpClient(
-      LocalAddress localAddress,
-      BackendProtocol protocol,
-      ChannelHandler handler) {
+  void setUpClient(LocalAddress localAddress, BackendProtocol protocol, ChannelHandler handler) {
     checkState(echoHandler != null, "Must call setUpServer before setUpClient");
     checkState(dumpHandler == null, "Can't call setUpClient twice");
     dumpHandler = new DumpHandler();

@@ -105,14 +105,16 @@ public class PollRequestFlowTest extends FlowTestCase<PollRequestFlow> {
             .setClientId(getClientIdForFlow())
             .setEventTime(clock.nowUtc().minusDays(5))
             .setMsg("Transfer requested.")
-            .setResponseData(ImmutableList.of(new ContactTransferResponse.Builder()
-                .setContactId("sh8013")
-                .setTransferStatus(TransferStatus.PENDING)
-                .setGainingClientId(getClientIdForFlow())
-                .setTransferRequestTime(clock.nowUtc().minusDays(5))
-                .setLosingClientId("NewRegistrar")
-                .setPendingTransferExpirationTime(clock.nowUtc())
-                .build()))
+            .setResponseData(
+                ImmutableList.of(
+                    new ContactTransferResponse.Builder()
+                        .setContactId("sh8013")
+                        .setTransferStatus(TransferStatus.PENDING)
+                        .setGainingClientId(getClientIdForFlow())
+                        .setTransferRequestTime(clock.nowUtc().minusDays(5))
+                        .setLosingClientId("NewRegistrar")
+                        .setPendingTransferExpirationTime(clock.nowUtc())
+                        .build()))
             .setParent(createHistoryEntryForEppResource(contact))
             .build());
     assertTransactionalFlow(false);
@@ -126,8 +128,13 @@ public class PollRequestFlowTest extends FlowTestCase<PollRequestFlow> {
             .setClientId(getClientIdForFlow())
             .setEventTime(clock.nowUtc().minusDays(1))
             .setMsg("Domain deleted.")
-            .setResponseData(ImmutableList.of(DomainPendingActionNotificationResponse.create(
-                "test.example", true, Trid.create("ABC-12345", "other-trid"), clock.nowUtc())))
+            .setResponseData(
+                ImmutableList.of(
+                    DomainPendingActionNotificationResponse.create(
+                        "test.example",
+                        true,
+                        Trid.create("ABC-12345", "other-trid"),
+                        clock.nowUtc())))
             .setParent(createHistoryEntryForEppResource(domain))
             .build());
     assertTransactionalFlow(false);
@@ -195,12 +202,14 @@ public class PollRequestFlowTest extends FlowTestCase<PollRequestFlow> {
   public void testSuccess_contactDelete() throws Exception {
     // Contact delete poll messages do not have any response data, so ensure that no
     // response data block is produced in the poll message.
-    HistoryEntry historyEntry = persistResource(new HistoryEntry.Builder()
-        .setClientId("NewRegistrar")
-        .setModificationTime(clock.nowUtc().minusDays(1))
-        .setType(HistoryEntry.Type.CONTACT_DELETE)
-        .setParent(contact)
-        .build());
+    HistoryEntry historyEntry =
+        persistResource(
+            new HistoryEntry.Builder()
+                .setClientId("NewRegistrar")
+                .setModificationTime(clock.nowUtc().minusDays(1))
+                .setType(HistoryEntry.Type.CONTACT_DELETE)
+                .setParent(contact)
+                .build());
     persistResource(
         new PollMessage.OneTime.Builder()
             .setClientId("NewRegistrar")
@@ -216,12 +225,14 @@ public class PollRequestFlowTest extends FlowTestCase<PollRequestFlow> {
   public void testSuccess_hostDelete() throws Exception {
     // Host delete poll messages do not have any response data, so ensure that no
     // response data block is produced in the poll message.
-    HistoryEntry historyEntry = persistResource(new HistoryEntry.Builder()
-        .setClientId("NewRegistrar")
-        .setModificationTime(clock.nowUtc().minusDays(1))
-        .setType(HistoryEntry.Type.HOST_DELETE)
-        .setParent(host)
-        .build());
+    HistoryEntry historyEntry =
+        persistResource(
+            new HistoryEntry.Builder()
+                .setClientId("NewRegistrar")
+                .setModificationTime(clock.nowUtc().minusDays(1))
+                .setType(HistoryEntry.Type.HOST_DELETE)
+                .setParent(host)
+                .build());
     persistResource(
         new PollMessage.OneTime.Builder()
             .setClientId("NewRegistrar")

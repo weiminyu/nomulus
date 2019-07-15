@@ -42,7 +42,7 @@ public enum IdnTableEnum {
       URL resource = Resources.getResource(IdnTableEnum.class, name + ".txt");
       return IdnTable.createFrom(name, readLines(resource, UTF_8), LanguageValidator.get(name));
     } catch (IOException e) {
-      throw new RuntimeException(e);  // should never happen
+      throw new RuntimeException(e); // should never happen
     }
   }
 }

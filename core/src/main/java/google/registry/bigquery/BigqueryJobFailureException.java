@@ -30,7 +30,7 @@ public final class BigqueryJobFailureException extends RuntimeException {
   /** Delegate {@link IOException} errors, checking for {@link GoogleJsonResponseException} */
   public static BigqueryJobFailureException create(IOException cause) {
     if (cause instanceof GoogleJsonResponseException) {
-        return create((GoogleJsonResponseException) cause);
+      return create((GoogleJsonResponseException) cause);
     } else {
       return new BigqueryJobFailureException(cause.getMessage(), cause, null, null);
     }
@@ -53,11 +53,9 @@ public final class BigqueryJobFailureException extends RuntimeException {
         describeError(jobStatus.getErrorResult()), null, jobStatus, null);
   }
 
-  @Nullable
-  private final JobStatus jobStatus;
+  @Nullable private final JobStatus jobStatus;
 
-  @Nullable
-  private final GoogleJsonError jsonError;
+  @Nullable private final GoogleJsonError jsonError;
 
   public BigqueryJobFailureException(
       String message,
@@ -80,8 +78,8 @@ public final class BigqueryJobFailureException extends RuntimeException {
    *   <li>{@code "unknown"}: Non-Bigquery errors.
    * </ul>
    *
-   * @see <a href="https://cloud.google.com/bigquery/troubleshooting-errors">
-   *     Troubleshooting Errors</a>
+   * @see <a href="https://cloud.google.com/bigquery/troubleshooting-errors">Troubleshooting
+   *     Errors</a>
    */
   public String getReason() {
     if (jobStatus != null) {

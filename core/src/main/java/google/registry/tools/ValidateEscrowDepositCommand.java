@@ -58,8 +58,7 @@ final class ValidateEscrowDepositCommand implements Command {
       validateWith = PathParameter.InputFile.class)
   private Path input = Paths.get("/dev/stdin");
 
-  @Inject
-  Keyring keyring;
+  @Inject Keyring keyring;
 
   @Override
   public void run() throws Exception {
@@ -84,7 +83,8 @@ final class ValidateEscrowDepositCommand implements Command {
     System.out.printf("Watermark: %s\n", deposit.getWatermark());
     System.out.printf("RDE Version: %s\n", deposit.getRdeMenu().getVersion());
     System.out.println();
-    System.out.printf("RDE Object URIs:\n  - %s\n",
+    System.out.printf(
+        "RDE Object URIs:\n  - %s\n",
         Joiner.on("\n  - ").join(Ordering.natural().sortedCopy(deposit.getRdeMenu().getObjURIs())));
     Set<String> hostnames = new HashSet<>();
     Set<String> hostnameRefs = new HashSet<>();
@@ -133,10 +133,9 @@ final class ValidateEscrowDepositCommand implements Command {
     System.out.println();
     System.out.println("Contents:");
     for (Map.Entry<String, Long> count : counts.entrySet()) {
-      System.out.printf("  - %s: %,d %s\n",
-          count.getKey(),
-          count.getValue(),
-          count.getValue() == 1L ? "entry" : "entries");
+      System.out.printf(
+          "  - %s: %,d %s\n",
+          count.getKey(), count.getValue(), count.getValue() == 1L ? "entry" : "entries");
     }
     System.out.println();
     boolean good = true;

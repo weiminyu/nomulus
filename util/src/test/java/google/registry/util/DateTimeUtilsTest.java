@@ -35,8 +35,8 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class DateTimeUtilsTest {
 
-  ImmutableList<DateTime> sampleDates = ImmutableList.of(
-      START_OF_TIME, START_OF_TIME.plusDays(1), END_OF_TIME, END_OF_TIME);
+  ImmutableList<DateTime> sampleDates =
+      ImmutableList.of(START_OF_TIME, START_OF_TIME.plusDays(1), END_OF_TIME, END_OF_TIME);
 
   @Test
   public void testSuccess_earliestOf() {

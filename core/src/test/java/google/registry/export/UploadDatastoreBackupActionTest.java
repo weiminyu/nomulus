@@ -60,10 +60,7 @@ import org.mockito.ArgumentCaptor;
 @RunWith(JUnit4.class)
 public class UploadDatastoreBackupActionTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withTaskQueue()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withTaskQueue().build();
   private final CheckedBigquery checkedBigquery = mock(CheckedBigquery.class);
   private final Bigquery bigquery = mock(Bigquery.class);
   private final Bigquery.Jobs bigqueryJobs = mock(Bigquery.Jobs.class);

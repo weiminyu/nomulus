@@ -41,8 +41,7 @@ public class FeeQueryResponseExtensionItem extends ImmutableObject {
    *
    * <p>This field is exposed to JAXB only via the getter so that subclasses can override it.
    */
-  @XmlTransient
-  Period period;
+  @XmlTransient Period period;
 
   /**
    * The magnitude of the fee, in the specified units, with an optional description.
@@ -51,8 +50,7 @@ public class FeeQueryResponseExtensionItem extends ImmutableObject {
    *
    * <p>This field is exposed to JAXB only via the getter so that subclasses can override it.
    */
-  @XmlTransient
-  List<Fee> fees;
+  @XmlTransient List<Fee> fees;
 
   /**
    * The type of the fee.
@@ -61,8 +59,7 @@ public class FeeQueryResponseExtensionItem extends ImmutableObject {
    *
    * <p>This field is exposed to JAXB only via the getter so that subclasses can override it.
    */
-  @XmlTransient
-  String feeClass;
+  @XmlTransient String feeClass;
 
   @XmlElement(name = "period")
   public Period getPeriod() {
@@ -80,9 +77,9 @@ public class FeeQueryResponseExtensionItem extends ImmutableObject {
   }
 
   /** Abstract builder for {@link FeeQueryResponseExtensionItem}. */
-  public abstract static class
-      Builder<T extends FeeQueryResponseExtensionItem, B extends Builder<?, ?>>
-          extends GenericBuilder<T, B> {
+  public abstract static class Builder<
+          T extends FeeQueryResponseExtensionItem, B extends Builder<?, ?>>
+      extends GenericBuilder<T, B> {
 
     public abstract B setCommand(CommandName commandName, String phase, String subphase);
 
@@ -103,23 +100,23 @@ public class FeeQueryResponseExtensionItem extends ImmutableObject {
     }
 
     public B setAvailIfSupported(@SuppressWarnings("unused") boolean avail) {
-      return thisCastToDerived();  // Default impl is a noop.
+      return thisCastToDerived(); // Default impl is a noop.
     }
 
     public B setReasonIfSupported(@SuppressWarnings("unused") String reason) {
-      return thisCastToDerived();  // Default impl is a noop.
+      return thisCastToDerived(); // Default impl is a noop.
     }
 
     public B setEffectiveDateIfSupported(@SuppressWarnings("unused") DateTime effectiveDate) {
-      return thisCastToDerived();  // Default impl is a noop.
+      return thisCastToDerived(); // Default impl is a noop.
     }
 
     public B setNotAfterDateIfSupported(@SuppressWarnings("unused") DateTime notAfterDate) {
-      return thisCastToDerived();  // Default impl is a noop.
+      return thisCastToDerived(); // Default impl is a noop.
     }
 
     public B setCurrencyIfSupported(@SuppressWarnings("unused") CurrencyUnit currency) {
-      return thisCastToDerived();  // Default impl is a noop.
+      return thisCastToDerived(); // Default impl is a noop.
     }
   }
 }

@@ -63,7 +63,10 @@ public final class PublishDnsUpdatesAction implements Runnable, Callable<Void> {
   @Inject DnsQueue dnsQueue;
   @Inject DnsWriterProxy dnsWriterProxy;
   @Inject DnsMetrics dnsMetrics;
-  @Inject @Config("publishDnsUpdatesLockDuration") Duration timeout;
+
+  @Inject
+  @Config("publishDnsUpdatesLockDuration")
+  Duration timeout;
 
   /**
    * The DNS writer to use for this batch.
@@ -73,7 +76,9 @@ public final class PublishDnsUpdatesAction implements Runnable, Callable<Void> {
    * writers configured in {@link Registry#getDnsWriters()}, as of the time the batch was written
    * out (and not necessarily currently).
    */
-  @Inject @Parameter(PARAM_DNS_WRITER) String dnsWriter;
+  @Inject
+  @Parameter(PARAM_DNS_WRITER)
+  String dnsWriter;
 
   @Inject
   @Parameter(PARAM_PUBLISH_TASK_ENQUEUED)
@@ -83,14 +88,31 @@ public final class PublishDnsUpdatesAction implements Runnable, Callable<Void> {
   @Parameter(PARAM_REFRESH_REQUEST_CREATED)
   DateTime itemsCreateTime;
 
-  @Inject @Parameter(PARAM_LOCK_INDEX) int lockIndex;
-  @Inject @Parameter(PARAM_NUM_PUBLISH_LOCKS) int numPublishLocks;
-  @Inject @Parameter(PARAM_DOMAINS) Set<String> domains;
-  @Inject @Parameter(PARAM_HOSTS) Set<String> hosts;
-  @Inject @Parameter(PARAM_TLD) String tld;
+  @Inject
+  @Parameter(PARAM_LOCK_INDEX)
+  int lockIndex;
+
+  @Inject
+  @Parameter(PARAM_NUM_PUBLISH_LOCKS)
+  int numPublishLocks;
+
+  @Inject
+  @Parameter(PARAM_DOMAINS)
+  Set<String> domains;
+
+  @Inject
+  @Parameter(PARAM_HOSTS)
+  Set<String> hosts;
+
+  @Inject
+  @Parameter(PARAM_TLD)
+  String tld;
+
   @Inject LockHandler lockHandler;
   @Inject Clock clock;
-  @Inject PublishDnsUpdatesAction() {}
+
+  @Inject
+  PublishDnsUpdatesAction() {}
 
   private void recordActionResult(ActionStatus status) {
     DateTime now = clock.nowUtc();
@@ -188,8 +210,7 @@ public final class PublishDnsUpdatesAction implements Runnable, Callable<Void> {
     int domainsPublished = 0;
     int domainsRejected = 0;
     for (String domain : nullToEmpty(domains)) {
-      if (!DomainNameUtils.isUnder(
-          InternetDomainName.from(domain), InternetDomainName.from(tld))) {
+      if (!DomainNameUtils.isUnder(InternetDomainName.from(domain), InternetDomainName.from(tld))) {
         logger.atSevere().log("%s: skipping domain %s not under tld", tld, domain);
         domainsRejected += 1;
       } else {
@@ -204,8 +225,7 @@ public final class PublishDnsUpdatesAction implements Runnable, Callable<Void> {
     int hostsPublished = 0;
     int hostsRejected = 0;
     for (String host : nullToEmpty(hosts)) {
-      if (!DomainNameUtils.isUnder(
-          InternetDomainName.from(host), InternetDomainName.from(tld))) {
+      if (!DomainNameUtils.isUnder(InternetDomainName.from(host), InternetDomainName.from(tld))) {
         logger.atSevere().log("%s: skipping host %s not under tld", tld, host);
         hostsRejected += 1;
       } else {

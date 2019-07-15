@@ -113,25 +113,21 @@ public class RdeUploadActionTest {
   private static final GcsFilename REPORT_R1_FILE =
       new GcsFilename("bucket", "tld_2010-10-17_full_S1_R1-report.xml.ghostryde");
 
-  @Rule
-  public final SftpServerRule sftpd = new SftpServerRule();
+  @Rule public final SftpServerRule sftpd = new SftpServerRule();
+
+  @Rule public final TemporaryFolder folder = new TemporaryFolder();
+
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
 
   @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  public final GpgSystemCommandRule gpg =
+      new GpgSystemCommandRule(
+          RdeTestData.loadBytes("pgp-public-keyring.asc"),
+          RdeTestData.loadBytes("pgp-private-keyring-escrow.asc"));
 
   @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
-
-  @Rule
-  public final GpgSystemCommandRule gpg = new GpgSystemCommandRule(
-      RdeTestData.loadBytes("pgp-public-keyring.asc"),
-      RdeTestData.loadBytes("pgp-private-keyring-escrow.asc"));
-
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withTaskQueue().build();
 
   private final FakeResponse response = new FakeResponse();
   private final EscrowTaskRunner runner = mock(EscrowTaskRunner.class);
@@ -216,11 +212,16 @@ public class RdeUploadActionTest {
     RdeUploadAction action = createAction(null);
     action.tld = "lol";
     action.run();
-    verify(runner).lockRunAndRollForward(
-        action, Registry.get("lol"), standardSeconds(23), CursorType.RDE_UPLOAD, standardDays(1));
-    assertTasksEnqueued("rde-report", new TaskMatcher()
-        .url(RdeReportAction.PATH)
-        .param(RequestParameters.PARAM_TLD, "lol"));
+    verify(runner)
+        .lockRunAndRollForward(
+            action,
+            Registry.get("lol"),
+            standardSeconds(23),
+            CursorType.RDE_UPLOAD,
+            standardDays(1));
+    assertTasksEnqueued(
+        "rde-report",
+        new TaskMatcher().url(RdeReportAction.PATH).param(RequestParameters.PARAM_TLD, "lol"));
     verifyNoMoreInteractions(runner);
   }
 
@@ -238,10 +239,9 @@ public class RdeUploadActionTest {
     assertThat(response.getContentType()).isEqualTo(PLAIN_TEXT_UTF_8);
     assertThat(response.getPayload()).isEqualTo("OK tld 2010-10-17T00:00:00.000Z\n");
     assertNoTasksEnqueued("rde-upload");
-    assertThat(folder.getRoot().list()).asList()
-        .containsExactly(
-            "tld_2010-10-17_full_S1_R0.ryde",
-            "tld_2010-10-17_full_S1_R0.sig");
+    assertThat(folder.getRoot().list())
+        .asList()
+        .containsExactly("tld_2010-10-17_full_S1_R0.ryde", "tld_2010-10-17_full_S1_R0.sig");
   }
 
   @Test
@@ -293,10 +293,9 @@ public class RdeUploadActionTest {
     assertThat(response.getContentType()).isEqualTo(PLAIN_TEXT_UTF_8);
     assertThat(response.getPayload()).isEqualTo("OK tld 2010-10-17T00:00:00.000Z\n");
     assertNoTasksEnqueued("rde-upload");
-    assertThat(folder.getRoot().list()).asList()
-        .containsExactly(
-            "tld_2010-10-17_full_S1_R1.ryde",
-            "tld_2010-10-17_full_S1_R1.sig");
+    assertThat(folder.getRoot().list())
+        .asList()
+        .containsExactly("tld_2010-10-17_full_S1_R1.ryde", "tld_2010-10-17_full_S1_R1.sig");
   }
 
   @Test
@@ -310,9 +309,12 @@ public class RdeUploadActionTest {
     createAction(uploadUrl).runWithLock(uploadCursor);
     // Only verify signature for SFTP versions, since we check elsewhere that the GCS files are
     // identical to the ones sent over SFTP.
-    Process pid = gpg.exec("gpg", "--verify",
-        new File(folder.getRoot(), "tld_2010-10-17_full_S1_R0.sig").toString(),
-        new File(folder.getRoot(), "tld_2010-10-17_full_S1_R0.ryde").toString());
+    Process pid =
+        gpg.exec(
+            "gpg",
+            "--verify",
+            new File(folder.getRoot(), "tld_2010-10-17_full_S1_R0.sig").toString(),
+            new File(folder.getRoot(), "tld_2010-10-17_full_S1_R0.ryde").toString());
     String stderr = slurp(pid.getErrorStream());
     assertWithMessage(stderr).that(pid.waitFor()).isEqualTo(0);
     assertThat(stderr).contains("Good signature");

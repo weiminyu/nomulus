@@ -50,7 +50,7 @@ final class KmsTestHelper {
         secretKey.getPublicKey(),
         secretKey.extractPrivateKey(
             new BcPBESecretKeyDecryptorBuilder(new BcPGPDigestCalculatorProvider())
-            .build(new char[0])));
+                .build(new char[0])));
   }
 
   private KmsTestHelper() {}

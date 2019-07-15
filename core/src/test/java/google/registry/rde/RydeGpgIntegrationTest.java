@@ -51,38 +51,39 @@ public class RydeGpgIntegrationTest extends ShardableTestCase {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  @Rule
-  public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
+  @Rule public final BouncyCastleProviderRule bouncy = new BouncyCastleProviderRule();
 
   @Rule
-  public final GpgSystemCommandRule gpg = new GpgSystemCommandRule(
-      RdeTestData.loadBytes("pgp-public-keyring.asc"),
-      RdeTestData.loadBytes("pgp-private-keyring-escrow.asc"));
+  public final GpgSystemCommandRule gpg =
+      new GpgSystemCommandRule(
+          RdeTestData.loadBytes("pgp-public-keyring.asc"),
+          RdeTestData.loadBytes("pgp-private-keyring-escrow.asc"));
 
   private final FakeKeyringModule keyringFactory = new FakeKeyringModule();
 
   @DataPoints
-  public static GpgCommand[] commands = new GpgCommand[] {
-    new GpgCommand("gpg"),
-    new GpgCommand("gpg2"),
-  };
+  public static GpgCommand[] commands =
+      new GpgCommand[] {
+        new GpgCommand("gpg"), new GpgCommand("gpg2"),
+      };
 
   @DataPoints
-  public static Filename[] filenames = new Filename[] {
-    new Filename("sloth"),
-  };
+  public static Filename[] filenames =
+      new Filename[] {
+        new Filename("sloth"),
+      };
 
   @DataPoints
-  public static Content[] contents = new Content[] {
-    new Content("(◕‿◕)"),
-    new Content(repeat("Fanatics have their dreams, wherewith they weave.\n", 1000)),
-    new Content("\0yolo"),
-    new Content(""),
-  };
+  public static Content[] contents =
+      new Content[] {
+        new Content("(◕‿◕)"),
+        new Content(repeat("Fanatics have their dreams, wherewith they weave.\n", 1000)),
+        new Content("\0yolo"),
+        new Content(""),
+      };
 
   @Theory
-  public void test(GpgCommand cmd, Filename name, Content content)
-      throws Exception {
+  public void test(GpgCommand cmd, Filename name, Content content) throws Exception {
     assumeTrue(hasCommand("tar"));
     assumeTrue(hasCommand(cmd.get() + " --version"));
 
@@ -99,11 +100,12 @@ public class RydeGpgIntegrationTest extends ShardableTestCase {
 
     try (OutputStream rydeOut = new FileOutputStream(rydeFile);
         OutputStream sigOut = new FileOutputStream(sigFile);
-        RydeEncoder rydeEncoder = new RydeEncoder.Builder()
-            .setRydeOutput(rydeOut, receiverKey)
-            .setSignatureOutput(sigOut, signingKey)
-            .setFileMetadata(name.get(), data.length, modified)
-            .build()) {
+        RydeEncoder rydeEncoder =
+            new RydeEncoder.Builder()
+                .setRydeOutput(rydeOut, receiverKey)
+                .setSignatureOutput(sigOut, signingKey)
+                .setFileMetadata(name.get(), data.length, modified)
+                .build()) {
       rydeEncoder.write(data);
     }
 

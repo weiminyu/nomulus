@@ -106,10 +106,11 @@ public abstract class CredentialModule {
       @Config("delegatedCredentialOauthScopes") ImmutableList<String> requiredScopes,
       @JsonCredential GoogleCredentialsBundle credentialsBundle,
       @Config("gSuiteAdminAccountEmailAddress") String gSuiteAdminAccountEmailAddress) {
-    return GoogleCredentialsBundle.create(credentialsBundle
-        .getGoogleCredentials()
-        .createDelegated(gSuiteAdminAccountEmailAddress)
-        .createScoped(requiredScopes));
+    return GoogleCredentialsBundle.create(
+        credentialsBundle
+            .getGoogleCredentials()
+            .createDelegated(gSuiteAdminAccountEmailAddress)
+            .createScoped(requiredScopes));
   }
 
   /** Dagger qualifier for the Application Default Credential. */

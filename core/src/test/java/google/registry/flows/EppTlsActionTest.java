@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 package google.registry.flows;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -45,13 +44,14 @@ public class EppTlsActionTest extends ShardableTestCase {
     action.eppRequestHandler = mock(EppRequestHandler.class);
     action.run();
     ArgumentCaptor<SessionMetadata> captor = ArgumentCaptor.forClass(SessionMetadata.class);
-    verify(action.eppRequestHandler).executeEpp(
-        captor.capture(),
-        same(action.tlsCredentials),
-        eq(EppRequestSource.TLS),
-        eq(false),
-        eq(false),
-        eq(INPUT_XML_BYTES));
+    verify(action.eppRequestHandler)
+        .executeEpp(
+            captor.capture(),
+            same(action.tlsCredentials),
+            eq(EppRequestSource.TLS),
+            eq(false),
+            eq(false),
+            eq(INPUT_XML_BYTES));
     assertThat(captor.getValue().getClientId()).isEqualTo("ClientIdentifier");
   }
 }

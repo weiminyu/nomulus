@@ -87,7 +87,10 @@ public final class UpdateRegistrarRdapBaseUrlsAction implements Runnable {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   @Inject HttpTransport httpTransport;
-  @Inject @KeyModule.Key("icannReportingPassword") String password;
+
+  @Inject
+  @KeyModule.Key("icannReportingPassword")
+  String password;
 
   @Inject
   UpdateRegistrarRdapBaseUrlsAction() {}
@@ -176,8 +179,9 @@ public final class UpdateRegistrarRdapBaseUrlsAction implements Runnable {
       try {
         return getRdapBaseUrlsPerIanaIdWithTld(tld);
       } catch (Throwable throwable) {
-        logger.atWarning().log(String
-            .format("Error retrieving RDAP urls with TLD %s: %s", tld, throwable.getMessage()));
+        logger.atWarning().log(
+            String.format(
+                "Error retrieving RDAP urls with TLD %s: %s", tld, throwable.getMessage()));
         finalThrowable = throwable;
       }
     }
@@ -215,9 +219,7 @@ public final class UpdateRegistrarRdapBaseUrlsAction implements Runnable {
                 logger.atInfo().log(
                     "Updating RdapBaseUrls for registrar %s (ianaId %s) from %s to %s",
                     registrar.getClientId(), ianaId, registrar.getRdapBaseUrls(), baseUrls);
-                ofy()
-                    .save()
-                    .entity(registrar.asBuilder().setRdapBaseUrls(baseUrls).build());
+                ofy().save().entity(registrar.asBuilder().setRdapBaseUrls(baseUrls).build());
               });
     }
   }

@@ -24,7 +24,7 @@ import org.joda.time.DateTime;
 
 /**
  * Represents an XML fragment that is digitally signed by the TMCH to prove ownership over a mark.
- **/
+ */
 @XmlRootElement(name = "signedMark")
 public class SignedMark extends ImmutableObject implements AbstractSignedMark {
 

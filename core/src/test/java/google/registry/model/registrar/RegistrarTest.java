@@ -46,7 +46,7 @@ import org.joda.money.CurrencyUnit;
 import org.junit.Before;
 import org.junit.Test;
 
- /** Unit tests for {@link Registrar}. */
+/** Unit tests for {@link Registrar}. */
 public class RegistrarTest extends EntityTestCase {
   private Registrar registrar;
   private RegistrarContact abuseAdminContact;
@@ -127,10 +127,14 @@ public class RegistrarTest extends EntityTestCase {
 
   @Test
   public void testPersistence() {
-    assertThat(registrar).isEqualTo(ofy().load().type(Registrar.class)
-        .parent(EntityGroupRoot.getCrossTldKey())
-        .id(registrar.getClientId())
-        .now());
+    assertThat(registrar)
+        .isEqualTo(
+            ofy()
+                .load()
+                .type(Registrar.class)
+                .parent(EntityGroupRoot.getCrossTldKey())
+                .id(registrar.getClientId())
+                .now());
   }
 
   @Test
@@ -187,9 +191,7 @@ public class RegistrarTest extends EntityTestCase {
   public void testSetCertificateHash_alsoSetsHash() {
     registrar = registrar.asBuilder().setClientCertificate(null, clock.nowUtc()).build();
     clock.advanceOneMilli();
-    registrar = registrar.asBuilder()
-        .setClientCertificate(SAMPLE_CERT, clock.nowUtc())
-        .build();
+    registrar = registrar.asBuilder().setClientCertificate(SAMPLE_CERT, clock.nowUtc()).build();
     assertThat(registrar.getLastCertificateUpdateTime()).isEqualTo(clock.nowUtc());
     assertThat(registrar.getClientCertificate()).isEqualTo(SAMPLE_CERT);
     assertThat(registrar.getClientCertificateHash()).isEqualTo(SAMPLE_CERT_HASH);
@@ -199,9 +201,7 @@ public class RegistrarTest extends EntityTestCase {
   public void testDeleteCertificateHash_alsoDeletesHash() {
     assertThat(registrar.getClientCertificateHash()).isNotNull();
     clock.advanceOneMilli();
-    registrar = registrar.asBuilder()
-        .setClientCertificate(null, clock.nowUtc())
-        .build();
+    registrar = registrar.asBuilder().setClientCertificate(null, clock.nowUtc()).build();
     assertThat(registrar.getLastCertificateUpdateTime()).isEqualTo(clock.nowUtc());
     assertThat(registrar.getClientCertificate()).isNull();
     assertThat(registrar.getClientCertificateHash()).isNull();
@@ -210,9 +210,8 @@ public class RegistrarTest extends EntityTestCase {
   @Test
   public void testSetFailoverCertificateHash_alsoSetsHash() {
     clock.advanceOneMilli();
-    registrar = registrar.asBuilder()
-        .setFailoverClientCertificate(SAMPLE_CERT2, clock.nowUtc())
-        .build();
+    registrar =
+        registrar.asBuilder().setFailoverClientCertificate(SAMPLE_CERT2, clock.nowUtc()).build();
     assertThat(registrar.getLastCertificateUpdateTime()).isEqualTo(clock.nowUtc());
     assertThat(registrar.getFailoverClientCertificate()).isEqualTo(SAMPLE_CERT2);
     assertThat(registrar.getFailoverClientCertificateHash()).isEqualTo(SAMPLE_CERT2_HASH);
@@ -220,14 +219,11 @@ public class RegistrarTest extends EntityTestCase {
 
   @Test
   public void testDeleteFailoverCertificateHash_alsoDeletesHash() {
-    registrar = registrar.asBuilder()
-        .setFailoverClientCertificate(SAMPLE_CERT, clock.nowUtc())
-        .build();
+    registrar =
+        registrar.asBuilder().setFailoverClientCertificate(SAMPLE_CERT, clock.nowUtc()).build();
     assertThat(registrar.getFailoverClientCertificateHash()).isNotNull();
     clock.advanceOneMilli();
-    registrar = registrar.asBuilder()
-        .setFailoverClientCertificate(null, clock.nowUtc())
-        .build();
+    registrar = registrar.asBuilder().setFailoverClientCertificate(null, clock.nowUtc()).build();
     assertThat(registrar.getLastCertificateUpdateTime()).isEqualTo(clock.nowUtc());
     assertThat(registrar.getFailoverClientCertificate()).isNull();
     assertThat(registrar.getFailoverClientCertificateHash()).isNull();
@@ -235,7 +231,8 @@ public class RegistrarTest extends EntityTestCase {
 
   @Test
   public void testSuccess_clearingIanaAndBillingIds() {
-    registrar.asBuilder()
+    registrar
+        .asBuilder()
         .setType(Type.TEST)
         .setIanaIdentifier(null)
         .setBillingIdentifier(null)
@@ -243,10 +240,8 @@ public class RegistrarTest extends EntityTestCase {
   }
 
   @Test
-   public void testSuccess_clearingBillingAccountMap() {
-    registrar = registrar.asBuilder()
-        .setBillingAccountMap(null)
-        .build();
+  public void testSuccess_clearingBillingAccountMap() {
+    registrar = registrar.asBuilder().setBillingAccountMap(null).build();
     assertThat(registrar.getBillingAccountMap()).isEmpty();
   }
 
@@ -421,7 +416,8 @@ public class RegistrarTest extends EntityTestCase {
   @Test
   public void testSuccess_setAllowedTlds() {
     assertThat(
-            registrar.asBuilder()
+            registrar
+                .asBuilder()
                 .setAllowedTlds(ImmutableSet.of("xn--q9jyb4c"))
                 .build()
                 .getAllowedTlds())
@@ -431,7 +427,8 @@ public class RegistrarTest extends EntityTestCase {
   @Test
   public void testSuccess_setAllowedTldsUncached() {
     assertThat(
-            registrar.asBuilder()
+            registrar
+                .asBuilder()
                 .setAllowedTldsUncached(ImmutableSet.of("xn--q9jyb4c"))
                 .build()
                 .getAllowedTlds())
@@ -455,8 +452,13 @@ public class RegistrarTest extends EntityTestCase {
   @Test
   public void testFailure_driveFolderId_asFullUrl() {
     IllegalArgumentException thrown =
-        assertThrows(IllegalArgumentException.class, () -> registrar.asBuilder().setDriveFolderId(
-            "https://drive.google.com/drive/folders/1j3v7RZkU25DjbTx2-Q93H04zKOBau89M"));
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                registrar
+                    .asBuilder()
+                    .setDriveFolderId(
+                        "https://drive.google.com/drive/folders/1j3v7RZkU25DjbTx2-Q93H04zKOBau89M"));
     assertThat(thrown).hasMessageThat().isEqualTo("Drive folder ID must not be a full URL");
   }
 
@@ -482,9 +484,7 @@ public class RegistrarTest extends EntityTestCase {
     IllegalArgumentException thrown =
         assertThrows(
             IllegalArgumentException.class, () -> registrar.asBuilder().setEmailAddress(""));
-    assertThat(thrown)
-        .hasMessageThat()
-        .isEqualTo("Provided email  is not a valid email address");
+    assertThat(thrown).hasMessageThat().isEqualTo("Provided email  is not a valid email address");
   }
 
   @Test
@@ -511,9 +511,7 @@ public class RegistrarTest extends EntityTestCase {
     IllegalArgumentException thrown =
         assertThrows(
             IllegalArgumentException.class, () -> registrar.asBuilder().setEmailAddress(""));
-    assertThat(thrown)
-        .hasMessageThat()
-        .isEqualTo("Provided email  is not a valid email address");
+    assertThat(thrown).hasMessageThat().isEqualTo("Provided email  is not a valid email address");
   }
 
   @Test

@@ -25,8 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class LaunchInfoExtension extends LaunchExtension {
 
   /** Whether or not to include mark information in the response. */
-  @XmlAttribute
-  Boolean includeMark;
+  @XmlAttribute Boolean includeMark;
 
   public Boolean getIncludeMark() {
     return includeMark;

@@ -85,9 +85,7 @@ public class CreateDomainCommandTest extends EppToolCommandTestCase<CreateDomain
         "--techs=crr-tech",
         "example.tld",
         "example.abc");
-    eppVerifier
-        .verifySent("domain_create_minimal.xml")
-        .verifySent("domain_create_minimal_abc.xml");
+    eppVerifier.verifySent("domain_create_minimal.xml").verifySent("domain_create_minimal_abc.xml");
   }
 
   @Test

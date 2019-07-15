@@ -83,9 +83,7 @@ public final class CopyDetailReportsAction implements Runnable {
     ImmutableList<String> detailReportObjectNames;
     try {
       detailReportObjectNames =
-          gcsUtils
-              .listFolderObjects(billingBucket, invoiceDirectoryPrefix)
-              .stream()
+          gcsUtils.listFolderObjects(billingBucket, invoiceDirectoryPrefix).stream()
               .filter(objectName -> objectName.startsWith(BillingModule.DETAIL_REPORT_PREFIX))
               .collect(ImmutableList.toImmutableList());
     } catch (IOException e) {

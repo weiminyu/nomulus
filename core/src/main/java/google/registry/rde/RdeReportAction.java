@@ -62,12 +62,29 @@ public final class RdeReportAction implements Runnable, EscrowTask {
   @Inject EscrowTaskRunner runner;
   @Inject Response response;
   @Inject RdeReporter reporter;
-  @Inject @Parameter(RequestParameters.PARAM_TLD) String tld;
-  @Inject @Config("rdeBucket") String bucket;
-  @Inject @Config("rdeInterval") Duration interval;
-  @Inject @Config("rdeReportLockTimeout") Duration timeout;
-  @Inject @Key("rdeStagingDecryptionKey") PGPPrivateKey stagingDecryptionKey;
-  @Inject RdeReportAction() {}
+
+  @Inject
+  @Parameter(RequestParameters.PARAM_TLD)
+  String tld;
+
+  @Inject
+  @Config("rdeBucket")
+  String bucket;
+
+  @Inject
+  @Config("rdeInterval")
+  Duration interval;
+
+  @Inject
+  @Config("rdeReportLockTimeout")
+  Duration timeout;
+
+  @Inject
+  @Key("rdeStagingDecryptionKey")
+  PGPPrivateKey stagingDecryptionKey;
+
+  @Inject
+  RdeReportAction() {}
 
   @Override
   public void run() {

@@ -50,7 +50,9 @@ public class FlowRunner {
   @Inject SessionMetadata sessionMetadata;
   @Inject Trid trid;
   @Inject FlowReporter flowReporter;
-  @Inject FlowRunner() {}
+
+  @Inject
+  FlowRunner() {}
 
   /** Runs the EPP flow, and records metrics on the given builder. */
   public EppOutput run(final EppMetric.Builder eppMetricBuilder) throws EppException {

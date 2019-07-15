@@ -33,10 +33,7 @@ public class RdeMarshallerTest extends ShardableTestCase {
   private static final String DECLARATION =
       "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @Test
   public void testMarshalRegistrar_validData_producesXmlFragment() throws Exception {
@@ -44,40 +41,43 @@ public class RdeMarshallerTest extends ShardableTestCase {
         new RdeMarshaller(STRICT).marshalRegistrar(loadRegistrar("TheRegistrar"));
     assertThat(fragment.type()).isEqualTo(RdeResourceType.REGISTRAR);
     assertThat(fragment.error()).isEmpty();
-    String expected = ""
-        + "<rdeRegistrar:registrar>\n"
-        + "    <rdeRegistrar:id>TheRegistrar</rdeRegistrar:id>\n"
-        + "    <rdeRegistrar:name>The Registrar</rdeRegistrar:name>\n"
-        + "    <rdeRegistrar:gurid>1</rdeRegistrar:gurid>\n"
-        + "    <rdeRegistrar:status>ok</rdeRegistrar:status>\n"
-        + "    <rdeRegistrar:postalInfo type=\"loc\">\n"
-        + "        <rdeRegistrar:addr>\n"
-        + "            <rdeRegistrar:street>123 Example Bőulevard</rdeRegistrar:street>\n"
-        + "            <rdeRegistrar:city>Williamsburg</rdeRegistrar:city>\n"
-        + "            <rdeRegistrar:sp>NY</rdeRegistrar:sp>\n"
-        + "            <rdeRegistrar:pc>11211</rdeRegistrar:pc>\n"
-        + "            <rdeRegistrar:cc>US</rdeRegistrar:cc>\n"
-        + "        </rdeRegistrar:addr>\n"
-        + "    </rdeRegistrar:postalInfo>\n"
-        + "    <rdeRegistrar:postalInfo type=\"int\">\n"
-        + "        <rdeRegistrar:addr>\n"
-        + "            <rdeRegistrar:street>123 Example Boulevard</rdeRegistrar:street>\n"
-        + "            <rdeRegistrar:city>Williamsburg</rdeRegistrar:city>\n"
-        + "            <rdeRegistrar:sp>NY</rdeRegistrar:sp>\n"
-        + "            <rdeRegistrar:pc>11211</rdeRegistrar:pc>\n"
-        + "            <rdeRegistrar:cc>US</rdeRegistrar:cc>\n"
-        + "        </rdeRegistrar:addr>\n"
-        + "    </rdeRegistrar:postalInfo>\n"
-        + "    <rdeRegistrar:voice>+1.2223334444</rdeRegistrar:voice>\n"
-        + "    <rdeRegistrar:email>the.registrar@example.com</rdeRegistrar:email>\n"
-        + "    <rdeRegistrar:url>http://my.fake.url</rdeRegistrar:url>\n"
-        + "    <rdeRegistrar:whoisInfo>\n"
-        + "        <rdeRegistrar:name>whois.nic.fakewhois.example</rdeRegistrar:name>\n"
-        + "    </rdeRegistrar:whoisInfo>\n"
-        + "    <rdeRegistrar:crDate>mine eyes have seen the glory</rdeRegistrar:crDate>\n"
-        + "    <rdeRegistrar:upDate>of the coming of the borg</rdeRegistrar:upDate>\n"
-        + "</rdeRegistrar:registrar>\n";
-    XmlTestUtils.assertXmlEquals(DECLARATION + expected, DECLARATION + fragment.xml(),
+    String expected =
+        ""
+            + "<rdeRegistrar:registrar>\n"
+            + "    <rdeRegistrar:id>TheRegistrar</rdeRegistrar:id>\n"
+            + "    <rdeRegistrar:name>The Registrar</rdeRegistrar:name>\n"
+            + "    <rdeRegistrar:gurid>1</rdeRegistrar:gurid>\n"
+            + "    <rdeRegistrar:status>ok</rdeRegistrar:status>\n"
+            + "    <rdeRegistrar:postalInfo type=\"loc\">\n"
+            + "        <rdeRegistrar:addr>\n"
+            + "            <rdeRegistrar:street>123 Example Bőulevard</rdeRegistrar:street>\n"
+            + "            <rdeRegistrar:city>Williamsburg</rdeRegistrar:city>\n"
+            + "            <rdeRegistrar:sp>NY</rdeRegistrar:sp>\n"
+            + "            <rdeRegistrar:pc>11211</rdeRegistrar:pc>\n"
+            + "            <rdeRegistrar:cc>US</rdeRegistrar:cc>\n"
+            + "        </rdeRegistrar:addr>\n"
+            + "    </rdeRegistrar:postalInfo>\n"
+            + "    <rdeRegistrar:postalInfo type=\"int\">\n"
+            + "        <rdeRegistrar:addr>\n"
+            + "            <rdeRegistrar:street>123 Example Boulevard</rdeRegistrar:street>\n"
+            + "            <rdeRegistrar:city>Williamsburg</rdeRegistrar:city>\n"
+            + "            <rdeRegistrar:sp>NY</rdeRegistrar:sp>\n"
+            + "            <rdeRegistrar:pc>11211</rdeRegistrar:pc>\n"
+            + "            <rdeRegistrar:cc>US</rdeRegistrar:cc>\n"
+            + "        </rdeRegistrar:addr>\n"
+            + "    </rdeRegistrar:postalInfo>\n"
+            + "    <rdeRegistrar:voice>+1.2223334444</rdeRegistrar:voice>\n"
+            + "    <rdeRegistrar:email>the.registrar@example.com</rdeRegistrar:email>\n"
+            + "    <rdeRegistrar:url>http://my.fake.url</rdeRegistrar:url>\n"
+            + "    <rdeRegistrar:whoisInfo>\n"
+            + "        <rdeRegistrar:name>whois.nic.fakewhois.example</rdeRegistrar:name>\n"
+            + "    </rdeRegistrar:whoisInfo>\n"
+            + "    <rdeRegistrar:crDate>mine eyes have seen the glory</rdeRegistrar:crDate>\n"
+            + "    <rdeRegistrar:upDate>of the coming of the borg</rdeRegistrar:upDate>\n"
+            + "</rdeRegistrar:registrar>\n";
+    XmlTestUtils.assertXmlEquals(
+        DECLARATION + expected,
+        DECLARATION + fragment.xml(),
         "registrar.crDate",
         "registrar.upDate");
   }

@@ -20,9 +20,7 @@ import com.google.common.collect.ImmutableList;
 import dagger.Module;
 import dagger.Provides;
 
-/**
- * Dagger module for authentication routines.
- */
+/** Dagger module for authentication routines. */
 @Module
 public class AuthModule {
 

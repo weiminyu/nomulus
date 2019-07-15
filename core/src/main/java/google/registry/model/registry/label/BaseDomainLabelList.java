@@ -49,16 +49,14 @@ import org.joda.time.DateTime;
  *
  * @param <T> The type of the root value being listed, e.g. {@link ReservationType}.
  * @param <R> The type of domain label entry being listed, e.g. {@link ReservedListEntry} (note,
- *            must subclass {@link DomainLabelEntry}.
+ *     must subclass {@link DomainLabelEntry}.
  */
 public abstract class BaseDomainLabelList<T extends Comparable<?>, R extends DomainLabelEntry<T, ?>>
     extends ImmutableObject implements Buildable {
 
-  @Id
-  String name;
+  @Id String name;
 
-  @Parent
-  Key<EntityGroupRoot> parent = getCrossTldKey();
+  @Parent Key<EntityGroupRoot> parent = getCrossTldKey();
 
   DateTime creationTime;
 
@@ -136,8 +134,7 @@ public abstract class BaseDomainLabelList<T extends Comparable<?>, R extends Dom
   /** Gets the names of the tlds that reference this list. */
   public final ImmutableSet<String> getReferencingTlds() {
     Key<? extends BaseDomainLabelList<?, ?>> key = Key.create(this);
-    return getTlds()
-        .stream()
+    return getTlds().stream()
         .filter((tld) -> refersToKey(Registry.get(tld), key))
         .collect(toImmutableSet());
   }

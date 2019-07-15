@@ -33,7 +33,7 @@ public abstract class ParameterConverterValidator<T>
   }
 
   @Override
-  public abstract T convert(String arg0);  // Redefine so non-null package annotation kicks in.
+  public abstract T convert(String arg0); // Redefine so non-null package annotation kicks in.
 
   @Override
   public void validate(String name, String value) throws ParameterException {

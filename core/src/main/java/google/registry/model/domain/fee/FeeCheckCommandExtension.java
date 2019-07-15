@@ -29,8 +29,7 @@ import org.joda.money.CurrencyUnit;
  * @type R the type of response returned for for this command (e.g. v6 responses for a v6 extension)
  */
 public interface FeeCheckCommandExtension<
-        C extends FeeCheckCommandExtensionItem,
-        R extends FeeCheckResponseExtension<?>>
+        C extends FeeCheckCommandExtensionItem, R extends FeeCheckResponseExtension<?>>
     extends CommandExtension {
 
   /**

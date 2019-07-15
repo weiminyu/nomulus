@@ -25,8 +25,8 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * A Saver that forwards to {@code ofy().save()}, but can be augmented via subclassing to
- * do custom processing on the entities to be saved prior to their saving.
+ * A Saver that forwards to {@code ofy().save()}, but can be augmented via subclassing to do custom
+ * processing on the entities to be saved prior to their saving.
  */
 abstract class AugmentedSaver implements Saver {
   private final Saver delegate = ofy().save();

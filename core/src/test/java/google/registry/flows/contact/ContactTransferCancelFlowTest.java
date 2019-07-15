@@ -68,15 +68,18 @@ public class ContactTransferCancelFlowTest
 
     // Transfer should have been cancelled. Verify correct fields were set.
     contact = reloadResourceByForeignKey();
-    assertAboutContacts().that(contact)
-        .hasCurrentSponsorClientId("TheRegistrar").and()
-        .hasLastTransferTimeNotEqualTo(clock.nowUtc()).and()
+    assertAboutContacts()
+        .that(contact)
+        .hasCurrentSponsorClientId("TheRegistrar")
+        .and()
+        .hasLastTransferTimeNotEqualTo(clock.nowUtc())
+        .and()
         .hasOneHistoryEntryEachOfTypes(
-            HistoryEntry.Type.CONTACT_TRANSFER_REQUEST,
-            HistoryEntry.Type.CONTACT_TRANSFER_CANCEL);
+            HistoryEntry.Type.CONTACT_TRANSFER_REQUEST, HistoryEntry.Type.CONTACT_TRANSFER_CANCEL);
     assertThat(contact.getTransferData())
         .isEqualTo(
-            originalTransferData.copyConstantFieldsToBuilder()
+            originalTransferData
+                .copyConstantFieldsToBuilder()
                 .setTransferStatus(TransferStatus.CLIENT_CANCELLED)
                 .setPendingTransferExpirationTime(clock.nowUtc())
                 .build());
@@ -88,9 +91,7 @@ public class ContactTransferCancelFlowTest
     PollMessage losingPollMessage = getOnlyPollMessage("TheRegistrar");
     assertThat(losingPollMessage.getEventTime()).isEqualTo(clock.nowUtc());
     assertThat(
-            losingPollMessage
-                .getResponseData()
-                .stream()
+            losingPollMessage.getResponseData().stream()
                 .filter(TransferResponse.class::isInstance)
                 .map(TransferResponse.class::cast)
                 .collect(onlyElement())
@@ -118,8 +119,8 @@ public class ContactTransferCancelFlowTest
 
   @Test
   public void testSuccess_withAuthinfo() throws Exception {
-    doSuccessfulTest("contact_transfer_cancel_with_authinfo.xml",
-        "contact_transfer_cancel_response.xml");
+    doSuccessfulTest(
+        "contact_transfer_cancel_with_authinfo.xml", "contact_transfer_cancel_response.xml");
   }
 
   @Test

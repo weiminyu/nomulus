@@ -136,8 +136,7 @@ public class EppLifecycleDomainTest extends EppTestCase {
         oneTimeCreateBillingEvent,
         makeRecurringCreateBillingEvent(domain, createTime.plusYears(2), deleteTime),
         // Check for the existence of a cancellation for the given one-time billing event.
-        makeCancellationBillingEventFor(
-            domain, oneTimeCreateBillingEvent, createTime, deleteTime));
+        makeCancellationBillingEventFor(domain, oneTimeCreateBillingEvent, createTime, deleteTime));
 
     assertThatLogoutSucceeds();
   }
@@ -187,8 +186,7 @@ public class EppLifecycleDomainTest extends EppTestCase {
                 "CODE", "2303", "MSG", "The domain with given ID (example.tld) doesn't exist."));
 
     DomainBase domain =
-        loadByForeignKey(
-                DomainBase.class, "example.tld", DateTime.parse("2000-08-01T00:02:00Z"))
+        loadByForeignKey(DomainBase.class, "example.tld", DateTime.parse("2000-08-01T00:02:00Z"))
             .get();
     // Verify that the autorenew was ended and that the one-time billing event is not canceled.
     assertBillingEventsForResource(
@@ -210,9 +208,12 @@ public class EppLifecycleDomainTest extends EppTestCase {
             .asBuilder()
             .setEapFeeSchedule(
                 ImmutableSortedMap.of(
-                    START_OF_TIME, Money.of(USD, 0),
-                    DateTime.parse("2000-06-01T00:00:00Z"), Money.of(USD, 100),
-                    DateTime.parse("2000-06-02T00:00:00Z"), Money.of(USD, 0)))
+                    START_OF_TIME,
+                    Money.of(USD, 0),
+                    DateTime.parse("2000-06-01T00:00:00Z"),
+                    Money.of(USD, 100),
+                    DateTime.parse("2000-06-02T00:00:00Z"),
+                    Money.of(USD, 0)))
             .build());
 
     // Create domain example.tld, which should have an EAP fee of USD 100.
@@ -222,8 +223,7 @@ public class EppLifecycleDomainTest extends EppTestCase {
         .hasResponse("domain_create_response_eap_fee.xml");
 
     DomainBase domain =
-        loadByForeignKey(
-                DomainBase.class, "example.tld", DateTime.parse("2000-06-01T00:03:00Z"))
+        loadByForeignKey(DomainBase.class, "example.tld", DateTime.parse("2000-06-01T00:03:00Z"))
             .get();
 
     // Delete domain example.tld within the add grade period.
@@ -873,8 +873,8 @@ public class EppLifecycleDomainTest extends EppTestCase {
   /**
    * Test a full launch of start-date sunrise.
    *
-   * We show that we can't create during pre-delegation, can only create with an encoded mark during
-   * start-date sunrise - which we can then delete "as normal" (no need for a signed mark or
+   * <p>We show that we can't create during pre-delegation, can only create with an encoded mark
+   * during start-date sunrise - which we can then delete "as normal" (no need for a signed mark or
    * anything for delete), and then use "regular" create during general-availability.
    */
   @Test
@@ -939,8 +939,7 @@ public class EppLifecycleDomainTest extends EppTestCase {
         .hasResponse("generic_success_response.xml");
 
     assertThatCommand(
-            "domain_create_no_hosts_or_dsdata.xml",
-            ImmutableMap.of("DOMAIN", "general.example"))
+            "domain_create_no_hosts_or_dsdata.xml", ImmutableMap.of("DOMAIN", "general.example"))
         .atTime(sunriseDate.plusDays(2))
         .hasResponse(
             "response_error.xml",
@@ -959,8 +958,7 @@ public class EppLifecycleDomainTest extends EppTestCase {
                     "Declared launch extension phase does not match the current registry phase"));
 
     assertThatCommand(
-            "domain_create_no_hosts_or_dsdata.xml",
-            ImmutableMap.of("DOMAIN", "general.example"))
+            "domain_create_no_hosts_or_dsdata.xml", ImmutableMap.of("DOMAIN", "general.example"))
         .atTime(gaDate.plusDays(2))
         .hasResponse(
             "domain_create_response.xml",

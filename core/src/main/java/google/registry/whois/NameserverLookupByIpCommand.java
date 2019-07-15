@@ -38,8 +38,7 @@ import org.joda.time.DateTime;
  */
 final class NameserverLookupByIpCommand implements WhoisCommand {
 
-  @VisibleForTesting
-  final InetAddress ipAddress;
+  @VisibleForTesting final InetAddress ipAddress;
 
   NameserverLookupByIpCommand(InetAddress ipAddress) {
     this.ipAddress = checkNotNull(ipAddress, "ipAddress");

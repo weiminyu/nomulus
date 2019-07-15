@@ -34,8 +34,8 @@ import java.util.NoSuchElementException;
 import javax.annotation.Nullable;
 
 /**
- * Reader that maps over {@link EppResourceIndex} and returns resources that are children of
- * {@link EppResource} objects.
+ * Reader that maps over {@link EppResourceIndex} and returns resources that are children of {@link
+ * EppResource} objects.
  */
 class ChildEntityReader<R extends EppResource, I extends ImmutableObject> extends InputReader<I> {
 

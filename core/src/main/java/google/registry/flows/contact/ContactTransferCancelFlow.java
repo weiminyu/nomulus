@@ -67,7 +67,9 @@ public final class ContactTransferCancelFlow implements TransactionalFlow {
   @Inject @TargetId String targetId;
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject ContactTransferCancelFlow() {}
+
+  @Inject
+  ContactTransferCancelFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -81,11 +83,12 @@ public final class ContactTransferCancelFlow implements TransactionalFlow {
     verifyTransferInitiator(clientId, existingContact);
     ContactResource newContact =
         denyPendingTransfer(existingContact, TransferStatus.CLIENT_CANCELLED, now, clientId);
-    HistoryEntry historyEntry = historyBuilder
-        .setType(HistoryEntry.Type.CONTACT_TRANSFER_CANCEL)
-        .setModificationTime(now)
-        .setParent(Key.create(existingContact))
-        .build();
+    HistoryEntry historyEntry =
+        historyBuilder
+            .setType(HistoryEntry.Type.CONTACT_TRANSFER_CANCEL)
+            .setModificationTime(now)
+            .setParent(Key.create(existingContact))
+            .build();
     // Create a poll message for the losing client.
     PollMessage losingPollMessage =
         createLosingTransferPollMessage(targetId, newContact.getTransferData(), historyEntry);

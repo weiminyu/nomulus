@@ -207,7 +207,9 @@ public class DomainCreateFlow implements TransactionalFlow {
   @Inject DomainFlowTmchUtils tmchUtils;
   @Inject DomainPricingLogic pricingLogic;
   @Inject DnsQueue dnsQueue;
-  @Inject DomainCreateFlow() {}
+
+  @Inject
+  DomainCreateFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
@@ -297,8 +299,8 @@ public class DomainCreateFlow implements TransactionalFlow {
         validateSecDnsExtension(eppInput.getSingleExtension(SecDnsCreateExtension.class));
     String repoId = createDomainRepoId(ObjectifyService.allocateId(), registry.getTldStr());
     DateTime registrationExpirationTime = leapSafeAddYears(now, years);
-    HistoryEntry historyEntry = buildHistoryEntry(
-        repoId, registry, now, period, registry.getAddGracePeriodLength());
+    HistoryEntry historyEntry =
+        buildHistoryEntry(repoId, registry, now, period, registry.getAddGracePeriodLength());
     // Bill for the create.
     BillingEvent.OneTime createBillingEvent =
         createOneTimeBillingEvent(
@@ -318,10 +320,7 @@ public class DomainCreateFlow implements TransactionalFlow {
         createAutorenewPollMessage(historyEntry, registrationExpirationTime);
     ImmutableSet.Builder<ImmutableObject> entitiesToSave = new ImmutableSet.Builder<>();
     entitiesToSave.add(
-        historyEntry,
-        createBillingEvent,
-        autorenewBillingEvent,
-        autorenewPollMessage);
+        historyEntry, createBillingEvent, autorenewBillingEvent, autorenewPollMessage);
     // Bill for EAP cost, if any.
     if (!feesAndCredits.getEapCost().isZero()) {
       entitiesToSave.add(createEapBillingEvent(feesAndCredits, createBillingEvent));
@@ -477,14 +476,13 @@ public class DomainCreateFlow implements TransactionalFlow {
       String repoId, Registry registry, DateTime now, Period period, Duration addGracePeriod) {
     // We ignore prober transactions
     if (registry.getTldType() == TldType.REAL) {
-      historyBuilder
-          .setDomainTransactionRecords(
-              ImmutableSet.of(
-                  DomainTransactionRecord.create(
-                      registry.getTldStr(),
-                      now.plus(addGracePeriod),
-                      TransactionReportField.netAddsFieldFromYears(period.getValue()),
-                      1)));
+      historyBuilder.setDomainTransactionRecords(
+          ImmutableSet.of(
+              DomainTransactionRecord.create(
+                  registry.getTldStr(),
+                  now.plus(addGracePeriod),
+                  TransactionReportField.netAddsFieldFromYears(period.getValue()),
+                  1)));
     }
     return historyBuilder
         .setType(HistoryEntry.Type.DOMAIN_CREATE)
@@ -587,8 +585,7 @@ public class DomainCreateFlow implements TransactionalFlow {
         .build();
   }
 
-  private void enqueueTasks(
-      DomainBase newDomain, boolean hasSignedMarks, boolean hasClaimsNotice) {
+  private void enqueueTasks(DomainBase newDomain, boolean hasSignedMarks, boolean hasClaimsNotice) {
     if (newDomain.shouldPublishToDns()) {
       dnsQueue.addDomainRefreshTask(newDomain.getFullyQualifiedDomainName());
     }

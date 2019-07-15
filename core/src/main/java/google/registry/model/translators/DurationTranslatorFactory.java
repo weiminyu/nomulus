@@ -34,6 +34,7 @@ public class DurationTranslatorFactory extends AbstractSimpleTranslatorFactory<D
       @Override
       public String saveValue(Duration pojoValue) {
         return pojoValue.toString();
-      }};
+      }
+    };
   }
 }

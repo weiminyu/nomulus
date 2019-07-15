@@ -54,8 +54,7 @@ public class AuthModuleTest {
   private static final String ACCESS_TOKEN = "FakeAccessToken";
   private static final String REFRESH_TOKEN = "FakeReFreshToken";
 
-  @Rule
-  public final TemporaryFolder folder = new TemporaryFolder();
+  @Rule public final TemporaryFolder folder = new TemporaryFolder();
 
   private final Credential fakeCredential =
       new Credential.Builder(

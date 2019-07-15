@@ -25,9 +25,7 @@ import java.util.List;
 @Parameters(separators = " =", commandDescription = "Show domain resource(s)")
 final class GetDomainCommand extends GetEppResourceCommand {
 
-  @Parameter(
-      description = "Fully qualified domain name(s)",
-      required = true)
+  @Parameter(description = "Fully qualified domain name(s)", required = true)
   private List<String> mainParameters;
 
   @Override

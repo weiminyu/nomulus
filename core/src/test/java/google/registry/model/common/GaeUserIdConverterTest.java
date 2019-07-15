@@ -28,10 +28,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class GaeUserIdConverterTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   @After
   public void verifyNoLingeringEntities() {

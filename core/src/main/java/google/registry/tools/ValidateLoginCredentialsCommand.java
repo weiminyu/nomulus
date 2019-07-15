@@ -72,8 +72,9 @@ final class ValidateLoginCredentialsCommand implements CommandWithRemoteApi {
         clientCertificatePath == null || isNullOrEmpty(clientCertificateHash),
         "Can't specify both --cert_hash and --cert_file");
     if (clientCertificatePath != null) {
-      clientCertificateHash = getCertificateHash(
-          loadCertificate(new String(Files.readAllBytes(clientCertificatePath), US_ASCII)));
+      clientCertificateHash =
+          getCertificateHash(
+              loadCertificate(new String(Files.readAllBytes(clientCertificatePath), US_ASCII)));
     }
     Registrar registrar =
         checkArgumentPresent(

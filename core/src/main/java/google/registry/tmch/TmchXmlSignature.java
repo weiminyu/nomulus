@@ -58,8 +58,7 @@ import org.xml.sax.SAXException;
 @ThreadSafe
 public class TmchXmlSignature {
 
-  @VisibleForTesting
-  final TmchCertificateAuthority tmchCertificateAuthority;
+  @VisibleForTesting final TmchCertificateAuthority tmchCertificateAuthority;
 
   @Inject
   public TmchXmlSignature(TmchCertificateAuthority tmchCertificateAuthority) {
@@ -118,10 +117,9 @@ public class TmchXmlSignature {
     return dbf.newDocumentBuilder().parse(input);
   }
 
-  private static String explainValidationProblem(
-      DOMValidateContext context, XMLSignature signature)
-          throws XMLSignatureException {
-    @SuppressWarnings("unchecked")  // Safe by specification.
+  private static String explainValidationProblem(DOMValidateContext context, XMLSignature signature)
+      throws XMLSignatureException {
+    @SuppressWarnings("unchecked") // Safe by specification.
     List<Reference> references = signature.getSignedInfo().getReferences();
     StringBuilder builder = new StringBuilder();
     builder.append("Signature failed core validation\n");

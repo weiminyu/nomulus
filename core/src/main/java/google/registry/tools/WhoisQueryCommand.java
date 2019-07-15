@@ -25,21 +25,16 @@ import javax.inject.Inject;
 @Parameters(separators = " =", commandDescription = "Manually perform a WHOIS query")
 final class WhoisQueryCommand implements CommandWithRemoteApi {
 
-  @Parameter(
-      description = "WHOIS query string",
-      required = true)
+  @Parameter(description = "WHOIS query string", required = true)
   private List<String> mainParameters;
 
-  @Parameter(
-      names = "--unicode",
-      description = "When set, output will be Unicode")
+  @Parameter(names = "--unicode", description = "When set, output will be Unicode")
   private boolean unicode;
 
   @Parameter(names = "--full_output", description = "When set, the full output will be displayed")
   private boolean fullOutput;
 
-  @Inject
-  Whois whois;
+  @Inject Whois whois;
 
   @Override
   public void run() {

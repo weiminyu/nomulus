@@ -71,11 +71,7 @@ public class EppServiceHandlerTest {
 
   private final EppServiceHandler eppServiceHandler =
       new EppServiceHandler(
-          RELAY_HOST,
-          RELAY_PATH,
-          () -> ACCESS_TOKEN,
-          HELLO.getBytes(UTF_8),
-          metrics);
+          RELAY_HOST, RELAY_PATH, () -> ACCESS_TOKEN, HELLO.getBytes(UTF_8), metrics);
 
   private EmbeddedChannel channel;
 
@@ -149,11 +145,7 @@ public class EppServiceHandlerTest {
     // Setup the second channel.
     EppServiceHandler eppServiceHandler2 =
         new EppServiceHandler(
-            RELAY_HOST,
-            RELAY_PATH,
-            () -> ACCESS_TOKEN,
-            HELLO.getBytes(UTF_8),
-            metrics);
+            RELAY_HOST, RELAY_PATH, () -> ACCESS_TOKEN, HELLO.getBytes(UTF_8), metrics);
     EmbeddedChannel channel2 = setUpNewChannel(eppServiceHandler2);
     setHandshakeSuccess(channel2, clientCertificate);
 
@@ -173,11 +165,7 @@ public class EppServiceHandlerTest {
     // Setup the second channel.
     EppServiceHandler eppServiceHandler2 =
         new EppServiceHandler(
-            RELAY_HOST,
-            RELAY_PATH,
-            () -> ACCESS_TOKEN,
-            HELLO.getBytes(UTF_8),
-            metrics);
+            RELAY_HOST, RELAY_PATH, () -> ACCESS_TOKEN, HELLO.getBytes(UTF_8), metrics);
     EmbeddedChannel channel2 = setUpNewChannel(eppServiceHandler2);
     X509Certificate clientCertificate2 = new SelfSignedCertificate().cert();
     setHandshakeSuccess(channel2, clientCertificate2);

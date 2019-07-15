@@ -25,9 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-/**
- * Unit tests for {@link ListHostsAction}.
- */
+/** Unit tests for {@link ListHostsAction}. */
 @RunWith(JUnit4.class)
 public class ListHostsActionTest extends ListActionTestCase {
 
@@ -42,11 +40,7 @@ public class ListHostsActionTest extends ListActionTestCase {
 
   @Test
   public void testRun_noParameters() {
-    testRunSuccess(
-        action,
-        null,
-        null,
-        null);
+    testRunSuccess(action, null, null, null);
   }
 
   @Test

@@ -39,8 +39,8 @@ public class MarkdownDocumentationFormatterTest {
 
   @Test
   public void testDedents() {
-    assertThat(MarkdownDocumentationFormatter.fixHtml(
-        "First line\n\n <p>Second line.\n Third line."))
+    assertThat(
+            MarkdownDocumentationFormatter.fixHtml("First line\n\n <p>Second line.\n Third line."))
         .isEqualTo("First line\n\nSecond line.\nThird line.");
   }
 
@@ -61,32 +61,32 @@ public class MarkdownDocumentationFormatterTest {
   public void testReflow() {
     String input =
         "This is the very first line.\n"
-        + "  \n"  // add a little blank space to this line just to make things interesting.
-        + "This is the second paragraph.  Aint\n"
-        + "it sweet?\n"
-        + "\n"
-        + "This is our third and final paragraph.\n"
-        + "It is multi-line and ends with no blank\n"
-        + "line.";
+            + "  \n" // add a little blank space to this line just to make things interesting.
+            + "This is the second paragraph.  Aint\n"
+            + "it sweet?\n"
+            + "\n"
+            + "This is our third and final paragraph.\n"
+            + "It is multi-line and ends with no blank\n"
+            + "line.";
 
     String expected =
         "This is the very\n"
-        + "first line.\n"
-        + "\n"
-        + "This is the\n"
-        + "second\n"
-        + "paragraph. Aint\n"
-        + "it sweet?\n"
-        + "\n"
-        + "This is our\n"
-        + "third and final\n"
-        + "paragraph. It is\n"
-        + "multi-line and\n"
-        + "ends with no\n"
-        + "blank line.\n";
+            + "first line.\n"
+            + "\n"
+            + "This is the\n"
+            + "second\n"
+            + "paragraph. Aint\n"
+            + "it sweet?\n"
+            + "\n"
+            + "This is our\n"
+            + "third and final\n"
+            + "paragraph. It is\n"
+            + "multi-line and\n"
+            + "ends with no\n"
+            + "blank line.\n";
 
-      assertThat(MarkdownDocumentationFormatter.reflow(input, 16)).isEqualTo(expected);
-    }
+    assertThat(MarkdownDocumentationFormatter.reflow(input, 16)).isEqualTo(expected);
+  }
 
   public MarkdownDocumentationFormatterTest() {}
 }

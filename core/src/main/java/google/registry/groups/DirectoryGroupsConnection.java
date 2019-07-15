@@ -35,9 +35,7 @@ import java.io.IOException;
 import java.util.Set;
 import javax.inject.Inject;
 
-/**
- * Class encapsulating methods to access Google Groups API.
- */
+/** Class encapsulating methods to access Google Groups API. */
 public class DirectoryGroupsConnection implements GroupsConnection {
 
   // NOTE: These error message strings were determined empirically. The API documentation contains
@@ -79,8 +77,13 @@ public class DirectoryGroupsConnection implements GroupsConnection {
 
   @Inject Directory directory;
   @Inject Groupssettings groupsSettings;
-  @Inject @Config("gSuiteAdminAccountEmailAddress") String gSuiteAdminAccountEmailAddress;
-  @Inject DirectoryGroupsConnection() {}
+
+  @Inject
+  @Config("gSuiteAdminAccountEmailAddress")
+  String gSuiteAdminAccountEmailAddress;
+
+  @Inject
+  DirectoryGroupsConnection() {}
 
   @Override
   public void addMemberToGroup(String groupKey, String email, Role role) throws IOException {
@@ -104,10 +107,11 @@ public class DirectoryGroupsConnection implements GroupsConnection {
         createGroup(groupKey);
         addMemberToGroup(groupKey, email, role);
       } else if (err.getCode() == SC_NOT_FOUND && err.getMessage().equals(MEMBER_NOT_FOUND_MSG)) {
-        throw new RuntimeException(String.format(
-            "Adding member %s to group %s failed because the member wasn't found.",
-            email,
-            groupKey), e);
+        throw new RuntimeException(
+            String.format(
+                "Adding member %s to group %s failed because the member wasn't found.",
+                email, groupKey),
+            e);
       } else if (err.getCode() == SC_CONFLICT
           && err.getMessage().equals(MEMBER_ALREADY_EXISTS_MSG)) {
         // This error case usually happens when an email address is already a member of the gorup,

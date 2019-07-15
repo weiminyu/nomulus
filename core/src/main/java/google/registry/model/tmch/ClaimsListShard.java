@@ -73,22 +73,18 @@ public class ClaimsListShard extends ImmutableObject {
   /** The number of claims list entries to store per shard. */
   private static final int SHARD_SIZE = 10000;
 
-  @Id
-  long id;
+  @Id long id;
 
-  @Parent
-  Key<ClaimsListRevision> parent;
+  @Parent Key<ClaimsListRevision> parent;
 
   /** When the claims list was last updated. */
   DateTime creationTime;
 
   /** A map from labels to claims keys. */
-  @EmbedMap
-  Map<String, String> labelsToKeys;
+  @EmbedMap Map<String, String> labelsToKeys;
 
   /** Indicates that this is a shard rather than a "full" list. */
-  @Ignore
-  boolean isShard = false;
+  @Ignore boolean isShard = false;
 
   private static final Retrier LOADER_RETRIER = new Retrier(new SystemSleeper(), 2);
 
@@ -243,11 +239,9 @@ public class ClaimsListShard extends ImmutableObject {
   @Entity
   @VirtualEntity
   public static class ClaimsListRevision extends ImmutableObject {
-    @Parent
-    Key<ClaimsListSingleton> parent;
+    @Parent Key<ClaimsListSingleton> parent;
 
-    @Id
-    long versionId;
+    @Id long versionId;
 
     @VisibleForTesting
     public static Key<ClaimsListRevision> createKey(ClaimsListSingleton singleton) {
@@ -264,8 +258,8 @@ public class ClaimsListShard extends ImmutableObject {
   }
 
   /**
-   * Serves as the coordinating claims list singleton linking to the {@link ClaimsListRevision}
-   * that is live.
+   * Serves as the coordinating claims list singleton linking to the {@link ClaimsListRevision} that
+   * is live.
    */
   @Entity
   @NotBackedUp(reason = Reason.EXTERNALLY_SOURCED)

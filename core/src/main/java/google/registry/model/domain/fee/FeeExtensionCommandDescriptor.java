@@ -24,14 +24,11 @@ import javax.xml.bind.annotation.XmlValue;
 /** A command name along with the launch phase and subphase it is to be executed in. */
 public class FeeExtensionCommandDescriptor extends ImmutableObject {
 
-  @XmlAttribute
-  String phase;
+  @XmlAttribute String phase;
 
-  @XmlAttribute
-  String subphase;
+  @XmlAttribute String subphase;
 
-  @XmlValue
-  String command;
+  @XmlValue String command;
 
   public String getPhase() {
     return phase;
@@ -57,8 +54,8 @@ public class FeeExtensionCommandDescriptor extends ImmutableObject {
     return CommandName.UNKNOWN;
   }
 
-  public static FeeExtensionCommandDescriptor
-      create(CommandName commandName, String phase, String subphase) {
+  public static FeeExtensionCommandDescriptor create(
+      CommandName commandName, String phase, String subphase) {
     FeeExtensionCommandDescriptor commandDescriptor = new FeeExtensionCommandDescriptor();
     commandDescriptor.command = Ascii.toLowerCase(commandName.name());
     commandDescriptor.phase = phase;

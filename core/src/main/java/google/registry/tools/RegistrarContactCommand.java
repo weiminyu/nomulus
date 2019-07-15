@@ -53,9 +53,7 @@ import javax.annotation.Nullable;
     commandDescription = "Create/read/update/delete the various contact lists for a Registrar.")
 final class RegistrarContactCommand extends MutatingCommand {
 
-  @Parameter(
-      description = "Client identifier of the registrar account.",
-      required = true)
+  @Parameter(description = "Client identifier of the registrar account.", required = true)
   List<String> mainParameters;
 
   @Parameter(
@@ -65,22 +63,19 @@ final class RegistrarContactCommand extends MutatingCommand {
   Mode mode;
 
   @Nullable
-  @Parameter(
-      names = "--name",
-      description = "Contact name.")
+  @Parameter(names = "--name", description = "Contact name.")
   String name;
 
   @Nullable
   @Parameter(
       names = "--contact_type",
-      description = "Type of communications for this contact; separate multiple with commas."
-          + " Allowed values are ABUSE, ADMIN, BILLING, LEGAL, MARKETING, TECH, WHOIS.")
+      description =
+          "Type of communications for this contact; separate multiple with commas."
+              + " Allowed values are ABUSE, ADMIN, BILLING, LEGAL, MARKETING, TECH, WHOIS.")
   private List<String> contactTypeNames;
 
   @Nullable
-  @Parameter(
-      names = "--email",
-      description = "Contact email address.")
+  @Parameter(names = "--email", description = "Contact email address.")
   String email;
 
   @Nullable
@@ -109,25 +104,26 @@ final class RegistrarContactCommand extends MutatingCommand {
   @Nullable
   @Parameter(
       names = "--visible_in_whois_as_admin",
-      description = " Whether this contact is publicly visible in WHOIS results as an "
-          + "Admin contact.",
+      description =
+          " Whether this contact is publicly visible in WHOIS results as an " + "Admin contact.",
       arity = 1)
   private Boolean visibleInWhoisAsAdmin;
 
   @Nullable
   @Parameter(
       names = "--visible_in_whois_as_tech",
-      description = " Whether this contact is publicly visible in WHOIS results as a "
-          + "Tech contact.",
+      description =
+          " Whether this contact is publicly visible in WHOIS results as a " + "Tech contact.",
       arity = 1)
   private Boolean visibleInWhoisAsTech;
 
   @Nullable
   @Parameter(
       names = "--visible_in_domain_whois_as_abuse",
-      description = " Whether this contact is publicly visible in WHOIS domain results as the "
-          + "registry abuse phone and email. If this flag is set, it will be cleared from all "
-          + "other contacts for the same registrar.",
+      description =
+          " Whether this contact is publicly visible in WHOIS domain results as the "
+              + "registry abuse phone and email. If this flag is set, it will be cleared from all "
+              + "other contacts for the same registrar.",
       arity = 1)
   private Boolean visibleInDomainWhoisAsAbuse;
 
@@ -137,18 +133,24 @@ final class RegistrarContactCommand extends MutatingCommand {
       validateWith = PathParameter.OutputFile.class)
   private Path output = Paths.get("/dev/stdout");
 
-  enum Mode { LIST, CREATE, UPDATE, DELETE }
+  enum Mode {
+    LIST,
+    CREATE,
+    UPDATE,
+    DELETE
+  }
 
   private static final ImmutableSet<Mode> MODES_REQUIRING_CONTACT_SYNC =
       ImmutableSet.of(Mode.CREATE, Mode.UPDATE, Mode.DELETE);
 
-  @Nullable
-  private ImmutableSet<RegistrarContact.Type> contactTypes;
+  @Nullable private ImmutableSet<RegistrarContact.Type> contactTypes;
 
   @Override
   protected void init() throws Exception {
-    checkArgument(mainParameters.size() == 1,
-        "Must specify exactly one client identifier: %s", ImmutableList.copyOf(mainParameters));
+    checkArgument(
+        mainParameters.size() == 1,
+        "Must specify exactly one client identifier: %s",
+        ImmutableList.copyOf(mainParameters));
     String clientId = mainParameters.get(0);
     Registrar registrar =
         checkArgumentPresent(
@@ -156,18 +158,20 @@ final class RegistrarContactCommand extends MutatingCommand {
     // If the contact_type parameter is not specified, we should not make any changes.
     if (contactTypeNames == null) {
       contactTypes = null;
-    // It appears that when the user specifies "--contact_type=" with no types following, JCommander
-    // sets contactTypeNames to a one-element list containing the empty string. This is strange, but
-    // we need to handle this by setting the contact types to the empty set. Also do this if
-    // contactTypeNames is empty, which is what I would hope JCommander would return in some future,
-    // better world.
+      // It appears that when the user specifies "--contact_type=" with no types following,
+      // JCommander
+      // sets contactTypeNames to a one-element list containing the empty string. This is strange,
+      // but
+      // we need to handle this by setting the contact types to the empty set. Also do this if
+      // contactTypeNames is empty, which is what I would hope JCommander would return in some
+      // future,
+      // better world.
     } else if (contactTypeNames.isEmpty()
         || ((contactTypeNames.size() == 1) && contactTypeNames.get(0).isEmpty())) {
       contactTypes = ImmutableSet.of();
     } else {
       contactTypes =
-          contactTypeNames
-              .stream()
+          contactTypeNames.stream()
               .map(Enums.stringConverter(RegistrarContact.Type.class))
               .collect(toImmutableSet());
     }
@@ -247,9 +251,10 @@ final class RegistrarContactCommand extends MutatingCommand {
     builder.setTypes(nullToEmpty(contactTypes));
 
     if (Objects.equals(allowConsoleAccess, Boolean.TRUE)) {
-      builder.setGaeUserId(checkArgumentNotNull(
-          GaeUserIdConverter.convertEmailAddressToGaeUserId(email),
-          String.format("Email address %s is not associated with any GAE ID", email)));
+      builder.setGaeUserId(
+          checkArgumentNotNull(
+              GaeUserIdConverter.convertEmailAddressToGaeUserId(email),
+              String.format("Email address %s is not associated with any GAE ID", email)));
     }
     if (visibleInWhoisAsAdmin != null) {
       builder.setVisibleInWhoisAsAdmin(visibleInWhoisAsAdmin);
@@ -294,9 +299,10 @@ final class RegistrarContactCommand extends MutatingCommand {
     }
     if (allowConsoleAccess != null) {
       if (allowConsoleAccess.equals(Boolean.TRUE)) {
-        builder.setGaeUserId(checkArgumentNotNull(
-            GaeUserIdConverter.convertEmailAddressToGaeUserId(email),
-            String.format("Email address %s is not associated with any GAE ID", email)));
+        builder.setGaeUserId(
+            checkArgumentNotNull(
+                GaeUserIdConverter.convertEmailAddressToGaeUserId(email),
+                String.format("Email address %s is not associated with any GAE ID", email)));
       } else {
         builder.setGaeUserId(null);
       }

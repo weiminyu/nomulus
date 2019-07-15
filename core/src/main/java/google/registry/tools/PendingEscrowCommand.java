@@ -36,16 +36,15 @@ final class PendingEscrowCommand implements CommandWithRemoteApi {
               .compare(left.mode(), right.mode())
               .compare(left.watermark(), right.watermark())
               .result();
-        }};
+        }
+      };
 
-  @Inject
-  PendingDepositChecker checker;
+  @Inject PendingDepositChecker checker;
 
   @Override
   public void run() {
     System.out.println(
-        SORTER
-            .sortedCopy(checker.getTldsAndWatermarksPendingDepositForRdeAndBrda().values())
+        SORTER.sortedCopy(checker.getTldsAndWatermarksPendingDepositForRdeAndBrda().values())
             .stream()
             .map(Object::toString)
             .collect(joining("\n")));

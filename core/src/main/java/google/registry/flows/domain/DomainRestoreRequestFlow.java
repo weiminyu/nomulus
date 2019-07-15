@@ -108,7 +108,7 @@ import org.joda.time.DateTime;
  * @error {@link DomainRestoreRequestFlow.RestoreCommandIncludesChangesException}
  */
 @ReportingSpec(ActivityReportField.DOMAIN_RGP_RESTORE_REQUEST)
-public final class DomainRestoreRequestFlow implements TransactionalFlow  {
+public final class DomainRestoreRequestFlow implements TransactionalFlow {
 
   @Inject ResourceCommand resourceCommand;
   @Inject ExtensionManager extensionManager;
@@ -121,14 +121,14 @@ public final class DomainRestoreRequestFlow implements TransactionalFlow  {
   @Inject DnsQueue dnsQueue;
   @Inject EppResponse.Builder responseBuilder;
   @Inject DomainPricingLogic pricingLogic;
-  @Inject DomainRestoreRequestFlow() {}
+
+  @Inject
+  DomainRestoreRequestFlow() {}
 
   @Override
   public final EppResponse run() throws EppException {
     extensionManager.register(
-        FeeUpdateCommandExtension.class,
-        MetadataExtension.class,
-        RgpUpdateExtension.class);
+        FeeUpdateCommandExtension.class, MetadataExtension.class, RgpUpdateExtension.class);
     extensionManager.validate();
     validateClientIsLoggedIn(clientId);
     verifyRegistrarIsActive(clientId);
@@ -150,16 +150,18 @@ public final class DomainRestoreRequestFlow implements TransactionalFlow  {
     // and to charge them for that again. Instead, we just say that all restores get a fresh year of
     // registration and bill them for that accordingly.
     DateTime newExpirationTime = now.plusYears(1);
-    BillingEvent.Recurring autorenewEvent = newAutorenewBillingEvent(existingDomain)
-        .setEventTime(newExpirationTime)
-        .setRecurrenceEndTime(END_OF_TIME)
-        .setParent(historyEntry)
-        .build();
-    PollMessage.Autorenew autorenewPollMessage = newAutorenewPollMessage(existingDomain)
-        .setEventTime(newExpirationTime)
-        .setAutorenewEndTime(END_OF_TIME)
-        .setParent(historyEntry)
-        .build();
+    BillingEvent.Recurring autorenewEvent =
+        newAutorenewBillingEvent(existingDomain)
+            .setEventTime(newExpirationTime)
+            .setRecurrenceEndTime(END_OF_TIME)
+            .setParent(historyEntry)
+            .build();
+    PollMessage.Autorenew autorenewPollMessage =
+        newAutorenewPollMessage(existingDomain)
+            .setEventTime(newExpirationTime)
+            .setAutorenewEndTime(END_OF_TIME)
+            .setParent(historyEntry)
+            .build();
     DomainBase newDomain =
         performRestore(
             existingDomain, newExpirationTime, autorenewEvent, autorenewPollMessage, now, clientId);
@@ -192,7 +194,8 @@ public final class DomainRestoreRequestFlow implements TransactionalFlow  {
       DomainBase existingDomain,
       Optional<FeeUpdateCommandExtension> feeUpdate,
       FeesAndCredits feesAndCredits,
-      DateTime now) throws EppException {
+      DateTime now)
+      throws EppException {
     verifyOptionalAuthInfo(authInfo, existingDomain);
     if (!isSuperuser) {
       verifyResourceOwnership(clientId, existingDomain);
@@ -246,16 +249,12 @@ public final class DomainRestoreRequestFlow implements TransactionalFlow  {
 
   private OneTime createRenewBillingEvent(
       HistoryEntry historyEntry, Money renewCost, DateTime now) {
-    return prepareBillingEvent(historyEntry, renewCost, now)
-        .setReason(Reason.RENEW)
-        .build();
+    return prepareBillingEvent(historyEntry, renewCost, now).setReason(Reason.RENEW).build();
   }
 
   private BillingEvent.OneTime createRestoreBillingEvent(
       HistoryEntry historyEntry, Money restoreCost, DateTime now) {
-    return prepareBillingEvent(historyEntry, restoreCost, now)
-        .setReason(Reason.RESTORE)
-        .build();
+    return prepareBillingEvent(historyEntry, restoreCost, now).setReason(Reason.RESTORE).build();
   }
 
   private OneTime.Builder prepareBillingEvent(HistoryEntry historyEntry, Money cost, DateTime now) {

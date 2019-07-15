@@ -61,9 +61,7 @@ public final class Concurrent {
    * @return transformed {@code items} in the same order.
    */
   public static <A, B> ImmutableList<B> transform(
-      Collection<A> items,
-      int maxThreadCount,
-      final Function<A, B> funk) {
+      Collection<A> items, int maxThreadCount, final Function<A, B> funk) {
     checkNotNull(funk);
     checkNotNull(items);
     int threadCount = max(1, min(items.size(), maxThreadCount));

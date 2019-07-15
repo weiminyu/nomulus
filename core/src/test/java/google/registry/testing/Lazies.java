@@ -19,9 +19,7 @@ import dagger.Lazy;
 /** Helper functions for {@link Lazy}. */
 public final class Lazies {
 
-  /**
-   * Returns a {@link Lazy} that supplies a constant value.
-   */
+  /** Returns a {@link Lazy} that supplies a constant value. */
   public static <T> Lazy<T> of(final T instance) {
     return () -> instance;
   }

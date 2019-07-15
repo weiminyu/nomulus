@@ -61,15 +61,11 @@ import org.mockito.junit.MockitoRule;
 @RunWith(JUnit4.class)
 public final class ConsoleOteSetupActionTest {
 
-  @Rule
-  public final AppEngineRule appEngineRule = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngineRule = AppEngineRule.builder().withDatastore().build();
 
   @Rule public final MockitoRule mocks = MockitoJUnit.rule();
 
-  @Rule
-  public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
+  @Rule public final SystemPropertyRule systemPropertyRule = new SystemPropertyRule();
 
   private final FakeResponse response = new FakeResponse();
   private final ConsoleOteSetupAction action = new ConsoleOteSetupAction();
@@ -180,12 +176,10 @@ public final class ConsoleOteSetupActionTest {
 
     // We just check some samples to make sure OteAccountBuilder was called successfully. We aren't
     // checking that all the entities are there or that they have the correct values.
-    assertThat(loadByClientId("myclientid-4").get().testPassword("SomePassword"))
-        .isTrue();
+    assertThat(loadByClientId("myclientid-4").get().testPassword("SomePassword")).isTrue();
     assertThat(response.getPayload())
         .contains("<h1>OT&E successfully created for registrar myclientid!</h1>");
-    assertThat(response.getPayload())
-        .contains("SomePassword");
+    assertThat(response.getPayload()).contains("SomePassword");
   }
 
   @Test

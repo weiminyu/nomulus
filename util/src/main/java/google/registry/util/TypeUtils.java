@@ -47,7 +47,8 @@ public class TypeUtils {
   }
 
   public static <T> T instantiate(Class<? extends T> clazz) {
-    checkArgument(Modifier.isPublic(clazz.getModifiers()),
+    checkArgument(
+        Modifier.isPublic(clazz.getModifiers()),
         "AppEngine's custom security manager won't let us reflectively access non-public types");
     try {
       return clazz.getConstructor().newInstance();
@@ -63,7 +64,8 @@ public class TypeUtils {
    * exactly the same type as the constructor argument. Subtypes are not allowed.
    */
   public static <T, U> T instantiate(Class<? extends T> clazz, U arg1) {
-    checkArgument(Modifier.isPublic(clazz.getModifiers()),
+    checkArgument(
+        Modifier.isPublic(clazz.getModifiers()),
         "AppEngine's custom security manager won't let us reflectively access non-public types");
     try {
       return clazz.getConstructor(arg1.getClass()).newInstance(arg1);
@@ -94,9 +96,7 @@ public class TypeUtils {
     return castedClass;
   }
 
-  /**
-   * Aggregates enum "values" in a typesafe enum pattern into a string->field map.
-   */
+  /** Aggregates enum "values" in a typesafe enum pattern into a string->field map. */
   @SuppressWarnings("unchecked")
   public static <T> ImmutableMap<String, T> getTypesafeEnumMapping(Class<T> clazz) {
     ImmutableMap.Builder<String, T> builder = new ImmutableMap.Builder<>();
@@ -108,8 +108,10 @@ public class TypeUtils {
           T enumField = (T) field.get(null);
           builder.put(field.getName(), enumField);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-          throw new RuntimeException(String.format(
-              "Could not retrieve static final field mapping for %s", clazz.getName()), e);
+          throw new RuntimeException(
+              String.format(
+                  "Could not retrieve static final field mapping for %s", clazz.getName()),
+              e);
         }
       }
     }
@@ -117,8 +119,7 @@ public class TypeUtils {
   }
 
   /** Returns a predicate that tests whether classes are annotated with the given annotation. */
-  public static Predicate<Class<?>> hasAnnotation(
-      final Class<? extends Annotation> annotation) {
+  public static Predicate<Class<?>> hasAnnotation(final Class<? extends Annotation> annotation) {
     return clazz -> clazz.isAnnotationPresent(annotation);
   }
 

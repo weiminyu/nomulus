@@ -46,8 +46,12 @@ public class CreatePremiumListAction extends CreateOrUpdatePremiumListAction {
   public static final String OVERRIDE_PARAM = "override";
   public static final String PATH = "/_dr/admin/createPremiumList";
 
-  @Inject @Parameter(OVERRIDE_PARAM) boolean override;
-  @Inject CreatePremiumListAction() {}
+  @Inject
+  @Parameter(OVERRIDE_PARAM)
+  boolean override;
+
+  @Inject
+  CreatePremiumListAction() {}
 
   @Override
   protected void savePremiumList() {

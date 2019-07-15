@@ -33,22 +33,22 @@ import javax.xml.bind.annotation.XmlRootElement;
  * commands.
  *
  * <p>This object holds XML data which JAXB will unmarshal from an EPP domain create command
- * extension.  The XML will have the following enclosing structure:
+ * extension. The XML will have the following enclosing structure:
  *
- * <pre> {@code
- *   <epp>
- *     <command>
- *       <create>
- *         <!-- domain create XML data -->
- *       </create>
- *       <extension>
- *         <launch:create>
- *           <!-- launch create XML payload data -->
- *         </launch:create>
- *       </extension>
- *     </command>
- *   </epp>
- * } </pre>
+ * <pre>{@code
+ * <epp>
+ *   <command>
+ *     <create>
+ *       <!-- domain create XML data -->
+ *     </create>
+ *     <extension>
+ *       <launch:create>
+ *         <!-- launch create XML payload data -->
+ *       </launch:create>
+ *     </extension>
+ *   </command>
+ * </epp>
+ * }</pre>
  *
  * @see CommandExtension
  */
@@ -75,18 +75,18 @@ public class LaunchCreateExtension extends LaunchExtension implements CommandExt
     REGISTRATION
   }
 
-  @XmlAttribute
-  CreateType type;
+  @XmlAttribute CreateType type;
 
   /**
    * A list of signed marks or encoded signed marks which assert the client's ability to register
-   * the specified domain name.  Each one contains both a Mark object with information about its
+   * the specified domain name. Each one contains both a Mark object with information about its
    * claim(s), and an XML signature over that mark object which is cryptographically signed. This is
    * used in the "signed mark" validation model.
    */
   @XmlElementRefs({
-      @XmlElementRef(type = EncodedSignedMark.class),
-      @XmlElementRef(type = SignedMark.class)})
+    @XmlElementRef(type = EncodedSignedMark.class),
+    @XmlElementRef(type = SignedMark.class)
+  })
   List<AbstractSignedMark> signedMarks;
 
   /**

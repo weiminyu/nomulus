@@ -96,21 +96,22 @@ public final class DomainInfoFlow implements Flow {
     extensionManager.validate();
     validateClientIsLoggedIn(clientId);
     DateTime now = clock.nowUtc();
-    DomainBase domain = verifyExistence(
-        DomainBase.class, targetId, loadByForeignKey(DomainBase.class, targetId, now));
+    DomainBase domain =
+        verifyExistence(
+            DomainBase.class, targetId, loadByForeignKey(DomainBase.class, targetId, now));
     verifyOptionalAuthInfo(authInfo, domain);
     flowCustomLogic.afterValidation(
         AfterValidationParameters.newBuilder().setDomain(domain).build());
     // Prefetch all referenced resources. Calling values() blocks until loading is done.
-    ofy().load()
-        .values(union(domain.getNameservers(), domain.getReferencedContacts())).values();
+    ofy().load().values(union(domain.getNameservers(), domain.getReferencedContacts())).values();
     // Registrars can only see a few fields on unauthorized domains.
     // This is a policy decision that is left up to us by the rfcs.
-    DomainInfoData.Builder infoBuilder = DomainInfoData.newBuilder()
-        .setFullyQualifiedDomainName(domain.getFullyQualifiedDomainName())
-        .setRepoId(domain.getRepoId())
-        .setCurrentSponsorClientId(domain.getCurrentSponsorClientId())
-        .setRegistrant(ofy().load().key(domain.getRegistrant()).now().getContactId());
+    DomainInfoData.Builder infoBuilder =
+        DomainInfoData.newBuilder()
+            .setFullyQualifiedDomainName(domain.getFullyQualifiedDomainName())
+            .setRepoId(domain.getRepoId())
+            .setCurrentSponsorClientId(domain.getCurrentSponsorClientId())
+            .setRegistrant(ofy().load().key(domain.getRegistrant()).now().getContactId());
     // If authInfo is non-null, then the caller is authorized to see the full information since we
     // will have already verified the authInfo is valid.
     if (clientId.equals(domain.getCurrentSponsorClientId()) || authInfo.isPresent()) {
@@ -118,12 +119,12 @@ public final class DomainInfoFlow implements Flow {
       infoBuilder
           .setStatusValues(domain.getStatusValues())
           .setContacts(loadForeignKeyedDesignatedContacts(domain.getContacts()))
-          .setNameservers(hostsRequest.requestDelegated()
-              ? domain.loadNameserverFullyQualifiedHostNames()
-              : null)
-          .setSubordinateHosts(hostsRequest.requestSubordinate()
-              ? domain.getSubordinateHosts()
-              : null)
+          .setNameservers(
+              hostsRequest.requestDelegated()
+                  ? domain.loadNameserverFullyQualifiedHostNames()
+                  : null)
+          .setSubordinateHosts(
+              hostsRequest.requestSubordinate() ? domain.getSubordinateHosts() : null)
           .setCreationClientId(domain.getCreationClientId())
           .setCreationTime(domain.getCreationTime())
           .setLastEppUpdateClientId(domain.getLastEppUpdateClientId())

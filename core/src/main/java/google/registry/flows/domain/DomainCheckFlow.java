@@ -108,14 +108,20 @@ public final class DomainCheckFlow implements Flow {
   @Inject ExtensionManager extensionManager;
   @Inject EppInput eppInput;
   @Inject @ClientId String clientId;
-  @Inject @Config("maxChecks") int maxChecks;
+
+  @Inject
+  @Config("maxChecks")
+  int maxChecks;
+
   @Inject @Superuser boolean isSuperuser;
   @Inject Clock clock;
   @Inject EppResponse.Builder responseBuilder;
   @Inject AllocationTokenFlowUtils allocationTokenFlowUtils;
   @Inject DomainCheckFlowCustomLogic flowCustomLogic;
   @Inject DomainPricingLogic pricingLogic;
-  @Inject DomainCheckFlow() {}
+
+  @Inject
+  DomainCheckFlow() {}
 
   @Override
   public EppResponse run() throws EppException {
@@ -170,11 +176,7 @@ public final class DomainCheckFlow implements Flow {
             .orElse(ImmutableMap.of());
     for (String targetId : targetIds) {
       Optional<String> message =
-          getMessageForCheck(
-              domainNames.get(targetId),
-              existingIds,
-              domainCheckResults,
-              tldStates);
+          getMessageForCheck(domainNames.get(targetId), existingIds, domainCheckResults, tldStates);
       checks.add(DomainCheck.create(!message.isPresent(), targetId, message.orElse(null)));
     }
     Optional<AllocationToken> allocationToken =

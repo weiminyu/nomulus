@@ -52,8 +52,7 @@ import java.util.Set;
 @Entity
 public class RegistrarContact extends ImmutableObject implements Jsonifiable {
 
-  @Parent
-  Key<Registrar> parent;
+  @Parent Key<Registrar> parent;
 
   /**
    * Registrar contacts types for partner communication tracking.
@@ -92,8 +91,7 @@ public class RegistrarContact extends ImmutableObject implements Jsonifiable {
   String name;
 
   /** The email address of the contact. */
-  @Id
-  String emailAddress;
+  @Id String emailAddress;
 
   /** The voice number of the contact. */
   String phoneNumber;
@@ -102,8 +100,8 @@ public class RegistrarContact extends ImmutableObject implements Jsonifiable {
   String faxNumber;
 
   /**
-   * Multiple types are used to associate the registrar contact with
-   * various mailing groups. This data is internal to the registry.
+   * Multiple types are used to associate the registrar contact with various mailing groups. This
+   * data is internal to the registry.
    */
   Set<Type> types;
 
@@ -114,8 +112,7 @@ public class RegistrarContact extends ImmutableObject implements Jsonifiable {
    *
    * @see com.google.appengine.api.users.User#getUserId()
    */
-  @Index
-  String gaeUserId;
+  @Index String gaeUserId;
 
   /**
    * Whether this contact is publicly visible in WHOIS registrar query results as an Admin contact.
@@ -215,16 +212,18 @@ public class RegistrarContact extends ImmutableObject implements Jsonifiable {
   /**
    * Returns a string representation that's human friendly.
    *
-   * <p>The output will look something like this:<pre>   {@code
+   * <p>The output will look something like this:
    *
-   *   Some Person
-   *   person@example.com
-   *   Tel: +1.2125650666
-   *   Types: [ADMIN, WHOIS]
-   *   Visible in WHOIS as Admin contact: Yes
-   *   Visible in WHOIS as Technical contact: No
-   *   GAE-UserID: 1234567890
-   *   Registrar-Console access: Yes}</pre>
+   * <pre>{@code
+   * Some Person
+   * person@example.com
+   * Tel: +1.2125650666
+   * Types: [ADMIN, WHOIS]
+   * Visible in WHOIS as Admin contact: Yes
+   * Visible in WHOIS as Technical contact: No
+   * GAE-UserID: 1234567890
+   * Registrar-Console access: Yes
+   * }</pre>
    */
   public String toStringMultilinePlainText() {
     StringBuilder result = new StringBuilder(256);

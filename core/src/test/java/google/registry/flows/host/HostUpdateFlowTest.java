@@ -357,11 +357,9 @@ public class HostUpdateFlowTest extends ResourceFlowTestCase<HostUpdateFlow, Hos
         .hasPersistedCurrentSponsorClientId("TheRegistrar")
         .and()
         .hasLastTransferTime(null);
-    DomainBase reloadedFooDomain =
-        ofy().load().entity(fooDomain).now().cloneProjectedAtTime(now);
+    DomainBase reloadedFooDomain = ofy().load().entity(fooDomain).now().cloneProjectedAtTime(now);
     assertThat(reloadedFooDomain.getSubordinateHosts()).isEmpty();
-    DomainBase reloadedTldDomain =
-        ofy().load().entity(tldDomain).now().cloneProjectedAtTime(now);
+    DomainBase reloadedTldDomain = ofy().load().entity(tldDomain).now().cloneProjectedAtTime(now);
     assertThat(reloadedTldDomain.getSubordinateHosts()).containsExactly("ns2.example.tld");
     assertDnsTasksEnqueued("ns1.example.foo", "ns2.example.tld");
   }
@@ -774,10 +772,7 @@ public class HostUpdateFlowTest extends ResourceFlowTestCase<HostUpdateFlow, Hos
         "ns1.example.foo", "ns2.example.tld", "<host:addr ip=\"v4\">192.0.2.22</host:addr>", null);
     createTld("tld");
     persistResource(
-        newDomainBase("example.tld")
-            .asBuilder()
-            .setLastTransferTime(domainTransferTime)
-            .build());
+        newDomainBase("example.tld").asBuilder().setLastTransferTime(domainTransferTime).build());
     persistResource(
         newHostResource(oldHostName()).asBuilder().setLastTransferTime(hostTransferTime).build());
     HostResource renamedHost = doSuccessfulTestAsSuperuser();

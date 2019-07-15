@@ -54,16 +54,26 @@ public final class InMemoryKeyring implements Keyring {
       String marksdbLordnPassword,
       String marksdbSmdrlLoginAndPassword,
       String jsonCredential) {
-    checkArgument(PgpHelper.isSigningKey(rdeSigningKey.getPublicKey()),
-        "RDE signing key must support signing: %s", rdeSigningKey.getKeyID());
-    checkArgument(rdeStagingKey.getPublicKey().isEncryptionKey(),
-        "staging key must support encryption: %s", rdeStagingKey.getKeyID());
-    checkArgument(rdeReceiverKey.isEncryptionKey(),
-        "receiver key must support encryption: %s", rdeReceiverKey.getKeyID());
-    checkArgument(PgpHelper.isSigningKey(brdaSigningKey.getPublicKey()),
-        "BRDA signing key must support signing: %s", brdaSigningKey.getKeyID());
-    checkArgument(brdaEncryptionKey.isEncryptionKey(),
-        "encryption key must support encryption: %s", brdaEncryptionKey.getKeyID());
+    checkArgument(
+        PgpHelper.isSigningKey(rdeSigningKey.getPublicKey()),
+        "RDE signing key must support signing: %s",
+        rdeSigningKey.getKeyID());
+    checkArgument(
+        rdeStagingKey.getPublicKey().isEncryptionKey(),
+        "staging key must support encryption: %s",
+        rdeStagingKey.getKeyID());
+    checkArgument(
+        rdeReceiverKey.isEncryptionKey(),
+        "receiver key must support encryption: %s",
+        rdeReceiverKey.getKeyID());
+    checkArgument(
+        PgpHelper.isSigningKey(brdaSigningKey.getPublicKey()),
+        "BRDA signing key must support signing: %s",
+        brdaSigningKey.getKeyID());
+    checkArgument(
+        brdaEncryptionKey.isEncryptionKey(),
+        "encryption key must support encryption: %s",
+        brdaEncryptionKey.getKeyID());
     this.rdeStagingKey = rdeStagingKey;
     this.rdeSigningKey = rdeSigningKey;
     this.rdeReceiverKey = rdeReceiverKey;
@@ -131,7 +141,7 @@ public final class InMemoryKeyring implements Keyring {
     return safeBrowsingAPIKey;
   }
 
-    @Override
+  @Override
   public String getMarksdbDnlLoginAndPassword() {
     return marksdbDnlLoginAndPassword;
   }

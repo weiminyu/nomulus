@@ -41,12 +41,14 @@ final class UploadClaimsListCommand extends ConfirmingCommand implements Command
 
   @Override
   protected void init() throws IOException {
-    checkArgument(mainParameters.size() == 1,
+    checkArgument(
+        mainParameters.size() == 1,
         "Expected a single argument with the claims list filename. Actual: %s",
         Joiner.on(' ').join(mainParameters));
     claimsListFilename = mainParameters.get(0);
-    claimsList = ClaimsListParser.parse(
-        Files.asCharSource(new File(claimsListFilename), US_ASCII).readLines());
+    claimsList =
+        ClaimsListParser.parse(
+            Files.asCharSource(new File(claimsListFilename), US_ASCII).readLines());
   }
 
   @Override

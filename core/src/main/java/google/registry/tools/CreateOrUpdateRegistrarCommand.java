@@ -53,20 +53,14 @@ import org.joda.time.DateTime;
 /** Shared base class for commands to create or update a {@link Registrar}. */
 abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
 
-  @Parameter(
-      description = "Client identifier of the registrar account",
-      required = true)
+  @Parameter(description = "Client identifier of the registrar account", required = true)
   List<String> mainParameters;
 
-  @Parameter(
-      names = "--registrar_type",
-      description = "Type of the registrar")
+  @Parameter(names = "--registrar_type", description = "Type of the registrar")
   Registrar.Type registrarType;
 
   @Nullable
-  @Parameter(
-      names = "--registrar_state",
-      description = "Initial state of the registrar")
+  @Parameter(names = "--registrar_state", description = "Initial state of the registrar")
   Registrar.State registrarState;
 
   @Parameter(
@@ -80,15 +74,11 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
   List<String> addAllowedTlds = new ArrayList<>();
 
   @Nullable
-  @Parameter(
-      names = "--password",
-      description = "Password for the registrar account")
+  @Parameter(names = "--password", description = "Password for the registrar account")
   String password;
 
   @Nullable
-  @Parameter(
-      names = "--name",
-      description = "Name of the registrar")
+  @Parameter(names = "--name", description = "Name of the registrar")
   String registrarName;
 
   @Nullable
@@ -134,11 +124,10 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
 
   @Nullable
   @Parameter(
-    names = "--cert_hash",
-    description =
-        "Hash of client certificate (SHA256 base64 no padding). Do not use this unless "
-            + "you want to store ONLY the hash and not the full certificate"
-  )
+      names = "--cert_hash",
+      description =
+          "Hash of client certificate (SHA256 base64 no padding). Do not use this unless "
+              + "you want to store ONLY the hash and not the full certificate")
   String clientCertificateHash;
 
   @Nullable
@@ -197,9 +186,7 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
   List<String> street;
 
   @Nullable
-  @Parameter(
-      names = "--city",
-      description = "City of address")
+  @Parameter(names = "--city", description = "City of address")
   String city;
 
   @Nullable
@@ -215,9 +202,7 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
   String zip;
 
   @Nullable
-  @Parameter(
-      names = "--cc",
-      description = "Country code of address")
+  @Parameter(names = "--cc", description = "Country code of address")
   String countryCode;
 
   @Nullable
@@ -243,9 +228,7 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
   Optional<String> driveFolderId;
 
   @Nullable
-  @Parameter(
-      names = "--passcode",
-      description = "Telephone support passcode")
+  @Parameter(names = "--passcode", description = "Telephone support passcode")
   String phonePasscode;
 
   @Nullable
@@ -276,9 +259,10 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
     DateTime now = DateTime.now(UTC);
     for (String clientId : mainParameters) {
       Registrar oldRegistrar = getOldRegistrar(clientId);
-      Registrar.Builder builder = (oldRegistrar == null)
-          ? new Registrar.Builder().setClientId(clientId)
-          : oldRegistrar.asBuilder();
+      Registrar.Builder builder =
+          (oldRegistrar == null)
+              ? new Registrar.Builder().setClientId(clientId)
+              : oldRegistrar.asBuilder();
 
       if (!isNullOrEmpty(password)) {
         builder.setPassword(password);
@@ -353,8 +337,8 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
         builder.setFailoverClientCertificate(asciiCert, now);
       }
       if (!isNullOrEmpty(clientCertificateHash)) {
-        checkArgument(clientCertificateFilename == null,
-            "Can't specify both --cert_hash and --cert_file");
+        checkArgument(
+            clientCertificateFilename == null, "Can't specify both --cert_hash and --cert_file");
         if ("null".equals(clientCertificateHash)) {
           clientCertificateHash = null;
         }
@@ -383,13 +367,14 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
       if (street != null) {
         // We always set the localized address for now. That should be safe to do since it supports
         // unrestricted UTF-8.
-        builder.setLocalizedAddress(new RegistrarAddress.Builder()
-            .setStreet(ImmutableList.copyOf(street))
-            .setCity(city)
-            .setState("null".equals(state) ? null : state)
-            .setZip("null".equals(zip) ? null : zip)
-            .setCountryCode(countryCode)
-            .build());
+        builder.setLocalizedAddress(
+            new RegistrarAddress.Builder()
+                .setStreet(ImmutableList.copyOf(street))
+                .setCity(city)
+                .setState("null".equals(state) ? null : state)
+                .setZip("null".equals(zip) ? null : zip)
+                .setCountryCode(countryCode)
+                .build());
       }
       Optional.ofNullable(blockPremiumNames).ifPresent(builder::setBlockPremiumNames);
       Optional.ofNullable(contactsRequireSyncing).ifPresent(builder::setContactsRequireSyncing);
@@ -432,9 +417,7 @@ abstract class CreateOrUpdateRegistrarCommand extends MutatingCommand {
         // Check if registrar has billing account IDs for the currency of the TLDs that it is
         // allowed to register.
         ImmutableSet<CurrencyUnit> tldCurrencies =
-            newRegistrar
-                .getAllowedTlds()
-                .stream()
+            newRegistrar.getAllowedTlds().stream()
                 .map(tld -> Registry.get(tld).getCurrency())
                 .collect(toImmutableSet());
         Set<CurrencyUnit> currenciesWithoutBillingAccountId =

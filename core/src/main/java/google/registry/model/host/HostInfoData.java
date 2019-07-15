@@ -28,17 +28,19 @@ import org.joda.time.DateTime;
 
 /** The {@link ResponseData} returned for an EPP info flow on a host. */
 @XmlRootElement(name = "infData")
-@XmlType(propOrder = {
-    "fullyQualifiedHostName",
-    "repoId",
-    "statusValues",
-    "inetAddresses",
-    "currentSponsorClientId",
-    "creationClientId",
-    "creationTime",
-    "lastEppUpdateClientId",
-    "lastEppUpdateTime",
-    "lastTransferTime" })
+@XmlType(
+    propOrder = {
+      "fullyQualifiedHostName",
+      "repoId",
+      "statusValues",
+      "inetAddresses",
+      "currentSponsorClientId",
+      "creationClientId",
+      "creationTime",
+      "lastEppUpdateClientId",
+      "lastEppUpdateTime",
+      "lastTransferTime"
+    })
 @AutoValue
 @CopyAnnotations
 public abstract class HostInfoData implements ResponseData {
@@ -80,15 +82,25 @@ public abstract class HostInfoData implements ResponseData {
   @AutoValue.Builder
   public abstract static class Builder {
     public abstract Builder setFullyQualifiedHostName(String fullyQualifiedHostName);
+
     public abstract Builder setRepoId(String repoId);
+
     public abstract Builder setStatusValues(ImmutableSet<StatusValue> statusValues);
+
     public abstract Builder setInetAddresses(ImmutableSet<InetAddress> inetAddresses);
+
     public abstract Builder setCurrentSponsorClientId(String currentSponsorClientId);
+
     public abstract Builder setCreationClientId(String creationClientId);
+
     public abstract Builder setCreationTime(DateTime creationTime);
+
     public abstract Builder setLastEppUpdateClientId(@Nullable String lastEppUpdateClientId);
+
     public abstract Builder setLastEppUpdateTime(@Nullable DateTime lastEppUpdateTime);
+
     public abstract Builder setLastTransferTime(@Nullable DateTime lastTransferTime);
+
     public abstract HostInfoData build();
   }
 

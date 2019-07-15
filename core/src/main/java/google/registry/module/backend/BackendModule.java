@@ -30,9 +30,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.joda.time.DateTime;
 
-/**
- * Dagger module for injecting common settings for all Backend tasks.
- */
+/** Dagger module for injecting common settings for all Backend tasks. */
 @Module
 public class BackendModule {
 

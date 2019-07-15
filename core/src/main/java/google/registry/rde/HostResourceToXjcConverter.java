@@ -35,8 +35,7 @@ import org.joda.time.DateTime;
 final class HostResourceToXjcConverter {
 
   /** Converts a subordinate {@link HostResource} to {@link XjcRdeHostElement}. */
-  static XjcRdeHostElement convertSubordinate(
-      HostResource host, DomainBase superordinateDomain) {
+  static XjcRdeHostElement convertSubordinate(HostResource host, DomainBase superordinateDomain) {
     checkArgument(Key.create(superordinateDomain).equals(host.getSuperordinateDomain()));
     return new XjcRdeHostElement(convertSubordinateHost(host, superordinateDomain));
   }
@@ -49,10 +48,11 @@ final class HostResourceToXjcConverter {
 
   /** Converts {@link HostResource} to {@link XjcRdeHost}. */
   static XjcRdeHost convertSubordinateHost(HostResource model, DomainBase superordinateDomain) {
-    XjcRdeHost bean = convertHostCommon(
-        model,
-        superordinateDomain.getCurrentSponsorClientId(),
-        model.computeLastTransferTime(superordinateDomain));
+    XjcRdeHost bean =
+        convertHostCommon(
+            model,
+            superordinateDomain.getCurrentSponsorClientId(),
+            model.computeLastTransferTime(superordinateDomain));
     if (superordinateDomain.getStatusValues().contains(StatusValue.PENDING_TRANSFER)) {
       bean.getStatuses().add(convertStatusValue(StatusValue.PENDING_TRANSFER));
     }
@@ -62,9 +62,7 @@ final class HostResourceToXjcConverter {
   /** Converts {@link HostResource} to {@link XjcRdeHost}. */
   static XjcRdeHost convertExternalHost(HostResource model) {
     return convertHostCommon(
-        model,
-        model.getPersistedCurrentSponsorClientId(),
-        model.getLastTransferTime());
+        model, model.getPersistedCurrentSponsorClientId(), model.getLastTransferTime());
   }
 
   private static XjcRdeHost convertHostCommon(

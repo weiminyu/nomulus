@@ -22,7 +22,7 @@ import javax.inject.Singleton;
 /**
  * Dagger component with instance lifetime for pricing engines.
  *
- * <p>This component only exists because the flows themselves are not yet injected.  Once they are,
+ * <p>This component only exists because the flows themselves are not yet injected. Once they are,
  * this separate component can be removed, and the pricingEngines() map added to the relevant
  * component used to construct the flows.
  */

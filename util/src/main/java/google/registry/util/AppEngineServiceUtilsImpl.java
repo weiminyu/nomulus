@@ -26,8 +26,7 @@ import javax.inject.Inject;
 /** A wrapper for {@link ModulesService} that provides a saner API. */
 public class AppEngineServiceUtilsImpl implements AppEngineServiceUtils {
 
-  private static final Pattern APPSPOT_HOSTNAME_PATTERN =
-      Pattern.compile("^(.*)\\.appspot\\.com$");
+  private static final Pattern APPSPOT_HOSTNAME_PATTERN = Pattern.compile("^(.*)\\.appspot\\.com$");
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   private final ModulesService modulesService;

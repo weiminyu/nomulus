@@ -62,7 +62,7 @@ final class DomainWhoisResponse extends WhoisResponseImpl {
   /** When fullOutput is false, the text to display for the registrant's email fields. */
   private final String whoisRedactedEmailText;
 
- /** Creates new WHOIS domain response on the given domain. */
+  /** Creates new WHOIS domain response on the given domain. */
   DomainWhoisResponse(
       DomainBase domain, boolean fullOutput, String whoisRedactedEmailText, DateTime timestamp) {
     super(timestamp);
@@ -81,9 +81,7 @@ final class DomainWhoisResponse extends WhoisResponseImpl {
         domain.getCurrentSponsorClientId());
     Registrar registrar = registrarOptional.get();
     Optional<RegistrarContact> abuseContact =
-        registrar
-            .getContacts()
-            .stream()
+        registrar.getContacts().stream()
             .filter(RegistrarContact::getVisibleInDomainWhoisAsAbuse)
             .findFirst();
     return WhoisResponseResults.create(
@@ -188,8 +186,7 @@ final class DomainWhoisResponse extends WhoisResponseImpl {
     }
 
     /** Emits status values and grace periods as a set, in the AWIP format. */
-    DomainEmitter emitStatusValues(
-        Set<StatusValue> statusValues, Set<GracePeriod> gracePeriods) {
+    DomainEmitter emitStatusValues(Set<StatusValue> statusValues, Set<GracePeriod> gracePeriods) {
       ImmutableSet.Builder<EppEnum> combinedStatuses = new ImmutableSet.Builder<>();
       combinedStatuses.addAll(statusValues);
       for (GracePeriod gracePeriod : gracePeriods) {

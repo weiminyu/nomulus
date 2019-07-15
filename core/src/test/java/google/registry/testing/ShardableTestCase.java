@@ -31,8 +31,7 @@ public abstract class ShardableTestCase {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  @Rule
-  public final TestName testName = new TestName();
+  @Rule public final TestName testName = new TestName();
 
   @Before
   public void beforeShardable() {

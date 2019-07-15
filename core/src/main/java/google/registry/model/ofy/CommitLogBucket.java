@@ -41,10 +41,9 @@ import org.joda.time.DateTime;
 /**
  * Root for a random commit log bucket.
  *
- * <p>This is used to shard {@link CommitLogManifest} objects into
- * {@link RegistryConfig#getCommitLogBucketCount() N} entity groups. This increases
- * transaction throughput, while maintaining the ability to perform strongly-consistent ancestor
- * queries.
+ * <p>This is used to shard {@link CommitLogManifest} objects into {@link
+ * RegistryConfig#getCommitLogBucketCount() N} entity groups. This increases transaction throughput,
+ * while maintaining the ability to perform strongly-consistent ancestor queries.
  *
  * @see <a href="https://cloud.google.com/appengine/articles/scaling/contention">Avoiding Datastore
  *     contention</a>
@@ -73,8 +72,8 @@ public class CommitLogBucket extends ImmutableObject implements Buildable {
   /**
    * Returns the key for the specified bucket ID.
    *
-   * <p>Always use this method in preference to manually creating bucket keys, since manual keys
-   * are not guaranteed to have a valid bucket ID number.
+   * <p>Always use this method in preference to manually creating bucket keys, since manual keys are
+   * not guaranteed to have a valid bucket ID number.
    */
   public static Key<CommitLogBucket> getBucketKey(int num) {
     checkArgument(getBucketIdRange().contains(num), "%s not in %s", num, getBucketIdRange());
@@ -94,7 +93,7 @@ public class CommitLogBucket extends ImmutableObject implements Buildable {
     return Range.closed(1, getCommitLogBucketCount());
   }
 
-  /** Returns an arbitrary numeric bucket ID.  Default behavior is randomly chosen IDs. */
+  /** Returns an arbitrary numeric bucket ID. Default behavior is randomly chosen IDs. */
   public static int getArbitraryBucketId() {
     return bucketIdSupplier.get();
   }
@@ -112,7 +111,7 @@ public class CommitLogBucket extends ImmutableObject implements Buildable {
 
         @Override
         public Integer get() {
-          return random.nextInt(getCommitLogBucketCount()) + 1;  // Add 1 since IDs can't be 0.
+          return random.nextInt(getCommitLogBucketCount()) + 1; // Add 1 since IDs can't be 0.
         }
       };
 
@@ -126,7 +125,7 @@ public class CommitLogBucket extends ImmutableObject implements Buildable {
 
   /** Returns the set of all loaded commit log buckets, filling in missing buckets with new ones. */
   public static ImmutableSet<CommitLogBucket> loadAllBuckets() {
-    ofy().load().keys(getAllBucketKeys());  // Load all buckets into session cache at once.
+    ofy().load().keys(getAllBucketKeys()); // Load all buckets into session cache at once.
     ImmutableSet.Builder<CommitLogBucket> allBuckets = new ImmutableSet.Builder<>();
     for (Key<CommitLogBucket> key : getAllBucketKeys()) {
       allBuckets.add(loadBucket(key));
@@ -136,8 +135,7 @@ public class CommitLogBucket extends ImmutableObject implements Buildable {
 
   /** Returns all commit log bucket keys, in ascending order by bucket ID. */
   public static ImmutableSet<Key<CommitLogBucket>> getAllBucketKeys() {
-    return getBucketIds()
-        .stream()
+    return getBucketIds().stream()
         .map(CommitLogBucket::getBucketKeyUnsafe)
         .collect(toImmutableSet());
   }
@@ -147,7 +145,7 @@ public class CommitLogBucket extends ImmutableObject implements Buildable {
     return new Builder(clone(this));
   }
 
-   /** A builder for {@link CommitLogBucket} since it is immutable. */
+  /** A builder for {@link CommitLogBucket} since it is immutable. */
   public static class Builder extends Buildable.Builder<CommitLogBucket> {
     public Builder() {}
 

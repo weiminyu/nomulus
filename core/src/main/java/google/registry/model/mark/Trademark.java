@@ -23,20 +23,22 @@ import javax.xml.bind.annotation.XmlType;
 import org.joda.time.DateTime;
 
 /** Holds information about a registered trademark. */
-@XmlType(propOrder = {
-    "id",
-    "markName",
-    "markHolders",
-    "contacts",
-    "jurisdiction",
-    "markClasses",
-    "labels",
-    "goodsAndServices",
-    "applicationId",
-    "applicationDate",
-    "registrationNumber",
-    "registrationDate",
-    "expirationDate"})
+@XmlType(
+    propOrder = {
+      "id",
+      "markName",
+      "markHolders",
+      "contacts",
+      "jurisdiction",
+      "markClasses",
+      "labels",
+      "goodsAndServices",
+      "applicationId",
+      "applicationDate",
+      "registrationNumber",
+      "registrationDate",
+      "expirationDate"
+    })
 public class Trademark extends CommonMarkFields {
 
   /** Two character code of the jurisdiction where the mark was registered. */

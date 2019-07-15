@@ -26,8 +26,8 @@ import google.registry.model.registry.label.ReservedList;
 import org.junit.Test;
 
 /** Unit tests for {@link UpdateReservedListCommand}. */
-public class UpdateReservedListCommandTest extends
-    CreateOrUpdateReservedListCommandTestCase<UpdateReservedListCommand> {
+public class UpdateReservedListCommandTest
+    extends CreateOrUpdateReservedListCommandTestCase<UpdateReservedListCommand> {
 
   private void populateInitialReservedList(boolean shouldPublish) {
     persistResource(

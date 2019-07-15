@@ -54,10 +54,8 @@ public class IcannReportingStagerTest {
   String subdir = "icann/monthly/2017-06";
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withLocalModules()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withLocalModules().build();
 
   private IcannReportingStager createStager() {
     IcannReportingStager action = new IcannReportingStager();
@@ -76,11 +74,12 @@ public class IcannReportingStagerTest {
 
   private void setUpBigquery() {
     when(bigquery.query(any(String.class), any(DestinationTable.class))).thenReturn(fakeFuture());
-    DestinationTable.Builder tableBuilder = new DestinationTable.Builder()
-        .datasetId("testdataset")
-        .type(TableType.TABLE)
-        .name("tablename")
-        .overwrite(true);
+    DestinationTable.Builder tableBuilder =
+        new DestinationTable.Builder()
+            .datasetId("testdataset")
+            .type(TableType.TABLE)
+            .name("tablename")
+            .overwrite(true);
     when(bigquery.buildDestinationTable(any(String.class))).thenReturn(tableBuilder);
   }
 
@@ -206,4 +205,3 @@ public class IcannReportingStagerTest {
     };
   }
 }
-

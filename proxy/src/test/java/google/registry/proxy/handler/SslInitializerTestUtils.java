@@ -76,10 +76,7 @@ public class SslInitializerTestUtils {
    * @param certs The certificate that the server should provide.
    * @return The SSL session in current channel, can be used for further validation.
    */
-  static SSLSession setUpSslChannel(
-      Channel channel,
-      X509Certificate... certs)
-      throws Exception {
+  static SSLSession setUpSslChannel(Channel channel, X509Certificate... certs) throws Exception {
     SslHandler sslHandler = channel.pipeline().get(SslHandler.class);
     // Wait till the handshake is complete.
     sslHandler.handshakeFuture().get();

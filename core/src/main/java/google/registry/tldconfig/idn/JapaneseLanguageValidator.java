@@ -46,8 +46,8 @@ class JapaneseLanguageValidator extends LanguageValidator {
   private static final int KATAKANA_HIRAGANA_PROLONGED_SOUND_MARK = 0x30FC;
 
   /** The set of {@link UnicodeBlock} objects containing valid Japanese codepoints. */
-  private static final ImmutableSet<UnicodeBlock> JAPANESE_UNICODE_BLOCKS = ImmutableSet.of(
-      CJK_SYMBOLS_AND_PUNCTUATION, HIRAGANA, KATAKANA, CJK_UNIFIED_IDEOGRAPHS);
+  private static final ImmutableSet<UnicodeBlock> JAPANESE_UNICODE_BLOCKS =
+      ImmutableSet.of(CJK_SYMBOLS_AND_PUNCTUATION, HIRAGANA, KATAKANA, CJK_UNIFIED_IDEOGRAPHS);
 
   /**
    * Codepoints which are technically considered to be in the Japanese language, but are
@@ -56,10 +56,10 @@ class JapaneseLanguageValidator extends LanguageValidator {
    */
   private static final ImmutableRangeSet<Integer> JAPANESE_EXCEPTION_CODEPOINTS =
       new ImmutableRangeSet.Builder<Integer>()
-      .add(Range.singleton(IDEOGRAPHIC_CLOSING_MARK))
-      .add(Range.singleton(KATAKANA_MIDDLE_DOT))
-      .add(Range.singleton(KATAKANA_HIRAGANA_PROLONGED_SOUND_MARK))
-      .build();
+          .add(Range.singleton(IDEOGRAPHIC_CLOSING_MARK))
+          .add(Range.singleton(KATAKANA_MIDDLE_DOT))
+          .add(Range.singleton(KATAKANA_HIRAGANA_PROLONGED_SOUND_MARK))
+          .build();
 
   @Override
   boolean isValidLabelForLanguage(String label) {
@@ -120,6 +120,5 @@ class JapaneseLanguageValidator extends LanguageValidator {
     // Any label with Japanese characters (including "exception" characters) can only be 15
     // codepoints long.
     return !(hasJapaneseCodepoint && (codepoints > MAX_LENGTH_JAPANESE_STRING));
-
   }
 }

@@ -40,15 +40,16 @@ public class JsonResponseTest {
 
   @Test
   public void testSetResponseValue() {
-    ImmutableMap<String, String> responseValues = ImmutableMap.of(
-        "hello", "world",
-        "goodbye", "cruel world");
+    ImmutableMap<String, String> responseValues =
+        ImmutableMap.of(
+            "hello", "world",
+            "goodbye", "cruel world");
     jsonResponse.setPayload(responseValues);
     String payload = fakeResponse.getPayload();
     assertThat(payload).startsWith(JSON_SAFETY_PREFIX);
     @SuppressWarnings("unchecked")
-    Map<String, Object> responseMap = (Map<String, Object>)
-        JSONValue.parse(payload.substring(JSON_SAFETY_PREFIX.length()));
+    Map<String, Object> responseMap =
+        (Map<String, Object>) JSONValue.parse(payload.substring(JSON_SAFETY_PREFIX.length()));
     assertThat(responseMap).containsExactlyEntriesIn(responseValues);
   }
 

@@ -42,8 +42,13 @@ public final class TmchDnlAction implements Runnable {
   private static final String DNL_SIG_PATH = "/dnl/dnl-latest.sig";
 
   @Inject Marksdb marksdb;
-  @Inject @Key("marksdbDnlLoginAndPassword") Optional<String> marksdbDnlLoginAndPassword;
-  @Inject TmchDnlAction() {}
+
+  @Inject
+  @Key("marksdbDnlLoginAndPassword")
+  Optional<String> marksdbDnlLoginAndPassword;
+
+  @Inject
+  TmchDnlAction() {}
 
   /** Synchronously fetches latest domain name list and saves it to Datastore. */
   @Override

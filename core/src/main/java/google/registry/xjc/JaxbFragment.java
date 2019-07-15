@@ -27,10 +27,9 @@ import java.io.Serializable;
 /**
  * JAXB element wrapper for java object serialization.
  *
- * Instances of {@link JaxbFragment} wrap a non-serializable JAXB element instance, and provide
- * hooks into the java object serialization process that allow the elements to be safely
- * marshalled and unmarshalled using {@link ObjectOutputStream} and {@link ObjectInputStream},
- * respectively.
+ * <p>Instances of {@link JaxbFragment} wrap a non-serializable JAXB element instance, and provide
+ * hooks into the java object serialization process that allow the elements to be safely marshalled
+ * and unmarshalled using {@link ObjectOutputStream} and {@link ObjectInputStream}, respectively.
  */
 public class JaxbFragment<T> implements Serializable {
 
@@ -67,9 +66,7 @@ public class JaxbFragment<T> implements Serializable {
     }
   }
 
-  /**
-   * Retrieves the JAXB element that is wrapped by this fragment.
-   */
+  /** Retrieves the JAXB element that is wrapped by this fragment. */
   public T getInstance() {
     return instance;
   }

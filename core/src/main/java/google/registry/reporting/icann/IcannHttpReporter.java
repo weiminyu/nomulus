@@ -60,10 +60,21 @@ public class IcannHttpReporter {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   @Inject HttpTransport httpTransport;
-  @Inject @Key("icannReportingPassword") String password;
-  @Inject @Config("icannTransactionsReportingUploadUrl") String icannTransactionsUrl;
-  @Inject @Config("icannActivityReportingUploadUrl") String icannActivityUrl;
-  @Inject IcannHttpReporter() {}
+
+  @Inject
+  @Key("icannReportingPassword")
+  String password;
+
+  @Inject
+  @Config("icannTransactionsReportingUploadUrl")
+  String icannTransactionsUrl;
+
+  @Inject
+  @Config("icannActivityReportingUploadUrl")
+  String icannActivityUrl;
+
+  @Inject
+  IcannHttpReporter() {}
 
   /** Uploads {@code reportBytes} to ICANN, returning whether or not it succeeded. */
   public boolean send(byte[] reportBytes, String reportFilename) throws XmlException, IOException {

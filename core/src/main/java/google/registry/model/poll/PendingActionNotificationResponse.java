@@ -29,21 +29,19 @@ import org.joda.time.DateTime;
 
 /** The {@link ResponseData} returned when completing a pending action on a domain. */
 @XmlTransient
-public abstract class PendingActionNotificationResponse
-    extends ImmutableObject implements ResponseData {
+public abstract class PendingActionNotificationResponse extends ImmutableObject
+    implements ResponseData {
 
   /** The inner name type that contains a name and the result boolean. */
   @Embed
   static class NameOrId extends ImmutableObject {
-    @XmlValue
-    String value;
+    @XmlValue String value;
 
     @XmlAttribute(name = "paResult")
     boolean actionResult;
   }
 
-  @XmlTransient
-  NameOrId nameOrId;
+  @XmlTransient NameOrId nameOrId;
 
   @XmlElement(name = "paTRID")
   Trid trid;
@@ -129,9 +127,8 @@ public abstract class PendingActionNotificationResponse
   @Embed
   @XmlRootElement(name = "panData", namespace = "urn:ietf:params:xml:ns:domain-1.0")
   @XmlType(
-    propOrder = {"name", "trid", "processedDate"},
-    namespace = "urn:ietf:params:xml:ns:domain-1.0"
-  )
+      propOrder = {"name", "trid", "processedDate"},
+      namespace = "urn:ietf:params:xml:ns:domain-1.0")
   public static class HostPendingActionNotificationResponse
       extends PendingActionNotificationResponse {
 

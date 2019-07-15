@@ -107,9 +107,9 @@ public class InjectRule extends ExternalResource {
    *
    * <p>The field is allowed to be {@code private}, but it most not be {@code final}.
    *
-   * <p>This method may be called either from either your {@link org.junit.Before @Before}
-   * method or from the {@link org.junit.Test @Test} method itself. However you may not
-   * inject the same field multiple times during the same test.
+   * <p>This method may be called either from either your {@link org.junit.Before @Before} method or
+   * from the {@link org.junit.Test @Test} method itself. However you may not inject the same field
+   * multiple times during the same test.
    *
    * @throws IllegalArgumentException if the static field could not be found or modified.
    * @throws IllegalStateException if the field has already been injected during this test.
@@ -125,16 +125,19 @@ public class InjectRule extends ExternalResource {
         | SecurityException
         | IllegalArgumentException
         | IllegalAccessException e) {
-      throw new IllegalArgumentException(String.format(
-          "Static field not found: %s.%s", clazz.getSimpleName(), fieldName), e);
+      throw new IllegalArgumentException(
+          String.format("Static field not found: %s.%s", clazz.getSimpleName(), fieldName), e);
     }
-    checkState(!injected.contains(field),
-        "Static field already injected: %s.%s", clazz.getSimpleName(), fieldName);
+    checkState(
+        !injected.contains(field),
+        "Static field already injected: %s.%s",
+        clazz.getSimpleName(),
+        fieldName);
     try {
       field.set(null, newValue);
     } catch (IllegalArgumentException | IllegalAccessException e) {
-      throw new IllegalArgumentException(String.format(
-          "Static field not settable: %s.%s", clazz.getSimpleName(), fieldName), e);
+      throw new IllegalArgumentException(
+          String.format("Static field not settable: %s.%s", clazz.getSimpleName(), fieldName), e);
     }
     changes.add(new Change(field, oldValue, newValue));
     injected.add(field);
@@ -145,13 +148,13 @@ public class InjectRule extends ExternalResource {
     RuntimeException thrown = null;
     for (Change change : changes) {
       try {
-        checkState(change.field.get(null).equals(change.newValue),
+        checkState(
+            change.field.get(null).equals(change.newValue),
             "Static field value was changed post-injection: %s.%s",
-            change.field.getDeclaringClass().getSimpleName(), change.field.getName());
+            change.field.getDeclaringClass().getSimpleName(),
+            change.field.getName());
         change.field.set(null, change.oldValue);
-      } catch (IllegalArgumentException
-          | IllegalStateException
-          | IllegalAccessException e) {
+      } catch (IllegalArgumentException | IllegalStateException | IllegalAccessException e) {
         if (thrown == null) {
           thrown = new RuntimeException(e);
         } else {

@@ -32,12 +32,16 @@ public abstract class CheckData extends ImmutableObject implements ResponseData 
 
   /** The check responses. We must explicitly list the namespaced versions of {@link Check}. */
   @XmlElements({
-      @XmlElement(
-          name = "cd", namespace = "urn:ietf:params:xml:ns:contact-1.0", type = ContactCheck.class),
-      @XmlElement(
-          name = "cd", namespace = "urn:ietf:params:xml:ns:domain-1.0", type = DomainCheck.class),
-      @XmlElement(
-          name = "cd", namespace = "urn:ietf:params:xml:ns:host-1.0", type = HostCheck.class)})
+    @XmlElement(
+        name = "cd",
+        namespace = "urn:ietf:params:xml:ns:contact-1.0",
+        type = ContactCheck.class),
+    @XmlElement(
+        name = "cd",
+        namespace = "urn:ietf:params:xml:ns:domain-1.0",
+        type = DomainCheck.class),
+    @XmlElement(name = "cd", namespace = "urn:ietf:params:xml:ns:host-1.0", type = HostCheck.class)
+  })
   ImmutableList<? extends Check> checks;
 
   protected static <T extends CheckData> T init(T instance, ImmutableList<? extends Check> checks) {
@@ -54,8 +58,9 @@ public abstract class CheckData extends ImmutableObject implements ResponseData 
   public static class Check extends ImmutableObject {
     /** An element containing the name or id and availability of a resource. */
     @XmlElements({
-        @XmlElement(name = "name", type = CheckName.class),
-        @XmlElement(name = "id", type = CheckID.class)})
+      @XmlElement(name = "name", type = CheckName.class),
+      @XmlElement(name = "id", type = CheckID.class)
+    })
     CheckNameOrID nameOrId;
 
     /** A message explaining the availability of this resource. */
@@ -78,12 +83,10 @@ public abstract class CheckData extends ImmutableObject implements ResponseData 
    */
   public abstract static class CheckNameOrID extends ImmutableObject {
     /** Whether the resource is available. */
-    @XmlAttribute
-    boolean avail;
+    @XmlAttribute boolean avail;
 
     /** The name of the resource being checked. */
-    @XmlValue
-    String value;
+    @XmlValue String value;
 
     public boolean getAvail() {
       return avail;

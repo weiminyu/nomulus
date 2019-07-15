@@ -385,11 +385,7 @@ public class DomainRestoreRequestFlowTest
   @Test
   public void testFailure_pendingRegistrarCantRestoreDomain() {
     persistResource(
-        Registrar.loadByClientId("TheRegistrar")
-            .get()
-            .asBuilder()
-            .setState(State.PENDING)
-            .build());
+        Registrar.loadByClientId("TheRegistrar").get().asBuilder().setState(State.PENDING).build());
     EppException thrown =
         assertThrows(RegistrarMustBeActiveForThisOperationException.class, this::runFlow);
     assertAboutEppExceptions().that(thrown).marshalsToXml();
@@ -639,8 +635,9 @@ public class DomainRestoreRequestFlowTest
     // This exception is referred to by its fully qualified path (rather than being imported) so
     // that it is not included in the list of exceptions thrown by DomainRestoreRequestFlow, as this
     // test EPP won't trigger the request flow at all.
-    EppException thrown = assertThrows(
-        google.registry.flows.EppException.UnimplementedCommandException.class, this::runFlow);
+    EppException thrown =
+        assertThrows(
+            google.registry.flows.EppException.UnimplementedCommandException.class, this::runFlow);
     assertThat(thrown).hasMessageThat().contains("domain restore reports are not supported");
     assertAboutEppExceptions().that(thrown).marshalsToXml();
   }

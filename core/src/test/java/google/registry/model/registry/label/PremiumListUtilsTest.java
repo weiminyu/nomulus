@@ -232,13 +232,14 @@ public class PremiumListUtilsTest {
     PremiumList pl = persistPremiumList("tld", "genius,USD 10", "dolt,JPY 1000");
     assertThat(getPremiumPrice("genius", registry)).hasValue(Money.parse("USD 10"));
     assertThat(getPremiumPrice("dolt", registry)).hasValue(Money.parse("JPY 1000"));
-    assertThat(ofy()
-            .load()
-            .type(PremiumListEntry.class)
-            .parent(pl.getRevisionKey())
-            .id("dolt")
-            .now()
-            .price)
+    assertThat(
+            ofy()
+                .load()
+                .type(PremiumListEntry.class)
+                .parent(pl.getRevisionKey())
+                .id("dolt")
+                .now()
+                .price)
         .isEqualTo(Money.parse("JPY 1000"));
     savePremiumListAndEntries(pl, ImmutableList.of("genius,USD 10", "savant,USD 90"));
     assertThat(getPremiumPrice("genius", registry)).hasValue(Money.parse("USD 10"));

@@ -34,8 +34,7 @@ public class MarkContact extends CommonMarkContactFields {
     THIRD_PARTY
   }
 
-  @XmlAttribute
-  ContactType type;
+  @XmlAttribute ContactType type;
 
   public ContactType getType() {
     return type;

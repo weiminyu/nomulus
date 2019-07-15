@@ -147,10 +147,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
         registrarTest);
 
     makeAndPersistDeletedContactResource(
-        "clyde",
-        clock.nowUtc().minusYears(1),
-        registrarDeleted,
-        clock.nowUtc().minusMonths(6));
+        "clyde", clock.nowUtc().minusYears(1), registrarDeleted, clock.nowUtc().minusMonths(6));
 
     action.fnParam = Optional.empty();
     action.handleParam = Optional.empty();
@@ -161,9 +158,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
     return loadJsonFile(expectedOutputFile, "TYPE", "entity");
   }
 
-  private JsonObject generateExpectedJson(
-      String handle,
-      String expectedOutputFile) {
+  private JsonObject generateExpectedJson(String handle, String expectedOutputFile) {
     return generateExpectedJson(handle, null, "active", null, expectedOutputFile);
   }
 
@@ -212,8 +207,9 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
               .asBuilder()
               .setRepoId(String.format("%04d-ROID", i))
               .build();
-      resourcesBuilder.add(makeHistoryEntry(
-          contact, HistoryEntry.Type.CONTACT_CREATE, null, "created", clock.nowUtc()));
+      resourcesBuilder.add(
+          makeHistoryEntry(
+              contact, HistoryEntry.Type.CONTACT_CREATE, null, "created", clock.nowUtc()));
       resourcesBuilder.add(contact);
     }
     persistResources(resourcesBuilder.build());
@@ -277,10 +273,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
   }
 
   private void runSuccessfulNameTest(
-      String queryString,
-      String handle,
-      @Nullable String fullName,
-      String fileName) {
+      String queryString, String handle, @Nullable String fullName, String fileName) {
     runSuccessfulNameTest(queryString, handle, fullName, "active", null, fileName);
   }
 
@@ -315,10 +308,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
   }
 
   private void runSuccessfulHandleTest(
-      String queryString,
-      String handle,
-      @Nullable String fullName,
-      String fileName) {
+      String queryString, String handle, @Nullable String fullName, String fileName) {
     runSuccessfulHandleTest(queryString, handle, fullName, "active", null, fileName);
   }
 
@@ -402,8 +392,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
     action.run();
     assertThat(parseJsonObject(response.getPayload()))
         .isEqualTo(
-            generateExpectedJsonError(
-                "You must specify either fn=XXXX or handle=YYYY", 400));
+            generateExpectedJsonError("You must specify either fn=XXXX or handle=YYYY", 400));
     assertThat(response.getStatus()).isEqualTo(400);
     verifyErrorMetrics(Optional.empty(), 400);
   }
@@ -449,9 +438,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
     rememberWildcardType("*");
     assertThat(generateActualJsonWithHandle("*"))
         .isEqualTo(
-            generateExpectedJsonError(
-                "Initial search string must be at least 2 characters",
-                422));
+            generateExpectedJsonError("Initial search string must be at least 2 characters", 422));
     assertThat(response.getStatus()).isEqualTo(422);
     verifyErrorMetrics(Optional.empty(), 422);
   }
@@ -461,9 +448,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
     rememberWildcardType("a*");
     assertThat(generateActualJsonWithHandle("a*"))
         .isEqualTo(
-            generateExpectedJsonError(
-                "Initial search string must be at least 2 characters",
-                422));
+            generateExpectedJsonError("Initial search string must be at least 2 characters", 422));
     assertThat(response.getStatus()).isEqualTo(422);
     verifyErrorMetrics(Optional.empty(), 422);
   }
@@ -474,8 +459,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
     assertThat(generateActualJsonWithFullName("Blinky (赤ベイ)"))
         .isEqualTo(
             generateExpectedJsonError(
-                "Subtype parameter must specify contacts, registrars or all",
-                400));
+                "Subtype parameter must specify contacts, registrars or all", 400));
     assertThat(response.getStatus()).isEqualTo(400);
     metricSearchType = SearchType.NONE; // Error occurs before search type is set.
     verifyErrorMetrics(Optional.empty(), 400);
@@ -821,13 +805,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
     checkCursorNavigation(
         QueryType.FULL_NAME,
         "Entity *",
-        ImmutableList.of(
-            "Entity 1",
-            "Entity 2",
-            "Entity 3",
-            "Entity 4",
-            "Entity 5",
-            "Entity 6"));
+        ImmutableList.of("Entity 1", "Entity 2", "Entity 3", "Entity 4", "Entity 5", "Entity 6"));
   }
 
   @Test
@@ -847,8 +825,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
     login("2-RegistrarTest");
     action.subtypeParam = Optional.of("registrars");
     createManyContactsAndRegistrars(1, 1, registrarTest);
-    runSuccessfulNameTest(
-        "Entity *", "301", "Entity 2", "rdap_registrar.json");
+    runSuccessfulNameTest("Entity *", "301", "Entity 2", "rdap_registrar.json");
     verifyMetrics(0);
   }
 
@@ -978,13 +955,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
   public void testHandleMatchContact_found_deletedWhenLoggedInAsSameRegistrar() {
     login("2-Registrar");
     action.includeDeletedParam = Optional.of(true);
-    runSuccessfulHandleTest(
-        "6-ROID",
-        "6-ROID",
-        "",
-        "inactive",
-        "",
-        "rdap_contact_deleted.json");
+    runSuccessfulHandleTest("6-ROID", "6-ROID", "", "inactive", "", "rdap_contact_deleted.json");
     verifyMetrics(1);
   }
 
@@ -992,13 +963,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
   public void testHandleMatchContact_found_deletedWhenLoggedInAsAdmin() {
     loginAsAdmin();
     action.includeDeletedParam = Optional.of(true);
-    runSuccessfulHandleTest(
-        "6-ROID",
-        "6-ROID",
-        "",
-        "inactive",
-        "",
-        "rdap_contact_deleted.json");
+    runSuccessfulHandleTest("6-ROID", "6-ROID", "", "inactive", "", "rdap_contact_deleted.json");
     verifyMetrics(1);
   }
 
@@ -1021,13 +986,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
   public void testHandleMatchContact_found_deletedWildcardWhenLoggedInAsSameRegistrar() {
     login("2-Registrar");
     action.includeDeletedParam = Optional.of(true);
-    runSuccessfulHandleTest(
-        "6-ROI*",
-        "6-ROID",
-        "",
-        "inactive",
-        "",
-        "rdap_contact_deleted.json");
+    runSuccessfulHandleTest("6-ROI*", "6-ROID", "", "inactive", "", "rdap_contact_deleted.json");
     verifyMetrics(1);
   }
 
@@ -1035,13 +994,7 @@ public class RdapEntitySearchActionTest extends RdapSearchActionTestCase<RdapEnt
   public void testHandleMatchContact_found_deletedWildcardWhenLoggedInAsAdmin() {
     loginAsAdmin();
     action.includeDeletedParam = Optional.of(true);
-    runSuccessfulHandleTest(
-        "6-ROI*",
-        "6-ROID",
-        "",
-        "inactive",
-        "",
-        "rdap_contact_deleted.json");
+    runSuccessfulHandleTest("6-ROI*", "6-ROID", "", "inactive", "", "rdap_contact_deleted.json");
     verifyMetrics(1);
   }
 

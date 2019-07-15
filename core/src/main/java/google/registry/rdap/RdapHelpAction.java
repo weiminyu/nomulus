@@ -42,7 +42,8 @@ public class RdapHelpAction extends RdapActionBase {
   private static final String RDAP_HELP_LINK =
       "https://github.com/google/nomulus/blob/master/docs/rdap.md";
 
-  @Inject public RdapHelpAction() {
+  @Inject
+  public RdapHelpAction() {
     super("help", EndpointType.HELP);
   }
 
@@ -73,8 +74,7 @@ public class RdapHelpAction extends RdapActionBase {
   }
 
   @Override
-  public HelpResponse getJsonObjectForResource(
-      String pathSearchString, boolean isHeadRequest) {
+  public HelpResponse getJsonObjectForResource(String pathSearchString, boolean isHeadRequest) {
     if (pathSearchString.isEmpty() || pathSearchString.equals("/")) {
       return HelpResponse.create(Optional.of(createHelpNotice()));
     }

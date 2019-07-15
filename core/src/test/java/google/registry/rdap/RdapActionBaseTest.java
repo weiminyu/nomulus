@@ -79,9 +79,8 @@ public class RdapActionBaseTest extends RdapActionBaseTestCase<RdapActionBaseTes
 
   @Test
   public void testIllegalValue_showsReadableTypeName() {
-    assertThat(generateActualJson("IllegalArgumentException")).isEqualTo(generateExpectedJsonError(
-        "Not a valid human-readable string",
-        400));
+    assertThat(generateActualJson("IllegalArgumentException"))
+        .isEqualTo(generateExpectedJsonError("Not a valid human-readable string", 400));
     assertThat(response.getStatus()).isEqualTo(400);
   }
 

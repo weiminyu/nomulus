@@ -24,15 +24,10 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import org.junit.Rule;
 
-/**
- * Base class for tests of list actions.
- */
+/** Base class for tests of list actions. */
 public class ListActionTestCase {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private FakeJsonResponse response;
 
@@ -54,7 +49,7 @@ public class ListActionTestCase {
       Optional<String> fields,
       Optional<Boolean> printHeaderRow,
       Optional<Boolean> fullFieldNames,
-      String ... expectedLinePatterns) {
+      String... expectedLinePatterns) {
     assertThat(expectedLinePatterns).isNotNull();
     runAction(action, fields, printHeaderRow, fullFieldNames);
     assertThat(response.getStatus()).isEqualTo(SC_OK);

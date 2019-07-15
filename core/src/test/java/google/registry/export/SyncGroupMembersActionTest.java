@@ -59,13 +59,9 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class SyncGroupMembersActionTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   private final DirectoryGroupsConnection connection = mock(DirectoryGroupsConnection.class);
   private final Response response = mock(Response.class);
@@ -81,19 +77,17 @@ public class SyncGroupMembersActionTest {
 
   @Test
   public void test_getGroupEmailAddressForContactType_convertsToLowercase() {
-    assertThat(getGroupEmailAddressForContactType(
-            "SomeRegistrar",
-            RegistrarContact.Type.ADMIN,
-            "domain-registry.example"))
+    assertThat(
+            getGroupEmailAddressForContactType(
+                "SomeRegistrar", RegistrarContact.Type.ADMIN, "domain-registry.example"))
         .isEqualTo("someregistrar-primary-contacts@domain-registry.example");
   }
 
   @Test
   public void test_getGroupEmailAddressForContactType_convertsNonAlphanumericChars() {
-    assertThat(getGroupEmailAddressForContactType(
-            "Weird.ಠ_ಠRegistrar",
-              MARKETING,
-            "domain-registry.example"))
+    assertThat(
+            getGroupEmailAddressForContactType(
+                "Weird.ಠ_ಠRegistrar", MARKETING, "domain-registry.example"))
         .isEqualTo("weirdregistrar-marketing-contacts@domain-registry.example");
   }
 
@@ -105,18 +99,21 @@ public class SyncGroupMembersActionTest {
         loadRegistrar("TheRegistrar").asBuilder().setContactsRequireSyncing(false).build());
     runAction();
     verify(response).setStatus(SC_OK);
-    verify(response).setPayload("NOT_MODIFIED No registrar contacts have been updated "
-        + "since the last time servlet ran.\n");
+    verify(response)
+        .setPayload(
+            "NOT_MODIFIED No registrar contacts have been updated "
+                + "since the last time servlet ran.\n");
     assertThat(loadRegistrar("NewRegistrar").getContactsRequireSyncing()).isFalse();
   }
 
   @Test
   public void test_doPost_syncsNewContact() throws Exception {
     runAction();
-    verify(connection).addMemberToGroup(
-        "newregistrar-primary-contacts@domain-registry.example",
-        "janedoe@theregistrar.com",
-        Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "newregistrar-primary-contacts@domain-registry.example",
+            "janedoe@theregistrar.com",
+            Role.MEMBER);
     verify(response).setStatus(SC_OK);
     verify(response).setPayload("OK Group memberships successfully updated.\n");
     assertThat(loadRegistrar("NewRegistrar").getContactsRequireSyncing()).isFalse();
@@ -127,8 +124,9 @@ public class SyncGroupMembersActionTest {
     when(connection.getMembersOfGroup("newregistrar-primary-contacts@domain-registry.example"))
         .thenReturn(ImmutableSet.of("defunct@example.com", "janedoe@theregistrar.com"));
     runAction();
-    verify(connection).removeMemberFromGroup(
-        "newregistrar-primary-contacts@domain-registry.example", "defunct@example.com");
+    verify(connection)
+        .removeMemberFromGroup(
+            "newregistrar-primary-contacts@domain-registry.example", "defunct@example.com");
     verify(response).setStatus(SC_OK);
     assertThat(loadRegistrar("NewRegistrar").getContactsRequireSyncing()).isFalse();
   }
@@ -137,14 +135,14 @@ public class SyncGroupMembersActionTest {
   public void test_doPost_removesAllContactsFromGroup() throws Exception {
     when(connection.getMembersOfGroup("newregistrar-primary-contacts@domain-registry.example"))
         .thenReturn(ImmutableSet.of("defunct@example.com", "janedoe@theregistrar.com"));
-    ofy().deleteWithoutBackup()
-        .entities(loadRegistrar("NewRegistrar").getContacts())
-        .now();
+    ofy().deleteWithoutBackup().entities(loadRegistrar("NewRegistrar").getContacts()).now();
     runAction();
-    verify(connection).removeMemberFromGroup(
-        "newregistrar-primary-contacts@domain-registry.example", "defunct@example.com");
-    verify(connection).removeMemberFromGroup(
-        "newregistrar-primary-contacts@domain-registry.example", "janedoe@theregistrar.com");
+    verify(connection)
+        .removeMemberFromGroup(
+            "newregistrar-primary-contacts@domain-registry.example", "defunct@example.com");
+    verify(connection)
+        .removeMemberFromGroup(
+            "newregistrar-primary-contacts@domain-registry.example", "janedoe@theregistrar.com");
     verify(response).setStatus(SC_OK);
     assertThat(loadRegistrar("NewRegistrar").getContactsRequireSyncing()).isFalse();
   }
@@ -174,24 +172,29 @@ public class SyncGroupMembersActionTest {
             .setTypes(ImmutableSet.of(TECH))
             .build());
     runAction();
-    verify(connection).removeMemberFromGroup(
-        "newregistrar-primary-contacts@domain-registry.example", "defunct@example.com");
-    verify(connection).addMemberToGroup(
-        "newregistrar-primary-contacts@domain-registry.example",
-        "binarystar@example.tld",
-        Role.MEMBER);
-    verify(connection).addMemberToGroup(
-        "newregistrar-marketing-contacts@domain-registry.example",
-        "binarystar@example.tld",
-        Role.MEMBER);
-    verify(connection).addMemberToGroup(
-        "theregistrar-primary-contacts@domain-registry.example",
-        "johndoe@theregistrar.com",
-        Role.MEMBER);
-    verify(connection).addMemberToGroup(
-        "theregistrar-technical-contacts@domain-registry.example",
-        "hexadecimal@snow.fall",
-        Role.MEMBER);
+    verify(connection)
+        .removeMemberFromGroup(
+            "newregistrar-primary-contacts@domain-registry.example", "defunct@example.com");
+    verify(connection)
+        .addMemberToGroup(
+            "newregistrar-primary-contacts@domain-registry.example",
+            "binarystar@example.tld",
+            Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "newregistrar-marketing-contacts@domain-registry.example",
+            "binarystar@example.tld",
+            Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "theregistrar-primary-contacts@domain-registry.example",
+            "johndoe@theregistrar.com",
+            Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "theregistrar-technical-contacts@domain-registry.example",
+            "hexadecimal@snow.fall",
+            Role.MEMBER);
     verify(response).setStatus(SC_OK);
     assertThat(Iterables.filter(Registrar.loadAll(), Registrar::getContactsRequireSyncing))
         .isEmpty();
@@ -204,10 +207,11 @@ public class SyncGroupMembersActionTest {
     when(connection.getMembersOfGroup("theregistrar-primary-contacts@domain-registry.example"))
         .thenThrow(new IOException("Internet was deleted"));
     runAction();
-    verify(connection).addMemberToGroup(
-        "newregistrar-primary-contacts@domain-registry.example",
-        "janedoe@theregistrar.com",
-        Role.MEMBER);
+    verify(connection)
+        .addMemberToGroup(
+            "newregistrar-primary-contacts@domain-registry.example",
+            "janedoe@theregistrar.com",
+            Role.MEMBER);
     verify(connection, times(3))
         .getMembersOfGroup("theregistrar-primary-contacts@domain-registry.example");
     verify(response).setStatus(SC_INTERNAL_SERVER_ERROR);
@@ -223,10 +227,11 @@ public class SyncGroupMembersActionTest {
         .when(connection)
         .addMemberToGroup(anyString(), anyString(), any(Role.class));
     runAction();
-    verify(connection, times(2)).addMemberToGroup(
-        "newregistrar-primary-contacts@domain-registry.example",
-        "janedoe@theregistrar.com",
-        Role.MEMBER);
+    verify(connection, times(2))
+        .addMemberToGroup(
+            "newregistrar-primary-contacts@domain-registry.example",
+            "janedoe@theregistrar.com",
+            Role.MEMBER);
     verify(response).setStatus(SC_OK);
     verify(response).setPayload("OK Group memberships successfully updated.\n");
     assertThat(loadRegistrar("NewRegistrar").getContactsRequireSyncing()).isFalse();

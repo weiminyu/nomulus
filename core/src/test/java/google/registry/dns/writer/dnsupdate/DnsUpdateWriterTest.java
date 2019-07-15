@@ -95,8 +95,9 @@ public class DnsUpdateWriterTest {
     createTld("tld");
     when(mockResolver.send(any(Update.class))).thenReturn(messageWithResponseCode(Rcode.NOERROR));
 
-    writer = new DnsUpdateWriter(
-        "tld", Duration.ZERO, Duration.ZERO, Duration.ZERO, mockResolver, clock);
+    writer =
+        new DnsUpdateWriter(
+            "tld", Duration.ZERO, Duration.ZERO, Duration.ZERO, mockResolver, clock);
   }
 
   @Test
@@ -450,9 +451,10 @@ public class DnsUpdateWriterTest {
         return fixIterator(Record.class, set.rrs());
       }
     }
-    assert_().fail(
-        "No record set found for resource '%s' type '%s'",
-        resourceName, Type.string(recordType));
+    assert_()
+        .fail(
+            "No record set found for resource '%s' type '%s'",
+            resourceName, Type.string(recordType));
     throw new AssertionError();
   }
 

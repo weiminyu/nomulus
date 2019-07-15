@@ -24,28 +24,25 @@ import javax.servlet.http.HttpServletRequest;
  * Authentication mechanism which uses the X-AppEngine-QueueName header set by App Engine for
  * internal requests.
  *
- * <p>
- * Task queue push task requests set this header value to the actual queue name. Cron requests set
- * this header value to __cron, since that's actually the name of the hidden queue used for cron
+ * <p>Task queue push task requests set this header value to the actual queue name. Cron requests
+ * set this header value to __cron, since that's actually the name of the hidden queue used for cron
  * requests. Cron also sets the header X-AppEngine-Cron, which we could check, but it's simpler just
  * to check the one.
  *
- * <p>
- * App Engine allows app admins to set these headers for testing purposes. This means that this auth
- * method is somewhat unreliable - any app admin can access any internal endpoint and pretend to be
- * the app itself by setting these headers, which would circumvent any finer-grained authorization
- * if we added it in the future (assuming we did not apply it to the app itself). And App Engine's
- * concept of an "admin" includes all project owners, editors and viewers. So anyone with access to
- * the project will be able to access anything the app itself can access.
+ * <p>App Engine allows app admins to set these headers for testing purposes. This means that this
+ * auth method is somewhat unreliable - any app admin can access any internal endpoint and pretend
+ * to be the app itself by setting these headers, which would circumvent any finer-grained
+ * authorization if we added it in the future (assuming we did not apply it to the app itself). And
+ * App Engine's concept of an "admin" includes all project owners, editors and viewers. So anyone
+ * with access to the project will be able to access anything the app itself can access.
  *
- * <p>
- * For now, it's probably okay to allow this behavior, especially since it could indeed be
+ * <p>For now, it's probably okay to allow this behavior, especially since it could indeed be
  * convenient for testing. If we wanted to revisit this decision in the future, we have a couple
  * options for locking this down:
  *
  * <ul>
- * <li>1. Always include the result of UserService.getCurrentUser() as the active user</li>
- * <li>2. Validate that the requests came from special AppEngine internal IPs</li>
+ *   <li>1. Always include the result of UserService.getCurrentUser() as the active user
+ *   <li>2. Validate that the requests came from special AppEngine internal IPs
  * </ul>
  *
  * <p>See <a href=

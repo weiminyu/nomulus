@@ -27,6 +27,5 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Embed
 public class PresenceMarker extends ImmutableObject implements Serializable {
-  @XmlTransient
-  boolean marked = true;
+  @XmlTransient boolean marked = true;
 }

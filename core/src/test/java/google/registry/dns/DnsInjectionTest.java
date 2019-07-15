@@ -46,13 +46,10 @@ import org.junit.runners.JUnit4;
 public final class DnsInjectionTest {
 
   @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .withTaskQueue()
-      .build();
+  public final AppEngineRule appEngine =
+      AppEngineRule.builder().withDatastore().withTaskQueue().build();
 
-  @Rule
-  public final InjectRule inject = new InjectRule();
+  @Rule public final InjectRule inject = new InjectRule();
 
   private final HttpServletRequest req = mock(HttpServletRequest.class);
   private final HttpServletResponse rsp = mock(HttpServletResponse.class);
@@ -65,9 +62,7 @@ public final class DnsInjectionTest {
   public void setUp() throws Exception {
     inject.setStaticField(Ofy.class, "clock", clock);
     when(rsp.getWriter()).thenReturn(new PrintWriter(httpOutput));
-    component = DaggerDnsTestComponent.builder()
-        .requestModule(new RequestModule(req, rsp))
-        .build();
+    component = DaggerDnsTestComponent.builder().requestModule(new RequestModule(req, rsp)).build();
     dnsQueue = component.dnsQueue();
     createTld("lol");
   }

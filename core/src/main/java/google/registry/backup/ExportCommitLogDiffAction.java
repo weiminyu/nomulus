@@ -75,11 +75,25 @@ public final class ExportCommitLogDiffAction implements Runnable {
   public static final String DIFF_FILE_PREFIX = "commit_diff_until_";
 
   @Inject GcsService gcsService;
-  @Inject @Config("commitLogGcsBucket") String gcsBucket;
-  @Inject @Config("commitLogDiffExportBatchSize") int batchSize;
-  @Inject @Parameter(LOWER_CHECKPOINT_TIME_PARAM) DateTime lowerCheckpointTime;
-  @Inject @Parameter(UPPER_CHECKPOINT_TIME_PARAM) DateTime upperCheckpointTime;
-  @Inject ExportCommitLogDiffAction() {}
+
+  @Inject
+  @Config("commitLogGcsBucket")
+  String gcsBucket;
+
+  @Inject
+  @Config("commitLogDiffExportBatchSize")
+  int batchSize;
+
+  @Inject
+  @Parameter(LOWER_CHECKPOINT_TIME_PARAM)
+  DateTime lowerCheckpointTime;
+
+  @Inject
+  @Parameter(UPPER_CHECKPOINT_TIME_PARAM)
+  DateTime upperCheckpointTime;
+
+  @Inject
+  ExportCommitLogDiffAction() {}
 
   @Override
   public void run() {
@@ -89,9 +103,11 @@ public final class ExportCommitLogDiffAction implements Runnable {
     checkArgument(lowerCheckpointTime.isBefore(upperCheckpointTime));
     // Load the boundary checkpoints - lower is exclusive and may not exist (on the first export,
     // when lowerCheckpointTime is START_OF_TIME), whereas the upper is inclusive and must exist.
-    CommitLogCheckpoint lowerCheckpoint = lowerCheckpointTime.isAfter(START_OF_TIME)
-        ? verifyNotNull(ofy().load().key(CommitLogCheckpoint.createKey(lowerCheckpointTime)).now())
-        : null;
+    CommitLogCheckpoint lowerCheckpoint =
+        lowerCheckpointTime.isAfter(START_OF_TIME)
+            ? verifyNotNull(
+                ofy().load().key(CommitLogCheckpoint.createKey(lowerCheckpointTime)).now())
+            : null;
     CommitLogCheckpoint upperCheckpoint =
         verifyNotNull(ofy().load().key(CommitLogCheckpoint.createKey(upperCheckpointTime)).now());
 
@@ -99,13 +115,15 @@ public final class ExportCommitLogDiffAction implements Runnable {
     List<Key<CommitLogManifest>> sortedKeys = loadAllDiffKeys(lowerCheckpoint, upperCheckpoint);
     logger.atInfo().log("Found %d manifests to export", sortedKeys.size());
     // Open an output channel to GCS, wrapped in a stream for convenience.
-    try (OutputStream gcsStream = newOutputStream(gcsService.createOrReplace(
-        new GcsFilename(gcsBucket, DIFF_FILE_PREFIX + upperCheckpointTime),
-        new GcsFileOptions.Builder()
-            .addUserMetadata(LOWER_BOUND_CHECKPOINT, lowerCheckpointTime.toString())
-            .addUserMetadata(UPPER_BOUND_CHECKPOINT, upperCheckpointTime.toString())
-            .addUserMetadata(NUM_TRANSACTIONS, Integer.toString(sortedKeys.size()))
-            .build()))) {
+    try (OutputStream gcsStream =
+        newOutputStream(
+            gcsService.createOrReplace(
+                new GcsFilename(gcsBucket, DIFF_FILE_PREFIX + upperCheckpointTime),
+                new GcsFileOptions.Builder()
+                    .addUserMetadata(LOWER_BOUND_CHECKPOINT, lowerCheckpointTime.toString())
+                    .addUserMetadata(UPPER_BOUND_CHECKPOINT, upperCheckpointTime.toString())
+                    .addUserMetadata(NUM_TRANSACTIONS, Integer.toString(sortedKeys.size()))
+                    .build()))) {
       // Export the upper checkpoint itself.
       serializeEntity(upperCheckpoint, gcsStream);
       // If there are no manifests to export, stop early, now that we've written out the file with
@@ -152,10 +170,7 @@ public final class ExportCommitLogDiffAction implements Runnable {
     // transaction-consistent by virtue of our checkpoint strategy and our customized Ofy; see
     // CommitLogCheckpointStrategy for the proof. We break ties by sorting on bucket ID to ensure
     // a deterministic order.
-    return upperCheckpoint
-        .getBucketTimestamps()
-        .keySet()
-        .stream()
+    return upperCheckpoint.getBucketTimestamps().keySet().stream()
         .flatMap(
             bucketNum ->
                 Streams.stream(loadDiffKeysFromBucket(lowerCheckpoint, upperCheckpoint, bucketNum)))
@@ -192,7 +207,8 @@ public final class ExportCommitLogDiffAction implements Runnable {
       return ImmutableSet.of();
     }
     Key<CommitLogBucket> bucketKey = getBucketKey(bucketNum);
-    return ofy().load()
+    return ofy()
+        .load()
         .type(CommitLogManifest.class)
         .ancestor(bucketKey)
         .filterKey(">=", CommitLogManifest.createKey(bucketKey, lowerBound))

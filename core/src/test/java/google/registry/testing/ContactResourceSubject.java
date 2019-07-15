@@ -55,8 +55,7 @@ public final class ContactResourceSubject
     return andChainer();
   }
 
-  public And<ContactResourceSubject> hasInternationalizedPostalInfo(
-      PostalInfo postalInfo) {
+  public And<ContactResourceSubject> hasInternationalizedPostalInfo(PostalInfo postalInfo) {
     return hasValue(
         postalInfo, actual.getInternationalizedPostalInfo(), "has internationalizedPostalInfo");
   }
@@ -67,7 +66,6 @@ public final class ContactResourceSubject
     }
     return andChainer();
   }
-
 
   public And<ContactResourceSubject> hasNonNullInternationalizedPostalInfo() {
     if (actual.getInternationalizedPostalInfo() == null) {

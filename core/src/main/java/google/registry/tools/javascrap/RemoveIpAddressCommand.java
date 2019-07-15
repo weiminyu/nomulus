@@ -44,10 +44,11 @@ import java.util.List;
 public class RemoveIpAddressCommand extends MutatingEppToolCommand {
   public static String registrarId = "CharlestonRoad";
 
-  @Parameter(names = "--roids_file",
-             description = "Text file containing a list of HostResource roids to remove",
-             required = true,
-             validateWith = PathParameter.InputFile.class)
+  @Parameter(
+      names = "--roids_file",
+      description = "Text file containing a list of HostResource roids to remove",
+      required = true,
+      validateWith = PathParameter.InputFile.class)
   private Path roidsFilePath;
 
   @Override
@@ -64,19 +65,24 @@ public class RemoveIpAddressCommand extends MutatingEppToolCommand {
 
       ArrayList<SoyMapData> ipAddresses = new ArrayList<>();
       for (InetAddress address : host.getInetAddresses()) {
-        SoyMapData dataMap = new SoyMapData(
-            "address", address.getHostAddress(),
-            "version", address instanceof Inet6Address ? "v6" : "v4");
+        SoyMapData dataMap =
+            new SoyMapData(
+                "address",
+                address.getHostAddress(),
+                "version",
+                address instanceof Inet6Address ? "v6" : "v4");
         ipAddresses.add(dataMap);
       }
 
       // Build and execute the EPP command.
       setSoyTemplate(
           RemoveIpAddressSoyInfo.getInstance(), RemoveIpAddressSoyInfo.REMOVE_IP_ADDRESS);
-      addSoyRecord(registrarId, new SoyMapData(
-          "name", host.getFullyQualifiedHostName(),
-          "ipAddresses", ipAddresses,
-          "requestedByRegistrar", registrarId));
+      addSoyRecord(
+          registrarId,
+          new SoyMapData(
+              "name", host.getFullyQualifiedHostName(),
+              "ipAddresses", ipAddresses,
+              "requestedByRegistrar", registrarId));
     }
   }
 }

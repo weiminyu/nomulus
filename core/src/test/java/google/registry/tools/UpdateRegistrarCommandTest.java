@@ -310,11 +310,7 @@ public class UpdateRegistrarCommandTest extends CommandTestCase<UpdateRegistrarC
   public void testSuccess_billingAccountMap_onlyAppliesToRealRegistrar() throws Exception {
     createTlds("foo");
     assertThat(loadRegistrar("NewRegistrar").getBillingAccountMap()).isEmpty();
-    runCommand(
-        "--billing_account_map=JPY=789xyz",
-        "--allowed_tlds=foo",
-        "--force",
-        "NewRegistrar");
+    runCommand("--billing_account_map=JPY=789xyz", "--allowed_tlds=foo", "--force", "NewRegistrar");
     assertThat(loadRegistrar("NewRegistrar").getBillingAccountMap())
         .containsExactly(CurrencyUnit.JPY, "789xyz");
   }
@@ -335,8 +331,16 @@ public class UpdateRegistrarCommandTest extends CommandTestCase<UpdateRegistrarC
 
   @Test
   public void testSuccess_streetAddress() throws Exception {
-    runCommand("--street=\"1234 Main St\"", "--street \"4th Floor\"", "--street \"Suite 1\"",
-        "--city Brooklyn", "--state NY", "--zip 11223", "--cc US", "--force", "NewRegistrar");
+    runCommand(
+        "--street=\"1234 Main St\"",
+        "--street \"4th Floor\"",
+        "--street \"Suite 1\"",
+        "--city Brooklyn",
+        "--state NY",
+        "--zip 11223",
+        "--cc US",
+        "--force",
+        "NewRegistrar");
 
     Registrar registrar = loadRegistrar("NewRegistrar");
     assertThat(registrar.getLocalizedAddress() != null).isTrue();
@@ -392,15 +396,18 @@ public class UpdateRegistrarCommandTest extends CommandTestCase<UpdateRegistrarC
   @Test
   public void testSuccess_resetOptionalParamsNullString() throws Exception {
     Registrar registrar = loadRegistrar("NewRegistrar");
-    registrar = persistResource(registrar.asBuilder()
-        .setType(Type.PDT) // for non-null IANA ID
-        .setIanaIdentifier(9995L)
-        .setBillingIdentifier(1L)
-        .setPhoneNumber("+1.2125555555")
-        .setFaxNumber("+1.2125555556")
-        .setUrl("http://www.example.tld")
-        .setDriveFolderId("id")
-        .build());
+    registrar =
+        persistResource(
+            registrar
+                .asBuilder()
+                .setType(Type.PDT) // for non-null IANA ID
+                .setIanaIdentifier(9995L)
+                .setBillingIdentifier(1L)
+                .setPhoneNumber("+1.2125555555")
+                .setFaxNumber("+1.2125555556")
+                .setUrl("http://www.example.tld")
+                .setDriveFolderId("id")
+                .build());
 
     assertThat(registrar.getIanaIdentifier()).isNotNull();
     assertThat(registrar.getBillingIdentifier()).isNotNull();
@@ -432,15 +439,18 @@ public class UpdateRegistrarCommandTest extends CommandTestCase<UpdateRegistrarC
   @Test
   public void testSuccess_resetOptionalParamsEmptyString() throws Exception {
     Registrar registrar = loadRegistrar("NewRegistrar");
-    registrar = persistResource(registrar.asBuilder()
-        .setType(Type.PDT) // for non-null IANA ID
-        .setIanaIdentifier(9995L)
-        .setBillingIdentifier(1L)
-        .setPhoneNumber("+1.2125555555")
-        .setFaxNumber("+1.2125555556")
-        .setUrl("http://www.example.tld")
-        .setDriveFolderId("id")
-        .build());
+    registrar =
+        persistResource(
+            registrar
+                .asBuilder()
+                .setType(Type.PDT) // for non-null IANA ID
+                .setIanaIdentifier(9995L)
+                .setBillingIdentifier(1L)
+                .setPhoneNumber("+1.2125555555")
+                .setFaxNumber("+1.2125555556")
+                .setUrl("http://www.example.tld")
+                .setDriveFolderId("id")
+                .build());
 
     assertThat(registrar.getIanaIdentifier()).isNotNull();
     assertThat(registrar.getBillingIdentifier()).isNotNull();

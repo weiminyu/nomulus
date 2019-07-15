@@ -17,7 +17,7 @@ package google.registry.tools.params;
 import google.registry.model.registry.Registry.TldState;
 
 /**
- * {@link TldState} CLI parameter converter/validator. Required to support multi-value
- * TldState parameters.
+ * {@link TldState} CLI parameter converter/validator. Required to support multi-value TldState
+ * parameters.
  */
 public final class TldStateParameter extends EnumParameter<TldState> {}

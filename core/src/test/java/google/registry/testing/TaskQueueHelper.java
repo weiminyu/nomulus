@@ -77,9 +77,9 @@ public class TaskQueueHelper {
     /**
      * Constructor to create a TaskMatcher that should exactly match an existing TaskStateInfo.
      *
-     * This is useful for checking that a pre-existing task as returned by TaskStateInfo is still
-     * in the queue; we can't just directly compare the lists of TaskStateInfos because they have
-     * no equals() override and there's no guarantee that reference equality is sufficient.
+     * <p>This is useful for checking that a pre-existing task as returned by TaskStateInfo is still
+     * in the queue; we can't just directly compare the lists of TaskStateInfos because they have no
+     * equals() override and there's no guarantee that reference equality is sufficient.
      */
     private TaskMatcher(TaskStateInfo taskStateInfo) {
       expected = new MatchableTaskInfo(taskStateInfo);
@@ -96,7 +96,7 @@ public class TaskQueueHelper {
     }
 
     /**
-     * Sets the HTTP method to match against.  WARNING: due to b/38459667, pull queue tasks will
+     * Sets the HTTP method to match against. WARNING: due to b/38459667, pull queue tasks will
      * report "POST" as their method.
      */
     public TaskMatcher method(String method) {
@@ -130,8 +130,7 @@ public class TaskQueueHelper {
 
     public TaskMatcher etaDelta(Duration lowerBound, Duration upperBound) {
       checkState(!lowerBound.isShorterThan(Duration.ZERO), "lowerBound must be non-negative");
-      checkState(
-          upperBound.isLongerThan(lowerBound), "upperBound must be greater than lowerBound");
+      checkState(upperBound.isLongerThan(lowerBound), "upperBound must be greater than lowerBound");
       expected.etaDeltaLowerBound = lowerBound.getStandardSeconds();
       expected.etaDeltaUpperBound = upperBound.getStandardSeconds();
       return this;
@@ -164,10 +163,8 @@ public class TaskQueueHelper {
           && (expected.method == null || Objects.equals(expected.method, actual.method))
           && (expected.payload == null || Objects.equals(expected.payload, actual.payload))
           && (expected.tag == null || Objects.equals(expected.tag, actual.tag))
-          && (expected.etaDeltaLowerBound == null
-              || expected.etaDeltaLowerBound <= actual.etaDelta)
-          && (expected.etaDeltaUpperBound == null
-              || expected.etaDeltaUpperBound >= actual.etaDelta)
+          && (expected.etaDeltaLowerBound == null || expected.etaDeltaLowerBound <= actual.etaDelta)
+          && (expected.etaDeltaUpperBound == null || expected.etaDeltaUpperBound >= actual.etaDelta)
           && containsEntries(actual.params, expected.params)
           && containsEntries(actual.headers, expected.headers);
     }
@@ -189,8 +186,8 @@ public class TaskQueueHelper {
   }
 
   /**
-   * Ensures that the tasks in the named queue are exactly those with the expected property
-   * values after being transformed with the provided property getter function.
+   * Ensures that the tasks in the named queue are exactly those with the expected property values
+   * after being transformed with the provided property getter function.
    */
   public static void assertTasksEnqueuedWithProperty(
       String queueName,
@@ -241,8 +238,7 @@ public class TaskQueueHelper {
                 "Task not found in queue %s:\n\n%s\n\nPotential candidate match diffs:\n\n%s",
                 queueName,
                 taskMatcher,
-                taskInfos
-                    .stream()
+                taskInfos.stream()
                     .map(
                         input ->
                             prettyPrintEntityDeepDiff(
@@ -256,9 +252,7 @@ public class TaskQueueHelper {
   }
 
   public static ImmutableList<ImmutableMultimap<String, String>> getQueuedParams(String queueName) {
-    return getQueueInfo(queueName)
-        .getTaskInfo()
-        .stream()
+    return getQueueInfo(queueName).getTaskInfo().stream()
         .map(MatchableTaskInfo::new)
         .map(taskInfo -> ImmutableMultimap.copyOf(taskInfo.params))
         .collect(toImmutableList());
@@ -275,7 +269,7 @@ public class TaskQueueHelper {
   }
 
   /** Ensures that the named queue contains no tasks. */
-  public static void assertNoTasksEnqueued(String ... queueNames) {
+  public static void assertNoTasksEnqueued(String... queueNames) {
     for (String queueName : queueNames) {
       assertThat(getQueueInfo(queueName).getCountTasks()).isEqualTo(0);
     }

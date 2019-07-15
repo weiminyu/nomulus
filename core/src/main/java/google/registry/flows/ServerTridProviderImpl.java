@@ -28,7 +28,8 @@ public class ServerTridProviderImpl implements ServerTridProvider {
   private static final String SERVER_ID = getServerId();
   private static final AtomicLong idCounter = new AtomicLong();
 
-  @Inject public ServerTridProviderImpl() {}
+  @Inject
+  public ServerTridProviderImpl() {}
 
   /** Creates a unique id for this server instance, as a base64 encoded UUID. */
   private static String getServerId() {

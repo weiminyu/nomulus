@@ -33,9 +33,7 @@ import java.util.Objects;
 @Parameters(separators = " =", commandDescription = "Show allocation token(s)")
 final class GetAllocationTokenCommand implements CommandWithRemoteApi {
 
-  @Parameter(
-      description = "Allocation token(s)",
-      required = true)
+  @Parameter(description = "Allocation token(s)", required = true)
   private List<String> mainParameters;
 
   private static final int BATCH_SIZE = 20;

@@ -77,8 +77,7 @@ public class RdapMetricsTest {
 
   @Test
   public void testPrefixLength_cappedAt5() {
-    rdapMetrics.updateMetrics(
-        getBuilder().setPrefixLength(6).setNumDomainsRetrieved(1).build());
+    rdapMetrics.updateMetrics(getBuilder().setPrefixLength(6).setNumDomainsRetrieved(1).build());
     assertThat(RdapMetrics.numberOfDomainsRetrieved)
         .hasDataSetForLabels(ImmutableSet.of(1), "DOMAINS", "NONE", "INVALID", "5+", "NO")
         .and()
@@ -106,9 +105,7 @@ public class RdapMetricsTest {
   @Test
   public void testCompleteResultSet() {
     rdapMetrics.updateMetrics(
-        getBuilder()
-            .setIncompletenessWarningType(IncompletenessWarningType.COMPLETE)
-            .build());
+        getBuilder().setIncompletenessWarningType(IncompletenessWarningType.COMPLETE).build());
     assertThat(RdapMetrics.responses)
         .hasValueForLabels(1, "DOMAINS", "NONE", "INVALID", "200", "COMPLETE")
         .and()
@@ -118,9 +115,7 @@ public class RdapMetricsTest {
   @Test
   public void testTruncatedResultSet() {
     rdapMetrics.updateMetrics(
-        getBuilder()
-            .setIncompletenessWarningType(IncompletenessWarningType.TRUNCATED)
-            .build());
+        getBuilder().setIncompletenessWarningType(IncompletenessWarningType.TRUNCATED).build());
     assertThat(RdapMetrics.responses)
         .hasValueForLabels(1, "DOMAINS", "NONE", "INVALID", "200", "TRUNCATED")
         .and()
@@ -247,16 +242,15 @@ public class RdapMetricsTest {
         .and()
         .hasNoOtherValues();
     assertThat(RdapMetrics.responses)
-        .hasValueForLabels(
-            1, "NAMESERVERS", "BY_NAMESERVER_NAME", "SUFFIX", "404", "COMPLETE")
+        .hasValueForLabels(1, "NAMESERVERS", "BY_NAMESERVER_NAME", "SUFFIX", "404", "COMPLETE")
         .and()
         .hasNoOtherValues();
     assertThat(RdapMetrics.numberOfDomainsRetrieved).hasNoOtherValues();
     assertThat(RdapMetrics.numberOfHostsRetrieved)
-    .hasDataSetForLabels(
-        ImmutableSet.of(0), "NAMESERVERS", "BY_NAMESERVER_NAME", "SUFFIX", "0", "NO")
-    .and()
-    .hasNoOtherValues();
+        .hasDataSetForLabels(
+            ImmutableSet.of(0), "NAMESERVERS", "BY_NAMESERVER_NAME", "SUFFIX", "0", "NO")
+        .and()
+        .hasNoOtherValues();
     assertThat(RdapMetrics.numberOfContactsRetrieved).hasNoOtherValues();
   }
 
@@ -276,15 +270,13 @@ public class RdapMetricsTest {
         .and()
         .hasNoOtherValues();
     assertThat(RdapMetrics.responses)
-        .hasValueForLabels(
-            1, "ENTITIES", "BY_FULL_NAME", "PREFIX", "200", "COMPLETE")
+        .hasValueForLabels(1, "ENTITIES", "BY_FULL_NAME", "PREFIX", "200", "COMPLETE")
         .and()
         .hasNoOtherValues();
     assertThat(RdapMetrics.numberOfDomainsRetrieved).hasNoOtherValues();
     assertThat(RdapMetrics.numberOfHostsRetrieved).hasNoOtherValues();
     assertThat(RdapMetrics.numberOfContactsRetrieved)
-        .hasDataSetForLabels(
-            ImmutableSet.of(50), "ENTITIES", "BY_FULL_NAME", "PREFIX", "4", "NO")
+        .hasDataSetForLabels(ImmutableSet.of(50), "ENTITIES", "BY_FULL_NAME", "PREFIX", "4", "NO")
         .and()
         .hasNoOtherValues();
   }

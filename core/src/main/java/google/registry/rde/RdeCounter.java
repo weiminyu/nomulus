@@ -53,16 +53,14 @@ public final class RdeCounter {
   public XjcRdeHeader makeHeader(String tld, RdeMode mode) {
     XjcRdeHeader header = new XjcRdeHeader();
     header.setTld(tld);
-    NON_HEADER_RDE_RESOURCE_TYPES
-        .stream()
+    NON_HEADER_RDE_RESOURCE_TYPES.stream()
         .filter(type -> type.getModes().contains(mode))
         .forEach(type -> header.getCounts().add(makeCount(type.getUri(), counts.get(type).get())));
     return header;
   }
 
   /** Returns an ICANN notification report as a JAXB object. */
-  public XjcRdeReport
-      makeReport(String id, DateTime watermark, XjcRdeHeader header, int revision) {
+  public XjcRdeReport makeReport(String id, DateTime watermark, XjcRdeHeader header, int revision) {
     XjcRdeReport report = new XjcRdeReport();
     report.setId(id);
     report.setKind(XjcRdeDepositTypeType.FULL);

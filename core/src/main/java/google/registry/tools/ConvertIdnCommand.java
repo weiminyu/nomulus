@@ -27,9 +27,7 @@ import java.util.List;
 @Parameters(commandDescription = "Convert IDNs to/from punycode")
 final class ConvertIdnCommand implements Command {
 
-  @Parameter(
-      description = "Labels to convert",
-      required = true)
+  @Parameter(description = "Labels to convert", required = true)
   private List<String> mainParameters;
 
   @Override

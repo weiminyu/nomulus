@@ -99,8 +99,7 @@ public class BigqueryUtilsTest {
 
   @Test
   public void test_toBigqueryTimestamp_timeunitConversion() {
-    assertThat(toBigqueryTimestamp(1234567890L, TimeUnit.SECONDS))
-        .isEqualTo("1234567890.000000");
+    assertThat(toBigqueryTimestamp(1234567890L, TimeUnit.SECONDS)).isEqualTo("1234567890.000000");
     assertThat(toBigqueryTimestamp(1234567890123L, TimeUnit.MILLISECONDS))
         .isEqualTo("1234567890.123000");
     assertThat(toBigqueryTimestamp(1234567890123000L, TimeUnit.MICROSECONDS))

@@ -36,17 +36,22 @@ import javax.inject.Inject;
 public final class TmchCrlAction implements Runnable {
 
   @Inject Marksdb marksdb;
-  @Inject @Config("tmchCrlUrl") URL tmchCrlUrl;
+
+  @Inject
+  @Config("tmchCrlUrl")
+  URL tmchCrlUrl;
+
   @Inject TmchCertificateAuthority tmchCertificateAuthority;
-  @Inject TmchCrlAction() {}
+
+  @Inject
+  TmchCrlAction() {}
 
   /** Synchronously fetches latest ICANN TMCH CRL and saves it to Datastore. */
   @Override
   public void run() {
     try {
       tmchCertificateAuthority.updateCrl(
-          new String(marksdb.fetch(tmchCrlUrl, Optional.empty()), UTF_8),
-          tmchCrlUrl.toString());
+          new String(marksdb.fetch(tmchCrlUrl, Optional.empty()), UTF_8), tmchCrlUrl.toString());
     } catch (IOException | GeneralSecurityException e) {
       throw new RuntimeException("Failed to update ICANN TMCH CRL.", e);
     }

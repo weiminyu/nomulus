@@ -173,10 +173,12 @@ final class RydeEncryption {
       }
 
       InputStream dataStream =
-          cyphertext.get().getDataStream(
-              new JcePublicKeyDataDecryptorFactoryBuilder()
-                  .setProvider(PROVIDER_NAME)
-                  .build(privateKey));
+          cyphertext
+              .get()
+              .getDataStream(
+                  new JcePublicKeyDataDecryptorFactoryBuilder()
+                      .setProvider(PROVIDER_NAME)
+                      .build(privateKey));
       if (!checkIntegrityPacket) {
         return new ImprovedInputStream("RydeDecryptor", dataStream);
       }

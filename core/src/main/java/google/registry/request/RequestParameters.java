@@ -44,11 +44,11 @@ public final class RequestParameters {
    * method to yield the following results:
    *
    * <ul>
-   * <li>/foo?bar=hello → hello
-   * <li>/foo?bar=hello&bar=there → hello
-   * <li>/foo?bar= → 400 error (empty)
-   * <li>/foo?bar=&bar=there → 400 error (empty)
-   * <li>/foo → 400 error (absent)
+   *   <li>/foo?bar=hello → hello
+   *   <li>/foo?bar=hello&bar=there → hello
+   *   <li>/foo?bar= → 400 error (empty)
+   *   <li>/foo?bar=&bar=there → 400 error (empty)
+   *   <li>/foo → 400 error (absent)
    * </ul>
    *
    * @throws BadRequestException if request parameter is absent or empty
@@ -126,9 +126,7 @@ public final class RequestParameters {
     if (parameter == null || parameter.isEmpty()) {
       return ImmutableSet.of();
     }
-    return Splitter.on(',')
-        .splitToList(parameter)
-        .stream()
+    return Splitter.on(',').splitToList(parameter).stream()
         .filter(s -> !s.isEmpty())
         .collect(toImmutableSet());
   }
@@ -160,8 +158,8 @@ public final class RequestParameters {
    * @throws BadRequestException if request parameter named {@code name} is absent, empty, or not
    *     equal to any of the values in {@code enumClass}
    */
-  public static <C extends Enum<C>>
-      C extractEnumParameter(HttpServletRequest req, Class<C> enumClass, String name) {
+  public static <C extends Enum<C>> C extractEnumParameter(
+      HttpServletRequest req, Class<C> enumClass, String name) {
     return getEnumValue(enumClass, extractRequiredParameter(req, name), name);
   }
 
@@ -216,9 +214,9 @@ public final class RequestParameters {
   }
 
   /**
-   * Returns first request parameter associated with {@code name} parsed as an
-   * <a href="https://goo.gl/pk5Q2k">ISO 8601</a> timestamp, e.g. {@code 1984-12-18TZ},
-   * {@code 2000-01-01T16:20:00Z}.
+   * Returns first request parameter associated with {@code name} parsed as an <a
+   * href="https://goo.gl/pk5Q2k">ISO 8601</a> timestamp, e.g. {@code 1984-12-18TZ}, {@code
+   * 2000-01-01T16:20:00Z}.
    *
    * @throws BadRequestException if request parameter named {@code name} is absent, empty, or could
    *     not be parsed as an ISO 8601 timestamp
@@ -233,9 +231,9 @@ public final class RequestParameters {
   }
 
   /**
-   * Returns first request parameter associated with {@code name} parsed as an
-   * <a href="https://goo.gl/pk5Q2k">ISO 8601</a> timestamp, e.g. {@code 1984-12-18TZ},
-   * {@code 2000-01-01T16:20:00Z}.
+   * Returns first request parameter associated with {@code name} parsed as an <a
+   * href="https://goo.gl/pk5Q2k">ISO 8601</a> timestamp, e.g. {@code 1984-12-18TZ}, {@code
+   * 2000-01-01T16:20:00Z}.
    *
    * @throws BadRequestException if request parameter is present but not a valid {@link DateTime}.
    */
@@ -262,8 +260,7 @@ public final class RequestParameters {
   public static ImmutableSet<DateTime> extractSetOfDatetimeParameters(
       HttpServletRequest req, String name) {
     try {
-      return extractSetOfParameters(req, name)
-          .stream()
+      return extractSetOfParameters(req, name).stream()
           .filter(not(String::isEmpty))
           .map(DateTime::parse)
           .collect(toImmutableSet());

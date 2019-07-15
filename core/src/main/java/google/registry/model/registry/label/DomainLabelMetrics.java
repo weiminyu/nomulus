@@ -52,12 +52,12 @@ class DomainLabelMetrics {
     }
 
     abstract String reservedListName();
+
     abstract ReservationType reservationType();
   }
 
   /**
-   * Labels attached to {@link #reservedListChecks} and {@link #reservedListProcessingTime}
-   * metrics.
+   * Labels attached to {@link #reservedListChecks} and {@link #reservedListProcessingTime} metrics.
    *
    * <p>A domain name can be matched by multiple reserved lists. To keep the metrics useful by
    * emitting only one metric result for each check, while avoiding potential combinatorial
@@ -128,7 +128,6 @@ class DomainLabelMetrics {
               "Count of reserved list hits",
               "count",
               RESERVED_LIST_HIT_LABEL_DESCRIPTORS);
-
 
   /** Metric recording the result of each premium list check. */
   @VisibleForTesting

@@ -140,8 +140,7 @@ public class EppLifecycleToolsTest extends EppTestCase {
     // Assert about billing events.
     DateTime createTime = DateTime.parse("2000-06-01T00:02:00Z");
     DomainBase domain =
-        loadByForeignKey(
-                DomainBase.class, "example.tld", DateTime.parse("2003-06-02T00:02:00Z"))
+        loadByForeignKey(DomainBase.class, "example.tld", DateTime.parse("2003-06-02T00:02:00Z"))
             .get();
     BillingEvent.OneTime renewBillingEvent =
         new BillingEvent.OneTime.Builder()

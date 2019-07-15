@@ -49,12 +49,13 @@ public final class ResourceTransferUtils {
   private ResourceTransferUtils() {}
 
   /** Statuses for which an exDate should be added to transfer responses. */
-  private static final ImmutableSet<TransferStatus> ADD_EXDATE_STATUSES = Sets.immutableEnumSet(
-      TransferStatus.PENDING, TransferStatus.CLIENT_APPROVED, TransferStatus.SERVER_APPROVED);
+  private static final ImmutableSet<TransferStatus> ADD_EXDATE_STATUSES =
+      Sets.immutableEnumSet(
+          TransferStatus.PENDING, TransferStatus.CLIENT_APPROVED, TransferStatus.SERVER_APPROVED);
 
   /**
-   * Create a transfer response using the id and type of this resource and the specified
-   * {@link TransferData}.
+   * Create a transfer response using the id and type of this resource and the specified {@link
+   * TransferData}.
    */
   public static TransferResponse createTransferResponse(
       EppResource eppResource, TransferData transferData, DateTime now) {
@@ -73,7 +74,8 @@ public final class ResourceTransferUtils {
                       ? extendRegistrationWithCap(now, domain.getRegistrationExpirationTime(), 1)
                       : null);
     }
-    builder.setGainingClientId(transferData.getGainingClientId())
+    builder
+        .setGainingClientId(transferData.getGainingClientId())
         .setLosingClientId(transferData.getLosingClientId())
         .setPendingTransferExpirationTime(transferData.getPendingTransferExpirationTime())
         .setTransferRequestTime(transferData.getTransferRequestTime())
@@ -114,20 +116,24 @@ public final class ResourceTransferUtils {
   /** If there is a transfer out, delete the server-approve entities and enqueue a poll message. */
   public static <R extends EppResource & ResourceWithTransferData>
       void handlePendingTransferOnDelete(
-            R resource, R newResource, DateTime now, HistoryEntry historyEntry) {
+          R resource, R newResource, DateTime now, HistoryEntry historyEntry) {
     if (resource.getStatusValues().contains(StatusValue.PENDING_TRANSFER)) {
       TransferData oldTransferData = resource.getTransferData();
       ofy().delete().keys(oldTransferData.getServerApproveEntities());
-      ofy().save().entity(new PollMessage.OneTime.Builder()
-          .setClientId(oldTransferData.getGainingClientId())
-          .setEventTime(now)
-          .setMsg(TransferStatus.SERVER_CANCELLED.getMessage())
-          .setResponseData(ImmutableList.of(
-              createTransferResponse(newResource, newResource.getTransferData(), now),
-              createPendingTransferNotificationResponse(
-                  resource, oldTransferData.getTransferRequestTrid(), false, now)))
-          .setParent(historyEntry)
-          .build());
+      ofy()
+          .save()
+          .entity(
+              new PollMessage.OneTime.Builder()
+                  .setClientId(oldTransferData.getGainingClientId())
+                  .setEventTime(now)
+                  .setMsg(TransferStatus.SERVER_CANCELLED.getMessage())
+                  .setResponseData(
+                      ImmutableList.of(
+                          createTransferResponse(newResource, newResource.getTransferData(), now),
+                          createPendingTransferNotificationResponse(
+                              resource, oldTransferData.getTransferRequestTrid(), false, now)))
+                  .setParent(historyEntry)
+                  .build());
     }
   }
 
@@ -146,14 +152,15 @@ public final class ResourceTransferUtils {
         resource.getStatusValues().contains(StatusValue.PENDING_TRANSFER),
         "Resource is not in pending transfer status.");
     checkArgument(
-        !TransferData.EMPTY.equals(resource.getTransferData()),
-        "No old transfer data to resolve.");
+        !TransferData.EMPTY.equals(resource.getTransferData()), "No old transfer data to resolve.");
     @SuppressWarnings("unchecked")
     B builder = (B) resource.asBuilder();
     return builder
         .removeStatusValue(StatusValue.PENDING_TRANSFER)
         .setTransferData(
-            resource.getTransferData().copyConstantFieldsToBuilder()
+            resource
+                .getTransferData()
+                .copyConstantFieldsToBuilder()
                 .setTransferStatus(transferStatus)
                 .setPendingTransferExpirationTime(checkNotNull(now))
                 .build());

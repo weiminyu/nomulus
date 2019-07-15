@@ -67,10 +67,12 @@ public final class ContactTransferApproveFlow implements TransactionalFlow {
   @Inject Optional<AuthInfo> authInfo;
   @Inject HistoryEntry.Builder historyBuilder;
   @Inject EppResponse.Builder responseBuilder;
-  @Inject ContactTransferApproveFlow() {}
+
+  @Inject
+  ContactTransferApproveFlow() {}
 
   /**
-   * <p>The logic in this flow, which handles client approvals, very closely parallels the logic in
+   * The logic in this flow, which handles client approvals, very closely parallels the logic in
    * {@link ContactResource#cloneProjectedAtTime} which handles implicit server approvals.
    */
   @Override
@@ -85,11 +87,12 @@ public final class ContactTransferApproveFlow implements TransactionalFlow {
     verifyResourceOwnership(clientId, existingContact);
     ContactResource newContact =
         approvePendingTransfer(existingContact, TransferStatus.CLIENT_APPROVED, now);
-    HistoryEntry historyEntry = historyBuilder
-        .setType(HistoryEntry.Type.CONTACT_TRANSFER_APPROVE)
-        .setModificationTime(now)
-        .setParent(Key.create(existingContact))
-        .build();
+    HistoryEntry historyEntry =
+        historyBuilder
+            .setType(HistoryEntry.Type.CONTACT_TRANSFER_APPROVE)
+            .setModificationTime(now)
+            .setParent(Key.create(existingContact))
+            .build();
     // Create a poll message for the gaining client.
     PollMessage gainingPollMessage =
         createGainingTransferPollMessage(targetId, newContact.getTransferData(), historyEntry);

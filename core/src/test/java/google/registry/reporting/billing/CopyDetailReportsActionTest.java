@@ -51,11 +51,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class CopyDetailReportsActionTest {
 
-  @Rule
-  public final AppEngineRule appEngine = AppEngineRule.builder()
-      .withDatastore()
-      .build();
-
+  @Rule public final AppEngineRule appEngine = AppEngineRule.builder().withDatastore().build();
 
   private final GcsService gcsService = GcsServiceFactory.createGcsService();
   private final GcsUtils gcsUtils = new GcsUtils(gcsService, 1024);
@@ -114,7 +110,7 @@ public class CopyDetailReportsActionTest {
   }
 
   @Test
-  public void testSuccess_nonDetailReportFiles_notSent() throws IOException{
+  public void testSuccess_nonDetailReportFiles_notSent() throws IOException {
     writeGcsFile(
         gcsService,
         new GcsFilename("test-bucket", "results/invoice_details_2017-10_TheRegistrar_hello.csv"),
@@ -177,8 +173,10 @@ public class CopyDetailReportsActionTest {
             MediaType.CSV_UTF_8,
             "0B-12345",
             "hola,mundo\n3,4".getBytes(UTF_8));
-    verify(emailUtils).sendAlertEmail("Warning: CopyDetailReportsAction failed.\nEncountered: "
-        + "expected on file: invoice_details_2017-10_TheRegistrar_hello.csv");
+    verify(emailUtils)
+        .sendAlertEmail(
+            "Warning: CopyDetailReportsAction failed.\nEncountered: "
+                + "expected on file: invoice_details_2017-10_TheRegistrar_hello.csv");
   }
 
   @Test
@@ -196,8 +194,7 @@ public class CopyDetailReportsActionTest {
     persistResource(loadRegistrar("TheRegistrar").asBuilder().setDriveFolderId(null).build());
     writeGcsFile(
         gcsService,
-        new GcsFilename(
-            "test-bucket", "results/invoice_details_2017-10_TheRegistrar_hello.csv"),
+        new GcsFilename("test-bucket", "results/invoice_details_2017-10_TheRegistrar_hello.csv"),
         "hola,mundo\n3,4".getBytes(UTF_8));
     action.run();
     verifyZeroInteractions(driveConnection);

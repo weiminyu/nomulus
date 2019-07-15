@@ -21,9 +21,13 @@ import com.google.auto.value.AutoValue;
 public abstract class UserInfo {
 
   abstract String email();
+
   abstract String authDomain();
+
   abstract String gaeUserId();
+
   abstract boolean isAdmin();
+
   abstract boolean isLoggedIn();
 
   /** Creates a new logged-in non-admin user instance. */

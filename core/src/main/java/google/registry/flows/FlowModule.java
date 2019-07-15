@@ -249,7 +249,7 @@ public class FlowModule {
   static EppResponse.Builder provideEppResponseBuilder(Trid trid) {
     return new EppResponse.Builder()
         .setTrid(trid)
-        .setResultFromCode(Result.Code.SUCCESS);  // Default to success.
+        .setResultFromCode(Result.Code.SUCCESS); // Default to success.
   }
 
   @Provides

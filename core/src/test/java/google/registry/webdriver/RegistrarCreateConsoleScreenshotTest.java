@@ -57,9 +57,10 @@ public class RegistrarCreateConsoleScreenshotTest extends WebDriverTestCase {
     driver.findElement(By.id("name")).sendKeys("registrar name");
     driver
         .findElement(By.id("billingAccount"))
-        .sendKeys(""
-            + "USD=12345678-abcd-1234-5678-cba987654321\n"
-            + "JPY=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+        .sendKeys(
+            ""
+                + "USD=12345678-abcd-1234-5678-cba987654321\n"
+                + "JPY=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
     driver.findElement(By.id("driveId")).sendKeys("drive-id");
     driver.findElement(By.id("ianaId")).sendKeys("15263");
     driver.findElement(By.id("referralEmail")).sendKeys("email@icann.example");
@@ -84,9 +85,10 @@ public class RegistrarCreateConsoleScreenshotTest extends WebDriverTestCase {
     driver.findElement(By.id("name")).sendKeys("registrar name");
     driver
         .findElement(By.id("billingAccount"))
-        .sendKeys(""
-            + "USD=12345678-abcd-1234-5678-cba987654321\n"
-            + "JPY=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+        .sendKeys(
+            ""
+                + "USD=12345678-abcd-1234-5678-cba987654321\n"
+                + "JPY=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
     driver.findElement(By.id("driveId")).sendKeys("drive-id");
     driver.findElement(By.id("ianaId")).sendKeys("15263");
     driver.findElement(By.id("referralEmail")).sendKeys("email@icann.example");

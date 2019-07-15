@@ -207,16 +207,41 @@ public final class RdeStagingAction implements Runnable {
   @Inject RdeStagingReducer.Factory reducerFactory;
   @Inject Response response;
   @Inject MapreduceRunner mrRunner;
-  @Inject @Config("transactionCooldown") Duration transactionCooldown;
-  @Inject @Parameter(RdeModule.PARAM_MANUAL) boolean manual;
-  @Inject @Parameter(RdeModule.PARAM_DIRECTORY) Optional<String> directory;
-  @Inject @Parameter(RdeModule.PARAM_MODE) ImmutableSet<String> modeStrings;
-  @Inject @Parameter(RequestParameters.PARAM_TLDS) ImmutableSet<String> tlds;
-  @Inject @Parameter(RdeModule.PARAM_WATERMARKS) ImmutableSet<DateTime> watermarks;
-  @Inject @Parameter(RdeModule.PARAM_REVISION) Optional<Integer> revision;
-  @Inject @Parameter(RdeModule.PARAM_LENIENT) boolean lenient;
 
-  @Inject RdeStagingAction() {}
+  @Inject
+  @Config("transactionCooldown")
+  Duration transactionCooldown;
+
+  @Inject
+  @Parameter(RdeModule.PARAM_MANUAL)
+  boolean manual;
+
+  @Inject
+  @Parameter(RdeModule.PARAM_DIRECTORY)
+  Optional<String> directory;
+
+  @Inject
+  @Parameter(RdeModule.PARAM_MODE)
+  ImmutableSet<String> modeStrings;
+
+  @Inject
+  @Parameter(RequestParameters.PARAM_TLDS)
+  ImmutableSet<String> tlds;
+
+  @Inject
+  @Parameter(RdeModule.PARAM_WATERMARKS)
+  ImmutableSet<DateTime> watermarks;
+
+  @Inject
+  @Parameter(RdeModule.PARAM_REVISION)
+  Optional<Integer> revision;
+
+  @Inject
+  @Parameter(RdeModule.PARAM_LENIENT)
+  boolean lenient;
+
+  @Inject
+  RdeStagingAction() {}
 
   @Override
   public void run() {
@@ -333,11 +358,7 @@ public final class RdeStagingAction implements Runnable {
           pendingsBuilder.put(
               tld,
               PendingDeposit.createInManualOperation(
-                  tld,
-                  watermark,
-                  mode,
-                  directoryWithTrailingSlash,
-                  revision.orElse(null)));
+                  tld, watermark, mode, directoryWithTrailingSlash, revision.orElse(null)));
         }
       }
     }

@@ -263,10 +263,14 @@ public class DomainRenewFlowTest extends ResourceFlowTestCase<DomainRenewFlow, D
     ImmutableMap<String, String> customFeeMap =
         updateSubstitutions(
             FEE_06_MAP,
-            "NAME", "costly-renew.tld",
-            "PERIOD", "1",
-            "EX_DATE", "2001-04-03T22:00:00.0Z",
-            "FEE", "111.00");
+            "NAME",
+            "costly-renew.tld",
+            "PERIOD",
+            "1",
+            "EX_DATE",
+            "2001-04-03T22:00:00.0Z",
+            "FEE",
+            "111.00");
     setEppInput("domain_renew_fee.xml", customFeeMap);
     persistDomain();
     doSuccessfulTest("domain_renew_response_fee.xml", 1, customFeeMap, Money.of(USD, 111));
