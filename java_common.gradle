@@ -17,10 +17,13 @@ apply plugin: 'nebula.lint'
 apply plugin: 'net.ltgt.apt'
 apply plugin: 'net.ltgt.errorprone'
 apply plugin: 'checkstyle'
+apply plugin: 'jacoco'
 
 // Checkstyle should run as part of the testing task
 tasks.test.dependsOn tasks.checkstyleMain
 tasks.test.dependsOn tasks.checkstyleTest
+
+tasks.test.finalizedBy jacocoTestReport
 
 dependencies {
     // compatibility with Java 8
