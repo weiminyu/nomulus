@@ -23,6 +23,9 @@ apply plugin: 'jacoco'
 tasks.test.dependsOn tasks.checkstyleMain
 tasks.test.dependsOn tasks.checkstyleTest
 
+// Generate per-subproject reports in build/reports/jacoco directory.
+// TODO(weiminyu): publish periodical reports to well known location.
+// TODO(weiminyu): investigate incremental coverage change calculation and alert.
 tasks.test.finalizedBy jacocoTestReport
 
 dependencies {
@@ -88,5 +91,44 @@ spotless {
     trimTrailingWhitespace()
     indentWithSpaces(2)
     endWithNewline()
+  }
+}
+
+// Set coverage minimums for each sub project.
+// We use the current instruction-level coverage ratios.
+task initCoverageMinimums {
+  rootProject.ext.coverageMinimums = [
+     'core'    : 0.6,
+     'proxy'   : 0.52,
+     'util'    : 0.57
+  ].asImmutable()
+
+  rootProject.ext.getMinCoverage = { key ->
+    if (rootProject.ext.coverageMinimums.containsKey(key)) {
+      return rootProject.ext.coverageMinimums.get(key)
+    }
+    return 0.0
+  }
+}
+
+// Alerts for coverage violation. Note that,
+// - This task is FYI only and needs to be invoked explicitly. We will consider
+// - This task does not address incremental coverage.
+jacocoTestCoverageVerification {
+
+  dependsOn initCoverageMinimums
+
+  violationRules {
+    rule {
+      // Each limit consists of the following properties:
+      // - An 'element' type: BUNDLE (default), PACKAGE, CLASS, SOURCEFILE, or METHOD.
+      // - A 'counter' type: INSTRUCTION (default), LINE, BRANCH, COMPLEXITY, METHOD, or CLASS
+      // - A 'value' type: TOTALCOUNT, COVEREDCOUNT, MISSEDCOUNT, COVEREDRATIO (default),
+      //   or MISSEDRATIO
+      // - The 'minimum' threshold, given as a fraction or a percentage (including '%')
+      limit {
+        minimum = rootProject.ext.getMinCoverage(project.getName())
+      }
+    }
   }
 }
