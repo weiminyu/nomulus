@@ -112,7 +112,7 @@ task initCoverageMinimums {
 }
 
 // Alerts for coverage violation. Note that,
-// - This task is FYI only and needs to be invoked explicitly. We will consider
+// - This task is FYI only and needs to be invoked explicitly.
 // - This task does not address incremental coverage.
 jacocoTestCoverageVerification {
 
