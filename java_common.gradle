@@ -94,9 +94,10 @@ spotless {
   }
 }
 
-// Set coverage minimums for each sub project.
-// We use the current instruction-level coverage ratios.
+// Initialize for coverage minimum determination for each sub project.
 task initCoverageMinimums {
+  // Use current coverage ratio of each subproject as placeholder value.
+  // Long-term plan is to calculate incremental coverage on the fly.
   rootProject.ext.coverageMinimums = [
      'core'    : 0.6,
      'proxy'   : 0.52,
