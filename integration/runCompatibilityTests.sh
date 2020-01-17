@@ -109,7 +109,7 @@ function runTest() {
           -PdevProject=${dev_project} \
           -Pnomulus_version=${nomulus_version} \
           -Pschema_version=${schema_version} \
-          -Ppublish_repo=gcs://${dev_project}-deployed-tags/maven)
+          -Ppublish_repo=https://storage.googleapis.com/${dev_project}-deployed-tags/maven)
 }
 
 set -e
