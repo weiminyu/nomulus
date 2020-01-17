@@ -12,3 +12,6 @@ cd ${KOKORO_ARTIFACTS_DIR}/github/nomulus
 
 ./integration/runCompatibilityTests.sh -p domain-registry-dev -s sql
 ./integration/runCompatibilityTests.sh -p domain-registry-dev -s nomulus
+
+./gradlew :integration:sqlIntegrationTest -PdevProject=domain-registry-dev -Pnomulus_version=nomulus-20200113-RC00 -Pschema_version=nomulus-20200113-RC00 -Ppublish_repo=gcs://domain-registry-dev-deployed-tags/maven
+
