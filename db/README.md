@@ -47,18 +47,25 @@ Below are the steps to submit a schema change:
     following the existing scripts in that folder. Note the double underscore in
     the naming pattern.
 
-4.  Run `./nom_build :nom:generate_golden_file`.  This is a pseudo-task
+4.  Run `./nom_build :nom:generate_golden_file`. This is a pseudo-task
     implemented in the `nom_build` script that does the following:
+
     -   Runs the `:db:test` task from the Gradle root project. The SchemaTest
         will fail because the new schema does not match the golden file.
 
-    -   Copies `db/build/resources/test/testcontainer/mount/dump.txt` to the golden
-        file `db/src/main/resources/sql/schema/nomulus.golden.sql`.
+    -   Copies `db/build/resources/test/testcontainer/mount/dump.txt` to the
+        golden file `db/src/main/resources/sql/schema/nomulus.golden.sql`.
 
     -   Re-runs the `:db:test` task. This time all tests should pass.
 
-    You'll want to have a look at the diffs in the golden schema to verify
-    that all changes are intentional.
+    You'll want to have a look at the diffs in the golden schema to verify that
+    all changes are intentional.
+
+5.  Run `./nom_build :db:updateFlywayGuard` if you have added or renamed a DDL
+    script in the flyway directory. This task computes a deterministic hash of
+    the DDL script **names** and compares it with the value in
+    `db/src/main/resources/sql/flyway/script.guard`, a file that helps detect
+    sequence number conflicts in DDL script names.
 
 Relevant files (under db/src/main/resources/sql/schema/):
 
