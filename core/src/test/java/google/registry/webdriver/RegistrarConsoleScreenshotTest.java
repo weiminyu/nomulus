@@ -39,6 +39,7 @@ import google.registry.schema.domain.RegistryLock;
 import google.registry.server.RegistryTestServer;
 import google.registry.testing.AppEngineExtension;
 import google.registry.testing.CertificateSamples;
+import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -179,9 +180,16 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
     Thread.sleep(5);
     driver.diffPage("page_with_password_after_hide");
 
-    // now actually set the password
+    // Now actually set the password
     driver.waitForElement(By.id("reg-app-btn-save")).click();
-    Thread.sleep(500);
+    server.waitForDatastoreMutation(
+        () ->
+            loadRegistrar("TheRegistrar").getContacts().stream()
+                .filter(c -> c.getEmailAddress().equals("johndoe@theregistrar.com"))
+                .findFirst()
+                .filter(c -> c.verifyRegistryLockPassword("password"))
+                .isPresent(),
+        Duration.ofSeconds(5));
     driver.diffPage("contact_view");
 
     server.runInAppEngineEnvironment(
