@@ -34,6 +34,7 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -143,6 +144,35 @@ public final class WebDriverPlusScreenDifferExtension
           Thread.sleep(WAIT_FOR_ELEMENTS_BONUS_DELAY_MS);
           return element;
         }
+      }
+      Thread.sleep(WAIT_FOR_ELEMENTS_POLLING_INTERVAL_MS);
+    }
+  }
+
+  /**
+   * Executes an action and waits indefinitely for the replacement of an <em>existing</em> element.
+   */
+  public WebElement waitForRefreshedElementAfterAction(ThrowingRunnable action, By by)
+      throws Exception {
+    WebElement oldElement = findElement(by);
+    action.run();
+    while (true) {
+      try {
+        oldElement.isDisplayed();
+        Thread.sleep(WAIT_FOR_ELEMENTS_POLLING_INTERVAL_MS);
+      } catch (StaleElementReferenceException e) {
+        break;
+      }
+    }
+    while (true) {
+      try {
+        WebElement newElement = waitForElement(by);
+        if (newElement != oldElement && newElement.isDisplayed()) {
+          Thread.sleep(WAIT_FOR_ELEMENTS_BONUS_DELAY_MS);
+          return newElement;
+        }
+      } catch (StaleElementReferenceException e) {
+        // This is fine.
       }
       Thread.sleep(WAIT_FOR_ELEMENTS_POLLING_INTERVAL_MS);
     }
@@ -302,5 +332,10 @@ public final class WebDriverPlusScreenDifferExtension
   private String getUniqueName(String imageKey) {
     Preconditions.checkNotNull(imageNamePrefix);
     return imageNamePrefix + "_" + imageKey;
+  }
+
+  public interface ThrowingRunnable {
+
+    void run() throws Exception;
   }
 }

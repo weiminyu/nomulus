@@ -16,19 +16,14 @@ package google.registry.webdriver;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static google.registry.persistence.transaction.TransactionManagerFactory.tm;
 import static google.registry.testing.AppEngineExtension.THE_REGISTRAR_GAE_USER_ID;
 import static google.registry.util.NetworkUtils.getExternalAddressOfLocalSystem;
 import static google.registry.util.NetworkUtils.pickUnusedPort;
 import static google.registry.util.PreconditionsUtils.checkArgumentNotNull;
 
-import com.google.common.base.Stopwatch;
-import com.google.common.base.Supplier;
-import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.net.HostAndPort;
-import google.registry.persistence.transaction.TransactionManager;
 import google.registry.request.auth.AuthenticatedRegistrarAccessor;
 import google.registry.server.Fixture;
 import google.registry.server.Route;
@@ -38,7 +33,6 @@ import google.registry.testing.UserInfo;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -167,39 +161,6 @@ public final class TestServerExtension implements BeforeEachCallback, AfterEachC
     jobs.add(job);
     testServer.ping();
     return job.get();
-  }
-
-  /**
-   * Waits until data in Datastore has reached expected state.
-   *
-   * @param mutationCheck a predicate that executes a READONLY query and returns true when relevant
-   *     data has reached the expected state. It will be invoked through {@link
-   *     TransactionManager#transactNewReadOnly}.
-   * @param timeout the maximum time to wait for the mutation to happen
-   */
-  void waitForDatastoreMutation(Supplier<Boolean> mutationCheck, Duration timeout) {
-    /**
-     * Wraps the check in a read-only transaction. This serves two purposes:
-     *
-     * <ul>
-     *   <li>Makes sure that query would not start until the mutation has committed, reducing the
-     *       likelihood that query result being returned earlier than the mutation response.
-     *   <li>Prevents the caller from accidentally modifying data.
-     * </ul>
-     */
-    Callable<Boolean> readOnlyQuery = () -> tm().transactNewReadOnly(mutationCheck);
-    try {
-      Stopwatch stopwatch = Stopwatch.createStarted();
-      while (!this.runInAppEngineEnvironment(readOnlyQuery)
-          && stopwatch.elapsed().compareTo(timeout) < 0) {
-        Thread.sleep(10);
-      }
-      stopwatch.stop();
-      return;
-    } catch (Throwable t) {
-      Throwables.throwIfUnchecked(t);
-      throw new RuntimeException(t);
-    }
   }
 
   private final class Server implements Runnable {

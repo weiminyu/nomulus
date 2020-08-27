@@ -39,7 +39,6 @@ import google.registry.schema.domain.RegistryLock;
 import google.registry.server.RegistryTestServer;
 import google.registry.testing.AppEngineExtension;
 import google.registry.testing.CertificateSamples;
-import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -180,18 +179,9 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
     Thread.sleep(5);
     driver.diffPage("page_with_password_after_hide");
 
-    // Now actually set the password
-    driver.waitForElement(By.id("reg-app-btn-save")).click();
-    server.waitForDatastoreMutation(
-        () ->
-            loadRegistrar("TheRegistrar").getContacts().stream()
-                .filter(c -> c.getEmailAddress().equals("johndoe@theregistrar.com"))
-                .findFirst()
-                .filter(c -> c.verifyRegistryLockPassword("password"))
-                .isPresent(),
-        Duration.ofSeconds(5));
-    // Wait a little longer to account for rendering time.
-    Thread.sleep(5);
+    // Now click the Save button and wait for another Edit button to show up
+    driver.waitForRefreshedElementAfterAction(
+        () -> driver.waitForElement(By.id("reg-app-btn-save")).click(), By.id("reg-app-btn-edit"));
     driver.diffPage("contact_view");
 
     server.runInAppEngineEnvironment(
