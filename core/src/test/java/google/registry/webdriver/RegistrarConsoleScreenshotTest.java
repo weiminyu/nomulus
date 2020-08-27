@@ -215,7 +215,7 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
     driver.get(server.getUrl("/registrar#contact-settings/johndoe@theregistrar.com"));
     driver.waitForElement(By.tagName("h1"));
     driver.waitForElement(By.id("reg-app-btn-edit")).click();
-    Thread.sleep(1000);
+    Thread.sleep(500);
     driver.diffPage("page");
   }
 
@@ -227,7 +227,7 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
     driver.get(server.getUrl("/registrar#contact-settings/johndoe@theregistrar.com"));
     driver.waitForElement(By.tagName("h1"));
     driver.waitForElement(By.id("reg-app-btn-edit")).click();
-    Thread.sleep(1000);
+    Thread.sleep(500);
     driver.diffPage("page");
   }
 
