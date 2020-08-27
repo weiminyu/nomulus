@@ -158,7 +158,7 @@ public final class WebDriverPlusScreenDifferExtension
     action.run();
     while (true) {
       try {
-        oldElement.isDisplayed();
+        oldElement.isDisplayed(); // Eventually triggers StaleElementReferenceException
         Thread.sleep(WAIT_FOR_ELEMENTS_POLLING_INTERVAL_MS);
       } catch (StaleElementReferenceException e) {
         break;
