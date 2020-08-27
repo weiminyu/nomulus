@@ -103,8 +103,8 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
   @RetryingTest(3)
   void settingsContact() throws Throwable {
     driver.get(server.getUrl("/registrar#contact-settings"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
+    Thread.sleep(500);
     driver.diffPage("page");
   }
 
@@ -113,16 +113,16 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
   void settingsContact_asAdmin() throws Throwable {
     server.setIsAdmin(true);
     driver.get(server.getUrl("/registrar?clientId=NewRegistrar#contact-settings"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
+    Thread.sleep(500);
     driver.diffPage("page");
   }
 
   @RetryingTest(3)
   void settingsContactItem() throws Throwable {
     driver.get(server.getUrl("/registrar#contact-settings/johndoe@theregistrar.com"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
+    Thread.sleep(500);
     driver.diffPage("page");
   }
 
@@ -133,8 +133,8 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
     driver.get(
         server.getUrl(
             "/registrar?clientId=NewRegistrar#contact-settings/janedoe@theregistrar.com"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
+    Thread.sleep(500);
     driver.diffPage("page");
   }
 
@@ -142,9 +142,9 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
   void settingsContactEdit() throws Throwable {
     driver.manage().window().setSize(new Dimension(1050, 2000));
     driver.get(server.getUrl("/registrar#contact-settings/johndoe@theregistrar.com"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
     driver.waitForElement(By.id("reg-app-btn-edit")).click();
+    Thread.sleep(500);
     driver.diffPage("page");
   }
 
@@ -163,9 +163,9 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
         });
     driver.manage().window().setSize(new Dimension(1050, 2000));
     driver.get(server.getUrl("/registrar#contact-settings/johndoe@theregistrar.com"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
     driver.waitForElement(By.id("reg-app-btn-edit")).click();
+    Thread.sleep(500);
     // The password should show as dots when the user types it in
     driver.findElement(By.id("contacts[1].registryLockPassword")).sendKeys("password");
     driver.diffPage("page_with_password");
@@ -190,6 +190,8 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
                 .filter(c -> c.verifyRegistryLockPassword("password"))
                 .isPresent(),
         Duration.ofSeconds(5));
+    // Wait a little longer to account for rendering time.
+    Thread.sleep(5);
     driver.diffPage("contact_view");
 
     server.runInAppEngineEnvironment(
@@ -221,9 +223,9 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
         });
     driver.manage().window().setSize(new Dimension(1050, 2000));
     driver.get(server.getUrl("/registrar#contact-settings/johndoe@theregistrar.com"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
     driver.waitForElement(By.id("reg-app-btn-edit")).click();
+    Thread.sleep(1000);
     driver.diffPage("page");
   }
 
@@ -233,9 +235,9 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
         () -> persistResource(makeRegistrar2().asBuilder().setRegistryLockAllowed(true).build()));
     driver.manage().window().setSize(new Dimension(1050, 2000));
     driver.get(server.getUrl("/registrar#contact-settings/johndoe@theregistrar.com"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
     driver.waitForElement(By.id("reg-app-btn-edit")).click();
+    Thread.sleep(1000);
     driver.diffPage("page");
   }
 
@@ -243,7 +245,6 @@ class RegistrarConsoleScreenshotTest extends WebDriverTestCase {
   void settingsContactAdd() throws Throwable {
     driver.manage().window().setSize(new Dimension(1050, 2000));
     driver.get(server.getUrl("/registrar#contact-settings"));
-    Thread.sleep(1000);
     driver.waitForElement(By.tagName("h1"));
     driver.waitForElement(By.id("reg-app-btn-add")).click();
     // Attempt to fix flaky tests. The going theory is that the click button CSS animation needs to

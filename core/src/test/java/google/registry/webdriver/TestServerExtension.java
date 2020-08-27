@@ -178,12 +178,21 @@ public final class TestServerExtension implements BeforeEachCallback, AfterEachC
    * @param timeout the maximum time to wait for the mutation to happen
    */
   void waitForDatastoreMutation(Supplier<Boolean> mutationCheck, Duration timeout) {
+    /**
+     * Wraps the check in a read-only transaction. This serves two purposes:
+     *
+     * <ul>
+     *   <li>Makes sure that query would not start until the mutation has committed, reducing the
+     *       likelihood that query result being returned earlier than the mutation response.
+     *   <li>Prevents the caller from accidentally modifying data.
+     * </ul>
+     */
     Callable<Boolean> readOnlyQuery = () -> tm().transactNewReadOnly(mutationCheck);
     try {
       Stopwatch stopwatch = Stopwatch.createStarted();
       while (!this.runInAppEngineEnvironment(readOnlyQuery)
           && stopwatch.elapsed().compareTo(timeout) < 0) {
-        Thread.sleep(100);
+        Thread.sleep(10);
       }
       stopwatch.stop();
       return;
