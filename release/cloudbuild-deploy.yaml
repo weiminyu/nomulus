@@ -97,18 +97,28 @@ steps:
     echo ${TAG_NAME} | \
       gsutil cp - gs://$PROJECT_ID-deployed-tags/nomulus.${_ENV}.tag
     # Update the release to AppEngine version mapping.
-    version=$(gcloud app versions list \
-      --project $PROJECT_ID --hide-no-traffic --format="csv[no-heading](VERSION.ID)" | \
-      uniq)
-    num_versions=$(echo "${version}" | wc -l)
-    if [ "${num_versions}" -ne 1 ]; then
-      echo "Expecting exactly one active version. Found ${num_versions}"
+    if [ ${_ENV} == production ]; then
+      project_id="domain-registry"
+    else
+      project_id="domain-registry-${_ENV}"
+    fi
+    local_map="nomulus.${_ENV}.tmp"
+    gcloud app versions list \
+      --project $project_id --hide-no-traffic \
+      --format="csv[no-heading](SERVICE,VERSION.ID)" | \
+      grep -e "^backend\|^default\|^pubapi\|^tools" |\
+      while read line; do echo "${TAG_NAME},$line"; done | tee "$local_map"
+    num_versions=$(cat "$local_map" | wc -l)
+    if [ "$num_versions" -ne 4 ]; then
+      echo "Expecting exactly four active services. Found $num_versions"
       exit 1
     fi
-    echo "${TAG_NAME} ${version}" | \
-      gsutil cp - gs://$PROJECT_ID-deployed-tags/nomulus.${_ENV}.tmp
-    gsutil compose gs://$PROJECT_ID-deployed-tags/nomulus.${_ENV}.versions \
-      gs://$PROJECT_ID-deployed-tags/nomulus.${_ENV}.tmp
+    gsutil cp "$local_map" gs://$PROJECT_ID-deployed-tags/nomulus.${_ENV}.tmp
+    # Atomically append uploaded tmp file to nomulus.${_ENV}.versions
+    gsutil compose \
+      gs://$PROJECT_ID-deployed-tags/nomulus.${_ENV}.versions \
+      gs://$PROJECT_ID-deployed-tags/nomulus.${_ENV}.tmp \
+      gs://$PROJECT_ID-deployed-tags/nomulus.${_ENV}.versions
 
 timeout: 3600s
 options:
