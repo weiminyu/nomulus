@@ -11,14 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Script to rollback the Nomulus server in an AppEngine environment."""
+"""Script to rollback the Nomulus server on AppEngine."""
 
-from nom import version_utils
+import appengine
 import argparse
 import sys
 from typing import Dict, List, Set
 
 from google.cloud import storage
+
+import common
+import gcs
 
 HELP_TEXT = 'Rolls back the Nomulus server in an AppEngine environment.'
 
@@ -68,28 +71,16 @@ def find_appengine_versions(
 
 
 def rollback(args: argparse.Namespace) -> int:
-    """appengine = appengine_admin.AppEngineAdmin(args.project)
-
-    per_service_versions = appengine.get_available_versions()
-    mappings = find_appengine_versions(args.dev_project, args.env,
-                                       args.target_release,
-                                       per_service_versions)
-    print(str(mappings))
-
-    active_versions = appengine.get_services()
-    print(active_versions)
-    x = dict([(service, info[1]) for service, info in active_versions.items()])
-    print(appengine.get_service_instance_count(x))
-    """
-
-    target_versions = version_utils.get_version_map(args.dev_project, args.env,
-                                                    args.target_release)
+    """"""
+    gcs_client = gcs.GcsClient(args.dev_project)
+    target_versions = gcs_client.get_versions_by_release(
+        args.env, args.target_release)
     print(target_versions)
 
-    appengine = version_utils.AppEngineAdmin(args.project)
-    versions_to_rollback = appengine.get_serving_versions()
+    appengine_admin = appengine.AppEngineAdmin(args.project)
+    versions_to_rollback = appengine_admin.get_serving_versions()
     print(
-        appengine.get_version_configs(
+        appengine_admin.get_version_configs(
             [*target_versions, *versions_to_rollback]))
     return 0
 
