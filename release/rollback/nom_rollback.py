@@ -13,87 +13,87 @@
 # limitations under the License.
 """Script to rollback the Nomulus server on AppEngine."""
 
-import appengine
 import argparse
+import dataclasses
 import sys
-from typing import Dict, List, Set
+from typing import Iterable, Optional, Tuple
 
-from google.cloud import storage
-
+import appengine
 import common
 import gcs
 
-HELP_TEXT = 'Rolls back the Nomulus server in an AppEngine environment.'
-
-FLAGS = [(['--dev_project', '-d'], {
-    'help': 'The GCP project with the deployment infrastructure.',
-    'required': True
-}),
-         (['--project', '-p'], {
-             'help': 'The GCP project where the Nomulus server is deployed.',
-             'required': True
-         }),
-         (['--env', '-e'], {
-             'help': 'The name of the Nomulus server environment.',
-             'required': True,
-             'choices': ['production', 'sandbox', 'crash', 'alpha']
-         }),
-         (['--target_release', '-t'], {
-             'help': 'The release to be deployed.',
-             'required': True
-         })]
+HELP_TEXT = 'Script to roll back the Nomulus server on AppEngine.'
 
 
-def get_mappings_on_gcs(dev_project: str, env: str) -> str:
-    """Download the version mapping file on GCS"""
+@dataclasses.dataclass(frozen=True)
+class Argument:
+    """Describes a command line argument.
 
-    client = storage.Client(dev_project)
-    return client.get_bucket(f'{dev_project}-deployed-tags').get_blob(
-        f'nomulus.{env}.versions').download_as_text()
+    This class is for use with argparse.ArgumentParser. Except for the
+    'arg_names' property which provides the argument name and/or flags, all
+    other property names must match an accepted parameter in the parser's
+    add_argument() method.
+    """
 
+    arg_names: Tuple[str, ...]
+    help: str
+    required: bool = True
+    choices: Optional[Tuple[str, ...]] = None
 
-def find_appengine_versions(
-        dev_project: str, env: str, tag: str,
-        available_versions: Dict[str, Set[str]]) -> Dict[str, List[str]]:
-    """Find the AppEngine versions"""
-
-    mappings = get_mappings_on_gcs(dev_project, env)
-    versions = {}
-    for line in mappings.splitlines(False):
-        nom_tag, service, appengine_version = line.split(',')
-        if nom_tag == tag and service in available_versions and appengine_version in available_versions[
-                service]:
-            if appengine_version not in versions:
-                versions[appengine_version] = []
-            versions[appengine_version].append(service)
-
-    return versions
+    def get_arg_attrs(self):
+        return dict((k, v) for k, v in vars(self).items() if k != 'arg_names')
 
 
-def rollback(args: argparse.Namespace) -> int:
+ARGUMENTS = (Argument(('--dev_project', '-d'),
+                      'The GCP project with Nomulus deployment records.'),
+             Argument(('--project', '-p'),
+                      'The GCP project where the Nomulus server is deployed.'),
+             Argument(('--env', '-e'),
+                      'The name of the Nomulus server environment.',
+                      choices=('production', 'sandbox', 'crash', 'alpha')),
+             Argument(('--target_release', '-t'),
+                      'The release to be deployed.'))
+
+
+def _generate_plan(target_versions: Iterable[common.Service],
+                   rollback_versions: Iterable[common.Service],
+                   version_configs: Iterable[common.VersionConfig]) -> None:
     """"""
-    gcs_client = gcs.GcsClient(args.dev_project)
-    target_versions = gcs_client.get_versions_by_release(
-        args.env, args.target_release)
-    print(target_versions)
+    pass
 
-    appengine_admin = appengine.AppEngineAdmin(args.project)
-    versions_to_rollback = appengine_admin.get_serving_versions()
-    print(
-        appengine_admin.get_version_configs(
-            [*target_versions, *versions_to_rollback]))
-    return 0
+
+def rollback(dev_project: str, project: str, env: str,
+             target_release: str) -> None:
+    """Rolls back a Nomulus server to the target release.
+
+    Args:
+        dev_project: The GCP project with deployment records.
+        project: The GCP project of the Nomulus server.
+        env: The environment name of the Nomulus server.
+        target_release: The tag of the release to be brought up.
+    """
+    gcs_client = gcs.GcsClient(dev_project)
+    target_versions = gcs_client.get_versions_by_release(env, target_release)
+
+    appengine_admin = appengine.AppEngineAdmin(project)
+    rollback_versions = appengine_admin.get_serving_versions()
+
+    version_configs = appengine_admin.get_version_configs(
+        [*target_versions, *rollback_versions])
+    print(version_configs)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(prog='nom_rollback',
                                      description=HELP_TEXT)
-    for flag in FLAGS:
-        parser.add_argument(*flag[0], **flag[1])
+    for flag in ARGUMENTS:
+        parser.add_argument(*flag.arg_names, **flag.get_arg_attrs())
 
     args = parser.parse_args()
 
-    return rollback(args)
+    rollback(**vars(args))
+
+    return 1
 
 
 if __name__ == '__main__':

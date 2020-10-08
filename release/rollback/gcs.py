@@ -25,7 +25,7 @@ class GcsClient:
     def __init__(self, project: str, gcs_client=None) -> None:
         """Initializes the instance for a GCP project.
 
-        Attributes:
+        Args:
             project: The GCP project with Nomulus deployment records.
             gcs_client: Optional API client to use.
         """

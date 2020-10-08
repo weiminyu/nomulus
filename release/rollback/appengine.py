@@ -100,7 +100,7 @@ class AppEngineAdmin:
         For each version in the request, gets the rollback-related data from
         its static configuration (found in appengine-web.xml).
 
-        Attributes:
+        Args:
             versions: A collection of the Service objects, each containing the
                 versions being queried in that service. Duplicates are combined.
 
