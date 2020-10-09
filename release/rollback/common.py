@@ -14,49 +14,39 @@
 """Declares data types that describe AppEngine services and versions."""
 
 import dataclasses
-from typing import Iterable, Optional
+from typing import Optional
+
+
+class ServiceStateError(Exception):
+    """Bad AppEngine state preventing rollback by this tool.
+
+    User must manually fix the system state before trying again to roll back.
+
+    Scenarios that may cause this error include but not limited to:
+        - Target version was not deployed to AppEngine.
+        - Target version has been deleted from AppEngine.
+    """
+    pass
 
 
 @dataclasses.dataclass(frozen=True)
-class Service:
-    """Information about an AppEngine service.
-
-    Holds an AppEngine service id and a collection of version deployed in this
-    service.
-
-    Attributes:
-        service_id: An AppEngine service id.
-        version_ids: A collection of AppEngine version ids deployed in this
-            service.
-    """
-
-    service_id: str
-    version_ids: Iterable[str]
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.version_ids, (tuple, frozenset)):
-            object.__setattr__(self, 'appengine_versions',
-                               frozenset(self.version_ids))
-
-
-@dataclasses.dataclass(frozen=True)
-class VersionConfig:
-    """Configurations of an AppEngine version.
-
-    Holds rollback-related configuration of an AppEngine version. These are the
-    static configuration from each service's appengine-web.xml file.
-
-    Attributes:
-        service_id: An AppEngine service id.
-        version_id: An AppEngine versions id.
-        manual_scaling_instances: For a version with manual scaling, the
-            configured number of instances. For all other versions, this value
-            should be None.
-    """
+class VersionKey:
+    """"""
 
     service_id: str
     version_id: str
+
+    def __eq__(self, other):
+        return isinstance(
+            other, VersionKey
+        ) and self.service_id == other.service_id and self.version_id == other.version_id
+
+
+@dataclasses.dataclass(frozen=True, eq=False)
+class VersionConfig(VersionKey):
+    """"""
+
     manual_scaling_instances: Optional[int] = None
 
-    def is_manual_scaling(self):
+    def is_manual_scaling(self) -> bool:
         return self.manual_scaling_instances is not None

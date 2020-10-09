@@ -13,7 +13,7 @@
 # limitations under the License.
 """Helper for using the AppEngine Admin REST API."""
 
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, FrozenSet
 
 from googleapiclient import discovery
 from googleapiclient import http
@@ -41,7 +41,7 @@ class AppEngineAdmin:
     """
 
     # AppEngine services under management.
-    SERVICES = ('backend', 'default', 'pubapi', 'tools')
+    SERVICES = frozenset(['backend', 'default', 'pubapi', 'tools'])
 
     # Forces 'list' calls (for services and versions) to return all
     # results in one shot, to avoid having to handl pagination. This values
@@ -66,7 +66,7 @@ class AppEngineAdmin:
 
         return response
 
-    def get_serving_versions(self) -> Iterable[common.Service]:
+    def get_serving_versions(self) -> FrozenSet[common.VersionKey]:
         """Returns the serving versions of every Nomulus service.
 
         For each service in AppEngineAdmin.SERVICES, gets the version(s)
@@ -84,17 +84,20 @@ class AppEngineAdmin:
         # Response format is specified at
         # http://googleapis.github.io/google-api-python-client/docs/dyn/appengine_v1beta5.apps.services.html#list.
 
-        return tuple([
-            common.Service(
-                service['id'],
-                service.get('split', {}).get('allocations', {}).keys())
-            for service in response.get('services', [])
-            if service['id'] in AppEngineAdmin.SERVICES
-        ])
+        versions = []
+        for service in response.get('services', []):
+            if service['id'] in AppEngineAdmin.SERVICES:
+                versions_with_traffic = service.get('split',
+                                                    {}).get('allocations',
+                                                            {}).keys()
+                for version in versions_with_traffic:
+                    versions.append(common.VersionKey(service['id'], version))
+
+        return frozenset(versions)
 
     def get_version_configs(
-            self, versions: Iterable[common.Service]
-    ) -> Iterable[common.VersionConfig]:
+        self, versions: FrozenSet[common.VersionKey]
+    ) -> FrozenSet[common.VersionConfig]:
         """Returns the configuration of requested versions.
 
         For each version in the request, gets the rollback-related data from
@@ -102,30 +105,26 @@ class AppEngineAdmin:
 
         Args:
             versions: A collection of the Service objects, each containing the
-                versions being queried in that service. Duplicates are combined.
+                versions being queried in that service.
 
         Returns:
             The version configurations in an immutable collection.
         """
 
-        deduplicated_versions = {}
-        for sv in versions:
-            deduplicated_versions.setdefault(sv.service_id,
-                                             set()).update(sv.version_ids)
+        requested_services = set([version.service_id for version in versions])
 
         version_configs = []
-        for service_id, appengine_versions in deduplicated_versions.items():
-            version_list = self._checked_request(
-                self._services.versions().list(
-                    appsId=self._project,
-                    servicesId=service_id,
-                    pageSize=AppEngineAdmin.PAGE_SIZE))
+        for service_id in requested_services:
+            response = self._checked_request(self._services.versions().list(
+                appsId=self._project,
+                servicesId=service_id,
+                pageSize=AppEngineAdmin.PAGE_SIZE))
 
             # Format of version_list is defined at
             # https://googleapis.github.io/google-api-python-client/docs/dyn/appengine_v1beta5.apps.services.versions.html#list
 
-            for version in version_list.get('versions', []):
-                if version['id'] in appengine_versions:
+            for version in response.get('versions', []):
+                if common.VersionKey(service_id, version['id']) in versions:
                     # This value may be None if version is not on manual scaling.
                     manual_instances = version.get('manualScaling',
                                                    {}).get('instances')
@@ -133,4 +132,4 @@ class AppEngineAdmin:
                         common.VersionConfig(service_id, version['id'],
                                              manual_instances))
 
-        return tuple(version_configs)
+        return frozenset(version_configs)

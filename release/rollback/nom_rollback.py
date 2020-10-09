@@ -16,7 +16,7 @@
 import argparse
 import dataclasses
 import sys
-from typing import Iterable, Optional, Tuple
+from typing import FrozenSet, Optional, Tuple
 
 import appengine
 import common
@@ -30,8 +30,8 @@ class Argument:
     """Describes a command line argument.
 
     This class is for use with argparse.ArgumentParser. Except for the
-    'arg_names' property which provides the argument name and/or flags, all
-    other property names must match an accepted parameter in the parser's
+    'arg_names' attribute which specifies the argument name and/or flags, all
+    other attributes must match an accepted parameter in the parser's
     add_argument() method.
     """
 
@@ -55,11 +55,71 @@ ARGUMENTS = (Argument(('--dev_project', '-d'),
                       'The release to be deployed.'))
 
 
-def _generate_plan(target_versions: Iterable[common.Service],
-                   rollback_versions: Iterable[common.Service],
-                   version_configs: Iterable[common.VersionConfig]) -> None:
-    """"""
-    pass
+@dataclasses.dataclass(frozen=True)
+class _RollbackPlan:
+    """Data needed for rolling back one service.
+
+    An instance holds the configurations of both the currently serving
+    version(s) and the rollback target in a service.
+
+    Attributes:
+        target_version: The version to roll back to.
+        serving_versions: The currently serving versions to be stopped. This
+            set may be empty. It may also have multiple versions.
+    """
+    target_version: common.VersionConfig
+    serving_versions: FrozenSet[common.VersionConfig]
+
+    def __post_init__(self):
+        """Validates the instance."""
+        if self.serving_versions:
+            for config in self.serving_versions:
+                assert config.service_id == self.target_version.service_id
+
+
+def _ensure_versions_available(
+    requested_versions: FrozenSet[common.VersionKey],
+    all_configs: FrozenSet[common.VersionConfig]
+) -> FrozenSet[common.VersionConfig]:
+    """Find configurations for requested versions."""
+
+    keys_with_configs = requested_versions.intersection(all_configs)
+    return all_configs.intersection(keys_with_configs)
+
+
+def _generate_plan(
+        target_versions: FrozenSet[common.VersionConfig],
+        serving_versions: FrozenSet[common.VersionConfig]
+) -> Tuple[_RollbackPlan]:
+    """Generates a rollback plan for each service."""
+
+    targets_by_service = {}
+    for version in target_versions:
+        targets_by_service.setdefault(version.service_id, set()).add(version)
+
+    serving_by_service = {}
+    for version in serving_versions:
+        serving_by_service.setdefault(version.service_id, set()).add(version)
+
+    if targets_by_service.keys() != appengine.AppEngineAdmin.SERVICES:
+        cannot_rollback = appengine.AppEngineAdmin.SERVICES.difference(
+            targets_by_service.keys())
+        raise common.ServiceStateError(
+            f'Target version(s) not found for {cannot_rollback}')
+
+    plan = []
+    for service_id, versions in targets_by_service.items():
+        serving_versions = serving_by_service.get(service_id, set())
+
+        if versions.intersection(serving_versions):
+            print(f'{service_id} is already running the target version. '
+                  'No rollback necessary')
+            continue
+
+        chosen_version = next(iter(versions))
+        plan.append(_RollbackPlan(chosen_version, frozenset(serving_versions)))
+
+    return tuple(plan)
 
 
 def rollback(dev_project: str, project: str, env: str,
@@ -72,15 +132,24 @@ def rollback(dev_project: str, project: str, env: str,
         env: The environment name of the Nomulus server.
         target_release: The tag of the release to be brought up.
     """
+
     gcs_client = gcs.GcsClient(dev_project)
     target_versions = gcs_client.get_versions_by_release(env, target_release)
 
     appengine_admin = appengine.AppEngineAdmin(project)
-    rollback_versions = appengine_admin.get_serving_versions()
+    serving_versions = appengine_admin.get_serving_versions()
 
-    version_configs = appengine_admin.get_version_configs(
-        [*target_versions, *rollback_versions])
-    print(version_configs)
+    all_version_configs = appengine_admin.get_version_configs(
+        target_versions.union(serving_versions))
+
+    target_configs = _ensure_versions_available(target_versions,
+                                                all_version_configs)
+    serving_configs = _ensure_versions_available(serving_versions,
+                                                 all_version_configs)
+
+    rollback_plan = _generate_plan(target_configs, serving_configs)
+
+    print(rollback_plan)
 
 
 def main() -> int:

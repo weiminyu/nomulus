@@ -13,7 +13,7 @@
 # limitations under the License.
 """Helper for managing Nomulus deployment records on GCS."""
 
-from typing import Iterable
+from typing import FrozenSet
 
 from google.cloud import storage
 
@@ -42,7 +42,7 @@ class GcsClient:
         return f'nomulus.{env}.versions'
 
     def get_versions_by_release(self, env: str,
-                                nom_tag: str) -> Iterable[common.Service]:
+                                nom_tag: str) -> FrozenSet[common.VersionKey]:
         """Returns AppEngine version ids of a given Nomulus release tag.
 
         Fetches the version mapping file maintained by the deployment process
@@ -59,20 +59,17 @@ class GcsClient:
             nom_tag: The Nomulus release tag.
 
         Returns:
-            An immutable collection of Service instances.
+            An immutable collection of versions.
         """
 
         file_content = self._client.get_bucket(
             self._get_deploy_bucket_name()).get_blob(
                 GcsClient._get_version_map_name(env)).download_as_text()
 
-        version_map = {}
+        versions = []
         for line in file_content.splitlines(False):
-            tag, service, appengine_version = line.split(',')
+            tag, service_id, version_id = line.split(',')
             if nom_tag == tag:
-                version_map.setdefault(service, set()).add(appengine_version)
+                versions.append(common.VersionKey(service_id, version_id))
 
-        return tuple([
-            common.Service(service, versions)
-            for service, versions in version_map.items()
-        ])
+        return frozenset(versions)
