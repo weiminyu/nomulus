@@ -31,20 +31,35 @@ class ServiceStateError(Exception):
 
 @dataclasses.dataclass(frozen=True)
 class VersionKey:
-    """"""
+    """Identifier of a deployed version on AppEngine.
+
+    AppEngine versions as deployable units are managed on per-service basis.
+    Each instance of this class uniquely identifies an AppEngine version.
+
+    This class may serve as the identity key of a subclass if the subclass
+    chooses not to implement its own __eq__() method.
+    """
 
     service_id: str
     version_id: str
 
     def __eq__(self, other):
-        return isinstance(
-            other, VersionKey
-        ) and self.service_id == other.service_id and self.version_id == other.version_id
+        return (isinstance(other, VersionKey)
+                and self.service_id == other.service_id
+                and self.version_id == other.version_id)
 
 
 @dataclasses.dataclass(frozen=True, eq=False)
 class VersionConfig(VersionKey):
-    """"""
+    """Rollback-related static configuration of an AppEngine version.
+
+    Contains data found from the application-web.xml for this version.
+
+    Attributes:
+        manual_scaling_instances: The originally configure VM instances to use
+            for each version that is on manual scaling. This value is needed
+            when a manual-scaling version is activated again.
+    """
 
     manual_scaling_instances: Optional[int] = None
 

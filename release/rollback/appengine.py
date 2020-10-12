@@ -95,9 +95,12 @@ class AppEngineAdmin:
 
         return frozenset(versions)
 
+
+# yapf: disable  #  argument indent wrong
     def get_version_configs(
-        self, versions: FrozenSet[common.VersionKey]
+            self, versions: FrozenSet[common.VersionKey]
     ) -> FrozenSet[common.VersionConfig]:
+        # yapf: enable
         """Returns the configuration of requested versions.
 
         For each version in the request, gets the rollback-related data from
@@ -111,7 +114,7 @@ class AppEngineAdmin:
             The version configurations in an immutable collection.
         """
 
-        requested_services = set([version.service_id for version in versions])
+        requested_services = {version.service_id for version in versions}
 
         version_configs = []
         for service_id in requested_services:
@@ -125,7 +128,7 @@ class AppEngineAdmin:
 
             for version in response.get('versions', []):
                 if common.VersionKey(service_id, version['id']) in versions:
-                    # This value may be None if version is not on manual scaling.
+                    # This value may be None if version not on manual scaling.
                     manual_instances = version.get('manualScaling',
                                                    {}).get('instances')
                     version_configs.append(

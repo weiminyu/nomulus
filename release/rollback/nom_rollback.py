@@ -77,10 +77,12 @@ class _RollbackPlan:
                 assert config.service_id == self.target_version.service_id
 
 
+# yapf: disable  # argument indent wrong
 def _ensure_versions_available(
-    requested_versions: FrozenSet[common.VersionKey],
-    all_configs: FrozenSet[common.VersionConfig]
+        requested_versions: FrozenSet[common.VersionKey],
+        all_configs: FrozenSet[common.VersionConfig]
 ) -> FrozenSet[common.VersionConfig]:
+    # yapf: enable
     """Find configurations for requested versions."""
 
     keys_with_configs = requested_versions.intersection(all_configs)
@@ -168,6 +170,6 @@ def main() -> int:
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except Exception as ex:
+    except Exception as ex:  # pylint: disable=broad-except
         print(str(ex))
         sys.exit(1)
