@@ -5,7 +5,7 @@
   <service>tools</service>
   <threadsafe>true</threadsafe>
   <sessions-enabled>true</sessions-enabled>
-  <instance-class>B4</instance-class>
+  <instance-class>F4</instance-class>
   <automatic-scaling>
     <max-instances>10</max-instances>
     <min-instances>1</min-instances>
