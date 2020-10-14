@@ -82,10 +82,10 @@ steps:
     tar -xvf ${_ENV}.tar
     # Note that this currently does not work for google.com projects that
     # we use due to b/137891685. External projects are likely to work.
-    for filename in cron dispatch dos index queue; do
-      gcloud -q --project $project_id app deploy \
-        default/WEB-INF/appengine-generated/$filename.yaml
-    done
+    ## for filename in cron dispatch dos index queue; do
+    ##  gcloud -q --project $project_id app deploy \
+    ##    default/WEB-INF/appengine-generated/$filename.yaml
+    ##done
 # Save the deployed tag for the current environment on GCS, and update the
 # mappings from Nomulus releases to Appengine versions.
 - name: 'gcr.io/$PROJECT_ID/builder:latest'
