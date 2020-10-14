@@ -41,6 +41,10 @@ class GcsClient:
     def _get_version_map_name(env: str):
         return f'nomulus.{env}.versions'
 
+    @staticmethod
+    def _get_schema_tag_file(env: str):
+        return f'sql.{env}.tag'
+
     def get_versions_by_release(self, env: str,
                                 nom_tag: str) -> FrozenSet[common.VersionKey]:
         """Returns AppEngine version ids of a given Nomulus release tag.
@@ -73,3 +77,17 @@ class GcsClient:
                 versions.append(common.VersionKey(service_id, version_id))
 
         return frozenset(versions)
+
+    def get_schema_tag(self, env: str) -> str:
+        """Gets the release tag of the SQL schema in the given environment.
+
+        This tag is needed for the server/schema compatibility test.
+        """
+        file_content = self._client.get_bucket(
+            self._get_deploy_bucket_name()).get_blob(
+                GcsClient._get_schema_tag_file(
+                    env)).download_as_text().splitlines(False)
+        assert len(
+            file_content
+        ) == 1, f'Unexpected content in {GcsClient._get_schema_tag_file(env)}.'
+        return next(iter(file_content))

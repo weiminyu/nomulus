@@ -21,6 +21,7 @@ from typing import FrozenSet, Optional, Tuple
 import appengine
 import common
 import gcs
+import rollback_steps
 
 HELP_TEXT = 'Script to roll back the Nomulus server on AppEngine.'
 
@@ -163,6 +164,15 @@ def main() -> int:
     args = parser.parse_args()
 
     rollback(**vars(args))
+
+    step = rollback_steps.CheckSchemaCompatibility(
+        dev_project=args.dev_project,
+        nom_tag=args.target_release,
+        sql_tag=gcs.GcsClient(args.dev_project).get_schema_tag(args.env))
+
+    step.show_commandline()
+
+    step.execute()
 
     return 1
 

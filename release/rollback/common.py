@@ -14,6 +14,8 @@
 """Declares data types that describe AppEngine services and versions."""
 
 import dataclasses
+import pathlib
+import re
 from typing import Optional
 
 
@@ -65,3 +67,22 @@ class VersionConfig(VersionKey):
 
     def is_manual_scaling(self) -> bool:
         return self.manual_scaling_instances is not None
+
+
+def get_nomulus_root() -> str:
+    """Finds the Nomulus root directory that contains this file.
+
+    Returns:
+        The absolute path to the Nomulus root directory.
+    """
+    for folder in pathlib.Path(__file__).parents:
+        if folder.name != 'nomulus':
+            continue
+        if not folder.joinpath('settings.gradle').exists():
+            continue
+        with open(folder.joinpath('settings.gradle'), 'r') as file:
+            for line in file:
+                if re.match(r"^rootProject.name\s*=\s*'nomulus'\s*$", line):
+                    return folder.absolute()
+
+    assert False, 'Do not move this file out of the Nomulus directory tree.'
