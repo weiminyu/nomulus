@@ -201,7 +201,8 @@ public abstract class PersistenceModule {
       SqlCredentialStore credentialStore,
       @Config("instanceConnectionNameOverride")
           Optional<Provider<String>> instanceConnectionNameOverride,
-      @Config("jpaMaxPoolSizeOverride") Optional<Integer> jpaMaxConnectionPoolSizeOverride,
+      @Config("jpaMaxPoolSizeOverride")
+          Optional<Provider<Integer>> jpaMaxConnectionPoolSizeOverride,
       @Config("beamIsolationOverride")
           Optional<Provider<TransactionIsolationLevel>> isolationOverride,
       @PartialCloudSqlConfigs ImmutableMap<String, String> cloudSqlConfigs,
@@ -216,8 +217,10 @@ public abstract class PersistenceModule {
         .ifPresent(
             instanceConnectionName ->
                 overrides.put(HIKARI_DS_CLOUD_SQL_INSTANCE, instanceConnectionName));
-    jpaMaxConnectionPoolSizeOverride.ifPresent(
-        maxPoolSize -> overrides.put(HIKARI_MAXIMUM_POOL_SIZE, String.valueOf(maxPoolSize)));
+    jpaMaxConnectionPoolSizeOverride
+        .map(Provider::get)
+        .ifPresent(
+            maxPoolSize -> overrides.put(HIKARI_MAXIMUM_POOL_SIZE, String.valueOf(maxPoolSize)));
     isolationOverride
         .map(Provider::get)
         .ifPresent(isolation -> overrides.put(Environment.ISOLATION, isolation.name()));

@@ -35,15 +35,16 @@ public class RegistryPipelineWorkerInitializer implements JvmInitializer {
 
   @Override
   public void beforeProcessing(PipelineOptions options) {
-    RegistryEnvironment environment =
-        options.as(RegistryPipelineOptions.class).getRegistryEnvironment();
+    RegistryPipelineOptions registryOptions = options.as(RegistryPipelineOptions.class);
+    RegistryEnvironment environment = registryOptions.getRegistryEnvironment();
     if (environment == null || environment.equals(RegistryEnvironment.UNITTEST)) {
       return;
     }
     logger.atInfo().log("Setting up RegistryEnvironment: %s", environment);
     environment.setup();
     Lazy<JpaTransactionManager> transactionManagerLazy =
-        DaggerRegistryPipelineComponent.create().getJpaTransactionManager();
+        RegistryPipelineComponent.withIsolationOverride(registryOptions.getIsolationOverride())
+            .getJpaTransactionManager();
     TransactionManagerFactory.setJpaTmOnBeamWorker(transactionManagerLazy::get);
   }
 }

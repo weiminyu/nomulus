@@ -14,6 +14,7 @@
 
 package google.registry.beam.common;
 
+import dagger.BindsInstance;
 import dagger.Component;
 import dagger.Lazy;
 import google.registry.config.CredentialModule;
@@ -21,9 +22,11 @@ import google.registry.config.RegistryConfig.Config;
 import google.registry.config.RegistryConfig.ConfigModule;
 import google.registry.persistence.PersistenceModule;
 import google.registry.persistence.PersistenceModule.BeamJpaTm;
+import google.registry.persistence.PersistenceModule.TransactionIsolationLevel;
 import google.registry.persistence.transaction.JpaTransactionManager;
 import google.registry.privileges.secretmanager.SecretManagerModule;
 import google.registry.util.UtilsModule;
+import javax.annotation.Nullable;
 import javax.inject.Singleton;
 
 /** Component that provides everything needed on a Pipeline worker. */
@@ -38,10 +41,34 @@ import javax.inject.Singleton;
     })
 public interface RegistryPipelineComponent {
 
+  static final int DEFAUL_JPA_POOL_SIZE = 4;
+
   /** Returns the GCP project ID. */
   @Config("projectId")
   String getProjectId();
 
   @BeamJpaTm
   Lazy<JpaTransactionManager> getJpaTransactionManager();
+
+  static RegistryPipelineComponent create() {
+    return DaggerRegistryPipelineComponent.builder().build();
+  }
+
+  static RegistryPipelineComponent withIsolationOverride(
+      TransactionIsolationLevel isolationOverride) {
+    return DaggerRegistryPipelineComponent.builder().isolationOverride(isolationOverride).build();
+  }
+
+  @Component.Builder
+  interface Builder {
+    @BindsInstance
+    Builder jpaMaxPoolSizeOverride(
+        @Nullable @Config("jpaMaxPoolSizeOverride") Integer jpaMaxPoolSizeOverride);
+
+    @BindsInstance
+    Builder isolationOverride(
+        @Nullable @Config("beamIsolationOverride") TransactionIsolationLevel isolationOverride);
+
+    RegistryPipelineComponent build();
+  }
 }

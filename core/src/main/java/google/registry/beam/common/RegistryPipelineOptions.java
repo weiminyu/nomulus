@@ -15,6 +15,7 @@
 package google.registry.beam.common;
 
 import google.registry.config.RegistryEnvironment;
+import google.registry.persistence.PersistenceModule.TransactionIsolationLevel;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import org.apache.beam.sdk.extensions.gcp.options.GcpOptions;
@@ -28,6 +29,12 @@ public interface RegistryPipelineOptions extends GcpOptions {
   RegistryEnvironment getRegistryEnvironment();
 
   void setRegistryEnvironment(RegistryEnvironment environment);
+
+  @Description("The desired transaction isolation level.")
+  @Nullable
+  TransactionIsolationLevel getIsolationOverride();
+
+  void setIsolationOverride(TransactionIsolationLevel isolationOverride);
 
   /**
    * Validates the GCP project and Registry environment settings in {@code option}. If project is
@@ -44,7 +51,9 @@ public interface RegistryPipelineOptions extends GcpOptions {
       return;
     }
     environment.setup();
-    String projectByEnv = DaggerRegistryPipelineComponent.create().getProjectId();
+    String projectByEnv =
+        RegistryPipelineComponent.withIsolationOverride(option.getIsolationOverride())
+            .getProjectId();
     if (Objects.equals(option.getProject(), projectByEnv)) {
       return;
     }
