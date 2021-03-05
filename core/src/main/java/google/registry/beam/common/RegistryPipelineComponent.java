@@ -50,15 +50,6 @@ public interface RegistryPipelineComponent {
   @BeamJpaTm
   Lazy<JpaTransactionManager> getJpaTransactionManager();
 
-  static RegistryPipelineComponent create() {
-    return DaggerRegistryPipelineComponent.builder().build();
-  }
-
-  static RegistryPipelineComponent withIsolationOverride(
-      TransactionIsolationLevel isolationOverride) {
-    return DaggerRegistryPipelineComponent.builder().isolationOverride(isolationOverride).build();
-  }
-
   @Component.Builder
   interface Builder {
     @BindsInstance

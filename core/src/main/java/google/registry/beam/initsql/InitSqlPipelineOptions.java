@@ -15,7 +15,6 @@
 package google.registry.beam.initsql;
 
 import google.registry.beam.common.RegistryPipelineOptions;
-import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.Validation;
 
@@ -43,26 +42,4 @@ public interface InitSqlPipelineOptions extends RegistryPipelineOptions {
   String getCommitLogEndTimestamp();
 
   void setCommitLogEndTimestamp(String commitLogEndTimestamp);
-
-  @Description(
-      "The maximum JDBC connection pool size on a VM. "
-          + "This value should be equal to or greater than the number of cores on the VM.")
-  @Default.Integer(4)
-  int getJdbcMaxPoolSize();
-
-  void setJdbcMaxPoolSize(int jdbcMaxPoolSize);
-
-  @Description(
-      "A hint to the pipeline runner of the maximum number of concurrent SQL writers to create. "
-          + "Note that multiple writers may run on the same VM and share the connection pool.")
-  @Default.Integer(4)
-  int getMaxConcurrentSqlWriters();
-
-  void setMaxConcurrentSqlWriters(int maxConcurrentSqlWriters);
-
-  @Description("The number of entities to be written to the SQL database in one transaction.")
-  @Default.Integer(20)
-  int getSqlWriteBatchSize();
-
-  void setSqlWriteBatchSize(int sqlWriteBatchSize);
 }

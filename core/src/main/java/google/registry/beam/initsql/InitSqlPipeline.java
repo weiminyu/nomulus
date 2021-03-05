@@ -222,7 +222,7 @@ public class InitSqlPipeline implements Serializable {
         RegistryJpaIO.<VersionedEntity>write()
             .withName(transformId)
             .withBatchSize(options.getSqlWriteBatchSize())
-            .withShards(options.getMaxConcurrentSqlWriters())
+            .withShards(options.getSqlWriteShards())
             .withJpaConverter(Transforms::convertVersionedEntityToSqlEntity));
   }
 
