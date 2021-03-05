@@ -62,8 +62,8 @@ public interface RegistryPipelineComponent {
   @Component.Builder
   interface Builder {
     @BindsInstance
-    Builder jpaMaxPoolSizeOverride(
-        @Nullable @Config("jpaMaxPoolSizeOverride") Integer jpaMaxPoolSizeOverride);
+    Builder jdbcMaxPoolSizeOverride(
+        @Nullable @Config("jdbcMaxPoolSizeOverride") Integer jdbcMaxPoolSizeOverride);
 
     @BindsInstance
     Builder isolationOverride(

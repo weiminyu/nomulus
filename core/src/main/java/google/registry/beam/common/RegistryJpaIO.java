@@ -25,6 +25,7 @@ import google.registry.model.ofy.ObjectifyService;
 import google.registry.persistence.transaction.JpaTransactionManager;
 import google.registry.persistence.transaction.TransactionManagerFactory;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 import org.apache.beam.sdk.metrics.Counter;
 import org.apache.beam.sdk.metrics.Metrics;
 import org.apache.beam.sdk.transforms.DoFn;
@@ -91,8 +92,9 @@ public final class RegistryJpaIO {
     public PCollection<Void> expand(PCollection<T> input) {
       return input
           .apply(
-              "Convert value to KV for batching " + name(),
-              WithKeys.<Integer, T>of(e -> 1).withKeyType(integers()))
+              "Assign random key " + name(),
+              WithKeys.<Integer, T>of(e -> ThreadLocalRandom.current().nextInt(shards()))
+                  .withKeyType(integers()))
           .apply(
               "Shard and batch " + name(),
               GroupIntoBatches.<Integer, T>ofSize(batchSize()).withShardedKey())

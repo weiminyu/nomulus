@@ -125,7 +125,7 @@ public abstract class PersistenceModule {
   abstract TransactionIsolationLevel bindBeamIsolationOverride();
 
   /**
-   * Optionally overrides the maximum connection pool size for JPA.
+   * Optionally overrides the maximum size of the JDBC connection pool.
    *
    * <p>If present, this binding overrides the {@code HIKARI_MAXIMUM_POOL_SIZE} value set in {@link
    * #provideDefaultDatabaseConfigs()}. The default value is tuned for the Registry server on
@@ -133,8 +133,8 @@ public abstract class PersistenceModule {
    * it.
    */
   @BindsOptionalOf
-  @Config("jpaMaxPoolSizeOverride")
-  abstract Integer bindJpaMaxPoolSizeOverride();
+  @Config("jdbcMaxPoolSizeOverride")
+  abstract Integer bindJdbcMaxPoolSizeOverride();
 
   /**
    * Optionally overrides the Cloud SQL database instance's connection name.
@@ -201,8 +201,8 @@ public abstract class PersistenceModule {
       SqlCredentialStore credentialStore,
       @Config("instanceConnectionNameOverride")
           Optional<Provider<String>> instanceConnectionNameOverride,
-      @Config("jpaMaxPoolSizeOverride")
-          Optional<Provider<Integer>> jpaMaxConnectionPoolSizeOverride,
+      @Config("jdbcMaxPoolSizeOverride")
+          Optional<Provider<Integer>> jdbcMaxConnectionPoolSizeOverride,
       @Config("beamIsolationOverride")
           Optional<Provider<TransactionIsolationLevel>> isolationOverride,
       @PartialCloudSqlConfigs ImmutableMap<String, String> cloudSqlConfigs,
@@ -217,7 +217,7 @@ public abstract class PersistenceModule {
         .ifPresent(
             instanceConnectionName ->
                 overrides.put(HIKARI_DS_CLOUD_SQL_INSTANCE, instanceConnectionName));
-    jpaMaxConnectionPoolSizeOverride
+    jdbcMaxConnectionPoolSizeOverride
         .map(Provider::get)
         .ifPresent(
             maxPoolSize -> overrides.put(HIKARI_MAXIMUM_POOL_SIZE, String.valueOf(maxPoolSize)));
@@ -310,6 +310,10 @@ public abstract class PersistenceModule {
   }
 
   private static EntityManagerFactory create(Map<String, String> properties) {
+    // Log the overridable parameters.
+    logger.atInfo().log(
+        "Maximum JDBC pool size is %s. Transaction isolation is %s.",
+        properties.get(HIKARI_MAXIMUM_POOL_SIZE), properties.get(Environment.ISOLATION));
     // If there are no annotated classes, we can create the EntityManagerFactory from the generic
     // method.  Otherwise we have to use a more tailored approach.  Note that this adds to the set
     // of annotated classes defined in the configuration, it does not override them.
