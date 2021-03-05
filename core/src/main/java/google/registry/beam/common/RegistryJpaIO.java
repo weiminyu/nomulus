@@ -39,8 +39,8 @@ import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 
 /**
- * Contains IO {@link PTransform transforms} for use in a pipeline that reads and writes from a
- * single database through a {@link JpaTransactionManager}.
+ * Contains IO {@link PTransform transforms} for BEAM pipelines that interacts with a single
+ * database through a {@link JpaTransactionManager}.
  *
  * <p>The {@code JpaTransactionManager} is expected to be set up once on each pipeline worker, and
  * made available through the static method {@link TransactionManagerFactory#jpaTm()}.
@@ -53,6 +53,18 @@ public final class RegistryJpaIO {
     return Write.<T>builder().build();
   }
 
+  /**
+   * A {@link PTransform transform} that writes an PCollection of entities to the SQL database using
+   * the {@link JpaTransactionManager}.
+   *
+   * <p>Unlike typical BEAM {@link Write} transforms, the output type of this transform is {@link
+   * PCollection PCollection<Void>} instead of {@link org.apache.beam.sdk.values.PDone}. This
+   * deviation allows writing sequencing of multiple {@code PCollections}: we have use cases where
+   * multiple {@code PCollections} are being written to the database, and one needs to complete
+   * before another starts (due to foreign key constraints in the latter).
+   *
+   * @param <T> type of the entities to be written
+   */
   @AutoValue
   public abstract static class Write<T> extends PTransform<PCollection<T>, PCollection<Void>> {
 
@@ -60,12 +72,35 @@ public final class RegistryJpaIO {
 
     public static final int DEFAULT_BATCH_SIZE = 1;
 
+    /** The default number of write shard. Please refer to {@link #shards} for more information. */
     public static final int DEFAULT_SHARDS = 1;
 
     public abstract String name();
 
+    /** Number of elements to be written in one call. */
     public abstract int batchSize();
 
+    /**
+     * The number of shards the output should be split into.
+     *
+     * <p>This value impacts the level of write parallelism as well as batching. It should be much,
+     * much larger than the available vCPUs (which we cannot control directly) in the pipeline, but
+     * small enough so that each shard still has enough elements to form full batches. The next
+     * paragraph explains a rule of thumb on choosing this value. In Nomulus use cases, a number of
+     * a few hundred should work fine
+     *
+     * <p>The following is a rule of thumb for determining this value. Let v_cpus be the number of
+     * vCPUs in the pipeline, batch_size be the desired batch size, and n be the number of elements
+     * to be written, the value of shards should satisfy the following constraints:
+     *
+     * <ul>
+     *   <li>{@code shards >> v_cpus}. This gives hints to the BEAM pipeline to bring up more vCPUs,
+     *       which we cannot directly control.
+     *   <li>{@code ((n / v_cpus) / shards) > batch_size}. This means that, when the elements are
+     *       evenly sharded and evenly spread to available vCPUs, each shard will have at least
+     *       batch_size elements.
+     * </ul>
+     */
     public abstract int shards();
 
     public abstract SerializableFunction<T, Object> jpaConverter();
@@ -92,11 +127,11 @@ public final class RegistryJpaIO {
     public PCollection<Void> expand(PCollection<T> input) {
       return input
           .apply(
-              "Assign random key " + name(),
+              "Shard data " + name(),
               WithKeys.<Integer, T>of(e -> ThreadLocalRandom.current().nextInt(shards()))
                   .withKeyType(integers()))
           .apply(
-              "Shard and batch " + name(),
+              "Group into batches " + name(),
               GroupIntoBatches.<Integer, T>ofSize(batchSize()).withShardedKey())
           .apply(
               "Write in batch for " + name(),
@@ -145,6 +180,8 @@ public final class RegistryJpaIO {
 
     @Setup
     public void setup() {
+      // Below is needed as long as Objectify keys are still involved in the handling of SQL
+      // entities (e.g., in VKeys).
       try (AppEngineEnvironment env = new AppEngineEnvironment()) {
         ObjectifyService.initOfy();
       }
