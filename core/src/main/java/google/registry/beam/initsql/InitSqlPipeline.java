@@ -34,6 +34,7 @@ import google.registry.model.registrar.Registrar;
 import google.registry.model.registrar.RegistrarContact;
 import google.registry.model.registry.Registry;
 import google.registry.model.reporting.HistoryEntry;
+import google.registry.persistence.PersistenceModule.TransactionIsolationLevel;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Optional;
@@ -139,6 +140,7 @@ public class InitSqlPipeline implements Serializable {
 
   @VisibleForTesting
   void setupPipeline() {
+    options.setIsolationOverride(TransactionIsolationLevel.TRANSACTION_READ_UNCOMMITTED);
     PCollectionTuple datastoreSnapshot =
         pipeline.apply(
             "Load Datastore snapshot",

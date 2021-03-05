@@ -14,21 +14,13 @@
 
 package google.registry.beam.initsql;
 
-import javax.annotation.Nullable;
-import org.apache.beam.sdk.extensions.gcp.options.GcpOptions;
+import google.registry.beam.common.RegistryPipelineOptions;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 import org.apache.beam.sdk.options.Validation;
 
 /** Pipeline options for {@link InitSqlPipeline} */
-public interface InitSqlPipelineOptions extends GcpOptions {
-
-  @Description(
-      "Overrides the URL to the SQL credential file. " + "Required if environment is not provided.")
-  @Nullable
-  String getSqlCredentialUrlOverride();
-
-  void setSqlCredentialUrlOverride(String credentialUrlOverride);
+public interface InitSqlPipelineOptions extends RegistryPipelineOptions {
 
   @Description("The root directory of the export to load.")
   String getDatastoreExportDir();
@@ -51,21 +43,6 @@ public interface InitSqlPipelineOptions extends GcpOptions {
   String getCommitLogEndTimestamp();
 
   void setCommitLogEndTimestamp(String commitLogEndTimestamp);
-
-  @Description(
-      "The deployed environment, alpha, crash, sandbox, or production. "
-          + "Not required only if sqlCredentialUrlOverride is provided.")
-  @Nullable
-  String getEnvironment();
-
-  void setEnvironment(String environment);
-
-  @Description(
-      "The GCP project that contains the keyring used for decrypting the " + "SQL credential file.")
-  @Nullable
-  String getCloudKmsProjectId();
-
-  void setCloudKmsProjectId(String cloudKmsProjectId);
 
   @Description(
       "The maximum JDBC connection pool size on a VM. "

@@ -25,7 +25,6 @@ import google.registry.model.ofy.ObjectifyService;
 import google.registry.persistence.transaction.JpaTransactionManager;
 import google.registry.persistence.transaction.TransactionManagerFactory;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
 import org.apache.beam.sdk.metrics.Counter;
 import org.apache.beam.sdk.metrics.Metrics;
 import org.apache.beam.sdk.transforms.DoFn;
@@ -34,6 +33,7 @@ import org.apache.beam.sdk.transforms.PTransform;
 import org.apache.beam.sdk.transforms.ParDo;
 import org.apache.beam.sdk.transforms.SerializableFunction;
 import org.apache.beam.sdk.transforms.WithKeys;
+import org.apache.beam.sdk.util.ShardedKey;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 
@@ -91,10 +91,11 @@ public final class RegistryJpaIO {
     public PCollection<Void> expand(PCollection<T> input) {
       return input
           .apply(
-              "Shard data for " + name(),
-              WithKeys.<Integer, T>of(e -> ThreadLocalRandom.current().nextInt(shards()))
-                  .withKeyType(integers()))
-          .apply("Batch output by shard " + name(), GroupIntoBatches.ofSize(batchSize()))
+              "Convert value to KV for batching " + name(),
+              WithKeys.<Integer, T>of(e -> 1).withKeyType(integers()))
+          .apply(
+              "Shard and batch " + name(),
+              GroupIntoBatches.<Integer, T>ofSize(batchSize()).withShardedKey())
           .apply(
               "Write in batch for " + name(),
               ParDo.of(new SqlBatchWriter<>(name(), jpaConverter())));
@@ -131,7 +132,7 @@ public final class RegistryJpaIO {
    * to hold the {@code JpaTransactionManager} instance, we must ensure that JpaTransactionManager
    * is not changed or torn down while being used by some instance.
    */
-  private static class SqlBatchWriter<T> extends DoFn<KV<Integer, Iterable<T>>, Void> {
+  private static class SqlBatchWriter<T> extends DoFn<KV<ShardedKey<Integer>, Iterable<T>>, Void> {
     private final Counter counter;
     private final SerializableFunction<T, Object> jpaConverter;
 
@@ -148,7 +149,7 @@ public final class RegistryJpaIO {
     }
 
     @ProcessElement
-    public void processElement(@Element KV<Integer, Iterable<T>> kv) {
+    public void processElement(@Element KV<ShardedKey<Integer>, Iterable<T>> kv) {
       try (AppEngineEnvironment env = new AppEngineEnvironment()) {
         ImmutableList<Object> ofyEntities =
             Streams.stream(kv.getValue())
