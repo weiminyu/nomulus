@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package google.registry.beam.initsql;
+package google.registry.beam.common;
 
 import static com.google.common.truth.Truth.assertThat;
 import static google.registry.model.ImmutableObjectSubject.immutableObjectCorrespondence;
@@ -22,6 +22,9 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.common.collect.ImmutableList;
 import google.registry.backup.VersionedEntity;
 import google.registry.beam.TestPipelineExtension;
+import google.registry.beam.initsql.BackupTestStore;
+import google.registry.beam.initsql.InitSqlTestUtils;
+import google.registry.beam.initsql.Transforms;
 import google.registry.model.ImmutableObject;
 import google.registry.model.contact.ContactResource;
 import google.registry.model.ofy.Ofy;
@@ -44,8 +47,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.io.TempDir;
 
-/** Unit test for {@link Transforms#writeToSql}. */
-class WriteToSqlTest implements Serializable {
+/** Unit test for {@link RegistryJpaIO.Write}. */
+class RegistryJpaWriteTest implements Serializable {
 
   private static final DateTime START_TIME = DateTime.parse("2000-01-01T00:00:00.0Z");
 
@@ -68,12 +71,6 @@ class WriteToSqlTest implements Serializable {
   @RegisterExtension
   final transient TestPipelineExtension testPipeline =
       TestPipelineExtension.create().enableAbandonedNodeEnforcement(true);
-
-  // Must not be transient!
-  @RegisterExtension
-  @Order(Order.DEFAULT + 1)
-  final BeamJpaExtension beamJpaExtension =
-      new BeamJpaExtension(() -> tmpDir.resolve("credential.dat"), database.getDatabase());
 
   private ImmutableList<Entity> contacts;
 
@@ -108,15 +105,11 @@ class WriteToSqlTest implements Serializable {
                     .map(bytes -> VersionedEntity.from(0L, bytes))
                     .collect(Collectors.toList())))
         .apply(
-            Transforms.writeToSql(
-                "ContactResource",
-                2,
-                4,
-                () ->
-                    DaggerBeamJpaModule_JpaTransactionManagerComponent.builder()
-                        .beamJpaModule(beamJpaExtension.getBeamJpaModule())
-                        .build()
-                        .localDbJpaTransactionManager()));
+            RegistryJpaIO.<VersionedEntity>write()
+                .withName("ContactResource")
+                .withBatchSize(4)
+                .withShards(2)
+                .withJpaConverter(Transforms::convertVersionedEntityToSqlEntity));
     testPipeline.run().waitUntilFinish();
 
     ImmutableList<?> sqlContacts = jpaTm().transact(() -> jpaTm().loadAllOf(ContactResource.class));

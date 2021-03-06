@@ -83,23 +83,14 @@ public final class RegistryJpaIO {
     /**
      * The number of shards the output should be split into.
      *
-     * <p>This value impacts the level of write parallelism as well as batching. It should be much,
-     * much larger than the available vCPUs (which we cannot control directly) in the pipeline, but
-     * small enough so that each shard still has enough elements to form full batches. The next
-     * paragraph explains a rule of thumb on choosing this value. In Nomulus use cases, a number of
-     * a few hundred should work fine
+     * <p>This value has impacts on the pipeline performance. It should be a large value relative to
+     * the available vCPUs in the pipeline to improve parallelism, but not to the point that the
+     * number of elements for each shard is lower than {@link #batchSize()}.
      *
-     * <p>The following is a rule of thumb for determining this value. Let v_cpus be the number of
-     * vCPUs in the pipeline, batch_size be the desired batch size, and n be the number of elements
-     * to be written, the value of shards should satisfy the following constraints:
-     *
-     * <ul>
-     *   <li>{@code shards >> v_cpus}. This gives hints to the BEAM pipeline to bring up more vCPUs,
-     *       which we cannot directly control.
-     *   <li>{@code ((n / v_cpus) / shards) > batch_size}. This means that, when the elements are
-     *       evenly sharded and evenly spread to available vCPUs, each shard will have at least
-     *       batch_size elements.
-     * </ul>
+     * <p>Let E be the number of elements to write, B be the desired batch size, and V be the number
+     * of vCPUs available, and S be the shards, the value of S should satisfy the following
+     * constraint: {@code (E / V) / S >= B}. Some level of guess work is involved when auto-scaling
+     * is enabled for the pipeline, when the number of vCPUs is not directly controlled by the user.
      */
     public abstract int shards();
 
@@ -162,12 +153,12 @@ public final class RegistryJpaIO {
   }
 
   /**
-   * Writes a batch of entities to a SQL database.
+   * Writes a batch of entities to a SQL database through a {@link JpaTransactionManager}.
    *
-   * <p>Note that an arbitrary number of instances of this class may be created and freed in
-   * arbitrary order in a single JVM. Due to the tech debt that forced us to use a static variable
-   * to hold the {@code JpaTransactionManager} instance, we must ensure that JpaTransactionManager
-   * is not changed or torn down while being used by some instance.
+   * <p>Due to the tech debt in the Nomulus code base, each pipeline worker JVM may have no more
+   * than one {@code JpaTransactionManager} instance, accessed through the {@link
+   * TransactionManagerFactory#jpaTm()} method. The setup is performed once on each worker by {@link
+   * RegistryPipelineWorkerInitializer}.
    */
   private static class SqlBatchWriter<T> extends DoFn<KV<ShardedKey<Integer>, Iterable<T>>, Void> {
     private final Counter counter;
