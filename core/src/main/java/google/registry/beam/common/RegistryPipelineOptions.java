@@ -14,6 +14,7 @@
 
 package google.registry.beam.common;
 
+import google.registry.beam.common.RegistryJpaIO.Write;
 import google.registry.config.RegistryEnvironment;
 import google.registry.persistence.PersistenceModule.TransactionIsolationLevel;
 import java.util.Objects;
@@ -22,7 +23,14 @@ import org.apache.beam.sdk.extensions.gcp.options.GcpOptions;
 import org.apache.beam.sdk.options.Default;
 import org.apache.beam.sdk.options.Description;
 
-/** Defines Nomulus-specific pipeline options, e.g. JPA configurations. */
+/**
+ * Defines Nomulus-specific pipeline options, e.g. JPA configurations.
+ *
+ * <p>When using the Cloud Dataflow runner, users are recommended to set an upper bound on active
+ * database connections by setting the pipeline worker options including {@code --maxNumWorkers},
+ * {@code workerMachineType}, and {@code numberOfWorkerHarnessThreads}. Please refer to {@link
+ * Write#shards()} for more information.
+ */
 public interface RegistryPipelineOptions extends GcpOptions {
 
   @Description("The Registry environment.")
@@ -37,23 +45,15 @@ public interface RegistryPipelineOptions extends GcpOptions {
 
   void setIsolationOverride(TransactionIsolationLevel isolationOverride);
 
-  @Description(
-      "The maximum JDBC connection pool size on a pipeline worker VM. This value should be "
-          + "equal to or slightly greater than the number of vCPUs on the VM.")
-  @Default.Integer(4)
-  int getJdbcMaxPoolSize();
-
-  void setJdbcMaxPoolSize(int jdbcMaxPoolSize);
-
-  @Description("The number of entities to be written to the SQL database in one transaction.")
+  @Description("The number of entities to write to the SQL database in one operation.")
   @Default.Integer(20)
   int getSqlWriteBatchSize();
 
   void setSqlWriteBatchSize(int sqlWriteBatchSize);
 
   @Description(
-      "Number of shards to create out of the data before writing to the SQL database. This value "
-          + "should be small enough such that shards on average have at least .")
+      "Number of shards to create out of the data before writing to the SQL database. Please refer "
+          + "to the Javadoc of RegistryJpaIO.Write.shards() for how to choose this value.")
   @Default.Integer(100)
   int getSqlWriteShards();
 
@@ -62,7 +62,6 @@ public interface RegistryPipelineOptions extends GcpOptions {
   static RegistryPipelineComponent toRegistryPipelineComponent(RegistryPipelineOptions options) {
     return DaggerRegistryPipelineComponent.builder()
         .isolationOverride(options.getIsolationOverride())
-        .jdbcMaxPoolSizeOverride(options.getJdbcMaxPoolSize())
         .build();
   }
 

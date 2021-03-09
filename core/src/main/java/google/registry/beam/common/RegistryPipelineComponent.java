@@ -41,8 +41,6 @@ import javax.inject.Singleton;
     })
 public interface RegistryPipelineComponent {
 
-  static final int DEFAUL_JPA_POOL_SIZE = 4;
-
   /** Returns the GCP project ID. */
   @Config("projectId")
   String getProjectId();
@@ -52,10 +50,11 @@ public interface RegistryPipelineComponent {
 
   @Component.Builder
   interface Builder {
-    @BindsInstance
-    Builder jdbcMaxPoolSizeOverride(
-        @Nullable @Config("jdbcMaxPoolSizeOverride") Integer jdbcMaxPoolSizeOverride);
 
+    /**
+     * Optionally overrides the default transaction isolation level. This applies to ALL
+     * transactions executed in the pipeline.
+     */
     @BindsInstance
     Builder isolationOverride(
         @Nullable @Config("beamIsolationOverride") TransactionIsolationLevel isolationOverride);

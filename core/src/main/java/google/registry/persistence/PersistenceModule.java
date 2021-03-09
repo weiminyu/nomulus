@@ -125,18 +125,6 @@ public abstract class PersistenceModule {
   abstract TransactionIsolationLevel bindBeamIsolationOverride();
 
   /**
-   * Optionally overrides the maximum size of the JDBC connection pool.
-   *
-   * <p>If present, this binding overrides the {@code HIKARI_MAXIMUM_POOL_SIZE} value set in {@link
-   * #provideDefaultDatabaseConfigs()}. The default value is tuned for the Registry server on
-   * AppEngine. Other applications such as the Nomulus tool and the BEAM pipeline, should override
-   * it.
-   */
-  @BindsOptionalOf
-  @Config("jdbcMaxPoolSizeOverride")
-  abstract Integer bindJdbcMaxPoolSizeOverride();
-
-  /**
    * Optionally overrides the Cloud SQL database instance's connection name.
    *
    * <p>This allows connections to alternative database instances, e.g., the read-only replica or a
@@ -201,8 +189,6 @@ public abstract class PersistenceModule {
       SqlCredentialStore credentialStore,
       @Config("instanceConnectionNameOverride")
           Optional<Provider<String>> instanceConnectionNameOverride,
-      @Config("jdbcMaxPoolSizeOverride")
-          Optional<Provider<Integer>> jdbcMaxConnectionPoolSizeOverride,
       @Config("beamIsolationOverride")
           Optional<Provider<TransactionIsolationLevel>> isolationOverride,
       @PartialCloudSqlConfigs ImmutableMap<String, String> cloudSqlConfigs,
@@ -212,15 +198,21 @@ public abstract class PersistenceModule {
     SqlCredential credential = credentialStore.getCredential(new RobotUser(RobotId.NOMULUS));
     overrides.put(Environment.USER, credential.login());
     overrides.put(Environment.PASS, credential.password());
+    // Override the default minimum which is tuned for the Registry server. A worker VM should
+    // release all connections if it no longer interacts with the database.
+    overrides.put(HIKARI_MINIMUM_IDLE, "0");
+    /**
+     * Disable Hikari's maxPoolSize limit check by setting it to an absurdly large number. The
+     * effective (and desirable) limit is the number of pipeline threads on the pipeline worker,
+     * which can be configured using pipeline options. See {@link RegistryPipelineOptions} for more
+     * information.
+     */
+    overrides.put(HIKARI_MAXIMUM_POOL_SIZE, String.valueOf(Integer.MAX_VALUE));
     instanceConnectionNameOverride
         .map(Provider::get)
         .ifPresent(
             instanceConnectionName ->
                 overrides.put(HIKARI_DS_CLOUD_SQL_INSTANCE, instanceConnectionName));
-    jdbcMaxConnectionPoolSizeOverride
-        .map(Provider::get)
-        .ifPresent(
-            maxPoolSize -> overrides.put(HIKARI_MAXIMUM_POOL_SIZE, String.valueOf(maxPoolSize)));
     isolationOverride
         .map(Provider::get)
         .ifPresent(isolation -> overrides.put(Environment.ISOLATION, isolation.name()));
@@ -310,10 +302,6 @@ public abstract class PersistenceModule {
   }
 
   private static EntityManagerFactory create(Map<String, String> properties) {
-    // Log the overridable parameters.
-    logger.atInfo().log(
-        "Maximum JDBC pool size is %s. Transaction isolation is %s.",
-        properties.get(HIKARI_MAXIMUM_POOL_SIZE), properties.get(Environment.ISOLATION));
     // If there are no annotated classes, we can create the EntityManagerFactory from the generic
     // method.  Otherwise we have to use a more tailored approach.  Note that this adds to the set
     // of annotated classes defined in the configuration, it does not override them.

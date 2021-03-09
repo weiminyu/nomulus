@@ -39,11 +39,13 @@ import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 
 /**
- * Contains IO {@link PTransform transforms} for BEAM pipelines that interacts with a single
+ * Contains IO {@link PTransform transforms} for a BEAM pipeline that interacts with a single
  * database through a {@link JpaTransactionManager}.
  *
- * <p>The {@code JpaTransactionManager} is expected to be set up once on each pipeline worker, and
- * made available through the static method {@link TransactionManagerFactory#jpaTm()}.
+ * <p>The {@code JpaTransactionManager} is instantiated once on each pipeline worker VM (through
+ * {@link RegistryPipelineWorkerInitializer}), made available through the static method {@link
+ * TransactionManagerFactory#jpaTm()}, and is shared by all threads on the VM. Configuration is
+ * through {@link RegistryPipelineOptions}.
  */
 public final class RegistryJpaIO {
 
@@ -54,14 +56,14 @@ public final class RegistryJpaIO {
   }
 
   /**
-   * A {@link PTransform transform} that writes an PCollection of entities to the SQL database using
+   * A {@link PTransform transform} that writes a PCollection of entities to the SQL database using
    * the {@link JpaTransactionManager}.
    *
    * <p>Unlike typical BEAM {@link Write} transforms, the output type of this transform is {@link
    * PCollection PCollection<Void>} instead of {@link org.apache.beam.sdk.values.PDone}. This
-   * deviation allows writing sequencing of multiple {@code PCollections}: we have use cases where
-   * multiple {@code PCollections} are being written to the database, and one needs to complete
-   * before another starts (due to foreign key constraints in the latter).
+   * deviation allows the sequencing of multiple {@code PCollections}: we have use cases where one
+   * collection of data must be completely written before another can start (due to foreign key
+   * constraints in the latter).
    *
    * @param <T> type of the entities to be written
    */
@@ -83,14 +85,24 @@ public final class RegistryJpaIO {
     /**
      * The number of shards the output should be split into.
      *
-     * <p>This value has impacts on the pipeline performance. It should be a large value relative to
-     * the available vCPUs in the pipeline to improve parallelism, but not to the point that the
-     * number of elements for each shard is lower than {@link #batchSize()}.
+     * <p>This value is a hint to the pipeline runner on the level of parallelism, and should be
+     * significantly greater than the number of threads working on this transformation (see next
+     * graph for more information). On the other hand, it should not be too large to the point that
+     * the number of elements per shard is lower than {@link #batchSize()}. As a rule of thumb, the
+     * following constraint should hold: {@code shards * batchSize * nThreads <= inputElementCount}.
+     * Although it is not always possible to determine the number of threads working on this
+     * transform, when the pipeline run is IO-bound, it most likely is close to the total number of
+     * threads in the pipeline, which is explained below.
      *
-     * <p>Let E be the number of elements to write, B be the desired batch size, and V be the number
-     * of vCPUs available, and S be the shards, the value of S should satisfy the following
-     * constraint: {@code (E / V) / S >= B}. Some level of guess work is involved when auto-scaling
-     * is enabled for the pipeline, when the number of vCPUs is not directly controlled by the user.
+     * <p>With Cloud Dataflow runner, the total number of worker threads in a batch pipeline (which
+     * includes all existing Registry pipelines) is the number of vCPUs used by the pipeline, and
+     * can be set by the {@code --maxNumWorkers} and {@code --workerMachineType} parameters. The
+     * number of worker threads in a streaming pipeline can be set by the {@code --maxNumWorkers}
+     * and {@code --numberOfWorkerHarnessThreads} parameters.
+     *
+     * <p>Note that connections on the database server are a limited resource, therefore the number
+     * of threads that interact with the database should be set to an appropriate limit. Again, we
+     * cannot control this number, but can influence it by controlling the total number of threads.
      */
     public abstract int shards();
 
@@ -108,6 +120,10 @@ public final class RegistryJpaIO {
       return toBuilder().shards(shards).build();
     }
 
+    /**
+     * An optional function that converts the input entities to a form that can be written into the
+     * database.
+     */
     public Write<T> withJpaConverter(SerializableFunction<T, Object> jpaConverter) {
       return toBuilder().jpaConverter(jpaConverter).build();
     }
@@ -121,6 +137,8 @@ public final class RegistryJpaIO {
               "Shard data " + name(),
               WithKeys.<Integer, T>of(e -> ThreadLocalRandom.current().nextInt(shards()))
                   .withKeyType(integers()))
+          // The call to withShardedKey() is performance critical. The resulting transform ensures
+          // that data is spread evenly across all worker threads.
           .apply(
               "Group into batches " + name(),
               GroupIntoBatches.<Integer, T>ofSize(batchSize()).withShardedKey())
@@ -152,14 +170,7 @@ public final class RegistryJpaIO {
     }
   }
 
-  /**
-   * Writes a batch of entities to a SQL database through a {@link JpaTransactionManager}.
-   *
-   * <p>Due to the tech debt in the Nomulus code base, each pipeline worker JVM may have no more
-   * than one {@code JpaTransactionManager} instance, accessed through the {@link
-   * TransactionManagerFactory#jpaTm()} method. The setup is performed once on each worker by {@link
-   * RegistryPipelineWorkerInitializer}.
-   */
+  /** Writes a batch of entities to a SQL database through a {@link JpaTransactionManager}. */
   private static class SqlBatchWriter<T> extends DoFn<KV<ShardedKey<Integer>, Iterable<T>>, Void> {
     private final Counter counter;
     private final SerializableFunction<T, Object> jpaConverter;

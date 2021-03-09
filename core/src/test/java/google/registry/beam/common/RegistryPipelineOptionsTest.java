@@ -46,15 +46,12 @@ class RegistryPipelineOptionsTest {
   void environment_fromArgs() {
     RegistryPipelineOptions options =
         PipelineOptionsFactory.fromArgs(
-                "--registryEnvironment=ALPHA",
-                "--isolationOverride=TRANSACTION_SERIALIZABLE",
-                "--jdbcMaxPoolSize=5")
+                "--registryEnvironment=ALPHA", "--isolationOverride=TRANSACTION_SERIALIZABLE")
             .withValidation()
             .as(RegistryPipelineOptions.class);
     assertThat(options.getRegistryEnvironment()).isSameInstanceAs(RegistryEnvironment.ALPHA);
     assertThat(options.getIsolationOverride())
         .isSameInstanceAs(TransactionIsolationLevel.TRANSACTION_SERIALIZABLE);
-    assertThat(options.getJdbcMaxPoolSize()).isEqualTo(5);
   }
 
   @Test
