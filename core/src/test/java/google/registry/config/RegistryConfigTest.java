@@ -15,17 +15,44 @@
 package google.registry.config;
 
 import static com.google.common.truth.Truth.assertThat;
-import static google.registry.config.RegistryConfig.CONFIG_SETTINGS;
-import static google.registry.config.RegistryConfig.ConfigModule.provideReservedTermsExportDisclaimer;
 
+import dagger.Component;
+import google.registry.config.RegistryConfig.Config;
+import google.registry.config.RegistryConfig.ConfigModule;
+import javax.inject.Singleton;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 /** Unit tests for {@link RegistryConfig}. */
 class RegistryConfigTest {
 
+  private static RegistryConfigTestComponent registryConfig;
+
+  @BeforeAll
+  static void beforeAll() {
+    registryConfig = DaggerRegistryConfigTest_RegistryConfigTestComponent.create();
+  }
+
   @Test
-  void test_reservedTermsExportDisclaimer_isPrependedWithOctothorpes() {
-    assertThat(provideReservedTermsExportDisclaimer(CONFIG_SETTINGS.get()))
+  void reservedTermsExportDisclaimer_isPrependedWithOctothorpes() {
+    // Verifies that multiline text with formatting requirement is displayed as expected.
+    assertThat(registryConfig.reservedTermsExportDisclaimer())
         .isEqualTo("# Disclaimer line 1.\n" + "# Line 2 is this 1.");
+  }
+
+  @Test
+  void beamStagingBucketUrl_gsPrefixEscapedCorrectly() {
+    // Verifies that the ':' in url (a special char to yaml) is escaped correctly.
+    assertThat(registryConfig.beamStagingBucketUrl()).startsWith("gs://");
+  }
+
+  @Singleton
+  @Component(modules = {ConfigModule.class})
+  interface RegistryConfigTestComponent {
+    @Config("reservedTermsExportDisclaimer")
+    String reservedTermsExportDisclaimer();
+
+    @Config("beamStagingBucketUrl")
+    String beamStagingBucketUrl();
   }
 }
