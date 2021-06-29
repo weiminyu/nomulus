@@ -26,6 +26,7 @@ import com.google.appengine.api.datastore.EntityTranslator;
 import com.google.appengine.tools.cloudstorage.GcsFileMetadata;
 import com.google.appengine.tools.cloudstorage.GcsService;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.PeekingIterator;
 import com.google.common.collect.Streams;
@@ -68,6 +69,14 @@ public class RestoreCommitLogsAction implements Runnable {
 
   static final int BLOCK_SIZE = 1024 * 1024;  // Buffer 1mb at a time, for no particular reason.
 
+  private static final ImmutableSet<RegistryEnvironment> ALLOWED_ENVIRONMENTS =
+      ImmutableSet.of(
+          RegistryEnvironment.ALPHA,
+          RegistryEnvironment.CRASH,
+          RegistryEnvironment.QA,
+          RegistryEnvironment.LOCAL,
+          RegistryEnvironment.UNITTEST);
+
   public static final String PATH = "/_dr/task/restoreCommitLogs";
   static final String DRY_RUN_PARAM = "dryRun";
   static final String FROM_TIME_PARAM = "fromTime";
@@ -84,14 +93,16 @@ public class RestoreCommitLogsAction implements Runnable {
 
   @Override
   public void run() {
+    logger.atInfo().log("Entering RestoreCommitLogAction.");
     checkArgument(
-        RegistryEnvironment.get() == RegistryEnvironment.ALPHA
-            || RegistryEnvironment.get() == RegistryEnvironment.CRASH
-            || RegistryEnvironment.get() == RegistryEnvironment.UNITTEST,
-        "DO NOT RUN ANYWHERE ELSE EXCEPT ALPHA, CRASH OR TESTS.");
+        ALLOWED_ENVIRONMENTS.contains(RegistryEnvironment.get()),
+        "DO NOT RUN IN PRODUCTION OR SANDBOX.");
     if (dryRun) {
       logger.atInfo().log("Running in dryRun mode");
+    } else {
+      return;
     }
+    logger.atInfo().log("Looking for Commit Log files.");
     List<GcsFileMetadata> diffFiles = diffLister.listDiffFiles(fromTime, toTime);
     if (diffFiles.isEmpty()) {
       logger.atInfo().log("Nothing to restore");
