@@ -18,12 +18,15 @@ import static com.google.appengine.api.ThreadManager.currentRequestThreadFactory
 import static com.google.common.util.concurrent.MoreExecutors.listeningDecorator;
 import static google.registry.backup.ExportCommitLogDiffAction.LOWER_CHECKPOINT_TIME_PARAM;
 import static google.registry.backup.ExportCommitLogDiffAction.UPPER_CHECKPOINT_TIME_PARAM;
+import static google.registry.backup.RestoreCommitLogsAction.COMMIT_LOGS_BUCKET_PARAM;
 import static google.registry.backup.RestoreCommitLogsAction.FROM_TIME_PARAM;
 import static google.registry.backup.RestoreCommitLogsAction.TO_TIME_PARAM;
+import static google.registry.request.RequestParameters.extractOptionalParameter;
 import static google.registry.request.RequestParameters.extractRequiredDatetimeParameter;
 import static google.registry.request.RequestParameters.extractRequiredParameter;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 
+import com.google.common.flogger.FluentLogger;
 import com.google.common.primitives.Ints;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import dagger.Module;
@@ -32,6 +35,7 @@ import google.registry.cron.CommitLogFanoutAction;
 import google.registry.request.HttpException.BadRequestException;
 import google.registry.request.Parameter;
 import java.lang.annotation.Documented;
+import java.util.Optional;
 import javax.inject.Qualifier;
 import javax.servlet.http.HttpServletRequest;
 import org.joda.time.DateTime;
@@ -43,6 +47,8 @@ import org.joda.time.DateTime;
  */
 @Module
 public final class BackupModule {
+
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   /** Dagger qualifier for backups. */
   @Qualifier
@@ -85,6 +91,14 @@ public final class BackupModule {
   @Parameter(TO_TIME_PARAM)
   static DateTime provideToTime(HttpServletRequest req) {
     return extractRequiredDatetimeParameter(req, TO_TIME_PARAM);
+  }
+
+  @Provides
+  @Parameter(COMMIT_LOGS_BUCKET_PARAM)
+  static Optional<String> provideCommitLogBucketOverride(HttpServletRequest req) {
+    logger.atInfo().log("Extracting commit logs override.");
+    logger.atInfo().log("Value is %s", req.getParameter(COMMIT_LOGS_BUCKET_PARAM));
+    return extractOptionalParameter(req, COMMIT_LOGS_BUCKET_PARAM);
   }
 
   @Provides

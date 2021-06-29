@@ -51,6 +51,7 @@ import java.nio.channels.Channels;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 import javax.inject.Inject;
@@ -81,11 +82,17 @@ public class RestoreCommitLogsAction implements Runnable {
   static final String DRY_RUN_PARAM = "dryRun";
   static final String FROM_TIME_PARAM = "fromTime";
   static final String TO_TIME_PARAM = "toTime";
+  static final String COMMIT_LOGS_BUCKET_PARAM = "commitLogsBucket";
 
   @Inject GcsService gcsService;
   @Inject @Parameter(DRY_RUN_PARAM) boolean dryRun;
   @Inject @Parameter(FROM_TIME_PARAM) DateTime fromTime;
   @Inject @Parameter(TO_TIME_PARAM) DateTime toTime;
+
+  @Inject
+  @Parameter(COMMIT_LOGS_BUCKET_PARAM)
+  Optional<String> commitLogsBucketOverride;
+
   @Inject DatastoreService datastoreService;
   @Inject GcsDiffFileLister diffLister;
   @Inject Retrier retrier;
@@ -99,10 +106,16 @@ public class RestoreCommitLogsAction implements Runnable {
         "DO NOT RUN IN PRODUCTION OR SANDBOX.");
     if (dryRun) {
       logger.atInfo().log("Running in dryRun mode");
-    } else {
+    }
+    if (commitLogsBucketOverride == null) {
+      logger.atInfo().log("BucketOverride is null!");
       return;
     }
-    logger.atInfo().log("Looking for Commit Log files.");
+    logger.atInfo().log(
+        "Looking for Commit Log files in %s.", commitLogsBucketOverride.orElse("default"));
+    if (commitLogsBucketOverride.isPresent() && !commitLogsBucketOverride.get().equals("a")) {
+      return;
+    }
     List<GcsFileMetadata> diffFiles = diffLister.listDiffFiles(fromTime, toTime);
     if (diffFiles.isEmpty()) {
       logger.atInfo().log("Nothing to restore");
