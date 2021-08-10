@@ -163,9 +163,7 @@ class SendExpiringCertificateNotificationEmailActionTest {
                 .build());
     persistSimpleResources(contacts);
     persistResource(registrar);
-    assertThat(
-            action.sendNotificationEmail(registrar, START_OF_TIME, CertificateType.FAILOVER, cert))
-        .isEqualTo(true);
+    assertThat(action.sendNotificationEmail(registrar, CertificateType.FAILOVER)).isEqualTo(true);
   }
 
   @TestOfyAndSql
@@ -178,9 +176,7 @@ class SendExpiringCertificateNotificationEmailActionTest {
             .cert();
     Optional<String> cert =
         Optional.of(certificateChecker.serializeCertificate(expiringCertificate));
-    assertThat(
-            action.sendNotificationEmail(
-                sampleRegistrar, START_OF_TIME, CertificateType.FAILOVER, cert))
+    assertThat(action.sendNotificationEmail(sampleRegistrar, CertificateType.FAILOVER))
         .isEqualTo(false);
   }
 
@@ -217,16 +213,12 @@ class SendExpiringCertificateNotificationEmailActionTest {
                 .build());
     persistSimpleResources(contacts);
     persistResource(registrar);
-    assertThat(
-            action.sendNotificationEmail(registrar, START_OF_TIME, CertificateType.FAILOVER, cert))
-        .isEqualTo(false);
+    assertThat(action.sendNotificationEmail(registrar, CertificateType.FAILOVER)).isEqualTo(false);
   }
 
   @TestOfyAndSql
   void sendNotificationEmail_returnsFalse_noCertificate() {
-    assertThat(
-            action.sendNotificationEmail(
-                sampleRegistrar, START_OF_TIME, CertificateType.FAILOVER, Optional.empty()))
+    assertThat(action.sendNotificationEmail(sampleRegistrar, CertificateType.FAILOVER))
         .isEqualTo(false);
   }
 

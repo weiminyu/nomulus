@@ -137,14 +137,11 @@ public class SendExpiringCertificateNotificationEmailAction implements Runnable 
    * if it's sent successfully.
    */
   @VisibleForTesting
-  boolean sendNotificationEmail(
-      Registrar registrar,
-      DateTime lastExpiringCertNotificationSentDate,
-      CertificateType certificateType,
-      Optional<String> certificate) {
+  boolean sendNotificationEmail(Registrar registrar, CertificateType certificateType) {
+    Optional<String> certificate = certificateType.getCertificate(registrar);
     if (!certificate.isPresent()
         || !certificateChecker.shouldReceiveExpiringNotification(
-            lastExpiringCertNotificationSentDate, certificate.get())) {
+            certificateType.getLastSendDate(registrar), certificate.get())) {
       return false;
     }
     try {
@@ -198,7 +195,8 @@ public class SendExpiringCertificateNotificationEmailAction implements Runnable 
                     newRegistrar.setLastExpiringCertNotificationSentDate(lastNotificationSentDate);
                     tm().put(newRegistrar.build());
                     logger.atInfo().log(
-                        "Updated Last Notification Email Sent Date for %s Certificate of Registrar %s.",
+                        "Updated Last Notification Email Sent Date for %s Certificate of Registrar"
+                            + " %s.",
                         certificateType.displayName, registrar.getRegistrarName());
                     break;
                   case FAILOVER:
@@ -206,7 +204,8 @@ public class SendExpiringCertificateNotificationEmailAction implements Runnable 
                         lastNotificationSentDate);
                     tm().put(newRegistrar.build());
                     logger.atInfo().log(
-                        "Updated Last Notification Email Sent Date for %s Certificate of Registrar %s.",
+                        "Updated Last Notification Email Sent Date for %s Certificate of Registrar"
+                            + " %s.",
                         certificateType.displayName, registrar.getRegistrarName());
                     break;
                   default:
@@ -228,19 +227,11 @@ public class SendExpiringCertificateNotificationEmailAction implements Runnable 
     for (RegistrarInfo registrarInfo : getRegistrarsWithExpiringCertificates()) {
       Registrar registrar = registrarInfo.registrar();
       if (registrarInfo.isCertExpiring()) {
-        sendNotificationEmail(
-            registrar,
-            registrar.getLastExpiringCertNotificationSentDate(),
-            CertificateType.PRIMARY,
-            registrar.getClientCertificate());
+        sendNotificationEmail(registrar, CertificateType.PRIMARY);
         emailSent++;
       }
       if (registrarInfo.isFailOverCertExpiring()) {
-        sendNotificationEmail(
-            registrar,
-            registrar.getLastExpiringFailoverCertNotificationSentDate(),
-            CertificateType.FAILOVER,
-            registrar.getFailoverClientCertificate());
+        sendNotificationEmail(registrar, CertificateType.FAILOVER);
         emailSent++;
       }
     }
@@ -289,8 +280,28 @@ public class SendExpiringCertificateNotificationEmailAction implements Runnable 
    * notification emails.
    */
   public enum CertificateType {
-    PRIMARY("Primary"),
-    FAILOVER("FailOver");
+    PRIMARY("Primary") {
+      @Override
+      DateTime getLastSendDate(Registrar registrar) {
+        return registrar.getLastExpiringCertNotificationSentDate();
+      }
+
+      @Override
+      Optional<String> getCertificate(Registrar registrar) {
+        return registrar.getClientCertificate();
+      }
+    },
+    FAILOVER("FailOver") {
+      @Override
+      DateTime getLastSendDate(Registrar registrar) {
+        return registrar.getLastExpiringFailoverCertNotificationSentDate();
+      }
+
+      @Override
+      Optional<String> getCertificate(Registrar registrar) {
+        return registrar.getFailoverClientCertificate();
+      }
+    };
 
     private final String displayName;
 
@@ -301,6 +312,10 @@ public class SendExpiringCertificateNotificationEmailAction implements Runnable 
     public String getDisplayName() {
       return displayName;
     }
+
+    abstract DateTime getLastSendDate(Registrar registrar);
+
+    abstract Optional<String> getCertificate(Registrar registrar);
   }
 
   @AutoValue
