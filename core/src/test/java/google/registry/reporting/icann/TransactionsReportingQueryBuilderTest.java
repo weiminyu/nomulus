@@ -18,11 +18,22 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import google.registry.testing.AppEngineExtension;
+import google.registry.testing.DualDatabaseTest;
+import google.registry.testing.TestOfyAndSql;
 import org.joda.time.YearMonth;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 /** Unit tests for {@link ActivityReportingQueryBuilder}. */
+@DualDatabaseTest
 class TransactionsReportingQueryBuilderTest {
+
+  @RegisterExtension
+  public final AppEngineExtension appEngine =
+      AppEngineExtension.builder()
+          .withDatastoreAndCloudSql()
+          .enableJpaEntityCoverageCheck(true)
+          .build();
 
   private final YearMonth yearMonth = new YearMonth(2017, 9);
 
@@ -32,7 +43,7 @@ class TransactionsReportingQueryBuilderTest {
     return queryBuilder;
   }
 
-  @Test
+  @TestOfyAndSql
   void testAggregateQueryMatch() {
     TransactionsReportingQueryBuilder queryBuilder = getQueryBuilder();
     assertThat(queryBuilder.getReportQuery(yearMonth))
@@ -41,7 +52,7 @@ class TransactionsReportingQueryBuilderTest {
                 + "`domain-registry-alpha.icann_reporting.transactions_report_aggregation_201709`");
   }
 
-  @Test
+  @TestOfyAndSql
   void testIntermediaryQueryMatch() {
     ImmutableList<String> expectedQueryNames =
         ImmutableList.of(
