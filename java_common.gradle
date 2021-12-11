@@ -64,6 +64,9 @@ configurations {
     it.exclude group: 'org.mockito', module: 'mockito-core'
   }
   all.each {
+    // log4j has high-profile security vulnerabilities. Our logger
+    // (FluentLogger) does not depend on it. Its exclusion is not expected to
+    // impact our monitoring and troubleshooting.
     it.exclude group: 'org.apache.logging.log4j'
   }
 }
