@@ -22,6 +22,7 @@ import static google.registry.util.PreconditionsUtils.checkArgumentNotNull;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.flogger.FluentLogger;
 import com.googlecode.objectify.Key;
@@ -33,6 +34,7 @@ import google.registry.model.annotations.NotBackedUp.Reason;
 import google.registry.model.replay.DatastoreAndSqlEntity;
 import google.registry.persistence.VKey;
 import google.registry.persistence.transaction.JpaTransactionManager;
+import google.registry.persistence.transaction.ReadOnlyCheckingEntityManager;
 import google.registry.persistence.transaction.TransactionManager;
 import google.registry.util.RequestStatusChecker;
 import google.registry.util.RequestStatusCheckerImpl;
@@ -262,8 +264,9 @@ public class Lock extends ImmutableObject implements DatastoreAndSqlEntity, Seri
     // must be definitively acquired before it is used, even when called inside another transaction.
     Supplier<AcquireResult> lockAcquirer =
         () -> {
-          DateTime now = transactionManager.getTransactionTime();
+          setIsolationLevelForLockingTransaction(transactionManager);
 
+          DateTime now = transactionManager.getTransactionTime();
           // Checking if an unexpired lock still exists - if so, the lock can't be acquired.
           Lock lock =
               transactionManager
@@ -297,6 +300,15 @@ public class Lock extends ImmutableObject implements DatastoreAndSqlEntity, Seri
 
           return AcquireResult.create(now, lock, newLock, lockState);
         };
+
+    if (!transactionManager.isOfy()) {
+      // Unlike ofy, JpaTransactionManager does not implement transactNew. Need this check to
+      // catch improper usage.
+      // TODO(b/193662898): implement and use transactNew in jpa transaction API.
+      Preconditions.checkState(
+          !transactionManager.inTransaction(),
+          "SQL-backed lock cannot be acquired from inside a transaction.");
+    }
     // In ofy, backup is determined per-action, but in SQL it's determined per-transaction
     AcquireResult acquireResult =
         transactionManager.isOfy()
@@ -313,6 +325,8 @@ public class Lock extends ImmutableObject implements DatastoreAndSqlEntity, Seri
     // Just use the default clock because we aren't actually doing anything that will use the clock.
     Supplier<Void> lockReleaser =
         () -> {
+          setIsolationLevelForLockingTransaction(transactionManager);
+
           // To release a lock, check that no one else has already obtained it and if not
           // delete it. If the lock in Datastore was different then this lock is gone already;
           // this can happen if release() is called around the expiration time and the lock
@@ -348,6 +362,28 @@ public class Lock extends ImmutableObject implements DatastoreAndSqlEntity, Seri
       transactionManager.transact(lockReleaser);
     } else {
       ((JpaTransactionManager) transactionManager).transactWithoutBackup(lockReleaser);
+    }
+  }
+
+  /**
+   * Sets the isolation level of a lock/unlock transaction to REPEATABLE_READ if in SQL. Since a
+   * lock transaction operates on a single table row, the default SERIALIZABLE level is overkill and
+   * may result in rollbacks for irrelevant operations.
+   *
+   * <p>This method must be called before any other queries or updates in a transaction.
+   */
+  // TODO(b/193662898): set isolation level through transaction API.
+  static void setIsolationLevelForLockingTransaction(TransactionManager transactionManager) {
+    // Can't call tm().isOfy() here. The tm() method queries MigrationSchedule, causing the
+    // isolation level update (which must be the first statement) below to fail.
+    if (transactionManager instanceof JpaTransactionManager) {
+      ReadOnlyCheckingEntityManager entityManager =
+          (ReadOnlyCheckingEntityManager)
+              ((JpaTransactionManager) transactionManager).getEntityManager();
+      // REPEATABLE READ is enough since transaction reads and writes a single row.
+      entityManager
+          .createNativeQuery("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+          .executeUpdateIgnoringReadOnly();
     }
   }
 

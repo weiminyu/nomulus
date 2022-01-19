@@ -31,7 +31,7 @@ import javax.persistence.TemporalType;
 
 /** A {@link Query} that throws exceptions on write actions if in read-only mode. */
 @DeleteAfterMigration
-class ReadOnlyCheckingQuery implements Query {
+public class ReadOnlyCheckingQuery implements Query {
 
   private final Query delegate;
 
