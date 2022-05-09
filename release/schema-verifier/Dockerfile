@@ -24,8 +24,18 @@
 
 FROM marketplace.gcr.io/google/ubuntu1804
 ENV DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8
-# Install pg_dump
-RUN apt-get update -y && apt-get install postgresql-client -y
+# Install pg_dump v11. This is too new for ubuntu1804, and need to be downloaded
+# from postgresql's own repo.
+RUN apt-get update -y \
+    && apt-get install locales -y \
+    && locale-gen en_US.UTF-8 \
+    && apt-get install curl gnupg lsb-release -y \
+    && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && sh -c \
+           'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+           > /etc/apt/sources.list.d/pgdg.list' \
+    && apt-get update -y \
+    && apt install postgresql-client-11 -y
 
 # Install unzip.
 RUN apt-get install zip -y
@@ -34,6 +44,8 @@ RUN apt-get install zip -y
 RUN apt-get install net-tools
 
 COPY verify_deployed_sql_schema.sh /usr/local/bin/
+COPY expected_diffs.txt /
+
 ADD https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 \
     /usr/local/bin/cloud_sql_proxy
 RUN chmod +x /usr/local/bin/cloud_sql_proxy

@@ -1,6 +1,6 @@
-# This script verifies that the actual Cloud SQL schema in the environment
-# specified by the '_ENV' variable is the same as the golden schema in the
-# current release for that environment.
+# Verifies that the actual Cloud SQL schema in the environment specified by the
+# '_ENV' variable is the same as the golden schema in the current release for
+# that environment.
 #
 # To run the build locally, install cloud-build-local first.
 # Then run:
@@ -57,7 +57,7 @@ steps:
   - schema_deployer
   - --output
   - /secrets/schema_deployer_credential.dec
-# Download the schema jar to be deployed.
+# Download the jar with the expected schema.
 - name: 'gcr.io/$PROJECT_ID/builder:latest'
   volumes:
   - name: 'schema'
@@ -71,14 +71,13 @@ steps:
         gs://$PROJECT_ID-deployed-tags/sql.${_ENV}.tag)
     gsutil cp gs://$PROJECT_ID-deploy/${deployed_schema_tag}/schema.jar \
       /schema
-# Deploy SQL schema
+# Verify the schema
 - name: 'gcr.io/$PROJECT_ID/schema_verifier:latest'
   volumes:
   - name: 'secrets'
     path: '/secrets'
   - name: 'schema'
     path: '/schema'
-  args: []
 timeout: 3600s
 options:
   machineType: 'E2_HIGHCPU_32'
