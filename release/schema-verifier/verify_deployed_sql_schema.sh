@@ -13,34 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Mounted volumes and required files in them:
-# - /secrets: cloud_sql_credential.json: Cloud SQL proxy credential
-# - /flyway/jars: the schema jar to be deployed.
+# This script compares the actual schema in a Cloud SQL database with the golden
+# schema in the corresponding release. It detects schema changes made outside
+# the normal deployment process, e.g., those made during a troubleshooting
+# session that were not cleaned up.
 #
-# Database login info may be passed in two ways:
-# - Save it in the format of "cloud_sql_instance login password" in a file and
-#   map the file as /secrets/schema_deployer_credential.dec
-# - Provide the content of the credential as command line arguments
+# Mounted volumes and required files in them:
+# - /secrets/cloud_sql_credential.json: Cloud SQL proxy credential
+# - /secrets/schema_deployer_credential.dec the schema_deployer user's
+#     database login credential.
+# - /schema/schema.jar: the jar with the golden schema.
 
 set -e
-if [ "$#" -eq 0 ]; then
-  if [ ! -f /secrets/schema_deployer_credential.dec ]; then
-    echo "Missing /secrets/schema_deployer_credential.dec"
-    exit 1
-  fi
-  cloud_sql_instance=$(cut -d' ' -f1 /secrets/schema_deployer_credential.dec)
-  db_user=$(cut -d' ' -f2 /secrets/schema_deployer_credential.dec)
-  db_password=$(cut -d' ' -f3 /secrets/schema_deployer_credential.dec)
-elif [ "$#" -eq 3 ]; then
-  cloud_sql_instance=$1
-  db_user=$2
-  db_password=$3
-else
-  echo "Wrong number of arguments."
+if [ ! -f /secrets/schema_deployer_credential.dec ]; then
+  echo "Missing /secrets/schema_deployer_credential.dec"
   exit 1
 fi
+cloud_sql_instance=$(cut -d' ' -f1 /secrets/schema_deployer_credential.dec)
+db_user=$(cut -d' ' -f2 /secrets/schema_deployer_credential.dec)
+db_password=$(cut -d' ' -f3 /secrets/schema_deployer_credential.dec)
 
-// Unpack the golden schema from schema.jar
+# Unpack the golden schema from schema.jar
+unzip -p /schema/schema.jar sql/schema/nomulus.golden.sql \
+  > /schema/nomulus.golden.sql
 
 echo "$(date): Connecting to ${cloud_sql_instance}."
 
@@ -57,7 +52,7 @@ echo "$(date): Connecting to ${cloud_sql_instance}."
 #     of the postgres-socket-factory jar.
 # - Create a self-contained Java application that connects using socket factory
 #   * Drawback: Seems an overkill
-cloud_sql_proxy -instances=${cloud_sql_instance}=tcp:5432 \
+cloud_sql_proxy -instances="${cloud_sql_instance}"=tcp:5432 \
   --credential_file=/secrets/cloud_sql_credential.json &
 
 set +e
@@ -72,21 +67,28 @@ if ! pgrep cloud_sql_proxy; then
   exit 1
 fi
 
+# Download the actual sql schema
+PGPASSWORD=${db_password} pg_dump -h localhost -U "${db_user}" \
+    -f /schema/nomulus.actual.sql --schema-only --no-owner --no-privileges \
+    --exclude-table flyway_schema_history \
+    postgres
 
+raw_diff=$(diff /schema/nomulus.golden.sql /schema/nomulus.actual.sql)
+effective_diff=$(echo "${raw_diff}" \
+                   | grep "^[<>]" | sed -e "s/^[<>]\s//g" \
+                   | grep -v "^--" | grep -v "^$"  \
+                   | grep -v -f /expected_diffs.txt )
 
-/flyway/flyway -community -user=${db_user} -password=${db_password} \
-  -url=jdbc:postgresql://localhost:5432/postgres \
-  -locations=classpath:sql/flyway \
-  ${flyway_action}
-migration_result=$?
-
-if [ ${flyway_action} == "migrate" ]; then
-  # After deployment, log the current schema.
-  /flyway/flyway -community -user=${db_user} -password=${db_password} \
-    -url=jdbc:postgresql://localhost:5432/postgres \
-    -locations=classpath:sql/flyway \
-    info
+if [[ ${effective_diff} == "" ]]
+then
+  echo "Golden and actual schemas match."
+  result=0
+else
+  echo "Golden and actual schemas do not match. Diff is:"
+  echo "${effective_diff}"
+  result=1
 fi
+
 # Stop Cloud SQL Proxy
 pkill cloud_sql_proxy
-exit ${migration_result}
+exit ${result}
