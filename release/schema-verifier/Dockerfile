@@ -24,8 +24,9 @@
 
 FROM marketplace.gcr.io/google/ubuntu1804
 ENV DEBIAN_FRONTEND=noninteractive LANG=en_US.UTF-8
-# Install pg_dump v11. This is too new for ubuntu1804, and need to be downloaded
-# from postgresql's own repo.
+# Install pg_dump v11 (same as current server version). This needs to be
+# downloaded from postgresql's own repo, because ubuntu1804 is too old. With a
+# newer image 'apt-get install postgresql-client-11' may be sufficient.
 RUN apt-get update -y \
     && apt-get install locales -y \
     && locale-gen en_US.UTF-8 \
