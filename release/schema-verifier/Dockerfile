@@ -45,7 +45,7 @@ RUN apt-get install zip -y
 RUN apt-get install net-tools
 
 COPY verify_deployed_sql_schema.sh /usr/local/bin/
-COPY expected_diffs.txt /
+COPY allowed_diffs.txt /
 
 ADD https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 \
     /usr/local/bin/cloud_sql_proxy
