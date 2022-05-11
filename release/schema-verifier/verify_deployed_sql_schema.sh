@@ -77,7 +77,7 @@ raw_diff=$(diff /schema/nomulus.golden.sql /schema/nomulus.actual.sql)
 effective_diff=$(echo "${raw_diff}" \
                    | grep "^[<>]" | sed -e "s/^[<>]\s//g" \
                    | grep -v "^--" | grep -v "^$"  \
-                   | grep -v -f /expected_diffs.txt )
+                   | grep -v -f /allowed_diffs.txt )
 
 if [[ ${effective_diff} == "" ]]
 then

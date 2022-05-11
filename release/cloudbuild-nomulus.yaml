@@ -143,7 +143,7 @@ artifacts:
     - 'release/cloudbuild-sync.yaml'
     - 'release/cloudbuild-deploy-*.yaml'
     - 'release/cloudbuild-delete-*.yaml'
-    - 'release/cloudbuild-schema-deploy-*.yaml'
+    - 'release/cloudbuild-schema-*.yaml'
 
 timeout: 7200s
 options:
