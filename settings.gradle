@@ -27,10 +27,9 @@ if (!pluginsUrl.isEmpty()) {
 
 rootProject.name = 'nomulus'
 
-include 'common'
+includeBuild 'g7'
 include 'core'
 include 'db'
-include 'docs'
 include 'integration'
 include 'networking'
 include 'processor'
