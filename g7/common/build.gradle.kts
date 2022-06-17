@@ -61,14 +61,11 @@ tasks.named<Test>("test") {
     useJUnitPlatform()
 }
 
-java {
-     toolchain {
-         languageVersion.set(JavaLanguageVersion.of(11))
-     }
- }
+tasks.compileJava {
+     options.release.set(8)
+}
 
-tasks.withType<JavaCompile>().configureEach {
-    javaCompiler.set(javaToolchains.compilerFor {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    })
+task ("compileTestingJar", Jar::class) {
+  baseName = "testing"
+  from(files(sourceSets["testing"].java.getClassesDirectory()))
 }

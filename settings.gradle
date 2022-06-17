@@ -27,7 +27,11 @@ if (!pluginsUrl.isEmpty()) {
 
 rootProject.name = 'nomulus'
 
-includeBuild 'g7'
+includeBuild('g7') {
+  dependencySubstitution {
+    substitute module("g7:common-testing") with project(":common")
+  }
+}
 include 'core'
 include 'db'
 include 'integration'
@@ -41,3 +45,4 @@ include 'services:backend'
 include 'services:tools'
 include 'services:pubapi'
 include 'java8compatibility'
+

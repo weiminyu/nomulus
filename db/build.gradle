@@ -175,7 +175,7 @@ dependencies {
   testCompile deps['org.testcontainers:testcontainers']
   testCompile deps['org.testcontainers:junit-jupiter']
   testCompile deps['org.testcontainers:postgresql']
-  testCompile 'g7:common:testing'
+  testCompile 'g7:common-testing'
 }
 
 task generateFlywayIndex {
