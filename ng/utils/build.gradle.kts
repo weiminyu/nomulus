@@ -16,6 +16,9 @@ repositories {
     mavenCentral()
 }
 
+dependencyLocking {
+    lockAllConfigurations()
+}
 
 
 dependencies {

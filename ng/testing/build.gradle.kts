@@ -16,7 +16,9 @@ repositories {
     mavenCentral()
 }
 
-
+dependencyLocking {
+    lockAllConfigurations()
+}
 
 dependencies {
   implementation("joda-time:joda-time:2.10.14")
