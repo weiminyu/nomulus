@@ -38,7 +38,7 @@ dependencies {
   compile deps['org.bouncycastle:bcprov-jdk15on']
   compile deps['xerces:xmlParserAPIs']
   compile deps['xpp3:xpp3']
-  compile project(':common')
+  compile 'ng:utils'
   compile project(':util')
   compile project(':networking')
 
@@ -56,7 +56,7 @@ dependencies {
   testCompile deps['org.junit.platform:junit-platform-suite-api']
   testCompile deps['org.mockito:mockito-core']
   testCompile deps['org.testcontainers:junit-jupiter']
-  testCompile project(path: ':common', configuration: 'testing')
+  testCompile 'ng:testing'
   testCompile project(path: ':networking', configuration: 'testRuntime')
 
   // Include auto-value in compile until nebula-lint understands

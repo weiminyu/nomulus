@@ -82,6 +82,8 @@ licenseReport {
       'javax.servlet:servlet-api',
       // Presumed free since this is from Apache:
       // http://www.apache.org/licenses/
-      'xerces:xmlParserAPIs'
+      'xerces:xmlParserAPIs',
+      'ng:testing',
+      'ng:utils'
   ]
 }

@@ -1,2 +1,0 @@
-This is a random file,
-with two lines and terminates with a newline.

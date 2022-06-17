@@ -83,9 +83,9 @@ com.google.apis:google-api-services-healthcare:v1-rev20211016-1.32.1
 com.google.apis:google-api-services-iamcredentials:v1-rev20210326-1.32.1
 com.google.apis:google-api-services-monitoring:v3-rev20220525-1.32.1
 com.google.apis:google-api-services-pubsub:v1-rev20211130-1.32.1
-com.google.apis:google-api-services-sheets:v4-rev20220411-1.32.1
+com.google.apis:google-api-services-sheets:v4-rev20220606-1.32.1
 com.google.apis:google-api-services-sqladmin:v1beta4-rev20220513-1.32.1
-com.google.apis:google-api-services-storage:v1-rev20220604-1.32.1
+com.google.apis:google-api-services-storage:v1-rev20220608-1.32.1
 com.google.appengine.tools:appengine-gcs-client:0.8.1
 com.google.appengine.tools:appengine-mapreduce:0.9
 com.google.appengine.tools:appengine-pipeline:0.2.13
@@ -111,12 +111,12 @@ com.google.cloud:google-cloud-core-http:2.7.1
 com.google.cloud:google-cloud-core:2.7.1
 com.google.cloud:google-cloud-firestore:3.0.14
 com.google.cloud:google-cloud-monitoring:1.82.0
-com.google.cloud:google-cloud-nio:0.124.4
+com.google.cloud:google-cloud-nio:0.124.5
 com.google.cloud:google-cloud-pubsub:1.116.0
 com.google.cloud:google-cloud-pubsublite:1.5.0
 com.google.cloud:google-cloud-secretmanager:2.2.0
 com.google.cloud:google-cloud-spanner:6.20.0
-com.google.cloud:google-cloud-storage:2.8.0
+com.google.cloud:google-cloud-storage:2.8.1
 com.google.cloud:google-cloud-tasks:2.2.0
 com.google.cloud:grpc-gcp:1.1.0
 com.google.cloud:proto-google-cloud-firestore-bundle-v1:3.0.14
@@ -279,7 +279,7 @@ org.codehaus.jackson:jackson-core-asl:1.9.13
 org.codehaus.jackson:jackson-mapper-asl:1.9.13
 org.conscrypt:conscrypt-openjdk-uber:2.5.1
 org.easymock:easymock:3.0
-org.flywaydb:flyway-core:8.5.12
+org.flywaydb:flyway-core:8.5.13
 org.glassfish.jaxb:jaxb-runtime:2.3.1
 org.glassfish.jaxb:txw2:2.3.1
 org.hamcrest:hamcrest-core:2.2

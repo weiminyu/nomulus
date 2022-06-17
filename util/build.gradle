@@ -42,7 +42,7 @@ dependencies {
   compile deps['org.bouncycastle:bcprov-jdk15on']
   compile deps['org.checkerframework:checker-compat-qual']
   compile deps['org.yaml:snakeyaml']
-  compile project(':common')
+  compile 'ng:utils'
   runtime deps['com.google.auto.value:auto-value']
   testCompile deps['com.google.appengine:appengine-api-stubs']
   testCompile deps['com.google.guava:guava-testlib']
@@ -58,7 +58,7 @@ dependencies {
   testCompile deps['org.mockito:mockito-junit-jupiter']
   testCompile deps['org.testcontainers:junit-jupiter']
   testCompile files("${rootDir}/third_party/objectify/v4_1/objectify-4.1.3.jar")
-  testCompile project(path: ':common', configuration: 'testing')
+  testCompile 'ng:testing'
   testRuntime deps['com.google.flogger:flogger-system-backend']
   annotationProcessor deps['com.google.auto.value:auto-value']
   annotationProcessor deps['com.google.dagger:dagger-compiler']

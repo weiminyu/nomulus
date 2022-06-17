@@ -28,7 +28,7 @@ dependencies {
   compile deps['org.bouncycastle:bcpkix-jdk15on']
   compile deps['org.bouncycastle:bcprov-jdk15on']
   compile project(':util')
-  compile project(':common')
+  compile 'ng:utils'
 
   runtime deps['com.google.flogger:flogger-system-backend']
   runtime deps['io.netty:netty-tcnative-boringssl-static']
@@ -43,7 +43,7 @@ dependencies {
   testCompile deps['org.junit.platform:junit-platform-runner']
   testCompile deps['org.junit.platform:junit-platform-suite-api']
   testCompile deps['org.testcontainers:junit-jupiter']
-  testCompile project(path: ':common', configuration: 'testing')
+  testCompile 'ng:testing'
 
   annotationProcessor deps['com.google.dagger:dagger-compiler']
   testAnnotationProcessor deps['com.google.dagger:dagger-compiler']

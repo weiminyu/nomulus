@@ -2,7 +2,6 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 com.fasterxml.jackson.core:jackson-annotations:2.10.3
-com.github.ben-manes.caffeine:caffeine:2.9.3
 com.github.docker-java:docker-java-api:3.2.13
 com.github.docker-java:docker-java-transport-zerodep:3.2.13
 com.github.docker-java:docker-java-transport:3.2.13

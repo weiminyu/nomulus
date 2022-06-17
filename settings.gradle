@@ -27,7 +27,6 @@ if (!pluginsUrl.isEmpty()) {
 
 rootProject.name = 'nomulus'
 
-include 'common'
 include 'core'
 include 'db'
 include 'docs'
@@ -42,3 +41,5 @@ include 'services:backend'
 include 'services:tools'
 include 'services:pubapi'
 include 'java8compatibility'
+
+includeBuild 'ng'
