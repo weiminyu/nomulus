@@ -112,6 +112,8 @@ interface RegistryToolComponent {
 
   void inject(EnqueuePollMessageCommand command);
 
+  void inject(FetchEppHistoryCommand command);
+
   void inject(GenerateAllocationTokensCommand command);
 
   void inject(GenerateDnsReportCommand command);

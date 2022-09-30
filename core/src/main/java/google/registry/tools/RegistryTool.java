@@ -58,6 +58,7 @@ public final class RegistryTool {
           .put("encrypt_escrow_deposit", EncryptEscrowDepositCommand.class)
           .put("enqueue_poll_message", EnqueuePollMessageCommand.class)
           .put("execute_epp", ExecuteEppCommand.class)
+          .put("fetch_epp_history", FetchEppHistoryCommand.class)
           .put("generate_allocation_tokens", GenerateAllocationTokensCommand.class)
           .put("generate_dns_report", GenerateDnsReportCommand.class)
           .put("generate_escrow_deposit", GenerateEscrowDepositCommand.class)
