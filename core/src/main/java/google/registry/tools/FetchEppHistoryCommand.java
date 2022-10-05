@@ -87,6 +87,7 @@ public class FetchEppHistoryCommand implements CommandWithRemoteApi, CommandWith
           + "     or creation_registrar_id = registrar_id) "
           + "and r.type = 'REAL' "
           + "and history_type != 'DOMAIN_AUTORENEW' "
+          + "and history_type != 'SYNTHETIC' "
           + "and h.creation_time < '2022-09-05T09:10:00Z' "
           + "order by domain_repo_id, history_modification_time";
 
@@ -98,7 +99,7 @@ public class FetchEppHistoryCommand implements CommandWithRemoteApi, CommandWith
   private static final String DOMAIN_FINAL_STATE_QUERY =
       "select h from DomainHistory h where domainRepoId = :repoId and modificationTime in "
           + "(select min(modificationTime) from DomainHistory where domainRepoId = :repoId "
-          + "and modificationTime >= :cutoff)";
+          + "and modificationTime >= :cutoff and (history_type != 'SYNTHETIC' or modificationTime >= :cutoff2 ))";
 
   AppEngineConnection connection;
 
@@ -172,56 +173,84 @@ public class FetchEppHistoryCommand implements CommandWithRemoteApi, CommandWith
       Collection<SimpleHistory> events,
       ImmutableSet<String> completedDomains,
       PrintWriter progressWriter) {
-    Iterator<SimpleHistory> remainingEvents = initializeDomainAndReturnEvents(repoId, events);
-    ImmutableList.Builder<String> responses = ImmutableList.builder();
+    logger.atInfo().log("Starting processing %s", repoId);
     try {
-      while (remainingEvents.hasNext()) {
-        SimpleHistory h = remainingEvents.next();
-        responses.add(playEppXml(h.registrarId(), h.historyXmlBytes()));
-      }
-    } catch (IOException e) {
-      throw new RuntimeException(Joiner.on("\n").join(responses.build()), e);
-    }
-    DomainHistory lastHistory =
-        jpaTm()
-            .transact(
-                () ->
-                    (DomainHistory)
-                        Iterables.getOnlyElement(
-                            jpaTm()
-                                .getEntityManager()
-                                .createQuery(DOMAIN_FINAL_STATE_QUERY)
-                                .setParameter("repoId", repoId)
-                                .setParameter("cutoff", DateTime.parse(RESAVE_END_TIME))
-                                .getResultList()));
-    if (lastHistory.getXmlBytes() != null && lastHistory.getXmlBytes().length > 0) {
+      Iterator<SimpleHistory> remainingEvents = initializeDomainAndReturnEvents(repoId, events);
+      ImmutableList.Builder<String> responses = ImmutableList.builder();
+      ImmutableSet<HistoryEntry.Type> supportedType =
+          ImmutableSet.of(HistoryEntry.Type.DOMAIN_RENEW, HistoryEntry.Type.DOMAIN_UPDATE);
       try {
-        responses.add(
-            playEppXml(lastHistory.getRegistrarId(), new String(lastHistory.getXmlBytes(), UTF_8)));
+        while (remainingEvents.hasNext()) {
+          SimpleHistory h = remainingEvents.next();
+          if (supportedType.contains(h.historyType())) {
+            responses.add(playEppXml(h.registrarId(), h.historyXmlBytes()));
+          }
+        }
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException(Joiner.on("\n").join(responses.build()), e);
       }
-    }
-    Domain finalActualState = getDomainFromHistory(lastHistory);
-    Domain finalReplayedState =
-        jpaTm().transact(() -> jpaTm().loadByKey(VKey.createSql(Domain.class, repoId)));
-
-    String result = "FAILED";
-    if (finalActualState.equals(finalReplayedState)) {
-      result = "SUCCEEDED";
-    } else {
-      logger.atWarning().log(
-          DiffUtils.prettyPrintEntityDeepDiff(
-              finalActualState.toDiffableFieldMap(), finalReplayedState.toDiffableFieldMap()));
-    }
-    if (result == "FAILED") {
-      finalReplayedState = finalReplayedState.cloneProjectedAtTime(DateTime.parse(RESAVE_END_TIME));
-      if (finalActualState.equals(finalReplayedState)) {
-        result = "SUCCEEDED_WITH_RESAVE";
+      DomainHistory lastHistory =
+          jpaTm()
+              .transact(
+                  () ->
+                      (DomainHistory)
+                          Iterables.getOnlyElement(
+                              jpaTm()
+                                  .getEntityManager()
+                                  .createQuery(DOMAIN_FINAL_STATE_QUERY)
+                                  .setParameter("repoId", repoId)
+                                  .setParameter("cutoff", DateTime.parse(RESAVE_END_TIME))
+                                  .setParameter("cutoff2", DateTime.parse("2022-10-05T00:00:00Z"))
+                                  .getResultList()));
+      if (supportedType.contains(lastHistory.getType())
+          && lastHistory.getXmlBytes() != null
+          && lastHistory.getXmlBytes().length > 0) {
+        try {
+          responses.add(
+              playEppXml(lastHistory.getRegistrarId(),
+                  new String(lastHistory.getXmlBytes(), UTF_8)));
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
       }
-    }
+      Domain finalActualState = getDomainFromHistory(lastHistory);
+      Domain finalReplayedState =
+          jpaTm().transact(() -> jpaTm().loadByKey(VKey.createSql(Domain.class, repoId)));
 
-    progressWriter.println(repoId + "," + result);
+      String result = "NO_MATCH";
+
+      HashMap<String, Object> diffs =
+          new HashMap(
+              DiffUtils.deepDiff(
+                  finalActualState.toDiffableFieldMap(),
+                  finalReplayedState.toDiffableFieldMap(),
+                  true));
+      ImmutableSet<String> ignoreFields =
+          ImmutableSet.of(
+              "updateTimestamp",
+              "lastEppUpdateTime",
+              "autorenewBillingEvent",
+              "autorenewPollMessage",
+              "deletePollMessage",
+              "registrationExpirationTime",
+              "deletionTime",
+              "gracePeriods");
+      for (String field : ignoreFields) {
+        diffs.remove(field);
+      }
+
+      if (diffs.isEmpty()) {
+        result = "MATCH";
+      } else {
+        logger.atWarning().log(diffs.toString());
+      }
+      progressWriter.println(repoId + "," + result);
+      if (!"MATCH".equals(result)) {
+        progressWriter.println(diffs);
+      }
+    } catch (Exception e) {
+      progressWriter.println(repoId + "," + "EXCEPTION");
+    }
     progressWriter.flush();
   }
 
@@ -374,8 +403,8 @@ public class FetchEppHistoryCommand implements CommandWithRemoteApi, CommandWith
 
     public static SimpleHistory fromString(String line) {
       checkNotNull(line, "Input is null.");
-      List<String> fields = Splitter.on(",").trimResults().limit(6).splitToList(line);
-      checkArgument(fields.size() == 6, "Line missing fields: %s", line);
+      List<String> fields = Splitter.on(",").trimResults().limit(7).splitToList(line);
+      checkArgument(fields.size() == 7, "Line missing fields: %s", line);
 
       return new google.registry.tools.AutoValue_FetchEppHistoryCommand_SimpleHistory(
           fields.get(0),
