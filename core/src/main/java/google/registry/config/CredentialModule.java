@@ -17,6 +17,7 @@ package google.registry.config;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.auth.oauth2.ImpersonatedCredentials;
 import com.google.common.collect.ImmutableList;
 import dagger.Module;
 import dagger.Provides;
@@ -149,13 +150,31 @@ public abstract class CredentialModule {
   @Provides
   @Singleton
   public static GoogleCredentialsBundle provideDelegatedCredential(
-      @Config("delegatedCredentialOauthScopes") ImmutableList<String> requiredScopes,
-      @JsonCredential GoogleCredentialsBundle credentialsBundle,
+      @Config("defaultCredentialOauthScopes") ImmutableList<String> defaultScopes,
+      @Config("delegatedCredentialOauthScopes") ImmutableList<String> delegationScopes,
+      @ApplicationDefaultCredential GoogleCredentialsBundle credentialsBundle,
       @Config("gSuiteAdminAccountEmailAddress") String gSuiteAdminAccountEmailAddress) {
-    return GoogleCredentialsBundle.create(credentialsBundle
-        .getGoogleCredentials()
-        .createDelegated(gSuiteAdminAccountEmailAddress)
-        .createScoped(requiredScopes));
+
+    try {
+      credentialsBundle.getGoogleCredentials().refresh();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    ImpersonatedCredentials credential =
+        ImpersonatedCredentials.newBuilder()
+            .setSourceCredentials(credentialsBundle.getGoogleCredentials())
+            .setTargetPrincipal(
+                "937378958468-qqp6ahqphoip5agh0v9h78vhj6g406q8@developer.gserviceaccount.com")
+            .setIamEndpointOverride("https://accounts.google.com/o/oauth2/token")
+            .setDelegates(ImmutableList.of(gSuiteAdminAccountEmailAddress))
+            .setScopes(
+                ImmutableList.<String>builder()
+                    .addAll(defaultScopes)
+                    .addAll(delegationScopes)
+                    .build())
+            .build();
+
+    return GoogleCredentialsBundle.create(credential);
   }
 
   /** Dagger qualifier for the scope-less Application Default Credential. */
