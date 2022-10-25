@@ -16,9 +16,12 @@ package google.registry.config;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import com.google.auth.ServiceAccountSigner;
+import com.google.auth.oauth2.ComputeEngineCredentials;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.auth.oauth2.ImpersonatedCredentials;
 import com.google.common.collect.ImmutableList;
+import com.google.common.flogger.FluentLogger;
 import dagger.Module;
 import dagger.Provides;
 import google.registry.config.RegistryConfig.Config;
@@ -30,12 +33,14 @@ import java.io.UncheckedIOException;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Optional;
 import javax.inject.Qualifier;
 import javax.inject.Singleton;
 
 /** Dagger module that provides all {@link GoogleCredentials} used in the application. */
 @Module
 public abstract class CredentialModule {
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   /**
    * Provides a {@link GoogleCredentialsBundle} backed by the application default credential from
@@ -64,6 +69,10 @@ public abstract class CredentialModule {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+    if (credential instanceof ComputeEngineCredentials) {
+      logger.atInfo().log(
+          "ADC account is %s", ((ComputeEngineCredentials) credential).getAccount());
+    } else logger.atInfo().log("ADC is %s", credential.getClass().getSimpleName());
     return GoogleCredentialsBundle.create(credential);
   }
 
@@ -160,19 +169,21 @@ public abstract class CredentialModule {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    ImpersonatedCredentials credential =
-        ImpersonatedCredentials.newBuilder()
-            .setSourceCredentials(credentialsBundle.getGoogleCredentials())
-            .setTargetPrincipal(
-                "937378958468-qqp6ahqphoip5agh0v9h78vhj6g406q8@developer.gserviceaccount.com")
-            .setIamEndpointOverride("https://accounts.google.com/o/oauth2/token")
-            .setDelegates(ImmutableList.of(gSuiteAdminAccountEmailAddress))
-            .setScopes(
-                ImmutableList.<String>builder()
-                    .addAll(defaultScopes)
-                    .addAll(delegationScopes)
-                    .build())
-            .build();
+    DelegatedCredentials credential =
+        new DelegatedCredentials(
+            (ServiceAccountSigner) credentialsBundle.getGoogleCredentials(),
+            // "937378958468-qqp6ahqphoip5agh0v9h78vhj6g406q8@developer.gserviceaccount.com",
+            ((ComputeEngineCredentials) credentialsBundle.getGoogleCredentials()).getAccount(),
+            Optional.empty(),
+            ImmutableList.<String>builder().addAll(defaultScopes).addAll(delegationScopes).build(),
+            gSuiteAdminAccountEmailAddress);
+    ImpersonatedCredentials.newBuilder()
+        .setSourceCredentials(credentialsBundle.getGoogleCredentials())
+        .setTargetPrincipal(
+            "937378958468-qqp6ahqphoip5agh0v9h78vhj6g406q8@developer.gserviceaccount.com")
+        .setScopes(
+            ImmutableList.<String>builder().addAll(defaultScopes).addAll(delegationScopes).build())
+        .build();
 
     return GoogleCredentialsBundle.create(credential);
   }
