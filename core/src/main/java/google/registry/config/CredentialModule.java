@@ -26,6 +26,7 @@ import dagger.Module;
 import dagger.Provides;
 import google.registry.config.RegistryConfig.Config;
 import google.registry.keyring.api.KeyModule.Key;
+import google.registry.util.Clock;
 import google.registry.util.GoogleCredentialsBundle;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -162,7 +163,8 @@ public abstract class CredentialModule {
       @Config("defaultCredentialOauthScopes") ImmutableList<String> defaultScopes,
       @Config("delegatedCredentialOauthScopes") ImmutableList<String> delegationScopes,
       @ApplicationDefaultCredential GoogleCredentialsBundle credentialsBundle,
-      @Config("gSuiteAdminAccountEmailAddress") String gSuiteAdminAccountEmailAddress) {
+      @Config("gSuiteAdminAccountEmailAddress") String gSuiteAdminAccountEmailAddress,
+      Clock clock) {
 
     try {
       credentialsBundle.getGoogleCredentials().refresh();
@@ -172,11 +174,10 @@ public abstract class CredentialModule {
     DelegatedCredentials credential =
         new DelegatedCredentials(
             (ServiceAccountSigner) credentialsBundle.getGoogleCredentials(),
-            // "937378958468-qqp6ahqphoip5agh0v9h78vhj6g406q8@developer.gserviceaccount.com",
-            ((ComputeEngineCredentials) credentialsBundle.getGoogleCredentials()).getAccount(),
-            Optional.empty(),
             ImmutableList.<String>builder().addAll(defaultScopes).addAll(delegationScopes).build(),
-            gSuiteAdminAccountEmailAddress);
+            gSuiteAdminAccountEmailAddress,
+            clock,
+            Optional.empty());
     ImpersonatedCredentials.newBuilder()
         .setSourceCredentials(credentialsBundle.getGoogleCredentials())
         .setTargetPrincipal(

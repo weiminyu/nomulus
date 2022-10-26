@@ -1,5 +1,7 @@
 package google.registry.config;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpBackOffIOExceptionHandler;
 import com.google.api.client.http.HttpBackOffUnsuccessfulResponseHandler;
@@ -18,7 +20,6 @@ import com.google.api.client.json.webtoken.JsonWebToken;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.client.util.GenericData;
 import com.google.api.client.util.StringUtils;
-import com.google.appengine.repackaged.com.google.api.client.util.Clock;
 import com.google.auth.ServiceAccountSigner;
 import com.google.auth.http.HttpTransportFactory;
 import com.google.auth.oauth2.AccessToken;
@@ -26,8 +27,11 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import google.registry.util.Clock;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -38,74 +42,50 @@ import org.apache.commons.codec.binary.Base64;
 public class DelegatedCredentials extends GoogleCredentials {
 
   private static final String DEFAULT_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
-  static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-
-  static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-  static final HttpTransportFactory HTTP_TRANSPORT_FACTORY = new DefaultHttpTransportFactory();
-
   private static final String GRANT_TYPE = "urn:ietf:params:oauth:grant-type:jwt-bearer";
 
-  private static String VALUE_NOT_FOUND_MESSAGE = "%sExpected value %s not found.";
-  private static String VALUE_WRONG_TYPE_MESSAGE = "%sExpected %s value %s of wrong type.";
+  private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+  private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
+  private static final HttpTransportFactory HTTP_TRANSPORT_FACTORY =
+      new DefaultHttpTransportFactory();
+
+  private static final String VALUE_NOT_FOUND_MESSAGE = "%sExpected value %s not found.";
+  private static final String VALUE_WRONG_TYPE_MESSAGE = "%sExpected %s value %s of wrong type.";
   private static final String PARSE_ERROR_PREFIX = "Error parsing token refresh response. ";
 
-  private final ServiceAccountSigner signer;
-  private final String tokenUri;
-  private final ImmutableList<String> scopes;
+  private static final Duration MAX_TOKEN_REFRESH_DELAY = Duration.ofHours(1);
 
-  private final String delegatedServiceAccountEmail;
+  private final ServiceAccountSigner signer;
+  private final ImmutableList<String> scopes;
   private final String delegatingUserEmail;
-  private final int lifetime;
+
+  private final Clock clock;
+  private final Duration tokenRefreshDelay;
 
   private final HttpTransportFactory transportFactory;
 
   DelegatedCredentials(
       ServiceAccountSigner signer,
-      String delegatedServiceAccountEmail,
-      Optional<String> tokenUri,
       Collection<String> scopes,
-      String delegatingUserEmail) {
-    this.signer = signer;
-    this.tokenUri = tokenUri.orElse(DEFAULT_TOKEN_URI);
-    this.scopes = ImmutableList.copyOf(scopes);
+      String delegatingUserEmail,
+      Clock clock,
+      Optional<Duration> tokenRefreshDelay) {
+    checkArgument(signer instanceof Serializable, "Signer must be serializable.");
+    checkArgument(
+        !tokenRefreshDelay.isPresent()
+            || tokenRefreshDelay.get().getSeconds() <= MAX_TOKEN_REFRESH_DELAY.getSeconds(),
+        "Max refresh delay must not exceed %s.",
+        MAX_TOKEN_REFRESH_DELAY);
 
-    this.delegatedServiceAccountEmail = delegatedServiceAccountEmail;
+    this.signer = signer;
+    this.scopes = ImmutableList.copyOf(scopes);
     this.delegatingUserEmail = delegatingUserEmail;
+
+    this.clock = clock;
+    this.tokenRefreshDelay = tokenRefreshDelay.orElse(MAX_TOKEN_REFRESH_DELAY);
 
     this.transportFactory =
         getFromServiceLoader(HttpTransportFactory.class, HTTP_TRANSPORT_FACTORY);
-
-    this.lifetime = 900; // seconds
-  }
-
-  String createAssertion(JsonFactory jsonFactory, long currentTime) throws IOException {
-    JsonWebSignature.Header header = new JsonWebSignature.Header();
-    header.setAlgorithm("RS256");
-    header.setType("JWT");
-
-    JsonWebToken.Payload payload = new JsonWebToken.Payload();
-    payload.setIssuer(this.delegatedServiceAccountEmail);
-    payload.setIssuedAtTimeSeconds(currentTime / 1000);
-    payload.setExpirationTimeSeconds(currentTime / 1000 + this.lifetime);
-    payload.setSubject(this.delegatingUserEmail);
-    payload.put("scope", Joiner.on(' ').join(scopes));
-
-    payload.setAudience(DEFAULT_TOKEN_URI);
-
-    String assertion = signAssertion(jsonFactory, header, payload);
-    return assertion;
-  }
-
-  String signAssertion(
-      JsonFactory jsonFactory, JsonWebSignature.Header header, JsonWebToken.Payload payload)
-      throws IOException {
-    String content =
-        Base64.encodeBase64URLSafeString(jsonFactory.toByteArray(header))
-            + "."
-            + Base64.encodeBase64URLSafeString(jsonFactory.toByteArray(payload));
-    byte[] contentBytes = StringUtils.getBytesUtf8(content);
-    byte[] signature = this.signer.sign(contentBytes);
-    return content + "." + Base64.encodeBase64URLSafeString(signature);
   }
 
   /**
@@ -114,7 +94,7 @@ public class DelegatedCredentials extends GoogleCredentials {
   @Override
   public AccessToken refreshAccessToken() throws IOException {
     JsonFactory jsonFactory = JSON_FACTORY;
-    long currentTime = Clock.SYSTEM.currentTimeMillis();
+    long currentTime = clock.nowUtc().getMillis();
     String assertion = createAssertion(jsonFactory, currentTime);
 
     GenericData tokenRequest = new GenericData();
@@ -123,7 +103,8 @@ public class DelegatedCredentials extends GoogleCredentials {
     UrlEncodedContent content = new UrlEncodedContent(tokenRequest);
 
     HttpRequestFactory requestFactory = transportFactory.create().createRequestFactory();
-    HttpRequest request = requestFactory.buildPostRequest(new GenericUrl(tokenUri), content);
+    HttpRequest request =
+        requestFactory.buildPostRequest(new GenericUrl(DEFAULT_TOKEN_URI), content);
     request.setParser(new JsonObjectParser(jsonFactory));
 
     request.setIOExceptionHandler(new HttpBackOffIOExceptionHandler(new ExponentialBackOff()));
@@ -157,8 +138,36 @@ public class DelegatedCredentials extends GoogleCredentials {
     GenericData responseData = response.parseAs(GenericData.class);
     String accessToken = validateString(responseData, "access_token", PARSE_ERROR_PREFIX);
     int expiresInSeconds = validateInt32(responseData, "expires_in", PARSE_ERROR_PREFIX);
-    long expiresAtMilliseconds = Clock.SYSTEM.currentTimeMillis() + expiresInSeconds * 1000L;
+    long expiresAtMilliseconds = clock.nowUtc().getMillis() + expiresInSeconds * 1000L;
     return new AccessToken(accessToken, new Date(expiresAtMilliseconds));
+  }
+
+  String createAssertion(JsonFactory jsonFactory, long currentTime) throws IOException {
+    JsonWebSignature.Header header = new JsonWebSignature.Header();
+    header.setAlgorithm("RS256");
+    header.setType("JWT");
+
+    JsonWebToken.Payload payload = new JsonWebToken.Payload();
+    payload.setIssuer(signer.getAccount());
+    payload.setIssuedAtTimeSeconds(currentTime / 1000);
+    payload.setExpirationTimeSeconds(currentTime / 1000 + tokenRefreshDelay.getSeconds());
+    payload.setSubject(delegatingUserEmail);
+    payload.put("scope", Joiner.on(' ').join(scopes));
+    payload.setAudience(DEFAULT_TOKEN_URI);
+
+    return signAssertion(jsonFactory, header, payload);
+  }
+
+  String signAssertion(
+      JsonFactory jsonFactory, JsonWebSignature.Header header, JsonWebToken.Payload payload)
+      throws IOException {
+    String content =
+        Base64.encodeBase64URLSafeString(jsonFactory.toByteArray(header))
+            + "."
+            + Base64.encodeBase64URLSafeString(jsonFactory.toByteArray(payload));
+    byte[] contentBytes = StringUtils.getBytesUtf8(content);
+    byte[] signature = signer.sign(contentBytes);
+    return content + "." + Base64.encodeBase64URLSafeString(signature);
   }
 
   static class DefaultHttpTransportFactory implements HttpTransportFactory {
