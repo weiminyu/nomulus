@@ -1,3 +1,17 @@
+// Copyright 2022 The Nomulus Authors. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package google.registry.config;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -5,7 +19,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpBackOffIOExceptionHandler;
 import com.google.api.client.http.HttpBackOffUnsuccessfulResponseHandler;
-import com.google.api.client.http.HttpBackOffUnsuccessfulResponseHandler.BackOffRequired;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
@@ -29,16 +42,39 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import google.registry.util.Clock;
 import java.io.IOException;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ServiceLoader;
 import org.apache.commons.codec.binary.Base64;
 
+/**
+ * OAuth2 credentials for accessing Google Workspace APIs with domain-wide delegation. It fetches
+ * access tokens using JSON Web Tokens (JWT) signed by a user-provided {@link ServiceAccountSigner}.
+ *
+ * <p>This class accepts the application-default-credential as {@code ServiceAccountSigner},
+ * avoiding the need for exported private keys. In this case, the default credential user itself
+ * (project-id@appspot.gserviceaccount.com on AppEngine) must have domain-wide delegation to the
+ * Workspace APIs. The default credential user also must have the Token Creator role to itself.
+ *
+ * <p>If the user provides a credential {@code S} that carries its own private key, such as {@link
+ * com.google.auth.oauth2.ServiceAccountCredentials}, this class can use {@code S} to impersonate
+ * another service account {@code D} and gain delegated access as {@code D}, as long as S has the
+ * Token Creator role to {@code D}. This usage is documented here for future reference.
+ *
+ * <p>As of October 2022, the functionalities described above are not implemented in the GCP Java
+ * Auth library, although they are available in the Python library. We have filed a <a
+ * href="https://github.com/googleapis/google-auth-library-java/issues/1064">feature request</a>.
+ * This class is a stop-gap implementation.
+ *
+ * <p>The main body of this class is adapted from {@link
+ * com.google.auth.oauth2.ServiceAccountCredentials} with cosmetic changes. The important changes
+ * include the removal of private key references and the way the JWT is signed. We choose not to
+ * extend {@code ServiceAccountCredentials} because it would add dependency to the non-public
+ * details of the parent class.
+ */
 public class DelegatedCredentials extends GoogleCredentials {
 
   private static final String DEFAULT_TOKEN_URI = "https://accounts.google.com/o/oauth2/token";
@@ -46,8 +82,6 @@ public class DelegatedCredentials extends GoogleCredentials {
 
   private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
   private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-  private static final HttpTransportFactory HTTP_TRANSPORT_FACTORY =
-      new DefaultHttpTransportFactory();
 
   private static final String VALUE_NOT_FOUND_MESSAGE = "%sExpected value %s not found.";
   private static final String VALUE_WRONG_TYPE_MESSAGE = "%sExpected %s value %s of wrong type.";
@@ -56,6 +90,7 @@ public class DelegatedCredentials extends GoogleCredentials {
   private static final Duration MAX_TOKEN_REFRESH_DELAY = Duration.ofHours(1);
 
   private final ServiceAccountSigner signer;
+  private final String delegatedServiceAccountUser;
   private final ImmutableList<String> scopes;
   private final String delegatingUserEmail;
 
@@ -64,28 +99,52 @@ public class DelegatedCredentials extends GoogleCredentials {
 
   private final HttpTransportFactory transportFactory;
 
-  DelegatedCredentials(
+  /**
+   * Creates a {@link DelegatedCredentials} instance that is self-signed by the signer, which must
+   * have delegated access to the Workspace APIs.
+   *
+   * @param signer Signs for the generated JWT tokens. This may be the application default
+   *     credential
+   * @param scopes The scopes to use when generating JWT tokens
+   * @param delegatingUserEmail The Workspace user whose permissions are delegated to the signer
+   * @param clock Used for setting token expiration times.
+   * @param tokenRefreshDelay The lifetime of each token. Should not exceed one hour according to
+   *     GCP recommendations.
+   * @return
+   */
+  static DelegatedCredentials createSelfSignedDelegatedCredential(
       ServiceAccountSigner signer,
       Collection<String> scopes,
       String delegatingUserEmail,
       Clock clock,
-      Optional<Duration> tokenRefreshDelay) {
-    checkArgument(signer instanceof Serializable, "Signer must be serializable.");
+      Duration tokenRefreshDelay) {
+    return new DelegatedCredentials(
+        signer, signer.getAccount(), scopes, delegatingUserEmail, clock, tokenRefreshDelay);
+  }
+
+  private DelegatedCredentials(
+      ServiceAccountSigner signer,
+      String delegatedServiceAccountUser,
+      Collection<String> scopes,
+      String delegatingUserEmail,
+      Clock clock,
+      Duration tokenRefreshDelay) {
     checkArgument(
-        !tokenRefreshDelay.isPresent()
-            || tokenRefreshDelay.get().getSeconds() <= MAX_TOKEN_REFRESH_DELAY.getSeconds(),
+        tokenRefreshDelay.getSeconds() <= MAX_TOKEN_REFRESH_DELAY.getSeconds(),
         "Max refresh delay must not exceed %s.",
         MAX_TOKEN_REFRESH_DELAY);
 
     this.signer = signer;
+    this.delegatedServiceAccountUser = delegatedServiceAccountUser;
     this.scopes = ImmutableList.copyOf(scopes);
     this.delegatingUserEmail = delegatingUserEmail;
 
     this.clock = clock;
-    this.tokenRefreshDelay = tokenRefreshDelay.orElse(MAX_TOKEN_REFRESH_DELAY);
+    this.tokenRefreshDelay = tokenRefreshDelay;
 
     this.transportFactory =
-        getFromServiceLoader(HttpTransportFactory.class, HTTP_TRANSPORT_FACTORY);
+        getFromServiceLoader(
+            HttpTransportFactory.class, DelegatedCredentials::provideHttpTransport);
   }
 
   /**
@@ -111,20 +170,17 @@ public class DelegatedCredentials extends GoogleCredentials {
     request.setUnsuccessfulResponseHandler(
         new HttpBackOffUnsuccessfulResponseHandler(new ExponentialBackOff())
             .setBackOffRequired(
-                new BackOffRequired() {
-                  @Override
-                  public boolean isRequired(HttpResponse response) {
-                    int code = response.getStatusCode();
-                    return (
-                    // Server error --- includes timeout errors, which use 500 instead of 408
-                    code / 100 == 5
-                        // Forbidden error --- for historical reasons, used for rate_limit_exceeded
-                        // errors instead of 429, but there currently seems no robust automatic way
-                        // to
-                        // distinguish these cases: see
-                        // https://github.com/google/google-api-java-client/issues/662
-                        || code == 403);
-                  }
+                response -> {
+                  int code = response.getStatusCode();
+                  return (
+                  // Server error --- includes timeout errors, which use 500 instead of 408
+                  code / 100 == 5
+                      // Forbidden error --- for historical reasons, used for rate_limit_exceeded
+                      // errors instead of 429, but there currently seems no robust automatic way
+                      // to
+                      // distinguish these cases: see
+                      // https://github.com/google/google-api-java-client/issues/662
+                      || code == 403);
                 }));
 
     HttpResponse response;
@@ -148,7 +204,7 @@ public class DelegatedCredentials extends GoogleCredentials {
     header.setType("JWT");
 
     JsonWebToken.Payload payload = new JsonWebToken.Payload();
-    payload.setIssuer(signer.getAccount());
+    payload.setIssuer(this.delegatedServiceAccountUser);
     payload.setIssuedAtTimeSeconds(currentTime / 1000);
     payload.setExpirationTimeSeconds(currentTime / 1000 + tokenRefreshDelay.getSeconds());
     payload.setSubject(delegatingUserEmail);
@@ -170,12 +226,8 @@ public class DelegatedCredentials extends GoogleCredentials {
     return content + "." + Base64.encodeBase64URLSafeString(signature);
   }
 
-  static class DefaultHttpTransportFactory implements HttpTransportFactory {
-
-    @Override
-    public HttpTransport create() {
-      return HTTP_TRANSPORT;
-    }
+  static HttpTransport provideHttpTransport() {
+    return HTTP_TRANSPORT;
   }
 
   protected static <T> T getFromServiceLoader(Class<? extends T> clazz, T defaultInstance) {

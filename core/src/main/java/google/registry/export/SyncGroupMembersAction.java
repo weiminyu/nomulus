@@ -118,7 +118,7 @@ public final class SyncGroupMembersAction implements Runnable {
             .filter(
                 registrar ->
                     registrar.isLive()
-                        // && registrar.getContactsRequireSyncing()
+                        && registrar.getContactsRequireSyncing()
                         && registrar.getType() == Registrar.Type.REAL)
             .collect(toImmutableList());
     if (dirtyRegistrars.isEmpty()) {
@@ -178,8 +178,6 @@ public final class SyncGroupMembersAction implements Runnable {
         groupKey =
             getGroupEmailAddressForContactType(registrar.getRegistrarId(), type, gSuiteDomainName);
         Set<String> currentMembers = groupsConnection.getMembersOfGroup(groupKey);
-        logger.atInfo().log(
-            "Found %s members for %s", currentMembers.size(), registrar.getRegistrarId());
         Set<String> desiredMembers =
             registrarPocs.stream()
                 .filter(contact -> contact.getTypes().contains(type))
