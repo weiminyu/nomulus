@@ -147,6 +147,7 @@ public class BatchModule {
     return getQueue(QUEUE_ASYNC_HOST_RENAME);
   }
 
+  // TODO(b/234424397): remove method after credential changes are rolled out.
   @Provides
   @Parameter(SCRIPT_PARAM)
   static String provideScriptName(HttpServletRequest req) {
