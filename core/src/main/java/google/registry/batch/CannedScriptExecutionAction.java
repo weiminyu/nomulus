@@ -18,6 +18,7 @@ import static google.registry.request.Action.Method.POST;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.flogger.FluentLogger;
+import google.registry.batch.cannedscript.BigQueryChecker;
 import google.registry.batch.cannedscript.GroupsApiChecker;
 import google.registry.request.Action;
 import google.registry.request.Parameter;
@@ -48,7 +49,11 @@ public class CannedScriptExecutionAction implements Runnable {
   static final String SCRIPT_PARAM = "script";
 
   static final ImmutableMap<String, Runnable> SCRIPTS =
-      ImmutableMap.of("runGroupsApiChecks", GroupsApiChecker::runGroupsApiChecks);
+      ImmutableMap.of(
+          "runGroupsApiChecks",
+          GroupsApiChecker::runGroupsApiChecks,
+          "runBigqueryChecker",
+          BigQueryChecker::runBigqueryCheck);
 
   private final String scriptName;
 

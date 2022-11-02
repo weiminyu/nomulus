@@ -30,7 +30,6 @@ import google.registry.util.GoogleCredentialsBundle;
 import google.registry.util.UtilsModule;
 import java.io.IOException;
 import java.util.function.Supplier;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
@@ -41,19 +40,16 @@ import javax.inject.Singleton;
 public class BigQueryChecker {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  static final Supplier<GroupsConnectionComponent> COMPONENT_SUPPLIER =
-      memoize(DaggerBigQueryChecker_GroupsConnectionComponent::create);
+  static final Supplier<BigqueryComponent> COMPONENT_SUPPLIER =
+      memoize(DaggerBigQueryChecker_BigqueryComponent::create);
 
   public static void runBigqueryCheck() {
-    GroupsConnectionComponent component = COMPONENT_SUPPLIER.get();
+    BigqueryComponent component = COMPONENT_SUPPLIER.get();
 
     Bigquery bigquery = component.bigquery();
     try {
       Dataset dataSet =
-          bigquery
-              .datasets()
-              .get(component.projectId(), component.icannReportingDataSet())
-              .execute();
+          bigquery.datasets().get(component.projectId(), "cloud_sql_icann_reporting").execute();
       logger.atInfo().log("Found Dataset %s", dataSet.getDatasetReference().getDatasetId());
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
@@ -68,14 +64,11 @@ public class BigQueryChecker {
         BigqueryModule.class,
         UtilsModule.class
       })
-  interface GroupsConnectionComponent {
+  interface BigqueryComponent {
     Bigquery bigquery();
 
     @Config("projectId")
     String projectId();
-
-    @Named("icannReportingDataSet")
-    String icannReportingDataSet();
   }
 
   @Module
