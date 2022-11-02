@@ -48,11 +48,11 @@ import javax.inject.Singleton;
 public class GroupsApiChecker {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
-  private static final Supplier<GroupsConnectionComponent> componentSupplier =
+  private static final Supplier<GroupsConnectionComponent> COMPONENT_SUPPLIER =
       Suppliers.memoize(DaggerGroupsApiChecker_GroupsConnectionComponent::create);
 
   public static void runGroupsApiChecks() {
-    GroupsConnectionComponent component = componentSupplier.get();
+    GroupsConnectionComponent component = COMPONENT_SUPPLIER.get();
     DirectoryGroupsConnection groupsConnection = component.groupsConnection();
 
     List<Registrar> registrars =
