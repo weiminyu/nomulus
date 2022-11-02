@@ -19,6 +19,8 @@ import static google.registry.util.RegistrarUtils.normalizeRegistrarId;
 
 import com.google.api.services.admin.directory.Directory;
 import com.google.api.services.groupssettings.Groupssettings;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Streams;
 import com.google.common.flogger.FluentLogger;
@@ -46,8 +48,11 @@ import javax.inject.Singleton;
 public class GroupsApiChecker {
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
+  private static final Supplier<GroupsConnectionComponent> componentSupplier =
+      Suppliers.memoize(DaggerGroupsApiChecker_GroupsConnectionComponent::create);
+
   public static void runGroupsApiChecks() {
-    GroupsConnectionComponent component = DaggerGroupsApiChecker_GroupsConnectionComponent.create();
+    GroupsConnectionComponent component = componentSupplier.get();
     DirectoryGroupsConnection groupsConnection = component.groupsConnection();
 
     List<Registrar> registrars =
