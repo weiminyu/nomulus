@@ -52,7 +52,7 @@ public class CannedScriptExecutionAction implements Runnable {
       ImmutableMap.of(
           "runGroupsApiChecks",
           GroupsApiChecker::runGroupsApiChecks,
-          "runBigqueryChecker",
+          "runBigqueryChecks",
           BigQueryChecker::runBigqueryCheck);
 
   private final String scriptName;
