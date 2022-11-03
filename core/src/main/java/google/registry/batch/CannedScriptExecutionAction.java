@@ -19,6 +19,7 @@ import static google.registry.request.Action.Method.POST;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.flogger.FluentLogger;
 import google.registry.batch.cannedscript.BigQueryChecker;
+import google.registry.batch.cannedscript.DnsChecker;
 import google.registry.batch.cannedscript.GroupsApiChecker;
 import google.registry.request.Action;
 import google.registry.request.Parameter;
@@ -53,7 +54,9 @@ public class CannedScriptExecutionAction implements Runnable {
           "runGroupsApiChecks",
           GroupsApiChecker::runGroupsApiChecks,
           "runBigqueryChecks",
-          BigQueryChecker::runBigqueryCheck);
+          BigQueryChecker::runBigqueryCheck,
+          "runDnsChecks",
+          DnsChecker::runDnsChecks);
 
   private final String scriptName;
 

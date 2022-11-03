@@ -19,7 +19,7 @@ import com.google.cloud.tasks.v2.CloudTasksClient;
 import com.google.cloud.tasks.v2.CloudTasksSettings;
 import dagger.Module;
 import dagger.Provides;
-import google.registry.config.CredentialModule.DefaultCredential;
+import google.registry.config.CredentialModule.ApplicationDefaultCredential;
 import google.registry.config.RegistryConfig.Config;
 import google.registry.util.Clock;
 import google.registry.util.CloudTasksUtils;
@@ -55,7 +55,7 @@ public abstract class CloudTasksUtilsModule {
   // Provides a supplier instead of using a Dagger @Provider because the latter is not serializable.
   @Provides
   public static Supplier<CloudTasksClient> provideCloudTasksClientSupplier(
-      @DefaultCredential GoogleCredentialsBundle credentials) {
+      @ApplicationDefaultCredential GoogleCredentialsBundle credentials) {
     return (Supplier<CloudTasksClient> & Serializable)
         () -> {
           CloudTasksClient client;
