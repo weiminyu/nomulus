@@ -42,6 +42,7 @@ import google.registry.request.Modules.UserServiceModule;
 import google.registry.tools.AuthModule.LocalCredentialModule;
 import google.registry.tools.javascrap.CompareEscrowDepositsCommand;
 import google.registry.tools.javascrap.CreateCancellationsForOneTimesCommand;
+import google.registry.tools.javascrap.CreateSyntheticContactHistoriesCommand;
 import google.registry.tools.javascrap.CreateSyntheticDomainHistoriesCommand;
 import google.registry.util.UtilsModule;
 import google.registry.whois.NonCachingWhoisModule;
@@ -105,6 +106,8 @@ interface RegistryToolComponent {
   void inject(CreateDomainCommand command);
 
   void inject(CreateRegistrarCommand command);
+
+  void inject(CreateSyntheticContactHistoriesCommand command);
 
   void inject(CreateSyntheticDomainHistoriesCommand command);
 
