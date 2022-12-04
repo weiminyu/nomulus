@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableMap;
 import google.registry.tools.javascrap.CompareEscrowDepositsCommand;
 import google.registry.tools.javascrap.CreateCancellationsForOneTimesCommand;
 import google.registry.tools.javascrap.CreateSyntheticContactHistoriesCommand;
+import google.registry.tools.javascrap.CreateSyntheticDomainHistoriesByIdsCommand;
 import google.registry.tools.javascrap.CreateSyntheticDomainHistoriesCommand;
 
 /** Container class to create and run remote commands against a Datastore instance. */
@@ -50,6 +51,9 @@ public final class RegistryTool {
           .put("create_registrar_groups", CreateRegistrarGroupsCommand.class)
           .put("create_reserved_list", CreateReservedListCommand.class)
           .put("create_synthetic_contact_histories", CreateSyntheticContactHistoriesCommand.class)
+          .put(
+              "create_synthetic_domain_histories_by_ids",
+              CreateSyntheticDomainHistoriesByIdsCommand.class)
           .put("create_synthetic_domain_histories", CreateSyntheticDomainHistoriesCommand.class)
           .put("create_tld", CreateTldCommand.class)
           .put("curl", CurlCommand.class)
