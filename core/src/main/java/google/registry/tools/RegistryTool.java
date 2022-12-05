@@ -20,6 +20,7 @@ import google.registry.tools.javascrap.CreateCancellationsForOneTimesCommand;
 import google.registry.tools.javascrap.CreateSyntheticContactHistoriesCommand;
 import google.registry.tools.javascrap.CreateSyntheticDomainHistoriesByIdsCommand;
 import google.registry.tools.javascrap.CreateSyntheticDomainHistoriesCommand;
+import google.registry.tools.javascrap.DeleteContactByRepoIdCommand;
 
 /** Container class to create and run remote commands against a Datastore instance. */
 public final class RegistryTool {
@@ -51,13 +52,14 @@ public final class RegistryTool {
           .put("create_registrar_groups", CreateRegistrarGroupsCommand.class)
           .put("create_reserved_list", CreateReservedListCommand.class)
           .put("create_synthetic_contact_histories", CreateSyntheticContactHistoriesCommand.class)
+          .put("create_synthetic_domain_histories", CreateSyntheticDomainHistoriesCommand.class)
           .put(
               "create_synthetic_domain_histories_by_ids",
               CreateSyntheticDomainHistoriesByIdsCommand.class)
-          .put("create_synthetic_domain_histories", CreateSyntheticDomainHistoriesCommand.class)
           .put("create_tld", CreateTldCommand.class)
           .put("curl", CurlCommand.class)
           .put("delete_allocation_tokens", DeleteAllocationTokensCommand.class)
+          .put("delete_contact_by_repo_id", DeleteContactByRepoIdCommand.class)
           .put("delete_domain", DeleteDomainCommand.class)
           .put("delete_host", DeleteHostCommand.class)
           .put("delete_premium_list", DeletePremiumListCommand.class)

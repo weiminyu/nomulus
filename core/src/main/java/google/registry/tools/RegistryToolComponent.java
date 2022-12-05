@@ -45,6 +45,7 @@ import google.registry.tools.javascrap.CreateCancellationsForOneTimesCommand;
 import google.registry.tools.javascrap.CreateSyntheticContactHistoriesCommand;
 import google.registry.tools.javascrap.CreateSyntheticDomainHistoriesByIdsCommand;
 import google.registry.tools.javascrap.CreateSyntheticDomainHistoriesCommand;
+import google.registry.tools.javascrap.DeleteContactByRepoIdCommand;
 import google.registry.util.UtilsModule;
 import google.registry.whois.NonCachingWhoisModule;
 import javax.annotation.Nullable;
@@ -115,6 +116,8 @@ interface RegistryToolComponent {
   void inject(CreateSyntheticDomainHistoriesCommand command);
 
   void inject(CreateTldCommand command);
+
+  void inject(DeleteContactByRepoIdCommand command);
 
   void inject(EncryptEscrowDepositCommand command);
 
