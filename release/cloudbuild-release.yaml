@@ -135,7 +135,7 @@ steps:
   - |
     set -e
     # The nomulus jar is not under the working dir. Must be copied over. 
-    cp ../../core/build/lib/nomulus.jar .
+    cp ../../core/build/libs/nomulus.jar .
     docker build -t gcr.io/${PROJECT_ID}/prober_cert_updater:${TAG_NAME} \
       --build-arg TAG_NAME=${TAG_NAME} --build-arg PROJECT_ID=${PROJECT_ID} .
     docker tag gcr.io/${PROJECT_ID}/prober_cert_updater:${TAG_NAME} \
