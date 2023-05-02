@@ -62,7 +62,7 @@ steps:
     gcloud secrets versions access latest \
       --secret nomulus-tool-cloudbuild-credential \
       > nomulus_tool_credential.json
-    prober_list_name=prober_registrars.{_ENV}
+    prober_list_name=prober_registrars.${_ENV}
     gcloud storage cp gcloud storage \
       cp gs://$PROJECT_ID-prober-certs/$prober_list_name ./prober-list
 # Install the new certs in the prober registrars. After this step, both the
