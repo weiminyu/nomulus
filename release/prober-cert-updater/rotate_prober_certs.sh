@@ -35,9 +35,10 @@ tools_credential="${4}"
 echo ${nomulus_env} ${cert_file} ${prober_list}
 
 cat "${prober_list}" | while IFS= read -r prober; do
+  echo "Updating client certificate for ${prober}."
   java -jar /nomulus.jar -e "${nomulus_env}" \
       --credential "${tools_credential}" \
-      update_registrar "prober" -f \
+      update_registrar "${prober}" -f \
       --rotate_primary_cert \
       --cert_file  "${cert_file}"
 done
