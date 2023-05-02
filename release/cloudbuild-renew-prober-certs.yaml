@@ -63,14 +63,13 @@ steps:
       --secret nomulus-tool-cloudbuild-credential \
       > nomulus_tool_credential.json
     prober_list_name=prober_registrars.${_ENV}
-    gcloud storage cp gcloud storage \
-      cp gs://$PROJECT_ID-prober-certs/$prober_list_name ./prober-list
+    gcloud storage cp \
+      gs://$PROJECT_ID-prober-certs/$prober_list_name ./prober-list
 # Install the new certs in the prober registrars. After this step, both the
 # current certs and the new certs are accepted for login.
 - name: 'gcr.io/$PROJECT_ID/prober_cert_updater:latest'
   args:
   - ${_ENV}
-  - --credential
   - ./prober-client-tls.pem
   - ./prober-list
   - ./nomulus_tool_credential.json
