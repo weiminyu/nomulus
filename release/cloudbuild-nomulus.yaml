@@ -90,7 +90,7 @@ steps:
       gcr.io/${PROJECT_ID}/prober_cert_updater:latest
     docker push gcr.io/${PROJECT_ID}/prober_cert_updater:latest
     docker push gcr.io/${PROJECT_ID}/prober_cert_updater:${TAG_NAME}
-  dir: 'release/prober_cert_updater/'
+  dir: 'release/prober-cert-updater/'
 # Update the prober_updater image digest in relevant GCB files.
 - name: 'gcr.io/${PROJECT_ID}/builder:latest'
   entrypoint: /bin/bash
