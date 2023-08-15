@@ -21,21 +21,13 @@ steps:
   args: ['mkdir', 'nomulus']
 # Run tests
 - name: 'gcr.io/${PROJECT_ID}/builder:latest'
-  # Set home for Gradle caches. Must be consistent with last step below
-  # and ./build_nomulus_for_env.sh
-  env: [ 'GRADLE_USER_HOME=/workspace/cloudbuild-caches' ]
-  args: ['./gradlew',
-         ':core:sT',
-         '--tests GetTldCommandTest.*',
-         '-PskipDockerIncompatibleTests=true',
-         '-PmavenUrl=gcs://domain-registry-maven-repository/maven',
-         '-PpluginsUrl=gcs://domain-registry-maven-repository/plugins'
-        ]
-- name: 'gcr.io/${PROJECT_ID}/builder:latest'
   entrypoint: /bin/bash
   args:
   - -c
   - |
+    ./gradlew :core:sT --tests GetTldCommandTest.* \
+        -PmavenUrl=gcs://domain-registry-maven-repository/maven \
+        -PpluginsUrl=gcs://domain-registry-maven-repository/plugins
     cat core/build/test-results/standardTest/TEST-google.registry.tools.GetTldCommandTest.xml
 # Build and package the deployment files for each environment, and the tool
 # binary and image.
