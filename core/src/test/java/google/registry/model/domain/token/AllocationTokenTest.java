@@ -524,7 +524,7 @@ public class AllocationTokenTest extends EntityTestCase {
   }
 
   @Test
-  void testBuild_registrationBehaviors() {
+  void testBuild_registrationBehaviors_bypassTldState() {
     createTld("tld");
     // BYPASS_TLD_STATE doesn't require a domain
     AllocationToken token =
@@ -533,22 +533,36 @@ public class AllocationTokenTest extends EntityTestCase {
             .setTokenType(SINGLE_USE)
             .setRegistrationBehavior(RegistrationBehavior.BYPASS_TLD_STATE)
             .build();
-    // ANCHOR_TENANT does
-    assertThat(
-            assertThrows(
-                IllegalArgumentException.class,
-                () ->
-                    token
-                        .asBuilder()
-                        .setRegistrationBehavior(RegistrationBehavior.ANCHOR_TENANT)
-                        .build()))
+  }
+
+  @Test
+  void testBuild_registrationBehaviors_anchorTenant() {
+    createTld("tld");
+    // ANCHOR_TENANT requires a domain
+    AllocationToken.Builder token =
+        new AllocationToken.Builder()
+            .setToken("abc")
+            .setTokenType(SINGLE_USE)
+            .setRegistrationBehavior(RegistrationBehavior.ANCHOR_TENANT);
+    assertThat(assertThrows(IllegalArgumentException.class, () -> token.build()))
         .hasMessageThat()
         .isEqualTo("ANCHOR_TENANT tokens must be tied to a domain");
-    token
-        .asBuilder()
-        .setRegistrationBehavior(RegistrationBehavior.ANCHOR_TENANT)
-        .setDomainName("example.tld")
-        .build();
+    token.setDomainName("example.tld").build();
+  }
+
+  @Test
+  void testBuild_registrationBehaviors_allowBsa() {
+    createTld("tld");
+    // ALLOW_BSA requires a domain
+    AllocationToken.Builder token =
+        new AllocationToken.Builder()
+            .setToken("abc")
+            .setTokenType(SINGLE_USE)
+            .setRegistrationBehavior(RegistrationBehavior.BYPASS_BSA);
+    assertThat(assertThrows(IllegalArgumentException.class, () -> token.build()))
+        .hasMessageThat()
+        .isEqualTo("ALLOW_BSA tokens must be tied to a domain");
+    token.setDomainName("example.tld").build();
   }
 
   private void assertBadInitialTransition(TokenStatus status) {

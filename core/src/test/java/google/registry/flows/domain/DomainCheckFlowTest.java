@@ -78,6 +78,7 @@ import google.registry.model.domain.Domain;
 import google.registry.model.domain.DomainHistory;
 import google.registry.model.domain.fee.FeeQueryCommandExtensionItem.CommandName;
 import google.registry.model.domain.token.AllocationToken;
+import google.registry.model.domain.token.AllocationToken.RegistrationBehavior;
 import google.registry.model.domain.token.AllocationToken.TokenStatus;
 import google.registry.model.eppcommon.StatusValue;
 import google.registry.model.reporting.HistoryEntry;
@@ -187,6 +188,42 @@ class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, Dom
         create(false, "allowedinsunrise.tld", "Reserved"),
         create(true, "example2.tld", null),
         create(true, "example3.tld", null));
+  }
+
+  @Test
+  void testSuccess_bsaBlocked_createAllowedWithToken() throws Exception {
+    persistBsaLabel("example1");
+    setEppInput("domain_check_allocationtoken.xml");
+    persistResource(
+        new AllocationToken.Builder()
+            .setToken("abc123")
+            .setTokenType(SINGLE_USE)
+            .setRegistrationBehavior(RegistrationBehavior.BYPASS_BSA)
+            .setDomainName("example1.tld")
+            .build());
+    doCheckTest(
+        create(true, "example1.tld", null),
+        create(false, "example2.tld", "Alloc token invalid for domain"),
+        create(false, "reserved.tld", "Reserved"),
+        create(false, "specificuse.tld", "Reserved; alloc. token required"));
+  }
+
+  @Test
+  void testSuccess_bsaBlocked_withIrrelevantToken() throws Exception {
+    persistBsaLabel("example1");
+    setEppInput("domain_check_allocationtoken.xml");
+    persistResource(
+        new AllocationToken.Builder()
+            .setToken("abc123")
+            .setTokenType(SINGLE_USE)
+            .setRegistrationBehavior(RegistrationBehavior.BYPASS_TLD_STATE)
+            .setDomainName("example1.tld")
+            .build());
+    doCheckTest(
+        create(false, "example1.tld", "Blocked by a GlobalBlock service"),
+        create(false, "example2.tld", "Alloc token invalid for domain"),
+        create(false, "reserved.tld", "Reserved"),
+        create(false, "specificuse.tld", "Reserved; alloc. token required"));
   }
 
   @Test

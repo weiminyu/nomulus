@@ -114,7 +114,9 @@ public class AllocationToken extends UpdateAutoTimestampEntity implements Builda
      */
     BYPASS_TLD_STATE,
     /** Bypasses most checks and creates the domain as an anchor tenant, with all that implies. */
-    ANCHOR_TENANT
+    ANCHOR_TENANT,
+    /** Bypass the BSA-block check during domain creation IF other checks have passed. */
+    BYPASS_BSA,
   }
 
   /** Type of the token that indicates how and where it should be used. */
@@ -381,6 +383,9 @@ public class AllocationToken extends UpdateAutoTimestampEntity implements Builda
       if (getInstance().registrationBehavior.equals(RegistrationBehavior.ANCHOR_TENANT)) {
         checkArgumentNotNull(
             getInstance().domainName, "ANCHOR_TENANT tokens must be tied to a domain");
+      }
+      if (getInstance().registrationBehavior.equals(RegistrationBehavior.BYPASS_BSA)) {
+        checkArgumentNotNull(getInstance().domainName, "ALLOW_BSA tokens must be tied to a domain");
       }
       if (getInstance().domainName != null) {
         try {

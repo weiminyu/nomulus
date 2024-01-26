@@ -2593,6 +2593,68 @@ class DomainCreateFlowTest extends ResourceFlowTestCase<DomainCreateFlow, Domain
   }
 
   @Test
+  void testSuccess_blockedByBsa_hasAllowBsaToken() throws Exception {
+    persistResource(
+        Tld.get("tld")
+            .asBuilder()
+            .setBsaEnrollStartTime(Optional.of(clock.nowUtc().minusSeconds(1)))
+            .build());
+    allocationToken =
+        persistResource(
+            new AllocationToken.Builder()
+                .setToken("abc123")
+                .setTokenType(SINGLE_USE)
+                .setRegistrationBehavior(RegistrationBehavior.BYPASS_BSA)
+                .setDomainName("example.tld")
+                .build());
+    persistBsaLabel("example");
+    persistContactsAndHosts();
+    setEppInput(
+        "domain_create_allocationtoken.xml",
+        ImmutableMap.of("DOMAIN", "example.tld", "YEARS", "2"));
+    runFlow();
+    assertSuccessfulCreate("tld", ImmutableSet.of(), allocationToken);
+  }
+
+  @Test
+  void testFailure_blockedByBsa_hasWrongToken() throws Exception {
+    persistResource(
+        Tld.get("tld")
+            .asBuilder()
+            .setBsaEnrollStartTime(Optional.of(clock.nowUtc().minusSeconds(1)))
+            .build());
+    allocationToken =
+        persistResource(
+            new AllocationToken.Builder()
+                .setToken("abc123")
+                .setTokenType(SINGLE_USE)
+                .setRegistrationBehavior(RegistrationBehavior.BYPASS_TLD_STATE)
+                .setDomainName("example.tld")
+                .build());
+    persistBsaLabel("example");
+    persistContactsAndHosts();
+    setEppInput(
+        "domain_create_allocationtoken.xml",
+        ImmutableMap.of("DOMAIN", "example.tld", "YEARS", "2"));
+    EppException thrown = assertThrows(DomainLabelBlockedByBsaException.class, this::runFlow);
+    assertAboutEppExceptions()
+        .that(thrown)
+        .marshalsToXml()
+        .and()
+        .hasMessage("Domain label is blocked by the Brand Safety Alliance");
+    byte[] responseXmlBytes =
+        marshal(
+            EppOutput.create(
+                new EppResponse.Builder()
+                    .setTrid(Trid.create(null, "server-trid"))
+                    .setResult(thrown.getResult())
+                    .build()),
+            ValidationMode.STRICT);
+    assertThat(new String(responseXmlBytes, StandardCharsets.UTF_8))
+        .isEqualTo(loadFile("domain_create_blocked_by_bsa.xml"));
+  }
+
+  @Test
   void testFailure_blockedByBsa() throws Exception {
     persistResource(
         Tld.get("tld")
