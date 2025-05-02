@@ -26,6 +26,8 @@ import google.registry.config.RegistryConfig.ConfigModule;
 import google.registry.dns.writer.VoidDnsWriterModule;
 import google.registry.dns.writer.clouddns.CloudDnsWriterModule;
 import google.registry.dns.writer.dnsupdate.DnsUpdateWriterModule;
+import google.registry.dns.writer.powerdns.PowerDnsConfigModule;
+import google.registry.dns.writer.powerdns.PowerDnsWriterModule;
 import google.registry.keyring.KeyringModule;
 import google.registry.keyring.api.KeyModule;
 import google.registry.model.ModelModule;
@@ -59,6 +61,8 @@ import javax.annotation.Nullable;
       CloudDnsWriterModule.class,
       CloudTasksUtilsModule.class,
       DnsUpdateWriterModule.class,
+      PowerDnsConfigModule.class,
+      PowerDnsWriterModule.class,
       GsonModule.class,
       KeyModule.class,
       KeyringModule.class,
