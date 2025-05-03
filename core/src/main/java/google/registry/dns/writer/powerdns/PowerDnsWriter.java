@@ -5,9 +5,19 @@ import google.registry.config.RegistryConfig.Config;
 import google.registry.dns.writer.DnsWriterZone;
 import google.registry.dns.writer.dnsupdate.DnsUpdateWriter;
 import google.registry.dns.writer.powerdns.client.PowerDNSClient;
+import google.registry.dns.writer.powerdns.client.model.RRSet;
+import google.registry.dns.writer.powerdns.client.model.RecordObject;
+import google.registry.dns.writer.powerdns.client.model.Zone;
 import google.registry.util.Clock;
 import jakarta.inject.Inject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import org.joda.time.Duration;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.Section;
+import org.xbill.DNS.Type;
+import org.xbill.DNS.Update;
 
 /**
  * A DnsWriter that sends updates to a PowerDNS backend server. Extends the peer DnsUpdateWriter
@@ -75,12 +85,95 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
   @Override
   protected void commitUnchecked() {
-    // TODO: Convert the parent class's update object (org.xbill.DNS.Update) into
-    // a PowerDNS Zone object (google.registry.dns.writer.powerdns.client.Zone)
+    try {
+      // persist staged changes to PowerDNS
+      logger.atInfo().log(
+          "Committing updates to PowerDNS for zone %s on server %s",
+          zoneName, powerDnsClient.getServerId());
 
-    // TODO: Call the PowerDNS API to commit the changes
-    logger.atWarning().log(
-        "PowerDnsWriter for server ID %s not yet implemented; ignoring zone %s",
-        powerDnsClient.getServerId(), zoneName);
+      // convert the update to a PowerDNS Zone object
+      Zone zone = convertUpdateToZone(update);
+
+      // call the PowerDNS API to commit the changes
+      powerDnsClient.patchZone(zone.getId(), zone);
+    } catch (IOException e) {
+      throw new RuntimeException("publishDomain failed for zone: " + zoneName, e);
+    }
+  }
+
+  /**
+   * Convert the parent class's update object (org.xbill.DNS.Update) into a PowerDNS Zone object
+   * (google.registry.dns.writer.powerdns.client.Zone)
+   *
+   * @param update the update object to convert
+   * @return the PowerDNS Zone object
+   * @throws IOException if the zone is not found
+   */
+  private Zone convertUpdateToZone(Update update) throws IOException {
+    // Iterate the update records and prepare them as PowerDNS RRSet objects, referencing the
+    // following source code to determine the usage of the org.xbill.DNS.Record object:
+    //
+    // https://www.javadoc.io/doc/dnsjava/dnsjava/3.2.1/org/xbill/DNS/Record.html
+    // https://github.com/dnsjava/dnsjava/blob/master/src/main/java/org/xbill/DNS/Record.java#L324-L350
+    ArrayList<RRSet> updatedRRSets = new ArrayList<RRSet>();
+    for (Record r : update.getSection(Section.UPDATE)) {
+      logger.atInfo().log("Processing zone update record: %s", r);
+
+      // create a PowerDNS RRSet object
+      RRSet record = new RRSet();
+      record.setName(r.getName().toString());
+      record.setTtl(r.getTTL());
+      record.setType(Type.string(r.getType()));
+
+      // add the record content
+      RecordObject recordObject = new RecordObject();
+      recordObject.setContent(r.rdataToString());
+      recordObject.setDisabled(false);
+      record.setRecords(new ArrayList<RecordObject>(Arrays.asList(recordObject)));
+
+      // TODO: need to figure out how to handle the change type of
+      // the record set. How to handle new and deleted records?
+      record.setChangeType(RRSet.ChangeType.REPLACE);
+
+      // add the RRSet to the list of updated RRSets
+      updatedRRSets.add(record);
+    }
+
+    // retrieve the zone by name and check that it exists
+    Zone zone = getZoneByName();
+
+    // prepare the zone for updates
+    Zone preparedZone = prepareZoneForUpdates(zone);
+    preparedZone.setRrsets(updatedRRSets);
+
+    // return the prepared zone
+    return preparedZone;
+  }
+
+  /**
+   * Prepare the zone for updates by clearing the RRSets and incrementing the serial number.
+   *
+   * @param zone the zone to prepare
+   * @return the prepared zone
+   */
+  private Zone prepareZoneForUpdates(Zone zone) {
+    zone.setRrsets(new ArrayList<RRSet>());
+    zone.setEditedSerial(zone.getSerial() + 1);
+    return zone;
+  }
+
+  /**
+   * Get the zone by name.
+   *
+   * @return the zone
+   * @throws IOException if the zone is not found
+   */
+  private Zone getZoneByName() throws IOException {
+    for (Zone zone : powerDnsClient.listZones()) {
+      if (zone.getName().equals(zoneName)) {
+        return zone;
+      }
+    }
+    throw new IOException("Zone not found: " + zoneName);
   }
 }

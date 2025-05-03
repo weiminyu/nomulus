@@ -11,7 +11,7 @@ public class RRSet {
   private String type;
 
   @JsonProperty("ttl")
-  private Integer ttl;
+  private long ttl;
 
   @JsonProperty("changetype")
   private ChangeType changetype;
@@ -38,11 +38,11 @@ public class RRSet {
     this.type = type;
   }
 
-  public Integer getTtl() {
+  public long getTtl() {
     return ttl;
   }
 
-  public void setTtl(Integer ttl) {
+  public void setTtl(long ttl) {
     this.ttl = ttl;
   }
 
@@ -50,7 +50,7 @@ public class RRSet {
     return changetype;
   }
 
-  public void setChangetype(ChangeType changetype) {
+  public void setChangeType(ChangeType changetype) {
     this.changetype = changetype;
   }
 
