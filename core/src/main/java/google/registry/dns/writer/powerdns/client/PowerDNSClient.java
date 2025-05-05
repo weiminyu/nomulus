@@ -1,6 +1,7 @@
 package google.registry.dns.writer.powerdns.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.flogger.FluentLogger;
 import google.registry.dns.writer.powerdns.client.model.Server;
 import google.registry.dns.writer.powerdns.client.model.Zone;
 import java.io.IOException;
@@ -14,6 +15,7 @@ import okhttp3.Response;
 
 public class PowerDNSClient {
   // static fields
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
   private final OkHttpClient httpClient;
   private final ObjectMapper objectMapper;
   private final String baseUrl;
@@ -42,11 +44,30 @@ public class PowerDNSClient {
     }
   }
 
+  private Response logAndExecuteRequest(Request request) throws IOException {
+    // log the request and create timestamp for the start time
+    logger.atInfo().log("Executing PowerDNS request: %s, body: %s", request, request.body());
+    long startTime = System.currentTimeMillis();
+
+    // execute the request and log the response
+    Response response = httpClient.newCall(request).execute();
+    logger.atInfo().log("PowerDNS response: %s", response);
+
+    // log the response time and response code
+    long endTime = System.currentTimeMillis();
+    logger.atInfo().log(
+        "Completed PowerDNS request in %d ms, success: %s, response code: %d",
+        endTime - startTime, response.isSuccessful(), response.code());
+
+    // return the response
+    return response;
+  }
+
   public List<Server> listServers() throws IOException {
     Request request =
         new Request.Builder().url(baseUrl + "/servers").header("X-API-Key", apiKey).get().build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = logAndExecuteRequest(request)) {
       if (!response.isSuccessful()) {
         throw new IOException("Failed to list servers: " + response);
       }
@@ -64,7 +85,7 @@ public class PowerDNSClient {
             .get()
             .build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = logAndExecuteRequest(request)) {
       if (!response.isSuccessful()) {
         throw new IOException("Failed to get server: " + response);
       }
@@ -88,7 +109,7 @@ public class PowerDNSClient {
             .get()
             .build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = logAndExecuteRequest(request)) {
       if (!response.isSuccessful()) {
         throw new IOException("Failed to list zones: " + response);
       }
@@ -106,7 +127,7 @@ public class PowerDNSClient {
             .get()
             .build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = logAndExecuteRequest(request)) {
       if (!response.isSuccessful()) {
         throw new IOException("Failed to get zone: " + response);
       }
@@ -125,7 +146,7 @@ public class PowerDNSClient {
             .post(body)
             .build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = logAndExecuteRequest(request)) {
       if (!response.isSuccessful()) {
         throw new IOException("Failed to create zone: " + response);
       }
@@ -141,25 +162,25 @@ public class PowerDNSClient {
             .delete()
             .build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = logAndExecuteRequest(request)) {
       if (!response.isSuccessful()) {
         throw new IOException("Failed to delete zone: " + response);
       }
     }
   }
 
-  public void patchZone(String zoneId, Zone zone) throws IOException {
+  public void patchZone(Zone zone) throws IOException {
     String json = objectMapper.writeValueAsString(zone);
     RequestBody body = RequestBody.create(json, MediaType.parse("application/json"));
 
     Request request =
         new Request.Builder()
-            .url(baseUrl + "/servers/" + serverId + "/zones/" + zoneId)
+            .url(baseUrl + "/servers/" + serverId + "/zones/" + zone.getId())
             .header("X-API-Key", apiKey)
             .patch(body)
             .build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = logAndExecuteRequest(request)) {
       if (!response.isSuccessful()) {
         throw new IOException("Failed to patch zone: " + response);
       }
@@ -174,7 +195,7 @@ public class PowerDNSClient {
             .put(RequestBody.create("", MediaType.parse("application/json")))
             .build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = logAndExecuteRequest(request)) {
       if (!response.isSuccessful()) {
         throw new IOException("Failed to notify zone: " + response);
       }

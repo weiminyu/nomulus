@@ -98,7 +98,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       Zone zone = convertUpdateToZone(update);
 
       // call the PowerDNS API to commit the changes
-      powerDnsClient.patchZone(zone.getId(), zone);
+      powerDnsClient.patchZone(zone);
     } catch (IOException e) {
       throw new RuntimeException("publishDomain failed for TLD: " + tldZoneName, e);
     }
