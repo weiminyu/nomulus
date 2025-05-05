@@ -46,7 +46,7 @@ public class RRSet {
     this.ttl = ttl;
   }
 
-  public ChangeType getChangetype() {
+  public ChangeType getChangeType() {
     return changetype;
   }
 

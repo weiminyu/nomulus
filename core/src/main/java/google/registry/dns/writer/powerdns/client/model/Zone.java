@@ -257,6 +257,16 @@ public class Zone {
     this.slaveTsigKeyIds = slaveTsigKeyIds;
   }
 
+  @Override
+  public String toString() {
+    long deletedCount =
+        rrsets.stream().filter(rrset -> rrset.getChangeType() == RRSet.ChangeType.DELETE).count();
+    long updatedCount =
+        rrsets.stream().filter(rrset -> rrset.getChangeType() == RRSet.ChangeType.REPLACE).count();
+    return String.format(
+        "{id:%s,name:%s,deleted:%d,updated:%d}", id, name, deletedCount, updatedCount);
+  }
+
   public enum ZoneKind {
     Native,
     Master,

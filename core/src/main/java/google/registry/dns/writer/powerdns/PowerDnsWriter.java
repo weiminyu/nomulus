@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.joda.time.Duration;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
@@ -27,13 +28,14 @@ import org.xbill.DNS.Update;
 public class PowerDnsWriter extends DnsUpdateWriter {
   public static final String NAME = "PowerDnsWriter";
 
+  private final String tldZoneName;
   private final PowerDNSClient powerDnsClient;
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
   /**
    * Class constructor.
    *
-   * @param zoneName the name of the zone to write to
+   * @param tldZoneName the name of the TLD associated with the update
    * @param dnsDefaultATtl the default TTL for A records
    * @param dnsDefaultNsTtl the default TTL for NS records
    * @param dnsDefaultDsTtl the default TTL for DS records
@@ -43,7 +45,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    */
   @Inject
   public PowerDnsWriter(
-      @DnsWriterZone String zoneName,
+      @DnsWriterZone String tldZoneName,
       @Config("dnsDefaultATtl") Duration dnsDefaultATtl,
       @Config("dnsDefaultNsTtl") Duration dnsDefaultNsTtl,
       @Config("dnsDefaultDsTtl") Duration dnsDefaultDsTtl,
@@ -53,9 +55,10 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
     // call the DnsUpdateWriter constructor, omitting the transport parameter
     // since we don't need it for PowerDNS
-    super(zoneName, dnsDefaultATtl, dnsDefaultNsTtl, dnsDefaultDsTtl, null, clock);
+    super(tldZoneName, dnsDefaultATtl, dnsDefaultNsTtl, dnsDefaultDsTtl, null, clock);
 
     // Initialize the PowerDNS client
+    this.tldZoneName = tldZoneName;
     this.powerDnsClient = new PowerDNSClient(powerDnsHost, powerDnsApiKey);
   }
 
@@ -88,8 +91,8 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     try {
       // persist staged changes to PowerDNS
       logger.atInfo().log(
-          "Committing updates to PowerDNS for zone %s on server %s",
-          zoneName, powerDnsClient.getServerId());
+          "Committing updates to PowerDNS for TLD %s on server %s",
+          tldZoneName, powerDnsClient.getServerId());
 
       // convert the update to a PowerDNS Zone object
       Zone zone = convertUpdateToZone(update);
@@ -97,7 +100,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       // call the PowerDNS API to commit the changes
       powerDnsClient.patchZone(zone.getId(), zone);
     } catch (IOException e) {
-      throw new RuntimeException("publishDomain failed for zone: " + zoneName, e);
+      throw new RuntimeException("publishDomain failed for TLD: " + tldZoneName, e);
     }
   }
 
@@ -115,65 +118,92 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     //
     // https://www.javadoc.io/doc/dnsjava/dnsjava/3.2.1/org/xbill/DNS/Record.html
     // https://github.com/dnsjava/dnsjava/blob/master/src/main/java/org/xbill/DNS/Record.java#L324-L350
-    ArrayList<RRSet> updatedRRSets = new ArrayList<RRSet>();
+    ArrayList<RRSet> allRRSets = new ArrayList<RRSet>();
+    ArrayList<RRSet> filteredRRSets = new ArrayList<RRSet>();
     for (Record r : update.getSection(Section.UPDATE)) {
-      logger.atInfo().log("Processing zone update record: %s", r);
+      logger.atInfo().log("Processing TLD zone %s update record: %s", tldZoneName, r);
 
-      // create a PowerDNS RRSet object
+      // create the base PowerDNS RRSet object
       RRSet record = new RRSet();
       record.setName(r.getName().toString());
       record.setTtl(r.getTTL());
       record.setType(Type.string(r.getType()));
 
-      // add the record content
-      RecordObject recordObject = new RecordObject();
-      recordObject.setContent(r.rdataToString());
-      recordObject.setDisabled(false);
-      record.setRecords(new ArrayList<RecordObject>(Arrays.asList(recordObject)));
+      // determine if this is a record update or a record deletion
+      Boolean isDelete = r.getTTL() == 0 && r.rdataToString().equals("");
 
-      // TODO: need to figure out how to handle the change type of
-      // the record set. How to handle new and deleted records?
-      record.setChangeType(RRSet.ChangeType.REPLACE);
+      // handle record updates and deletions
+      if (isDelete) {
+        // indicate that this is a record deletion
+        record.setChangeType(RRSet.ChangeType.DELETE);
+      } else {
+        // add the record content
+        RecordObject recordObject = new RecordObject();
+        recordObject.setContent(r.rdataToString());
+        recordObject.setDisabled(false);
+        record.setRecords(new ArrayList<RecordObject>(Arrays.asList(recordObject)));
 
-      // add the RRSet to the list of updated RRSets
-      updatedRRSets.add(record);
+        // indicate that this is a record update
+        record.setChangeType(RRSet.ChangeType.REPLACE);
+      }
+
+      // Add record to lists of all and filtered RRSets. The first list is used to track all RRSets
+      // for the TLD zone, while the second list is used to track the RRSets that will be sent to
+      // the PowerDNS API. By default, there is a deletion record created by the parent class for
+      // every domain name and record type combination. However, PowerDNS only expects to see a
+      // deletion record if the record should be removed from the TLD zone.
+      allRRSets.add(record);
+      filteredRRSets.add(record);
     }
 
-    // retrieve the zone by name and check that it exists
-    Zone zone = getZoneByName();
+    // remove deletion records for a domain if there is a subsequent update enqueued
+    // for the same domain name and record type combination
+    allRRSets.stream()
+        .filter(r -> r.getChangeType() == RRSet.ChangeType.REPLACE)
+        .forEach(
+            r -> {
+              filteredRRSets.removeIf(
+                  fr ->
+                      fr.getName().equals(r.getName())
+                          && fr.getType().equals(r.getType())
+                          && fr.getChangeType() == RRSet.ChangeType.DELETE);
+            });
 
-    // prepare the zone for updates
-    Zone preparedZone = prepareZoneForUpdates(zone);
-    preparedZone.setRrsets(updatedRRSets);
+    // retrieve the TLD zone by name and prepare it for update using the filtered set of
+    // RRSet records that will be sent to the PowerDNS API
+    Zone tldZone = getTldZoneByName();
+    Zone preparedTldZone = prepareTldZoneForUpdates(tldZone, filteredRRSets);
 
-    // return the prepared zone
-    return preparedZone;
+    // return the prepared TLD zone
+    logger.atInfo().log("Prepared TLD zone %s for PowerDNS: %s", tldZoneName, preparedTldZone);
+    return preparedTldZone;
   }
 
   /**
-   * Prepare the zone for updates by clearing the RRSets and incrementing the serial number.
+   * Prepare the TLD zone for updates by clearing the RRSets and incrementing the serial number.
    *
-   * @param zone the zone to prepare
-   * @return the prepared zone
+   * @param tldZone the TLD zone to prepare
+   * @param records the set of RRSet records that will be sent to the PowerDNS API
+   * @return the prepared TLD zone
    */
-  private Zone prepareZoneForUpdates(Zone zone) {
-    zone.setRrsets(new ArrayList<RRSet>());
-    zone.setEditedSerial(zone.getSerial() + 1);
-    return zone;
+  private Zone prepareTldZoneForUpdates(Zone tldZone, List<RRSet> records) {
+    tldZone.setRrsets(records);
+    tldZone.setEditedSerial(tldZone.getSerial() + 1);
+    return tldZone;
   }
 
   /**
-   * Get the zone by name.
+   * Get the TLD zone by name.
    *
-   * @return the zone
-   * @throws IOException if the zone is not found
+   * @return the TLD zone
+   * @throws IOException if the TLD zone is not found
    */
-  private Zone getZoneByName() throws IOException {
+  private Zone getTldZoneByName() throws IOException {
     for (Zone zone : powerDnsClient.listZones()) {
-      if (zone.getName().equals(zoneName)) {
+      if (zone.getName().equals(tldZoneName)) {
         return zone;
       }
     }
-    throw new IOException("Zone not found: " + zoneName);
+    throw new IOException("TLD zone not found: " + tldZoneName);
   }
 }
