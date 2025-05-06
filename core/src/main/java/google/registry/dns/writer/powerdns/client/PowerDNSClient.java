@@ -54,7 +54,10 @@ public class PowerDNSClient {
       }
       this.serverId = servers.get(0).getId();
     } catch (IOException e) {
-      this.serverId = "unknown-server-id";
+      // TODO: throw this exception once PowerDNS is available, but for now we are just
+      // going to return a dummy ID
+      logger.atWarning().log("Failed to get server ID: %s", e);
+      this.serverId = "dummy-server-id";
     }
   }
 

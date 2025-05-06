@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import org.joda.time.Duration;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
@@ -45,6 +46,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   private final String tldZoneName;
   private final PowerDNSClient powerDnsClient;
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+  private static final ConcurrentHashMap<String, String> zoneIdCache = new ConcurrentHashMap<>();
 
   /**
    * Class constructor.
@@ -183,10 +185,8 @@ public class PowerDnsWriter extends DnsUpdateWriter {
                           && fr.getChangeType() == RRSet.ChangeType.DELETE);
             });
 
-    // retrieve the TLD zone by name and prepare it for update using the filtered set of
-    // RRSet records that will be sent to the PowerDNS API
-    Zone tldZone = getTldZoneByName();
-    Zone preparedTldZone = prepareTldZoneForUpdates(tldZone, filteredRRSets);
+    // prepare a PowerDNS zone object containing the TLD record updates
+    Zone preparedTldZone = getTldZoneForUpdate(filteredRRSets);
 
     // return the prepared TLD zone
     logger.atInfo().log("Prepared TLD zone %s for PowerDNS: %s", tldZoneName, preparedTldZone);
@@ -196,13 +196,13 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   /**
    * Prepare the TLD zone for updates by clearing the RRSets and incrementing the serial number.
    *
-   * @param tldZone the TLD zone to prepare
    * @param records the set of RRSet records that will be sent to the PowerDNS API
    * @return the prepared TLD zone
    */
-  private Zone prepareTldZoneForUpdates(Zone tldZone, List<RRSet> records) {
+  private Zone getTldZoneForUpdate(List<RRSet> records) {
+    Zone tldZone = new Zone();
+    tldZone.setId(getTldZoneId());
     tldZone.setRrsets(records);
-    tldZone.setEditedSerial(tldZone.getSerial() + 1);
     return tldZone;
   }
 
@@ -219,5 +219,26 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       }
     }
     throw new IOException("TLD zone not found: " + tldZoneName);
+  }
+
+  /**
+   * Get the TLD zone ID for the given TLD zone name from the cache, or compute it if it is not
+   * present in the cache.
+   *
+   * @return the ID of the TLD zone
+   */
+  private String getTldZoneId() {
+    return zoneIdCache.computeIfAbsent(
+        tldZoneName,
+        key -> {
+          try {
+            return getTldZoneByName().getId();
+          } catch (IOException e) {
+            // TODO: throw this exception once PowerDNS is available, but for now we are just
+            // going to return a dummy ID
+            logger.atWarning().log("Failed to get TLD zone ID for %s: %s", tldZoneName, e);
+            return String.format("dummy-zone-id-%s", tldZoneName);
+          }
+        });
   }
 }
