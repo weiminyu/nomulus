@@ -27,6 +27,18 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * A client for the PowerDNS API.
+ *
+ * <p>This class is used to interact with the PowerDNS API. It provides methods to list servers, get
+ * a server, list zones, get a zone, create a zone, delete a zone, and patch a zone. Based on the <a
+ * href="https://raw.githubusercontent.com/PowerDNS/pdns/master/docs/http-api/swagger/authoritative-api-swagger.yaml">PowerDNS
+ * API spec</a>.
+ *
+ * <p>The server ID is retrieved from the server list and is used to make all subsequent requests.
+ *
+ * <p>The API key is retrieved from the environment variable {@code POWERDNS_API_KEY}.
+ */
 public class PowerDNSClient {
   // static fields
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
