@@ -51,9 +51,13 @@ public class PowerDNSClient {
   private String serverId;
 
   public PowerDNSClient(String baseUrl, String apiKey) {
-    // initialize the base URL, API key, and HTTP client
+    // initialize the base URL and API key. The base URL should be of the form
+    // https://<server-host-name>/api/v1. An example of a valid API call to the
+    // localhost to list servers is http://localhost:8081/api/v1/servers
     this.baseUrl = baseUrl;
     this.apiKey = apiKey;
+
+    // initialize the base URL, API key, and HTTP client
     this.httpClient = new OkHttpClient();
     this.objectMapper = new ObjectMapper();
 

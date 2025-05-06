@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import org.joda.time.Duration;
 import org.xbill.DNS.Record;
@@ -44,6 +45,8 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   public static final String NAME = "PowerDnsWriter";
 
   private final String tldZoneName;
+  private final String powerDnsDefaultSoaMName;
+  private final String powerDnsDefaultSoaRName;
   private final PowerDNSClient powerDnsClient;
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
   private static final ConcurrentHashMap<String, String> zoneIdCache = new ConcurrentHashMap<>();
@@ -67,6 +70,8 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       @Config("dnsDefaultDsTtl") Duration dnsDefaultDsTtl,
       @Config("powerDnsHost") String powerDnsHost,
       @Config("powerDnsApiKey") String powerDnsApiKey,
+      @Config("powerDnsDefaultSoaMName") String powerDnsDefaultSoaMName,
+      @Config("powerDnsDefaultSoaRName") String powerDnsDefaultSoaRName,
       Clock clock) {
 
     // call the DnsUpdateWriter constructor, omitting the transport parameter
@@ -74,7 +79,9 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     super(tldZoneName, dnsDefaultATtl, dnsDefaultNsTtl, dnsDefaultDsTtl, null, clock);
 
     // Initialize the PowerDNS client
-    this.tldZoneName = tldZoneName;
+    this.tldZoneName = getCanonicalHostName(tldZoneName);
+    this.powerDnsDefaultSoaMName = powerDnsDefaultSoaMName;
+    this.powerDnsDefaultSoaRName = powerDnsDefaultSoaRName;
     this.powerDnsClient = new PowerDNSClient(powerDnsHost, powerDnsApiKey);
   }
 
@@ -86,8 +93,9 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    */
   @Override
   public void publishDomain(String domainName) {
-    logger.atInfo().log("Staging domain %s for PowerDNS", domainName);
-    super.publishDomain(domainName);
+    String normalizedDomainName = getCanonicalHostName(domainName);
+    logger.atInfo().log("Staging domain %s for PowerDNS", normalizedDomainName);
+    super.publishDomain(normalizedDomainName);
   }
 
   /**
@@ -98,8 +106,9 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    */
   @Override
   public void publishHost(String hostName) {
-    logger.atInfo().log("Staging host %s for PowerDNS", hostName);
-    super.publishHost(hostName);
+    String normalizedHostName = getCanonicalHostName(hostName);
+    logger.atInfo().log("Staging host %s for PowerDNS", normalizedHostName);
+    super.publishHost(normalizedHostName);
   }
 
   @Override
@@ -115,7 +124,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
       // call the PowerDNS API to commit the changes
       powerDnsClient.patchZone(zone);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new RuntimeException("publishDomain failed for TLD: " + tldZoneName, e);
     }
   }
@@ -194,6 +203,20 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   }
 
   /**
+   * Returns the presentation format ending in a dot used for an given hostname.
+   *
+   * @param hostName the fully qualified hostname
+   */
+  private String getCanonicalHostName(String hostName) {
+    String normalizedHostName = hostName.endsWith(".") ? hostName : hostName + '.';
+    String canonicalHostName =
+        tldZoneName == null || normalizedHostName.endsWith(tldZoneName)
+            ? normalizedHostName
+            : normalizedHostName + tldZoneName;
+    return canonicalHostName.toLowerCase(Locale.US);
+  }
+
+  /**
    * Prepare the TLD zone for updates by clearing the RRSets and incrementing the serial number.
    *
    * @param records the set of RRSet records that will be sent to the PowerDNS API
@@ -213,11 +236,50 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    * @throws IOException if the TLD zone is not found
    */
   private Zone getTldZoneByName() throws IOException {
+    // retrieve an existing TLD zone by name
     for (Zone zone : powerDnsClient.listZones()) {
       if (zone.getName().equals(tldZoneName)) {
         return zone;
       }
     }
+
+    // attempt to create a new TLD zone
+    try {
+      // base TLD zone object
+      logger.atInfo().log("Creating new TLD zone %s", tldZoneName);
+      Zone newTldZone = new Zone();
+      newTldZone.setName(tldZoneName);
+      newTldZone.setKind(Zone.ZoneKind.Native);
+
+      // create an initial SOA record, which may be modified later by an administrator
+      // or an automated onboarding process
+      RRSet soaRecord = new RRSet();
+      soaRecord.setChangeType(RRSet.ChangeType.REPLACE);
+      soaRecord.setName(tldZoneName);
+      soaRecord.setTtl(3600);
+      soaRecord.setType("SOA");
+
+      // add content to the SOA record content from default configuration
+      RecordObject soaRecordContent = new RecordObject();
+      soaRecordContent.setContent(
+          String.format(
+              "%s %s 1 900 1800 6048000 3600", powerDnsDefaultSoaMName, powerDnsDefaultSoaRName));
+      soaRecordContent.setDisabled(false);
+      soaRecord.setRecords(new ArrayList<RecordObject>(Arrays.asList(soaRecordContent)));
+
+      // add the SOA record to the new TLD zone
+      newTldZone.setRrsets(new ArrayList<RRSet>(Arrays.asList(soaRecord)));
+
+      // create the TLD zone and log the result
+      Zone createdTldZone = powerDnsClient.createZone(newTldZone);
+      logger.atInfo().log("Successfully created TLD zone %s", tldZoneName);
+      return createdTldZone;
+    } catch (Exception e) {
+      // log the error and continue
+      logger.atWarning().log("Failed to create TLD zone %s: %s", tldZoneName, e);
+    }
+
+    // otherwise, throw an exception
     throw new IOException("TLD zone not found: " + tldZoneName);
   }
 
@@ -233,7 +295,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
         key -> {
           try {
             return getTldZoneByName().getId();
-          } catch (IOException e) {
+          } catch (Exception e) {
             // TODO: throw this exception once PowerDNS is available, but for now we are just
             // going to return a dummy ID
             logger.atWarning().log("Failed to get TLD zone ID for %s: %s", tldZoneName, e);

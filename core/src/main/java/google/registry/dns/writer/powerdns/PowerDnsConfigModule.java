@@ -18,7 +18,7 @@ import dagger.Module;
 import dagger.Provides;
 import google.registry.config.RegistryConfig.Config;
 
-/** Dagger module that provides DNS configuration settings. */
+/** Dagger module that provides PowerDNS configuration settings. */
 @Module
 public class PowerDnsConfigModule {
 
@@ -34,5 +34,19 @@ public class PowerDnsConfigModule {
   @Config("powerDnsApiKey")
   public static String providePowerDnsApiKey() {
     return "dummy-api-key";
+  }
+
+  /** Default SOA MNAME for the TLD zone. */
+  @Provides
+  @Config("powerDnsDefaultSoaMName")
+  public static String providePowerDnsDefaultSoaMName() {
+    return "a.gtld-servers.net.";
+  }
+
+  /** Default SOA RNAME for the TLD zone. */
+  @Provides
+  @Config("powerDnsDefaultSoaRName")
+  public static String providePowerDnsDefaultSoaRName() {
+    return "nstld.verisign-grs.com.";
   }
 }
