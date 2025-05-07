@@ -243,13 +243,15 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       }
     }
 
-    // attempt to create a new TLD zone
+    // Attempt to create a new TLD zone if it does not exist. The zone will have a
+    // basic SOA record, but will not have DNSSEC enabled. Adding DNSSEC is a follow
+    // up step using pdnsutil command line tool.
     try {
       // base TLD zone object
       logger.atInfo().log("Creating new TLD zone %s", tldZoneName);
       Zone newTldZone = new Zone();
       newTldZone.setName(tldZoneName);
-      newTldZone.setKind(Zone.ZoneKind.Native);
+      newTldZone.setKind(Zone.ZoneKind.Master);
 
       // create an initial SOA record, which may be modified later by an administrator
       // or an automated onboarding process
