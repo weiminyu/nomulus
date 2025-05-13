@@ -49,7 +49,10 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   private final String powerDnsDefaultSoaMName;
   private final String powerDnsDefaultSoaRName;
   private final PowerDNSClient powerDnsClient;
+
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+  private static final ArrayList<String> supportedRecordTypes =
+      new ArrayList<>(Arrays.asList("DS", "NS"));
   private static final ConcurrentHashMap<String, String> zoneIdCache = new ConcurrentHashMap<>();
 
   /**
@@ -141,30 +144,63 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     // Convert the Update object to a Zone object
     logger.atInfo().log("Converting PowerDNS TLD zone %s update: %s", tldZoneName, update);
 
+    // generate a list of records to process
+    List<Record> updateRecordsToProcess = new ArrayList<>();
+    for (Record r : update.getSection(Section.UPDATE)) {
+      // determine if any updates exist for this domain
+      Boolean isAnyDomainUpdate =
+          update.getSection(Section.UPDATE).stream()
+              .anyMatch(record -> record.getName().equals(r.getName()) && !isDeleteRecord(record));
+
+      // special processing for ANY record deletions
+      if (isDeleteRecord(r) && Type.string(r.getType()).equals("ANY")) {
+        // only add a deletion record if there are no other updates for this domain
+        if (!isAnyDomainUpdate) {
+          // add a delete record for each of the supported record types
+          for (String recordType : supportedRecordTypes) {
+            Record deleteRecord =
+                Record.newRecord(r.getName(), Type.value(recordType), r.getDClass(), r.getTTL());
+            updateRecordsToProcess.add(deleteRecord);
+          }
+        }
+      } else {
+        // add the record to the list of records to process
+        updateRecordsToProcess.add(r);
+      }
+    }
+
     // Iterate the update records and prepare them as PowerDNS RRSet objects, referencing the
     // following source code to determine the usage of the org.xbill.DNS.Record object:
     //
     // https://www.javadoc.io/doc/dnsjava/dnsjava/3.2.1/org/xbill/DNS/Record.html
     // https://github.com/dnsjava/dnsjava/blob/master/src/main/java/org/xbill/DNS/Record.java#L324-L350
     ArrayList<RRSet> allRRSets = new ArrayList<RRSet>();
-    for (Record r : update.getSection(Section.UPDATE)) {
-      logger.atInfo().log("Processing PowerDNS TLD zone %s update record: %s", tldZoneName, r);
+    for (Record r : updateRecordsToProcess) {
+      // skip unsupported record types
+      if (!supportedRecordTypes.contains(Type.string(r.getType()))) {
+        logger.atInfo().log(
+            "Skipping unsupported PowerDNS update record type: %s", Type.string(r.getType()));
+        continue;
+      }
+
+      // determine if this is a record update or a record deletion
+      Boolean isDelete = isDeleteRecord(r);
 
       // find an existing RRSET matching record name and type, or create a new one
       // if an existing RRSET is not found
+      logger.atInfo().log("Processing PowerDNS TLD zone %s update record: %s", tldZoneName, r);
       RRSet rrSet =
           allRRSets.stream()
               .filter(
                   rrset ->
                       rrset.getName().equals(r.getName().toString())
-                          && rrset.getType().equals(Type.string(r.getType())))
+                          && rrset.getType().equals(Type.string(r.getType()))
+                          && ((isDelete && rrset.getChangeType() == RRSet.ChangeType.DELETE)
+                              || (!isDelete && rrset.getChangeType() == RRSet.ChangeType.REPLACE)))
               .findFirst()
               .orElse(
                   appendRRSet(
                       allRRSets, r.getName().toString(), Type.string(r.getType()), r.getTTL()));
-
-      // determine if this is a record update or a record deletion
-      Boolean isDelete = r.getTTL() == 0 && r.rdataToString().equals("");
 
       // handle record updates and deletions
       if (isDelete) {
@@ -335,5 +371,15 @@ public class PowerDnsWriter extends DnsUpdateWriter {
             return tldZoneName;
           }
         });
+  }
+
+  /**
+   * Determine if a record is a delete record.
+   *
+   * @param r the record to check
+   * @return true if the record is a delete record, false otherwise
+   */
+  private Boolean isDeleteRecord(Record r) {
+    return r.getTTL() == 0 && r.rdataToString().equals("");
   }
 }
