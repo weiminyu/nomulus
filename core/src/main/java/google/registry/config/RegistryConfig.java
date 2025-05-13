@@ -130,6 +130,46 @@ public final class RegistryConfig {
       return config.gcpProject.locationId;
     }
 
+    /** Base URL of the PowerDNS server. */
+    @Provides
+    @Config("powerDnsBaseUrl")
+    public static String providePowerDnsBaseUrl(RegistryConfigSettings config) {
+      if (config.powerDns != null && config.powerDns.baseUrl != null) {
+        return config.powerDns.baseUrl;
+      }
+      return "http://localhost:8081/api/v1";
+    }
+
+    /** API key for the PowerDNS server. */
+    @Provides
+    @Config("powerDnsApiKey")
+    public static String providePowerDnsApiKey(RegistryConfigSettings config) {
+      if (config.powerDns != null && config.powerDns.apiKey != null) {
+        return config.powerDns.apiKey;
+      }
+      return "dummy-api-key";
+    }
+
+    /** Default SOA MNAME for the TLD zone. */
+    @Provides
+    @Config("powerDnsDefaultSoaMName")
+    public static String providePowerDnsDefaultSoaMName(RegistryConfigSettings config) {
+      if (config.powerDns != null && config.powerDns.defaultSoaMName != null) {
+        return config.powerDns.defaultSoaMName;
+      }
+      return "a.gtld-servers.net.";
+    }
+
+    /** Default SOA RNAME for the TLD zone. */
+    @Provides
+    @Config("powerDnsDefaultSoaRName")
+    public static String providePowerDnsDefaultSoaRName(RegistryConfigSettings config) {
+      if (config.powerDns != null && config.powerDns.defaultSoaRName != null) {
+        return config.powerDns.defaultSoaRName;
+      }
+      return "nstld.verisign-grs.com.";
+    }
+
     /**
      * The product name of this specific registry. Used throughout the registrar console.
      *

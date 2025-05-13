@@ -26,6 +26,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.Buffer;
 
 /**
  * A client for the PowerDNS API.
@@ -40,15 +41,15 @@ import okhttp3.Response;
  * <p>The API key is retrieved from the environment variable {@code POWERDNS_API_KEY}.
  */
 public class PowerDNSClient {
-  // static fields
-  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+  // class variables
   private final OkHttpClient httpClient;
   private final ObjectMapper objectMapper;
   private final String baseUrl;
   private final String apiKey;
 
-  // dynamic fields
-  private String serverId;
+  // static fields
+  private static final FluentLogger logger = FluentLogger.forEnclosingClass();
+  private static String serverId;
 
   public PowerDNSClient(String baseUrl, String apiKey) {
     // initialize the base URL and API key. The base URL should be of the form
@@ -61,26 +62,46 @@ public class PowerDNSClient {
     this.httpClient = new OkHttpClient();
     this.objectMapper = new ObjectMapper();
 
-    // initialize the Server ID by querying the server list and choosing
-    // the first entry
-    try {
-      List<Server> servers = listServers();
-      if (servers.isEmpty()) {
-        throw new IOException("No servers found");
+    // initialize the Server ID
+    initializeServerId();
+  }
+
+  private synchronized void initializeServerId() {
+    if (serverId == null) {
+      try {
+        // list the servers and throw an exception if no servers are found
+        List<Server> servers = listServers();
+        if (servers.isEmpty()) {
+          throw new IOException("No servers found");
+        }
+
+        // set the server ID to the first server in the list
+        serverId = servers.get(0).getId();
+      } catch (Exception e) {
+        logger.atWarning().withCause(e).log("Failed to get PowerDNS server ID");
       }
-      this.serverId = servers.get(0).getId();
-    } catch (IOException e) {
-      // TODO: throw this exception once PowerDNS is available, but for now we are just
-      // going to return a dummy ID
-      logger.atWarning().log("Failed to get server ID: %s", e);
-      this.serverId = "dummy-server-id";
+    }
+  }
+
+  private String bodyToString(final RequestBody requestBody) throws IOException {
+    try (Buffer buffer = new Buffer()) {
+      if (requestBody != null) requestBody.writeTo(buffer);
+      else return "";
+      return buffer.readUtf8();
     }
   }
 
   private Response logAndExecuteRequest(Request request) throws IOException {
     // log the request and create timestamp for the start time
-    logger.atInfo().log("Executing PowerDNS request: %s, body: %s", request, request.body());
+    logger.atInfo().log(
+        "Executing PowerDNS request: %s, body: %s",
+        request, request.body() != null ? bodyToString(request.body()) : null);
     long startTime = System.currentTimeMillis();
+
+    // validate the server ID is initialized
+    if (request.url().toString().contains("/servers/null")) {
+      throw new IOException("Server ID is not initialized");
+    }
 
     // execute the request and log the response
     Response response = httpClient.newCall(request).execute();
@@ -124,14 +145,6 @@ public class PowerDNSClient {
       }
       return objectMapper.readValue(Objects.requireNonNull(response.body()).string(), Server.class);
     }
-  }
-
-  public String getServerId() {
-    return serverId;
-  }
-
-  public void setServerId(String serverId) {
-    this.serverId = serverId;
   }
 
   public List<Zone> listZones() throws IOException {

@@ -14,9 +14,11 @@
 
 package google.registry.dns.writer.powerdns.client.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Zone {
   @JsonProperty("id")
   private String id;
@@ -278,7 +280,8 @@ public class Zone {
     long updatedCount =
         rrsets.stream().filter(rrset -> rrset.getChangeType() == RRSet.ChangeType.REPLACE).count();
     return String.format(
-        "{id:%s,name:%s,deleted:%d,updated:%d}", id, name, deletedCount, updatedCount);
+        "{id:%s,name:%s,deleted:%d,updated:%d,total:%d}",
+        id, name, deletedCount, updatedCount, rrsets.size());
   }
 
   public enum ZoneKind {

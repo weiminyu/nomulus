@@ -42,7 +42,6 @@ import google.registry.dns.writer.VoidDnsWriterModule;
 import google.registry.dns.writer.clouddns.CloudDnsWriterModule;
 import google.registry.dns.writer.dnsupdate.DnsUpdateConfigModule;
 import google.registry.dns.writer.dnsupdate.DnsUpdateWriterModule;
-import google.registry.dns.writer.powerdns.PowerDnsConfigModule;
 import google.registry.dns.writer.powerdns.PowerDnsWriterModule;
 import google.registry.export.ExportDomainListsAction;
 import google.registry.export.ExportPremiumTermsAction;
@@ -150,7 +149,6 @@ import google.registry.whois.WhoisModule;
       DnsModule.class,
       DnsUpdateConfigModule.class,
       DnsUpdateWriterModule.class,
-      PowerDnsConfigModule.class,
       PowerDnsWriterModule.class,
       EppTlsModule.class,
       EppToolModule.class,

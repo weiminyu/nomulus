@@ -58,7 +58,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    * @param dnsDefaultATtl the default TTL for A records
    * @param dnsDefaultNsTtl the default TTL for NS records
    * @param dnsDefaultDsTtl the default TTL for DS records
-   * @param powerDnsHost the host of the PowerDNS server
+   * @param powerDnsBaseUrl the base URL of the PowerDNS server
    * @param powerDnsApiKey the API key for the PowerDNS server
    * @param clock the clock to use for the PowerDNS writer
    */
@@ -68,7 +68,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       @Config("dnsDefaultATtl") Duration dnsDefaultATtl,
       @Config("dnsDefaultNsTtl") Duration dnsDefaultNsTtl,
       @Config("dnsDefaultDsTtl") Duration dnsDefaultDsTtl,
-      @Config("powerDnsHost") String powerDnsHost,
+      @Config("powerDnsBaseUrl") String powerDnsBaseUrl,
       @Config("powerDnsApiKey") String powerDnsApiKey,
       @Config("powerDnsDefaultSoaMName") String powerDnsDefaultSoaMName,
       @Config("powerDnsDefaultSoaRName") String powerDnsDefaultSoaRName,
@@ -82,7 +82,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     this.tldZoneName = getCanonicalHostName(tldZoneName);
     this.powerDnsDefaultSoaMName = powerDnsDefaultSoaMName;
     this.powerDnsDefaultSoaRName = powerDnsDefaultSoaRName;
-    this.powerDnsClient = new PowerDNSClient(powerDnsHost, powerDnsApiKey);
+    this.powerDnsClient = new PowerDNSClient(powerDnsBaseUrl, powerDnsApiKey);
   }
 
   /**
@@ -93,7 +93,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    */
   @Override
   public void publishDomain(String domainName) {
-    String normalizedDomainName = getCanonicalHostName(domainName);
+    String normalizedDomainName = getSanitizedHostName(domainName);
     logger.atInfo().log("Staging domain %s for PowerDNS", normalizedDomainName);
     super.publishDomain(normalizedDomainName);
   }
@@ -106,7 +106,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    */
   @Override
   public void publishHost(String hostName) {
-    String normalizedHostName = getCanonicalHostName(hostName);
+    String normalizedHostName = getSanitizedHostName(hostName);
     logger.atInfo().log("Staging host %s for PowerDNS", normalizedHostName);
     super.publishHost(normalizedHostName);
   }
@@ -115,9 +115,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   protected void commitUnchecked() {
     try {
       // persist staged changes to PowerDNS
-      logger.atInfo().log(
-          "Committing updates to PowerDNS for TLD %s on server %s",
-          tldZoneName, powerDnsClient.getServerId());
+      logger.atInfo().log("Committing updates to PowerDNS for TLD %s", tldZoneName);
 
       // convert the update to a PowerDNS Zone object
       Zone zone = convertUpdateToZone(update);
@@ -125,6 +123,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       // call the PowerDNS API to commit the changes
       powerDnsClient.patchZone(zone);
     } catch (Exception e) {
+      logger.atSevere().withCause(e).log("Commit to PowerDNS failed for TLD: %s", tldZoneName);
       throw new RuntimeException("publishDomain failed for TLD: " + tldZoneName, e);
     }
   }
@@ -138,15 +137,17 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    * @throws IOException if the zone is not found
    */
   private Zone convertUpdateToZone(Update update) throws IOException {
+    // Convert the Update object to a Zone object
+    logger.atInfo().log("Converting PowerDNS TLD zone %s update: %s", tldZoneName, update);
+
     // Iterate the update records and prepare them as PowerDNS RRSet objects, referencing the
     // following source code to determine the usage of the org.xbill.DNS.Record object:
     //
     // https://www.javadoc.io/doc/dnsjava/dnsjava/3.2.1/org/xbill/DNS/Record.html
     // https://github.com/dnsjava/dnsjava/blob/master/src/main/java/org/xbill/DNS/Record.java#L324-L350
     ArrayList<RRSet> allRRSets = new ArrayList<RRSet>();
-    ArrayList<RRSet> filteredRRSets = new ArrayList<RRSet>();
     for (Record r : update.getSection(Section.UPDATE)) {
-      logger.atInfo().log("Processing TLD zone %s update record: %s", tldZoneName, r);
+      logger.atInfo().log("Processing PowerDNS TLD zone %s update record: %s", tldZoneName, r);
 
       // create the base PowerDNS RRSet object
       RRSet record = new RRSet();
@@ -172,33 +173,17 @@ public class PowerDnsWriter extends DnsUpdateWriter {
         record.setChangeType(RRSet.ChangeType.REPLACE);
       }
 
-      // Add record to lists of all and filtered RRSets. The first list is used to track all RRSets
-      // for the TLD zone, while the second list is used to track the RRSets that will be sent to
-      // the PowerDNS API. By default, there is a deletion record created by the parent class for
-      // every domain name and record type combination. However, PowerDNS only expects to see a
-      // deletion record if the record should be removed from the TLD zone.
+      // Add record to lists of RRSets
       allRRSets.add(record);
-      filteredRRSets.add(record);
     }
 
-    // remove deletion records for a domain if there is a subsequent update enqueued
-    // for the same domain name and record type combination
-    allRRSets.stream()
-        .filter(r -> r.getChangeType() == RRSet.ChangeType.REPLACE)
-        .forEach(
-            r -> {
-              filteredRRSets.removeIf(
-                  fr ->
-                      fr.getName().equals(r.getName())
-                          && fr.getType().equals(r.getType())
-                          && fr.getChangeType() == RRSet.ChangeType.DELETE);
-            });
-
     // prepare a PowerDNS zone object containing the TLD record updates
-    Zone preparedTldZone = getTldZoneForUpdate(filteredRRSets);
+    Zone preparedTldZone = getTldZoneForUpdate(allRRSets);
 
     // return the prepared TLD zone
-    logger.atInfo().log("Prepared TLD zone %s for PowerDNS: %s", tldZoneName, preparedTldZone);
+    logger.atInfo().log(
+        "Successfully processed PowerDNS TLD zone %s update record: %s",
+        tldZoneName, preparedTldZone);
     return preparedTldZone;
   }
 
@@ -217,6 +202,17 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   }
 
   /**
+   * Returns the sanitized host name, which is the host name without the trailing dot.
+   *
+   * @param hostName the fully qualified hostname
+   * @return the sanitized host name
+   */
+  private String getSanitizedHostName(String hostName) {
+    // return the host name without the trailing dot
+    return hostName.endsWith(".") ? hostName.substring(0, hostName.length() - 1) : hostName;
+  }
+
+  /**
    * Prepare the TLD zone for updates by clearing the RRSets and incrementing the serial number.
    *
    * @param records the set of RRSet records that will be sent to the PowerDNS API
@@ -225,6 +221,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   private Zone getTldZoneForUpdate(List<RRSet> records) {
     Zone tldZone = new Zone();
     tldZone.setId(getTldZoneId());
+    tldZone.setName(getSanitizedHostName(tldZoneName));
     tldZone.setRrsets(records);
     return tldZone;
   }
@@ -248,7 +245,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     // up step using pdnsutil command line tool.
     try {
       // base TLD zone object
-      logger.atInfo().log("Creating new TLD zone %s", tldZoneName);
+      logger.atInfo().log("Creating new PowerDNS TLD zone %s", tldZoneName);
       Zone newTldZone = new Zone();
       newTldZone.setName(tldZoneName);
       newTldZone.setKind(Zone.ZoneKind.Master);
@@ -274,11 +271,11 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
       // create the TLD zone and log the result
       Zone createdTldZone = powerDnsClient.createZone(newTldZone);
-      logger.atInfo().log("Successfully created TLD zone %s", tldZoneName);
+      logger.atInfo().log("Successfully created PowerDNS TLD zone %s", tldZoneName);
       return createdTldZone;
     } catch (Exception e) {
       // log the error and continue
-      logger.atWarning().log("Failed to create TLD zone %s: %s", tldZoneName, e);
+      logger.atWarning().log("Failed to create PowerDNS TLD zone %s: %s", tldZoneName, e);
     }
 
     // otherwise, throw an exception
@@ -300,8 +297,8 @@ public class PowerDnsWriter extends DnsUpdateWriter {
           } catch (Exception e) {
             // TODO: throw this exception once PowerDNS is available, but for now we are just
             // going to return a dummy ID
-            logger.atWarning().log("Failed to get TLD zone ID for %s: %s", tldZoneName, e);
-            return String.format("dummy-zone-id-%s", tldZoneName);
+            logger.atWarning().log("Failed to get PowerDNS TLD zone ID for %s: %s", tldZoneName, e);
+            return tldZoneName;
           }
         });
   }

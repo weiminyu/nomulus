@@ -14,8 +14,10 @@
 
 package google.registry.dns.writer.powerdns.client.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RecordObject {
   @JsonProperty("content")
   private String content;
