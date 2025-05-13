@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.joda.time.Duration;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Section;
@@ -149,11 +150,18 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     for (Record r : update.getSection(Section.UPDATE)) {
       logger.atInfo().log("Processing PowerDNS TLD zone %s update record: %s", tldZoneName, r);
 
-      // create the base PowerDNS RRSet object
-      RRSet record = new RRSet();
-      record.setName(r.getName().toString());
-      record.setTtl(r.getTTL());
-      record.setType(Type.string(r.getType()));
+      // find an existing RRSET matching record name and type, or create a new one
+      // if an existing RRSET is not found
+      RRSet rrSet =
+          allRRSets.stream()
+              .filter(
+                  rrset ->
+                      rrset.getName().equals(r.getName().toString())
+                          && rrset.getType().equals(Type.string(r.getType())))
+              .findFirst()
+              .orElse(
+                  appendRRSet(
+                      allRRSets, r.getName().toString(), Type.string(r.getType()), r.getTTL()));
 
       // determine if this is a record update or a record deletion
       Boolean isDelete = r.getTTL() == 0 && r.rdataToString().equals("");
@@ -161,30 +169,56 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       // handle record updates and deletions
       if (isDelete) {
         // indicate that this is a record deletion
-        record.setChangeType(RRSet.ChangeType.DELETE);
+        rrSet.setChangeType(RRSet.ChangeType.DELETE);
       } else {
+        // indicate that this is a record update
+        rrSet.setChangeType(RRSet.ChangeType.REPLACE);
+
         // add the record content
         RecordObject recordObject = new RecordObject();
         recordObject.setContent(r.rdataToString());
         recordObject.setDisabled(false);
-        record.setRecords(new ArrayList<RecordObject>(Arrays.asList(recordObject)));
 
-        // indicate that this is a record update
-        record.setChangeType(RRSet.ChangeType.REPLACE);
+        // append the record to the RRSet
+        rrSet.getRecords().add(recordObject);
       }
-
-      // Add record to lists of RRSets
-      allRRSets.add(record);
     }
 
-    // prepare a PowerDNS zone object containing the TLD record updates
-    Zone preparedTldZone = getTldZoneForUpdate(allRRSets);
+    // prepare a PowerDNS zone object containing the TLD record updates using the RRSet objects
+    // that have a valid change type
+    Zone preparedTldZone =
+        getTldZoneForUpdate(
+            allRRSets.stream().filter(v -> v.getChangeType() != null).collect(Collectors.toList()));
 
     // return the prepared TLD zone
     logger.atInfo().log(
         "Successfully processed PowerDNS TLD zone %s update record: %s",
         tldZoneName, preparedTldZone);
     return preparedTldZone;
+  }
+
+  /**
+   * Create a new RRSet object.
+   *
+   * @param rrsets the list of RRSets
+   * @param name the name of the RRSet
+   * @param type the type of the RRSet
+   * @param ttl the TTL of the RRSet
+   * @return the new RRSet object
+   */
+  private RRSet appendRRSet(List<RRSet> rrsets, String name, String type, long ttl) {
+    // create the base PowerDNS RRSet object
+    RRSet rrset = new RRSet();
+    rrset.setName(name);
+    rrset.setType(type);
+    rrset.setTtl(ttl);
+    rrset.setRecords(new ArrayList<RecordObject>());
+
+    // add the RRSet to the list of RRSets
+    rrsets.add(rrset);
+
+    // return the new RRSet object
+    return rrset;
   }
 
   /**

@@ -94,8 +94,10 @@ public class PowerDNSClient {
   private Response logAndExecuteRequest(Request request) throws IOException {
     // log the request and create timestamp for the start time
     logger.atInfo().log(
-        "Executing PowerDNS request: %s, body: %s",
-        request, request.body() != null ? bodyToString(request.body()) : null);
+        "Executing PowerDNS request: %s, url: %s, body: %s",
+        request.method(),
+        request.url(),
+        request.body() != null ? bodyToString(request.body()) : null);
     long startTime = System.currentTimeMillis();
 
     // validate the server ID is initialized
