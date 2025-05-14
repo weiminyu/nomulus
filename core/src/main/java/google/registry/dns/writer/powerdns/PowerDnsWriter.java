@@ -52,7 +52,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
   private static final FluentLogger logger = FluentLogger.forEnclosingClass();
   private static final ArrayList<String> supportedRecordTypes =
-      new ArrayList<>(Arrays.asList("DS", "NS"));
+      new ArrayList<>(Arrays.asList("A", "AAAA", "DS", "NS"));
   private static final ConcurrentHashMap<String, String> zoneIdCache = new ConcurrentHashMap<>();
 
   /**
