@@ -346,9 +346,11 @@ public class PowerDnsWriter extends DnsUpdateWriter {
         logger.atInfo().log("Enabling DNSSEC for PowerDNS TLD zone %s", zone.getName());
 
         // create the KSK and ZSK entries for the TLD zone
-        powerDnsClient.createCryptokey(
-            zone.getId(),
-            Cryptokey.createCryptokey(KeyType.ksk, DNSSEC_KSK_BITS, true, true, DNSSEC_ALGORITHM));
+        Cryptokey newKsk =
+            powerDnsClient.createCryptokey(
+                zone.getId(),
+                Cryptokey.createCryptokey(
+                    KeyType.ksk, DNSSEC_KSK_BITS, true, true, DNSSEC_ALGORITHM));
         powerDnsClient.createCryptokey(
             zone.getId(),
             Cryptokey.createCryptokey(KeyType.zsk, DNSSEC_ZSK_BITS, true, true, DNSSEC_ALGORITHM));
@@ -377,11 +379,49 @@ public class PowerDnsWriter extends DnsUpdateWriter {
         }
 
         // retrieve the zone and print the new DS values
-        logger.atInfo().log("Successfully enabled DNSSEC for PowerDNS TLD zone %s", zone.getName());
+        logger.atInfo().log(
+            "Successfully enabled DNSSEC for PowerDNS TLD zone %s, DS=%s",
+            zone.getName(),
+            newKsk.getDs().stream()
+                .map(ds -> String.format("IN DS %s", ds))
+                .collect(Collectors.toList()));
       } else {
         // DNSSEC is enabled, so we need to validate the configuration
         logger.atInfo().log(
             "Validating existing DNSSEC configuration for PowerDNS TLD zone %s", zone.getName());
+
+        // list all crypto keys for the TLD zone
+        List<Cryptokey> cryptokeys = powerDnsClient.listCryptokeys(zone.getId());
+
+        // identify the KSK and ZSK records
+        Cryptokey activeZsk =
+            cryptokeys.stream()
+                .filter(c -> c.getActive() && c.getKeytype() == KeyType.zsk)
+                .findFirst()
+                .orElse(null);
+        Cryptokey activeKsk =
+            cryptokeys.stream()
+                .filter(c -> c.getActive() && c.getKeytype() == KeyType.ksk)
+                .findFirst()
+                .orElse(null);
+
+        // validate the KSK and ZSK records are present
+        if (activeKsk == null || activeZsk == null) {
+          // log the error and continue
+          logger.atWarning().log(
+              "Unable to validate DNSSEC configuration with active KSK and ZSK records for PowerDNS"
+                  + " TLD zone %s",
+              zone.getName());
+          return;
+        }
+
+        // log the DS records associated with the KSK record
+        logger.atInfo().log(
+            "Validated KSK and ZSK records for PowerDNS TLD zone %s, parent DS=%s",
+            zone.getName(),
+            activeKsk.getDs().stream()
+                .map(ds -> String.format("IN DS %s", ds))
+                .collect(Collectors.toList()));
 
         // check for a ZSK expiration flag
         if (zone.getAccount().contains(DNSSEC_ZSK_EXPIRE_FLAG)) {
@@ -431,15 +471,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
                 "ZSK activation window has elapsed, activating ZSK for PowerDNS TLD zone %s",
                 zone.getName());
 
-            // list all crypto keys for the TLD zone
-            List<Cryptokey> cryptokeys = powerDnsClient.listCryptokeys(zone.getId());
-
-            // identify the active and inactive ZSKs
-            Cryptokey activeZsk =
-                cryptokeys.stream()
-                    .filter(c -> c.getActive() && c.getKeytype() == KeyType.zsk)
-                    .findFirst()
-                    .orElse(null);
+            // identify the inactive ZSK
             Cryptokey inactiveZsk =
                 cryptokeys.stream()
                     .filter(c -> !c.getActive() && c.getKeytype() == KeyType.zsk)
