@@ -380,7 +380,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
         // retrieve the zone and print the new DS values
         logger.atInfo().log(
-            "Successfully enabled DNSSEC for PowerDNS TLD zone %s, DS=%s",
+            "Successfully enabled DNSSEC for PowerDNS TLD zone %s, expected root DS=%s",
             zone.getName(),
             newKsk.getDs().stream()
                 .map(ds -> String.format("IN DS %s", ds))
@@ -417,7 +417,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
         // log the DS records associated with the KSK record
         logger.atInfo().log(
-            "Validated KSK and ZSK records for PowerDNS TLD zone %s, parent DS=%s",
+            "Validated KSK and ZSK records for PowerDNS TLD zone %s, expected root DS=%s",
             zone.getName(),
             activeKsk.getDs().stream()
                 .map(ds -> String.format("IN DS %s", ds))
