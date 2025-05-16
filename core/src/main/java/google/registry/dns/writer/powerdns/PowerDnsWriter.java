@@ -26,6 +26,7 @@ import google.registry.dns.writer.powerdns.client.model.Cryptokey.KeyType;
 import google.registry.dns.writer.powerdns.client.model.Metadata;
 import google.registry.dns.writer.powerdns.client.model.RRSet;
 import google.registry.dns.writer.powerdns.client.model.RecordObject;
+import google.registry.dns.writer.powerdns.client.model.TSIGKey;
 import google.registry.dns.writer.powerdns.client.model.Zone;
 import google.registry.util.Clock;
 import jakarta.inject.Inject;
@@ -78,6 +79,10 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       1000L * 2 * defaultZoneTtl; // twice the default zone TTL in milliseconds
   private static final String DNSSEC_ZSK_EXPIRE_FLAG = "DNSSEC-ZSK-EXPIRE-DATE";
   private static final String DNSSEC_ZSK_ACTIVATION_FLAG = "DNSSEC-ZSK-ACTIVATION-DATE";
+
+  // TSIG key configuration
+  private static final String TSIG_KEY_NAME = "axfr-key";
+  private static final String TSIG_KEY_ALGORITHM = "hmac-sha256";
 
   /**
    * Class constructor.
@@ -313,8 +318,21 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     soaRecordContent.setDisabled(false);
     soaRecord.setRecords(new ArrayList<RecordObject>(Arrays.asList(soaRecordContent)));
 
-    // add the SOA record to the new TLD zone
-    newTldZone.setRrsets(new ArrayList<RRSet>(Arrays.asList(soaRecord)));
+    // create NS records, which may be modified later by an administrator
+    RRSet nsRecord = new RRSet();
+    nsRecord.setChangeType(RRSet.ChangeType.REPLACE);
+    nsRecord.setName(tldZoneName);
+    nsRecord.setTtl(defaultZoneTtl);
+    nsRecord.setType("NS");
+
+    // add content to the NS record content from default configuration
+    RecordObject nsRecordContent = new RecordObject();
+    nsRecordContent.setContent(defaultSoaMName);
+    nsRecordContent.setDisabled(false);
+    nsRecord.setRecords(new ArrayList<RecordObject>(Arrays.asList(nsRecordContent)));
+
+    // add the SOA and NS record to the new TLD zone
+    newTldZone.setRrsets(new ArrayList<RRSet>(Arrays.asList(soaRecord, nsRecord)));
 
     // create the TLD zone and log the result
     Zone createdTldZone = powerDnsClient.createZone(newTldZone);
@@ -322,6 +340,56 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
     // return the created TLD zone
     return createdTldZone;
+  }
+
+  /**
+   * Validate the TSIG key configuration for the PowerDNS server. Ensures a TSIG key associated with
+   * the TLD zone is available for use, and detects whether the TLD zone has been configured to use
+   * the TSIG key during AXFR replication. Instructions are provided in the logs on how to configure
+   * both the primary and secondary DNS servers with the expected TSIG key.
+   *
+   * @param zone the TLD zone to validate
+   */
+  private void validateTsigConfig(Zone zone) throws IOException {
+    // calculate the zone TSIG key name
+    logger.atInfo().log("Validating TSIG configuration for PowerDNS TLD zone %s", zone.getName());
+    String zoneTsigKeyName =
+        String.format("%s-%s", TSIG_KEY_NAME, getSanitizedHostName(zone.getName()));
+
+    // validate the named TSIG key is present in the PowerDNS server
+    try {
+      // check for existing TSIG key, which throws an exception if it is not found
+      powerDnsClient.getTSIGKey(zoneTsigKeyName);
+    } catch (Exception e) {
+      // create the TSIG key
+      logger.atInfo().log(
+          "Creating TSIG key '%s' for PowerDNS TLD zone %s", zoneTsigKeyName, zone.getName());
+      powerDnsClient.createTSIGKey(TSIGKey.createTSIGKey(zoneTsigKeyName, TSIG_KEY_ALGORITHM));
+    }
+    logger.atInfo().log(
+        "Validated TSIG key '%s' (%s) is available for AXFR replication to secondary servers for"
+            + " TLD zone %s. Retrieve the key using 'pdnsutil list-tsig-keys' in a secure"
+            + " environment and apply the key to the secondary server configuration.",
+        zoneTsigKeyName, TSIG_KEY_ALGORITHM, zone.getName());
+
+    // ensure the TSIG-ALLOW-AXFR metadata is set to the current TSIG key name
+    try {
+      Metadata metadata = powerDnsClient.getMetadata(zone.getId(), "TSIG-ALLOW-AXFR");
+      // validate the metadata contains the expected TSIG key name
+      if (!metadata.getMetadata().contains(zoneTsigKeyName)) {
+        throw new IOException("missing expected TSIG-ALLOW-AXFR value");
+      }
+      logger.atInfo().log(
+          "Validated PowerDNS TLD zone %s is ready for AXFR replication using TSIG key '%s'",
+          zone.getName(), zoneTsigKeyName);
+    } catch (IOException e) {
+      // log the missing metadata with instructions on how to configure it
+      logger.atSevere().log(
+          "PowerDNS TLD zone %s is not configured for AXFR replication using TSIG key '%s'."
+              + " Configure the replication using 'pdnsutil activate-tsig-key %s %s primary' in a"
+              + " secure environment.",
+          zoneTsigKeyName, zone.getName(), zone.getName(), zoneTsigKeyName);
+    }
   }
 
   /**
@@ -573,6 +641,9 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     // retrieve an existing TLD zone by name
     for (Zone zone : powerDnsClient.listZones()) {
       if (getSanitizedHostName(zone.getName()).equals(getSanitizedHostName(tldZoneName))) {
+        // validate the zone's TSIG key configuration
+        validateTsigConfig(zone);
+
         // validate the DNSSEC configuration and return the TLD zone
         validateDnssecConfig(zone);
         return zone;
@@ -583,6 +654,9 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     try {
       // create a new TLD zone
       Zone zone = createZone();
+
+      // validate the zone's TSIG key configuration
+      validateTsigConfig(zone);
 
       // configure DNSSEC and return the TLD zone
       validateDnssecConfig(zone);
