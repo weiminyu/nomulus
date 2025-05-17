@@ -64,8 +64,8 @@ public class RegistryConfigSettings {
     public String baseUrl;
     public String apiKey;
     public Boolean dnssecEnabled;
-    public String defaultSoaMName;
-    public String defaultSoaRName;
+    public List<String> rootNameServers;
+    public String soaName;
   }
 
   /** Configuration options for authenticating users. */

@@ -15,6 +15,7 @@
 package google.registry.dns.writer.powerdns;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.flogger.FluentLogger;
 import google.registry.config.RegistryConfig.Config;
@@ -55,8 +56,8 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
   // PowerDNS configuration
   private final String tldZoneName;
-  private final String defaultSoaMName;
-  private final String defaultSoaRName;
+  private final ImmutableList<String> rootNameServers;
+  private final String soaName;
   private final Boolean dnssecEnabled;
   private final PowerDNSClient powerDnsClient;
 
@@ -103,8 +104,8 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       @Config("dnsDefaultDsTtl") Duration dnsDefaultDsTtl,
       @Config("powerDnsBaseUrl") String powerDnsBaseUrl,
       @Config("powerDnsApiKey") String powerDnsApiKey,
-      @Config("powerDnsDefaultSoaMName") String powerDnsDefaultSoaMName,
-      @Config("powerDnsDefaultSoaRName") String powerDnsDefaultSoaRName,
+      @Config("powerDnsRootNameServers") ImmutableList<String> powerDnsRootNameServers,
+      @Config("powerDnsSoaName") String powerDnsSoaName,
       @Config("powerDnsDnssecEnabled") Boolean powerDnsDnssecEnabled,
       Clock clock) {
 
@@ -114,8 +115,8 @@ public class PowerDnsWriter extends DnsUpdateWriter {
 
     // Initialize the PowerDNS client
     this.tldZoneName = getCanonicalHostName(tldZoneName);
-    this.defaultSoaMName = powerDnsDefaultSoaMName;
-    this.defaultSoaRName = powerDnsDefaultSoaRName;
+    this.rootNameServers = powerDnsRootNameServers;
+    this.soaName = powerDnsSoaName;
     this.dnssecEnabled = powerDnsDnssecEnabled;
     this.powerDnsClient = new PowerDNSClient(powerDnsBaseUrl, powerDnsApiKey);
   }
@@ -314,7 +315,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     RecordObject soaRecordContent = new RecordObject();
     soaRecordContent.setContent(
         String.format(
-            "%s %s 1 900 1800 6048000 %s", defaultSoaMName, defaultSoaRName, defaultZoneTtl));
+            "%s %s 1 900 1800 6048000 %s", rootNameServers.get(0), soaName, defaultZoneTtl));
     soaRecordContent.setDisabled(false);
     soaRecord.setRecords(new ArrayList<RecordObject>(Arrays.asList(soaRecordContent)));
 
@@ -326,10 +327,17 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     nsRecord.setType("NS");
 
     // add content to the NS record content from default configuration
-    RecordObject nsRecordContent = new RecordObject();
-    nsRecordContent.setContent(defaultSoaMName);
-    nsRecordContent.setDisabled(false);
-    nsRecord.setRecords(new ArrayList<RecordObject>(Arrays.asList(nsRecordContent)));
+    nsRecord.setRecords(
+        new ArrayList<RecordObject>(
+            rootNameServers.stream()
+                .map(
+                    ns -> {
+                      RecordObject nsRecordContent = new RecordObject();
+                      nsRecordContent.setContent(ns);
+                      nsRecordContent.setDisabled(false);
+                      return nsRecordContent;
+                    })
+                .collect(Collectors.toList())));
 
     // add the SOA and NS record to the new TLD zone
     newTldZone.setRrsets(new ArrayList<RRSet>(Arrays.asList(soaRecord, nsRecord)));
