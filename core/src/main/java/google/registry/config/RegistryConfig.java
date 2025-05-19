@@ -151,6 +151,13 @@ public final class RegistryConfig {
       return config.powerDns.dnssecEnabled;
     }
 
+    /** Whether TSIG is enabled for the PowerDNS server. */
+    @Provides
+    @Config("powerDnsTsigEnabled")
+    public static Boolean providePowerDnsTsigEnabled(RegistryConfigSettings config) {
+      return config.powerDns.tsigEnabled;
+    }
+
     /** Default SOA MNAME for the TLD zone. */
     @Provides
     @Config("powerDnsRootNameServers")

@@ -59,6 +59,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   private final ImmutableList<String> rootNameServers;
   private final String soaName;
   private final Boolean dnssecEnabled;
+  private final Boolean tsigEnabled;
   private final PowerDNSClient powerDnsClient;
 
   // Supported record types to synchronize with PowerDNS
@@ -82,7 +83,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
   private static final String DNSSEC_ZSK_ACTIVATION_FLAG = "DNSSEC-ZSK-ACTIVATION-DATE";
 
   // TSIG key configuration
-  private static final String TSIG_KEY_NAME = "axfr-key";
+  private static final String TSIG_KEY_NAME = "tsig";
   private static final String TSIG_KEY_ALGORITHM = "hmac-sha256";
 
   /**
@@ -107,6 +108,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
       @Config("powerDnsRootNameServers") ImmutableList<String> powerDnsRootNameServers,
       @Config("powerDnsSoaName") String powerDnsSoaName,
       @Config("powerDnsDnssecEnabled") Boolean powerDnsDnssecEnabled,
+      @Config("powerDnsTsigEnabled") Boolean powerDnsTsigEnabled,
       Clock clock) {
 
     // call the DnsUpdateWriter constructor, omitting the transport parameter
@@ -118,6 +120,7 @@ public class PowerDnsWriter extends DnsUpdateWriter {
     this.rootNameServers = powerDnsRootNameServers;
     this.soaName = powerDnsSoaName;
     this.dnssecEnabled = powerDnsDnssecEnabled;
+    this.tsigEnabled = powerDnsTsigEnabled;
     this.powerDnsClient = new PowerDNSClient(powerDnsBaseUrl, powerDnsApiKey);
   }
 
@@ -359,10 +362,17 @@ public class PowerDnsWriter extends DnsUpdateWriter {
    * @param zone the TLD zone to validate
    */
   private void validateTsigConfig(Zone zone) throws IOException {
+    // check if TSIG configuration is required
+    if (!tsigEnabled) {
+      logger.atInfo().log(
+          "TSIG validation is not required for PowerDNS TLD zone %s", zone.getName());
+      return;
+    }
+
     // calculate the zone TSIG key name
     logger.atInfo().log("Validating TSIG configuration for PowerDNS TLD zone %s", zone.getName());
     String zoneTsigKeyName =
-        String.format("%s-%s", TSIG_KEY_NAME, getSanitizedHostName(zone.getName()));
+        String.format("%s-%s", getSanitizedHostName(zone.getName()), TSIG_KEY_NAME);
 
     // validate the named TSIG key is present in the PowerDNS server
     try {

@@ -64,6 +64,7 @@ public class RegistryConfigSettings {
     public String baseUrl;
     public String apiKey;
     public Boolean dnssecEnabled;
+    public Boolean tsigEnabled;
     public List<String> rootNameServers;
     public String soaName;
   }
