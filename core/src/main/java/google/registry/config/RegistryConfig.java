@@ -100,7 +100,7 @@ public final class RegistryConfig {
   }
 
   /** Shorthand method to retrieve the main registry config settings for the current environment. */
-  static RegistryConfigSettings getConfigSettings() {
+  private static RegistryConfigSettings getConfigSettings() {
     return RegistryConfig.getEnvironmentConfigSettings(
         YAML_CONFIG_DEFAULT, YAML_CONFIG_ENV_TEMPLATE, RegistryConfigSettings.class);
   }
