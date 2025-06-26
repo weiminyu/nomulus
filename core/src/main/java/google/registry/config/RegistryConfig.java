@@ -99,7 +99,10 @@ public final class RegistryConfig {
     return YamlUtils.getConfigSettings(defaultYaml, customYaml, clazz);
   }
 
-  /** Shorthand method to retrieve the main registry config settings for the current environment. */
+  /**
+   * Shorthand method to retrieve the main registry config settings for the current environment. Can
+   * be changed to public scope if needed by other packages.
+   */
   private static RegistryConfigSettings getConfigSettings() {
     return RegistryConfig.getEnvironmentConfigSettings(
         YAML_CONFIG_DEFAULT, YAML_CONFIG_ENV_TEMPLATE, RegistryConfigSettings.class);
