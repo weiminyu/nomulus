@@ -951,12 +951,18 @@ class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, Dom
     runFlowAssertResponse(loadFile("domain_check_fee_response_default_token_v11.xml"));
   }
 
-  @ParameterizedTest
-  @MethodSource("provideFeeTestParams")
-  void testFeeExtension_latest(String name, FeeFileLoader fileLoader) throws Exception {
+  @Test
+  void testFeeExtension_v12() throws Exception {
     persistActiveDomain("example1.tld");
-    setEppInputXml(fileLoader.load(this, "domain_check_fee_v12.xml"));
-    runFlowAssertResponse(fileLoader.load(this, "domain_check_fee_response_v12.xml"));
+    setEppInput("domain_check_fee_v12.xml");
+    runFlowAssertResponse(loadFile("domain_check_fee_response_v12.xml"));
+  }
+
+  @Test
+  void testFeeExtension_stdv1() throws Exception {
+    persistActiveDomain("example1.tld");
+    setEppInput("domain_check_fee_stdv1.xml");
+    runFlowAssertResponse(loadFile("domain_check_fee_response_stdv1.xml"));
   }
 
   @ParameterizedTest
@@ -1834,7 +1840,6 @@ class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, Dom
         new FeeFileLoader(/* isFeeStdV1= */ false));
   }
 
-  @Disabled("v1.0 buggy")
   @Test
   void testSuccess_eapFeeCheck_std_v1() throws Exception {
     runEapFeeCheckTest(
@@ -1843,7 +1848,6 @@ class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, Dom
         new FeeFileLoader(/* isFeeStdV1= */ true));
   }
 
-  @Disabled("v1.0 buggy")
   @Test
   void testSuccess_eapFeeCheck_date_std_v1() throws Exception {
     runEapFeeCheckTest(
@@ -2006,7 +2010,7 @@ class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, Dom
   @SuppressWarnings("unused")
   private static Stream<Arguments> provideFeeTestParams() {
     return Stream.of(
-        // Arguments.of("fee_std_v1", new FeeFileLoader(true)),
+        Arguments.of("fee_std_v1", new FeeFileLoader(true)),
         Arguments.of("fee_12", new FeeFileLoader(false)));
   }
 }
