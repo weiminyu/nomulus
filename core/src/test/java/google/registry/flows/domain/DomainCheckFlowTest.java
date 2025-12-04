@@ -14,32 +14,6 @@
 
 package google.registry.flows.domain;
 
-import static google.registry.bsa.persistence.BsaTestingUtils.persistBsaLabel;
-import static google.registry.model.billing.BillingBase.RenewalPriceBehavior.DEFAULT;
-import static google.registry.model.billing.BillingBase.RenewalPriceBehavior.NONPREMIUM;
-import static google.registry.model.billing.BillingBase.RenewalPriceBehavior.SPECIFIED;
-import static google.registry.model.domain.token.AllocationToken.TokenType.DEFAULT_PROMO;
-import static google.registry.model.domain.token.AllocationToken.TokenType.REGISTER_BSA;
-import static google.registry.model.domain.token.AllocationToken.TokenType.SINGLE_USE;
-import static google.registry.model.domain.token.AllocationToken.TokenType.UNLIMITED_USE;
-import static google.registry.model.eppoutput.CheckData.DomainCheck.create;
-import static google.registry.model.tld.Tld.TldState.PREDELEGATION;
-import static google.registry.model.tld.Tld.TldState.START_DATE_SUNRISE;
-import static google.registry.testing.DatabaseHelper.createTld;
-import static google.registry.testing.DatabaseHelper.createTlds;
-import static google.registry.testing.DatabaseHelper.loadRegistrar;
-import static google.registry.testing.DatabaseHelper.persistActiveDomain;
-import static google.registry.testing.DatabaseHelper.persistBillingRecurrenceForDomain;
-import static google.registry.testing.DatabaseHelper.persistDeletedDomain;
-import static google.registry.testing.DatabaseHelper.persistPremiumList;
-import static google.registry.testing.DatabaseHelper.persistReservedList;
-import static google.registry.testing.DatabaseHelper.persistResource;
-import static google.registry.testing.EppExceptionSubject.assertAboutEppExceptions;
-import static google.registry.util.DateTimeUtils.START_OF_TIME;
-import static org.joda.money.CurrencyUnit.JPY;
-import static org.joda.money.CurrencyUnit.USD;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -86,10 +60,6 @@ import google.registry.model.tld.Tld;
 import google.registry.model.tld.Tld.TldState;
 import google.registry.model.tld.label.ReservedList;
 import google.registry.testing.DatabaseHelper;
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.joda.money.Money;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,6 +68,37 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import static google.registry.bsa.persistence.BsaTestingUtils.persistBsaLabel;
+import static google.registry.model.billing.BillingBase.RenewalPriceBehavior.DEFAULT;
+import static google.registry.model.billing.BillingBase.RenewalPriceBehavior.NONPREMIUM;
+import static google.registry.model.billing.BillingBase.RenewalPriceBehavior.SPECIFIED;
+import static google.registry.model.domain.token.AllocationToken.TokenType.DEFAULT_PROMO;
+import static google.registry.model.domain.token.AllocationToken.TokenType.REGISTER_BSA;
+import static google.registry.model.domain.token.AllocationToken.TokenType.SINGLE_USE;
+import static google.registry.model.domain.token.AllocationToken.TokenType.UNLIMITED_USE;
+import static google.registry.model.eppoutput.CheckData.DomainCheck.create;
+import static google.registry.model.tld.Tld.TldState.PREDELEGATION;
+import static google.registry.model.tld.Tld.TldState.START_DATE_SUNRISE;
+import static google.registry.testing.DatabaseHelper.createTld;
+import static google.registry.testing.DatabaseHelper.createTlds;
+import static google.registry.testing.DatabaseHelper.loadRegistrar;
+import static google.registry.testing.DatabaseHelper.persistActiveDomain;
+import static google.registry.testing.DatabaseHelper.persistBillingRecurrenceForDomain;
+import static google.registry.testing.DatabaseHelper.persistDeletedDomain;
+import static google.registry.testing.DatabaseHelper.persistPremiumList;
+import static google.registry.testing.DatabaseHelper.persistReservedList;
+import static google.registry.testing.DatabaseHelper.persistResource;
+import static google.registry.testing.EppExceptionSubject.assertAboutEppExceptions;
+import static google.registry.util.DateTimeUtils.START_OF_TIME;
+import static org.joda.money.CurrencyUnit.JPY;
+import static org.joda.money.CurrencyUnit.USD;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** Unit tests for {@link DomainCheckFlow}. */
 class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, Domain> {
@@ -965,15 +966,24 @@ class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, Dom
     runFlowAssertResponse(loadFile("domain_check_fee_response_stdv1.xml"));
   }
 
-  @ParameterizedTest
-  @MethodSource("provideFeeTestParams")
-  void testFeeExtension_defaultToken_latest(String name, FeeFileLoader fileLoader)
+  @Test
+  void testFeeExtension_defaultToken_v12()
       throws Exception {
     setUpDefaultToken();
     persistActiveDomain("example1.tld");
-    setEppInputXml(
-        fileLoader.load(this, "domain_check_fee_v12.xml", ImmutableMap.of("CURRENCY", "USD")));
-    runFlowAssertResponse(fileLoader.load(this, "domain_check_fee_response_default_token_v12.xml"));
+    setEppInput(
+        "domain_check_fee_v12.xml", ImmutableMap.of("CURRENCY", "USD"));
+    runFlowAssertResponse(loadFile("domain_check_fee_response_default_token_v12.xml"));
+  }
+
+  @Test
+  void testFeeExtension_defaultToken_stdv1()
+          throws Exception {
+    setUpDefaultToken();
+    persistActiveDomain("example1.tld");
+    setEppInput(
+            "domain_check_fee_stdv1.xml", ImmutableMap.of("CURRENCY", "USD"));
+    runFlowAssertResponse(loadFile("domain_check_fee_response_default_token_stdv1.xml"));
   }
 
   @Test
@@ -1841,19 +1851,11 @@ class DomainCheckFlowTest extends ResourceCheckFlowTestCase<DomainCheckFlow, Dom
   }
 
   @Test
-  void testSuccess_eapFeeCheck_std_v1() throws Exception {
+  void testSuccess_eapFeeCheck_stdv1() throws Exception {
     runEapFeeCheckTest(
-        "domain_check_fee_v12.xml",
-        "domain_check_eap_fee_response_v12.xml",
-        new FeeFileLoader(/* isFeeStdV1= */ true));
-  }
-
-  @Test
-  void testSuccess_eapFeeCheck_date_std_v1() throws Exception {
-    runEapFeeCheckTest(
-        "domain_check_fee_date_v12.xml",
-        "domain_check_eap_fee_response_date_v12.xml",
-        new FeeFileLoader(/* isFeeStdV1= */ true));
+        "domain_check_fee_stdv1.xml",
+        "domain_check_eap_fee_response_stdv1.xml",
+        new FeeFileLoader(/* isFeeStdV1= */ false));
   }
 
   @Test
