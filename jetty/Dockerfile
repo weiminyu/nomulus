@@ -1,4 +1,4 @@
-FROM jetty:12-jdk21
+FROM jetty:12-jdk25
 ADD --chown=jetty:jetty build/jetty-base /jetty-base
 ADD --chown=jetty:jetty start.sh /
 ADD --chown=jetty:jetty logging.properties /
@@ -14,6 +14,6 @@ RUN mkdir -p /opt/cprof && \
 USER jetty
 
 EXPOSE 8080
-# jetty:12-jdk21 has bash. We can afford the extra 200M in image size over
+# jetty:12-jdk25 has bash. We can afford the extra 200M in image size over
 # the -alpine flavor.
 ENTRYPOINT ["/bin/bash", "/start.sh"]
