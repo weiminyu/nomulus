@@ -85,7 +85,11 @@ interface RegistryToolComponent {
 
   void inject(CreateDomainCommand command);
 
+  void inject(CreatePremiumListCommand command);
+
   void inject(CreateRegistrarCommand command);
+
+  void inject(CreateReservedListCommand command);
 
   void inject(CreateUserCommand command);
 
@@ -103,11 +107,17 @@ interface RegistryToolComponent {
 
   void inject(GenerateEscrowDepositCommand command);
 
+  void inject(GenerateLordnCommand command);
+
+  void inject(GenerateZoneFilesCommand command);
+
   void inject(GetBulkPricingPackageCommand command);
 
   void inject(GetDomainCommand command);
 
   void inject(GetFeatureFlagCommand command);
+
+  void inject(GetHistoryEntriesCommand command);
 
   void inject(GetHostCommand command);
 
@@ -153,7 +163,11 @@ interface RegistryToolComponent {
 
   void inject(UpdateKeyringSecretCommand command);
 
+  void inject(UpdatePremiumListCommand command);
+
   void inject(UpdateRegistrarCommand command);
+
+  void inject(UpdateReservedListCommand command);
 
   void inject(ValidateEscrowDepositCommand command);
 
