@@ -14,6 +14,8 @@
 
 package google.registry.rdap;
 
+import static com.google.monitoring.metrics.EventMetric.DEFAULT_FITTER;
+
 import com.google.auto.value.AutoBuilder;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
@@ -133,6 +135,16 @@ public class RdapMetrics {
               LABEL_DESCRIPTORS_FOR_RETRIEVAL_COUNTS,
               FIBONACCI_FITTER);
 
+  @VisibleForTesting
+  static final EventMetric requestTime =
+      MetricRegistryImpl.getDefault()
+          .newEventMetric(
+              "/rdap/request_time",
+              "RDAP Request Time",
+              "milliseconds",
+              LABEL_DESCRIPTORS_FOR_RESPONSES,
+              DEFAULT_FITTER);
+
   @Inject
   public RdapMetrics() {}
 
@@ -181,6 +193,15 @@ public class RdapMetrics {
           getLabelStringForPrefixLength(rdapMetricInformation.prefixLength()),
           rdapMetricInformation.includeDeleted() ? "YES" : "NO");
     }
+    if (rdapMetricInformation.processingTime().isPresent()) {
+      requestTime.record(
+          rdapMetricInformation.processingTime().get(),
+          rdapMetricInformation.endpointType().toString(),
+          rdapMetricInformation.searchType().toString(),
+          rdapMetricInformation.wildcardType().toString(),
+          String.valueOf(rdapMetricInformation.statusCode()),
+          rdapMetricInformation.incompletenessWarningType().toString());
+    }
   }
 
   /**
@@ -202,6 +223,8 @@ public class RdapMetrics {
    *     than were actually returned in the response; absent if a search was not performed.
    * @param numHostsRetrieved Number of hosts retrieved from the database; this might be more than
    *     were actually returned in the response; absent if a search was not performed.
+   * @param processingTime The processing time for the request in milliseconds; absent if not
+   *     recorded.
    */
   public record RdapMetricInformation(
       EndpointType endpointType,
@@ -215,7 +238,8 @@ public class RdapMetrics {
       int statusCode,
       IncompletenessWarningType incompletenessWarningType,
       Optional<Long> numDomainsRetrieved,
-      Optional<Long> numHostsRetrieved) {
+      Optional<Long> numHostsRetrieved,
+      Optional<Long> processingTime) {
 
     @AutoBuilder
     interface Builder {
@@ -243,8 +267,11 @@ public class RdapMetrics {
 
       Builder setNumHostsRetrieved(long numHostsRetrieved);
 
+      Builder setProcessingTime(long processingTime);
+
       RdapMetricInformation build();
     }
+
 
     static Builder builder() {
       return new AutoBuilder_RdapMetrics_RdapMetricInformation_Builder()
