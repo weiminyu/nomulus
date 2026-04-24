@@ -99,9 +99,7 @@ public class EppXmlTransformer  {
     }
     return eppOutput.getResponse().getExtensions().stream()
         .map(EppResponse.ResponseExtension::getClass)
-        .filter(EppXmlTransformer::isFeeExtension)
-        .findAny()
-        .isPresent();
+        .anyMatch(EppXmlTransformer::isFeeExtension);
   }
 
   @VisibleForTesting
