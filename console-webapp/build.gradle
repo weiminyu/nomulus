@@ -21,27 +21,23 @@ clean {
 
 task npmInstallDeps(type: Exec) {
   workingDir "${consoleDir}/"
-  executable 'npm'
-  args 'i', '--no-audit', '--no-fund', '--loglevel=error'
+  commandLine 'sh', '-c', 'npm i --no-audit --no-fund --loglevel=error'
 }
 
 task runConsoleWebappLocally(type: Exec) {
   workingDir "${consoleDir}/"
-  executable 'npm'
-  args 'run', 'start:dev'
+  commandLine 'sh', '-c', 'npm run start:dev'
 }
 
 task runConsoleWebappUnitTests(type: Exec) {
   workingDir "${consoleDir}/"
-  executable 'npm'
-  args 'run', 'test'
+  commandLine 'sh', '-c', 'npm run test'
 }
 
 task buildConsoleWebapp(type: Exec) {
   workingDir "${consoleDir}/"
-  executable 'npx'
   def configuration = project.getProperty('configuration')
-  args 'ng', 'build', '--base-href=/console/', "--configuration=${configuration}", "--output-path=staged/dist"
+  commandLine 'sh', '-c', "npx ng build --base-href=/console/ --configuration=${configuration} --output-path=staged/dist"
   doFirst {
     println "Building console for environment: ${configuration}"
   }
@@ -52,8 +48,7 @@ task buildConsoleForAll() {}
 def createConsoleTask = { env ->
   project.tasks.register("buildConsoleFor${env.capitalize()}", Exec) {
     workingDir "${consoleDir}/"
-    executable 'npx'
-    args 'ng', 'build', '--base-href=/console/', "--configuration=${env}"
+    commandLine 'sh', '-c', "npx ng build --base-href=/console/ --configuration=${env}"
     doFirst {
       println "Building console for environment: ${env}"
     }
@@ -91,14 +86,12 @@ tasks.buildConsoleWebapp.mustRunAfter(tasks.buildConsoleForProduction)
 
 task applyFormatting(type: Exec) {
   workingDir "${consoleDir}/"
-  executable 'npm'
-  args 'run', 'prettify'
+  commandLine 'sh', '-c', 'npm run prettify'
 }
 
 task checkFormatting(type: Exec) {
   workingDir "${consoleDir}/"
-  executable 'npm'
-  args 'run', 'prettify:check'
+  commandLine 'sh', '-c', 'npm run prettify:check'
 }
 
 tasks.buildConsoleWebapp.dependsOn(tasks.npmInstallDeps)
