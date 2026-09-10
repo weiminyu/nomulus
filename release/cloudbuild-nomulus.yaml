@@ -53,42 +53,14 @@ steps:
     ./gradlew :jetty:buildNomulusImage :proxy:buildProxyImage :core:buildToolImage\
       -PmavenUrl=gcs://domain-registry-maven-repository/maven \
       -PpluginsUrl=gcs://domain-registry-maven-repository/plugins
-    docker tag nomulus gcr.io/${PROJECT_ID}/nomulus:${TAG_NAME}
-    docker tag nomulus gcr.io/${PROJECT_ID}/nomulus:latest
-    docker push gcr.io/${PROJECT_ID}/nomulus:${TAG_NAME}
-    docker push gcr.io/${PROJECT_ID}/nomulus:latest
-    docker tag proxy gcr.io/${PROJECT_ID}/proxy:${TAG_NAME}
-    docker tag proxy gcr.io/${PROJECT_ID}/proxy:latest
-    docker push gcr.io/${PROJECT_ID}/proxy:${TAG_NAME}
-    docker push gcr.io/${PROJECT_ID}/proxy:latest
+    docker tag nomulus us-docker.pkg.dev/${PROJECT_ID}/staging/nomulus:${TAG_NAME}
+    docker tag nomulus us-docker.pkg.dev/${PROJECT_ID}/staging/nomulus:latest
+    docker tag proxy us-docker.pkg.dev/${PROJECT_ID}/staging/proxy:${TAG_NAME}
+    docker tag proxy us-docker.pkg.dev/${PROJECT_ID}/staging/proxy:latest
     docker tag nomulus-tool gcr.io/${PROJECT_ID}/nomulus-tool:${TAG_NAME}
     docker tag nomulus-tool gcr.io/${PROJECT_ID}/nomulus-tool:latest
     docker push gcr.io/${PROJECT_ID}/nomulus-tool:${TAG_NAME}
     docker push gcr.io/${PROJECT_ID}/nomulus-tool:latest
-# Sign nomulus and proxy images.
-- name: 'gcr.io/${PROJECT_ID}/builder:latest'
-  entrypoint: /bin/bash
-  args:
-  - -c
-  - |
-    nomulus_digest=$(gcloud container images list-tags gcr.io/${PROJECT_ID}/nomulus \
-    --format="get(digest)" --filter="tags = ${TAG_NAME}")
-    echo "$nomulus_digest" > /workspace/nomulus_digest
-    proxy_digest=$(gcloud container images list-tags gcr.io/${PROJECT_ID}/proxy \
-    --format="get(digest)" --filter="tags = ${TAG_NAME}")
-    echo "$proxy_digest" > /workspace/proxy_digest
-    gcloud --project=${PROJECT_ID} beta container binauthz attestations \
-      sign-and-create --artifact-url=gcr.io/${PROJECT_ID}/nomulus@$nomulus_digest \
-      --attestor=build-attestor --attestor-project=${PROJECT_ID} \
-      --keyversion-project=${PROJECT_ID} --keyversion-location=global \
-      --keyversion-keyring=attestor-keys --keyversion-key=signing \
-      --keyversion=1
-    gcloud --project=${PROJECT_ID} beta container binauthz attestations \
-      sign-and-create --artifact-url=gcr.io/${PROJECT_ID}/proxy@$proxy_digest \
-      --attestor=build-attestor --attestor-project=${PROJECT_ID} \
-      --keyversion-project=${PROJECT_ID} --keyversion-location=global \
-      --keyversion-keyring=attestor-keys --keyversion-key=signing \
-      --keyversion=1
 # Get the tool image digest and substitute in the digest in other GCB files.
 - name: 'gcr.io/${PROJECT_ID}/builder:latest'
   entrypoint: /bin/bash
@@ -177,35 +149,6 @@ steps:
     cp db/build/libs/schema.jar output/
     cp core/build/libs/nomulus-public.jar output/
     cp core/build/libs/nomulus-tests-alldeps.jar output/
-# Create a release in Cloud Deploy to trigger the deployment pipeline
-- name: 'gcr.io/${PROJECT_ID}/builder:latest'
-  entrypoint: /bin/bash
-  args:
-  - -c
-  - |
-    set -e
-    echo "============================================="
-    echo "Triggering Google Cloud Deploy Release"
-    echo "============================================="
-    echo "Tag Name: ${TAG_NAME}"
-    echo "Project ID: ${PROJECT_ID}"
-    pipeline="deploy-nomulus"
-    region="us-central1"
-    # Release names must consist of lowercase letters, numbers, and hyphens.
-    release_name=$(echo "${TAG_NAME}" | tr '[:upper:]' '[:lower:]' | tr '_' '-')
-    echo "Release Name: $release_name"
-    echo "============================================="
-    # Read the pre-fetched image digest from the workspace file
-    nomulus_digest=$(cat /workspace/nomulus_digest)
-    proxy_digest=$(cat /workspace/proxy_digest)
-    gcloud deploy releases create "$release_name" \
-      --delivery-pipeline="$pipeline" \
-      --region="$region" \
-      --project=${PROJECT_ID} \
-      --images="gcr.io/${PROJECT_ID}/nomulus=gcr.io/${PROJECT_ID}/nomulus@${nomulus_digest},gcr.io/${PROJECT_ID}/proxy=gcr.io/${PROJECT_ID}/proxy@${proxy_digest}" \
-      --source=. \
-      --skaffold-file=release/clouddeploy/skaffold.yaml \
-      --deploy-parameters="deployed_image=gcr.io/${PROJECT_ID}/nomulus@${nomulus_digest},base_image=us-docker.pkg.dev/${PROJECT_ID}/gcr.io/nomulus,tag_name=${TAG_NAME},project_id=${PROJECT_ID}"
 # The tarballs and jars to upload to GCS.
 artifacts:
   objects:
@@ -228,11 +171,12 @@ artifacts:
     - 'release/cloudbuild-restart-proxies-*.yaml'
     - 'jetty/kubernetes/*.yaml'
     - 'jetty/kubernetes/gateway/*.yaml'
-# The images are already uploaded, but we still need to include them there so that
-# the GCB pubsub message contains them (for Spinnaker to consume).
+# Images to upload to staging repository for build provenance generation.
 images:
-  - 'gcr.io/${PROJECT_ID}/nomulus:${TAG_NAME}'
-  - 'gcr.io/${PROJECT_ID}/proxy:${TAG_NAME}'
+  - 'us-docker.pkg.dev/${PROJECT_ID}/staging/nomulus:${TAG_NAME}'
+  - 'us-docker.pkg.dev/${PROJECT_ID}/staging/nomulus:latest'
+  - 'us-docker.pkg.dev/${PROJECT_ID}/staging/proxy:${TAG_NAME}'
+  - 'us-docker.pkg.dev/${PROJECT_ID}/staging/proxy:latest'
 timeout: 7200s
 options:
   machineType: 'E2_HIGHCPU_32'
